@@ -1,0 +1,47 @@
+% !TEX TS-program = lualatex
+% Created by Alain Matthes on 2024-12-25.
+% Copyright (c) 2024 AlterMundus.
+\documentclass[margin = 12pt]{standalone}
+\usepackage[mini]{tkz-euclide}
+\usepackage{tkz-elements}
+\begin{document}
+
+\directlua{
+ z.A = point(0, 0)
+ z.B = point(10, 0)
+ L.AB = line(z.A, z.B)
+ z.C = L.AB:gold_ratio()
+ L.AC = line(z.A, z.C)
+ L.CB = line(z.C, z.B)
+ L.AB = line(z.A, z.B)
+ z.O_0 = L.AB.mid
+ z.O_1 = L.AC.mid
+ z.O_2 = L.CB.mid
+ C.AB = circle(z.O_0, z.B)
+ C.AC = circle(z.O_1, z.C)
+ C.CB = circle(z.O_2, z.B)
+ z.P = C.CB.north
+ z.Q = C.AC.north
+ z.O = C.AB.south
+ z.c = z.C:north(2)
+ C.PC = circle(z.P, z.C)
+ C.QA = circle(z.Q, z.A)
+ z.P_0 = intersection(C.PC, C.AB)
+ z.P_1 = intersection(C.PC, C.AC)
+ _, z.P_2 = intersection(C.QA, C.CB)
+ T = triangle(z.P_0, z.P_1, z.P_2)
+ z.O_3 = T.circumcenter
+}
+
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawCircle[black,fill=yellow!20,opacity=.4](O_0,B)
+  \tkzDrawCircles[teal,fill=teal!40,opacity=.6](O_1,C O_2,B)
+  \tkzDrawCircle[purple,fill=purple!20,opacity=.4](O_3,P_0)
+  \tkzDrawArc[cyan,delta=10](Q,A)(P_0)
+  \tkzDrawArc[cyan,delta=10](P,P_0)(B)
+  \tkzDrawArc[cyan,delta=10](O,B)(A)
+  \tkzDrawPoints(A,B,C,O_0,O_1,O_2,P,Q,P_0,P_0,P_1,P_2,O)
+  \tkzLabelPoints(A,B,C,O_0,O_1,O_2,P,Q,P_0,P_0,P_1,P_2,O)
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,457 @@
+\newpage
+\section{Transfers} % (fold)
+\label{sec:transfers}
+\subsection{From Lua to tkz-euclide or TikZ} % (fold)
+\label{sub:from_lua_to_tkz_euclide_or_tikz}
+
+This section explains how to transfer values from Lua to TeX/TikZ, including points, booleans, numeric values, and functional data. Some examples are advanced and can be explored in a second reading.
+
+\subsubsection{Points transfer} % (fold)
+\label{ssub:points_transfer}
+
+The necessary definitions and calculations are performed with the primitive \tkzMacro{lualatex}{directlua}\footnote{Or inside the \tkzEnv{tkz-elements}{tkzelements} environment}. Then, we execute the macro \tkzcname{tkzGetNodes}, which transforms the affixes of the table |z| into TikZ nodes. The drawing can then be done with plain \TIKZ{} or \tkzNamePack{tkz-euclide}.
+
+If you wish to use another package for plotting, you must define a custom macro similar to \tkzMacro{tkz-elements}{tkzGetNodes} that interprets the contents of the |z| table. You don't need to understand the following code to use the package. You only need to know that if |z.A| is defined, then the macro below will create a node named |A|.
+
+
+\vspace*{1em}
+
+\begin{mybox}
+\begin{verbatim}
+\def\tkzGetNodes{\directlua{
+   for K,V in pairs(z) do
+      local n,sd,ft
+      n = string.len(K)
+      if n >1 then
+      _,_,ft, sd = string.find( K , "(.+)(.)" )  
+     if sd == "p" then   K=ft.."'" end 
+     _,_,xft, xsd = string.find( ft , "(.+)(.)" ) 
+     if xsd == "p" then  K=xft.."'".."'" end 
+       end    
+  tex.print("\\coordinate ("..K..") at ("..V.re..","..V.im..") ;\\\\")
+end}
+}
+\end{verbatim}
+\end{mybox}
+
+See the section In-depth Study \ref{sec:in_depth_study} for an explanation of the previous code.
+
+Point names may include the underscore  |_| and the macro \tkzMacro{tkz-elements}{tkzGetNodes} for automatic conversion to names with \tkzname{prime} or \tkzname{double prime}. (See  the next example)
+
+\vspace{1em}
+
+\begin{tkzexample}[latex=7cm]
+  \directlua{
+     init_elements()
+     z.o   = point(0, 0)
+     z.a_1 = point(2, 1)
+     z.a_2 = point(1, 2)
+     z.ap  = z.a_1 + z.a_2
+     z.app = z.a_1 - z.a_2
+  }
+
+  \begin{center}
+    \begin{tikzpicture}[ scale = 1.5]
+       \tkzGetNodes
+       \tkzDrawSegments(o,a_1 o,a_2 o,a' o,a'')
+       \tkzDrawSegments[red](a_1,a' a_2,a')
+       \tkzDrawSegments[blue](a_1,a'' a_2,a'')
+       \tkzDrawPoints(a_1,a_2,a',o,a'')
+       \tkzLabelPoints(o,a_1,a_2,a',a'')
+    \end{tikzpicture}
+  \end{center}
+\end{tkzexample}
+
+% subsubsection points_transfer (end)
+% subsection from_lua_to_tkz_euclide_or_tikz (end)
+
+\subsubsection{Other transfers} % (fold)
+\label{ssub:other_transfers}
+
+It is also useful to transfer numerical values (such as lengths or angles) and booleans. For this, we provide the macro \tkzMacro{tkz-elements}{tkzUseLua(...)}:
+
+\begin{mybox}
+  \begin{verbatim}
+  \def\tkzUseLua#1{\directlua{tex.print(tostring(#1))}} 
+\end{verbatim}
+\end{mybox}
+
+This macro prints the value of a Lua variable or expression directly into the TeX stream.
+
+\paragraph{Example.} The following Lua code computes whether two lines intersect:
+
+\directlua{
+ z.a = point(4, 2)
+ z.b = point(1, 1)
+ z.c = point(2, 2)
+ z.d = point(5, 1)
+ L.ab = line(z.a,z.b)
+ L.cd = line(z.c,z.d)
+ det = (z.b-z.a)^(z.d-z.c)
+ if det == 0 then bool = true 
+   else bool = false
+ end
+ x = intersection (L.ab,L.cd)}
+
+The intersection of the two lines lies at
+a point whose affix is: \tkzUseLua{x}
+
+\vspace{1em}
+\begin{minipage}{0.5\textwidth}
+\begin{verbatim}
+\directlua{
+  z.a = point(4, 2)
+  z.b = point(1, 1)
+  z.c = point(2, 2)
+  z.d = point(5, 1)
+  L.ab = line(z.a, z.b)
+  L.cd = line(z.c, z.d)
+  det = (z.b - z.a)^(z.d - z.c)
+  if det == 0 then bool = true
+    else bool = false
+  end
+  x = intersection (L.ab,L.cd)}
+
+The intersection of the two lines lies at
+    a point whose affix is:\tkzUseLua{x}
+
+
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzInit[xmin =0,ymin=0,xmax=5,ymax=3]
+  \tkzGrid\tkzAxeX\tkzAxeY
+  \tkzDrawPoints(a,...,d)
+  \ifthenelse{\equal{\tkzUseLua{bool}}{%
+  true}}{\tkzDrawSegments[red](a,b c,d)}{%
+  \tkzDrawSegments[blue](a,b c,d)}
+  \tkzLabelPoints(a,...,d)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+\begin{center}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzInit[xmin =0,ymin=0,xmax=5,ymax=3]
+  \tkzGrid\tkzAxeX\tkzAxeY
+  \tkzDrawPoints(a,...,d)
+  \ifthenelse{\equal{\tkzUseLua{bool}}{true}}{
+  \tkzDrawSegments[red](a,b c,d)}{%
+  \tkzDrawSegments[blue](a,b c,d)}
+  \tkzLabelPoints(a,...,d)
+\end{tikzpicture}
+\end{center}
+  \end{minipage}
+
+% subsubsection other_transfers (end)
+\subsubsection{Example 1} % (fold)
+\label{ssub:example_1}
+
+This example shows how to transfer a Lua-defined function and generate a path of coordinates to be used in a TikZ plot. The main tools involved are Lua's   function \tkzFct{lua}{load}  and the   \tkzNameObj{path} class. See [\ref{ssub:plotting_a_curve}]
+
+
+\begin{verbatim}
+\makeatletter\let\percentchar\@percentchar\makeatother
+\directlua{
+init_elements()
+function list (f,min,max,nb)
+  PA.tbl = path()
+  for x = min, max, (max - min) / nb do
+     PA.tbl:add_point(point(x, f(x)),5)
+  end
+  return table.concat(PA.tbl)
+end}
+\def\plotcoords#1#2#3#4{%
+\directlua{%
+  f = load (([[
+        return function (x)
+            return (\percentchar s)
+        end
+    ]]):format ([[#1]]), nil, 't', math) ()
+tex.print(list(f,#2,#3,#4))}}
+
+\begin{tikzpicture}
+\tkzInit[xmin=1,xmax=3,ymin=0,ymax=2]
+\tkzGrid
+\tkzDrawX[right=3pt,label={$x$}]
+\tkzDrawY[above=3pt,label={$f(x) = \dfrac{1-\mathrm{e}^{-x^2}}{1+\mathrm{e}^{-x^2}}$}]
+\draw[cyan,thick] plot coordinates {\plotcoords{(1-exp(-x^2))/(exp(-x^2)+1)}{-3}{3}{100}};
+\end{tikzpicture}
+\end{verbatim}
+
+
+\makeatletter\let\percentchar\@percentchar\makeatother
+\directlua{
+init_elements()
+function list (f,min,max,nb)
+  PA.tbl = path()
+  for x = min, max, (max - min) / nb do
+     PA.tbl:add_point(point(x, f(x)),5)
+  end
+  return table.concat(PA.tbl)
+end}
+\def\plotcoords#1#2#3#4{%
+\directlua{%
+  f = load (([[
+        return function (x)
+            return (\percentchar s)
+        end
+    ]]):format ([[#1]]), nil, 't', math) ()
+tex.print(list(f,#2,#3,#4))}
+}
+\begin{center}
+  \begin{tikzpicture}
+  \tkzInit[xmin=1,xmax=3,ymin=0,ymax=2]
+  \tkzGrid
+  \tkzDrawX[right=3pt,label={$x$}]
+  \tkzDrawY[above=3pt,label={$f(x) = \dfrac{1-\mathrm{e}^{-x^2}}{1+\mathrm{e}^{-x^2}}$}]
+  \draw[cyan,thick] plot coordinates {\plotcoords{(1-exp(-x^2))/(exp(-x^2)+1)}{-3}{3}{100}};
+  \end{tikzpicture}
+\end{center}
+
+% subsubsection example_1 (end)
+
+\subsubsection{Example 2} % (fold)
+\label{ssub:example_2}
+
+This example demonstrates how to pass a value (the number of sides) from \TeX{} to Lua using the   \tkzMacro{lualatex}{directlua} primitive. This enables the dynamic creation of regular polygons. This example is based on a answer from egreg [\href{https://tex.stackexchange.com/questions/729009/how-can-these-regular-polygons-be-arranged-within-a-page/731503#731503}{egreg--tex.stackexchange.com}]
+
+\begin{verbatim}
+\directlua{
+  z.I = point(0, 0)
+  z.A = point(2, 0)
+}
+\def\drawPolygon#1{
+\directlua{
+  RP.six = regular_polygon(z.I,z.A,#1)
+  RP.six : name ("P_")
+  }
+\begin{tikzpicture}[scale=.5]
+ \def\nb{\tkzUseLua{RP.six.nb}}
+ \tkzGetNodes
+ \tkzDrawCircles(I,A)
+ \tkzDrawPolygon(P_1,P_...,P_\nb)
+ \tkzDrawPoints[red](P_1,P_...,P_\nb)
+\end{tikzpicture}
+}
+\foreach [count=\i] \n in {3, 4, ..., 10} {
+  \makebox[0.2\textwidth]{%
+    \begin{tabular}[t]{@{}c@{}}
+      $n=\n$ \\[1ex]
+      \drawPolygon{\n}
+    \end{tabular}%
+  }\ifnum\i=4 \\[2ex]\fi
+}
+\end{verbatim}
+
+\directlua{
+  z.I = point(0,0)
+  z.A = point(2,0)
+}
+\def\drawPolygon#1{
+\directlua{
+  RP.six   = regular_polygon(z.I,z.A,#1)
+  RP.six : name ("P_")
+  }
+\begin{tikzpicture}[scale=.5]
+ \def\nb{\tkzUseLua{RP.six.nb}}
+ \tkzGetNodes
+ \tkzDrawCircles(I,A)
+ \tkzDrawPolygon(P_1,P_...,P_\nb)
+ \tkzDrawPoints[red](P_1,P_...,P_\nb)
+\end{tikzpicture}
+}
+\foreach [count=\i] \n in {3, 4, ..., 10} {
+  \makebox[0.2\textwidth]{%
+    \begin{tabular}[t]{@{}c@{}}
+      $n=\n$ \\[1ex]
+      \drawPolygon{\n}
+    \end{tabular}%
+  }\ifnum\i=4 \\[2ex]\fi
+}
+
+% subsubsection example_2 (end)
+
+\subsubsection{Example 3} % (fold)
+\label{ssub:example_3}
+
+This time, the transfer will be carried out using an external file. The following example is based on this one, but using a table.
+
+\directlua{
+ init_elements()
+   z.a = point(1, 0)
+   z.b = point(3, 2)
+   z.c = point(0, 2)
+ A,B,C =  tkz.parabola (z.a, z.b, z.c)
+
+ function f(t0, t1, n)
+  local out=assert(io.open("tmp.table","w"))
+  local y
+  for t = t0,t1,(t1-t0)/n  do
+   y = A*t^2+B*t +C
+   out:write(utils.checknumber(t), " ",
+     utils.checknumber(y), " i\string\n")
+  end
+  out:close()
+ end
+ }
+
+\begin{minipage}{0.55\textwidth}
+\begin{verbatim}
+\directlua{
+  init_elements()
+   z.a = point(1, 0)
+   z.b = point(3, 2)
+   z.c = point(0, 2)
+   A,B,C = parabola (z.a, z.b, z.c)
+
+ function f(t0, t1, n)
+  local out=assert(io.open("tmp.table","w"))
+  local y
+  for t = t0,t1,(t1-t0)/n  do
+   y = A*t^2+B*t +C
+   out:write(utils.checknumber(t), " ",
+     utils.checknumber(y), " i\string\n")
+  end
+  out:close()
+ end
+ }
+\begin{tikzpicture}
+   \tkzGetNodes
+   \tkzInit[xmin=-1,xmax=5,ymin=0,ymax=5]
+   \tkzDrawX\tkzDrawY
+   \tkzDrawPoints[red,size=2](a,b,c)
+   \directlua{f(-1,3,100)}%
+   \draw[domain=-1:3] plot[smooth]
+        file {tmp.table};
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{0.45\textwidth}
+\begin{center}
+  \begin{tikzpicture}
+     \tkzGetNodes
+     \tkzInit[xmin=-1,xmax=5,ymin=0,ymax=5]
+     \tkzDrawX\tkzDrawY
+     \tkzDrawPoints[red,size=2](a,b,c)
+     \directlua{f(-1,3,100)}%
+     \draw[domain=-1:3] plot[smooth] file {tmp.table};
+  \end{tikzpicture}
+\end{center}
+
+\end{minipage}
+% subsubsection example_3 (end)
+
+\subsubsection{Example 4} % (fold)
+\label{ssub:example_4}
+
+The result is identical to the previous one.
+\begin{verbatim}
+\directlua{
+   z.a   = point(1, 0)
+   z.b   = point(3, 2)
+   z.c   = point(0, 2)
+   A,B,C =  parabola (z.a, z.b, z.c)
+
+ function f(t0, t1, n)
+ local PA.tbl = path()
+ for t = t0,t1,(t1-t0)/n  do
+     y = A*t^2+B*t +C
+     local pt = point(t, y)
+     PA.tbl:add_point(pt)
+  end
+  return table.concat (tbl)
+end
+}
+\begin{tikzpicture}
+   \tkzGetNodes
+   \tkzDrawX\tkzDrawY
+   \tkzDrawPoints[red,size=2pt](a,b,c)
+   \draw[domain=-2:3,smooth] plot coordinates {\directlua{tex.print(f(-2,3,100))}};
+\end{tikzpicture}
+\end{verbatim}
+% subsubsection example_4 (end)
+
+\subsubsection{Example 5} % (fold)
+\label{ssub:example_5}
+
+\begin{verbatim}
+\makeatletter\let\percentchar\@percentchar\makeatother
+\directlua{
+function cellx (start,step,n)
+return start+step*(n-1)
+end
+}
+\def\calcval#1#2{%
+\directlua{
+  f = load (([[
+        return function (x)
+            return (\percentchar s)
+        end
+    ]]):format ([[#1]]), nil, 't', math) ()
+x = #2
+tex.print(string.format("\percentchar.2f",f(x)))}
+}
+\def\fvalues(#1,#2,#3,#4) {%
+\def\firstline{$x$}
+    \foreach \i in {1,2,...,#4}{%
+      \xdef\firstline{\firstline &  \tkzUseLua{cellx(#2,#3,\i)}}}
+\def\secondline{$f(x)=#1$}
+     \foreach \i in {1,2,...,#4}{%
+      \xdef\secondline{\secondline &
+     \calcval{#1}{\tkzUseLua{cellx(#2,#3,\i)}}}}
+\begin{tabular}{l*{#4}c}
+  \toprule
+  \firstline  \\
+  \secondline \\
+  \bottomrule
+  \end{tabular}
+}
+\fvalues(x^2-3*x+1,-2,.25,8)
+\vspace{12pt}
+
+\end{verbatim}
+
+\makeatletter\let\percentchar\@percentchar\makeatother
+\directlua{
+function cellx (start,step,n)
+return start+step*(n-1)
+end
+}
+\def\calcval#1#2{%
+\directlua{
+  f = load (([[
+        return function (x)
+            return (\percentchar s)
+        end
+    ]]):format ([[#1]]), nil, 't', math) ()
+x = #2
+tex.print(string.format("\percentchar.2f",f(x)))}
+}
+\def\fvalues(#1,#2,#3,#4) {%
+\def\firstline{$x$}
+    \foreach \i in {1,2,...,#4}{%
+      \xdef\firstline{\firstline &  \tkzUseLua{cellx(#2,#3,\i)}}}
+\def\secondline{$f(x)=#1$}
+     \foreach \i in {1,2,...,#4}{%
+      \xdef\secondline{\secondline &
+     \calcval{#1}{\tkzUseLua{cellx(#2,#3,\i)}}}}
+\begin{tabular}{l*{#4}c}
+  \toprule
+  \firstline  \\
+  \secondline \\
+  \bottomrule
+  \end{tabular}
+}
+\fvalues(x^2-3*x+1,-2,.25,8)
+
+\subsubsection{Summary} % (fold)
+\label{ssub:transfer_summary}
+
+The transfer of data between Lua and TeX is a key feature of \tkzNamePack{tkz-elements}, enabling high-precision numerical computations and dynamic figure generation. Whether for plotting curves, testing geometric properties, or generating tables, these tools offer flexibility and power that extend beyond traditional TeX capabilities.
+
+
+% subsubsection example_5 (end)
+% section transfers (end)
+
+\endinput

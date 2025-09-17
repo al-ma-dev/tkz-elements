@@ -1,0 +1,57 @@
+\newpage
+\section{Structure} % (fold)
+\label{sec:structure}
+
+The package defines  two macros \tkzMacro{tkz-elements}{tkzGetNodes} and \tkzMacro{tkz-elements}{tkzUseLua}.
+
+ Additionally, the package loads the file |tkz_elements_main.lua|. This file initializes all the tables used by the modules in which the classes are defined. It also defines the function \tkzFct{tkz-elements}{init\_elements()}, which resets all tables.
+ 
+ 
+\begin{tikzpicture}[scale=.75]
+\begin{scope}
+\path[mindmap, concept color=MidnightBlue!60, text=white,text width=38mm,
+ level 1 concept/.append style={level distance=120mm,
+  sibling angle=72},
+ set angles for level/.style={level 2/.append style={
+ sibling angle=360/\the\tikznumberofchildren}},
+ level/.append style={set angles for level=2},
+ level 3 concept/.append style={level distance=20mm,
+  sibling angle=20},
+ L1/.style={level distance=45mm},
+ L2/.style={level distance=65mm,minimum size=2cm}]
+
+node[concept,circular drop shadow] {|tkz-elements.sty|} [clockwise from=10]
+
+child[concept color= MidnightBlue!80,minimum size=4cm,text width=38mm,
+clockwise from=27] { 
+  node[concept,circular drop shadow] {|tkz\_elements\_main|} 
+  [clockwise from=0]
+  child[L2] { node[concept,circular drop shadow] {|Regular \_Polygon|} }
+  child[L2] { node[concept,circular drop shadow] {|Quadri\-lateral|} }
+  child[L2] { node[concept,circular drop shadow] {|Para\-llelogram|} }
+  child[L2] { node[concept,circular drop shadow] {|Rectangle|} }
+  child[L2] { node[concept,circular drop shadow] {|Matrix|} }
+  child[L2] { node[concept,circular drop shadow] {|Vector|} }
+  child[L2] { node[concept,circular drop shadow] {|Point|} }
+  child[L2] { node[concept,circular drop shadow] {|Line|} }
+  child[L2] { node[concept,circular drop shadow] {|Circle|} }
+  child[L2] { node[concept,circular drop shadow] {|Triangle|} }
+  child[L2] { node[concept,circular drop shadow] {|Conic|} }
+  child[L2] { node[concept,circular drop shadow] {|Square|} }
+  child[L2] { node[concept,circular drop shadow] {|OCCS|} }
+  child[L2] { node[concept,circular drop shadow] {|Path|} }
+};
+\end{scope}
+\end{tikzpicture}
+
+The current classes are :
+
+ \tkzClass{point} (z), \tkzClass{circle} (C), \tkzClass{line} (L), \tkzClass{matrix} (M), \tkzClass{occs} (O), \tkzClass{parallelogram} (P), \tkzClass{quadrilateral} (Q), \tkzClass{rectangle} (R), \tkzClass{square} (S), \tkzClass{triangle} (T), \tkzClass{vector} (V), \tkzClass{conic} (CO),   \tkzClass{regular\_polygon} (RP) and \tkzClass{path} (PA).\\
+ 
+  The variable in parentheses indicates the name typically assigned to the table containing objects of the corresponding class.  
+
+If \tkzname{name} refers to a class, its definition can be found in the file \code{tkz\_elements\_name.lua}.
+     
+% section structure (end)
+
+

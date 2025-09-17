@@ -1,0 +1,76 @@
+\newpage
+\section{Global Variables and constants} % (fold)
+\label{sec:global_variables}
+
+This module defines default values and mathematical constants used for precision control and symbolic computations in \tkzNamePack{tkz-elements}.
+
+\subsection{Global Variables} % (fold)
+\label{sub:tkz_settings_variables}
+
+\begin{center}
+  \bgroup
+  \catcode`_=12
+  \small
+  \captionof{table}{Default settings and constants.}\label{tab:tkz_settings}
+  \begin{tabular}{ll}
+    \toprule
+    \textbf{Variable} & \textbf{Description} \\
+    \midrule
+    \tkzSysVar{tkz.nb\_dec}  & Number of decimals used for formatting (default: 10) \\
+     \tkzSysVar{tkz.epsilon}  & Tolerance used for floating-point comparisons ($10^{-\texttt{tkz.nb\_dec}}$) \\
+     \tkzSysVar{tkz.dc}        & Number of decimals shown in output (default: 2) \\
+          \midrule
+     \textbf{Constant} & \textbf{Description} \\
+     \midrule
+     
+     \tkzConst{tkz.phi}        & Golden ratio $\varphi = \dfrac{1 + \sqrt{5}}{2}$ \\
+     \tkzConst{tkz.invphi}     & Inverse golden ratio $1/\varphi = \dfrac{\sqrt{5} - 1}{2}$ \\
+     \tkzConst{tkz.sqrtphi}    & Square root of the golden ratio $\sqrt{\varphi}$ \\
+    \bottomrule
+  \end{tabular}
+  \egroup
+\end{center}
+
+
+\subsection{Functions} % (fold)
+\label{sub:tkz_settings_functions}
+
+\begin{center}
+  \bgroup
+  \catcode`\_=12
+  \small
+  \captionof{table}{Functions related to settings.}\label{tab:tkz_settings_functions}
+  \begin{tabular}{ll}
+    \toprule
+    \textbf{Function} & \textbf{Reference} \\
+    \midrule
+    \tkzFct{tkz}{tkz.reset\_defaults()}   & Section~\ref{ssub:tkz_reset_defaults} \\
+    \tkzFct{tkz}{tkz.set\_nb\_dec(n)}      & Section~\ref{ssub:tkz_set_nb_dec} \\
+    \bottomrule
+  \end{tabular}
+  \egroup
+\end{center}
+
+\subsubsection{Function \tkzFct{tkz-elements}{reset\_defaults()}} % (fold)
+\label{ssub:tkz_reset_defaults}
+
+Restores default values for numerical precision and formatting:
+\begin{itemize}
+  \item \code{tkz.nb\_dec = 10}
+  \item \code{tkz.epsilon = 1e-10}
+  \item \code{tkz.dc = 2}
+\end{itemize}
+
+\subsubsection{Function \tkzFct{tkz}{tkz.set\_nb\_dec(n)}} % (fold)
+\label{ssub:tkz_set_nb_dec}
+
+
+Sets the number of decimals used in floating-point comparisons and updates the tolerance accordingly:
+\begin{itemize}
+  \item \code{tkz.nb\_dec = $n$}
+  \item \code{tkz.epsilon = $10^{-n}$}
+\end{itemize}
+%
+% \noindent
+% \textbf{Effect:} Updates both \code{tkz\\\_nb\\\_dec} and \code{tkz\\\_epsilon} (which becomes $10^{-n}$).
+% section constants (end)

@@ -1,0 +1,322 @@
+\newpage
+\section{Class \tkzClass{occs}} % (fold)
+\label{sec:orthonormal_cartesian_coordinate_system}
+
+\subsection{Description} % (fold)
+\label{sub:description_occs}
+
+The \texttt{occs} class models an \emph{orthonormal Cartesian coordinate system} (OCCS). Its primary use is to transition from the default coordinate system to one aligned with geometric features of the figure (e.g., a directrix, a major axis, or the vertex of a conic).
+
+All calculations in this package are performed in a fixed OCCS. For convenience and clarity, this class allows defining and transforming to a new OCCS using a direction (a line) and a new origin point.
+
+\medskip
+\noindent
+The typical use case is to simplify the coordinates of geometric objects such as conics, by aligning the axes with their natural directions.
+
+% sub : description (end)
+
+\subsection{Creating an OCCS} % (fold)
+\label{sub:creating_occs}
+
+An OCCS (orthonormal Cartesian coordinate system) is defined by:
+\begin{itemize}
+  \item a line, which sets the direction of the new \emph{ordinate} axis (the $y$-axis), and
+  \item a point, which becomes the new origin.
+\end{itemize}
+
+The abscissa axis (the $x$-axis) is automatically computed to be orthogonal to the ordinate axis, ensuring a right-handed coordinate system.
+
+\medskip
+\noindent
+There are two equivalent ways to create an OCCS:
+
+\begin{mybox}
+  \code{O.S = occs(L.axis, z.S)} \hfill (short form, recommended)  
+  \\
+  \code{O.S = occs:new(L.axis, z.S)} \hfill (explicit constructor)
+\end{mybox}
+
+The result is stored in the table \code{O} under the key \code{"S"}, representing the OCCS centered at point \code{z.S}.
+
+\medskip
+\noindent
+This object can then be used to:
+\begin{itemize}
+  \item compute coordinates of points in the new system,
+  \item project points onto the new axes, or
+  \item reconstruct geometric elements aligned with the new frame.
+\end{itemize}
+
+
+The new abscissa axis is automatically computed to ensure orthonormality.
+
+% subsection creating_occs (end)
+
+
+
+\subsection{Attributes of an occs} % (fold)
+\label{sub:attributes_of_an_occs}
+
+\begin{center}
+  \bgroup
+  \catcode`_=12
+  \small
+  \captionof{table}{Attributes of an \texttt{occs} object.}\label{tab:occs_attributes}
+  \begin{tabular}{ll}
+    \toprule
+    \textbf{Attribute} & \textbf{Description}  \\
+    \midrule
+    \tkzAttr{occs}{type}       & Object type name, always \texttt{"occs"} \\
+    \tkzAttr{occs}{origin}     & The new origin point                     \\
+    \tkzAttr{occs}{x}          & Point that defines the new $x$-axis (abscissa) \\
+    \tkzAttr{occs}{y}          & Point that defines the new $y$-axis (ordinate) \\
+    \tkzAttr{occs}{abscissa}   & Line representing the abscissa axis \\
+    \tkzAttr{occs}{ordinate}   & Line representing the ordinate axis \\
+    \bottomrule
+  \end{tabular}
+  \egroup
+\end{center}
+
+
+\subsubsection{Example: attributes of \texttt{occs}} % (fold)
+\label{ssub:example_attributes_of_occs}
+
+A few words about the arguments of a new OCCS. The most important is the line that defines the direction of the new ordinate axis. For a parabola, this direction should point from the directrix to the focus. For a hyperbola or an ellipse, it should go from the center to the principal focus. The orientation is determined by the order of the two points used to construct the line: it runs from the first to the second.
+
+If this line is constructed as an orthogonal to another line (as in the example below), then its orientation depends on the orientation of the original line.
+\vspace{1em}
+
+\begin{verbatim}
+ \directlua{
+ init_elements()
+ z.O = point(0, 0)
+ z.i = point(1, 0)
+ z.j = point(0, 1)
+ z.A = point(-1, -1)
+ z.B = point(4, 2)
+ L.AB = line(z.A, z.B)
+ z.S = point(0, 3)
+ L.axis = L.AB:ortho_from(z.S)
+ % new occs
+ O.S = occs(L.axis, z.S)
+ z.u = O.S.x
+ z.v = O.S.y
+ z.ax = O.S.abscissa.pa
+ z.bx = O.S.ordinate.pa
+ z.ay = O.S.abscissa.pb
+ z.by = O.S.ordinate.pb}
+\begin{tikzpicture}
+ \tkzGetNodes
+ \tkzDrawLines(A,B)
+ \tkzDrawLines[purple,add=4 and 4](ax,ay bx,by)
+ \tkzDrawSegments[->,red,thick](O,i O,j)
+ \tkzDrawSegments[->,purple,thick](S,u S,v)
+ \tkzLabelSegment[below,sloped,pos=.9](A,B){L.AB the directrix}
+ \tkzLabelSegment[below,sloped,pos=3](ax,ay){abscissa}
+ \tkzLabelSegment[below,sloped,pos=5](bx,by){ordinate major\_axis}
+ \tkzLabelPoints(O,S)
+ \tkzLabelPoints[left](j,v)
+ \tkzLabelPoints[below right](i,u)
+\end{tikzpicture}
+\end{verbatim}
+
+
+\directlua{
+ init_elements()
+ z.O = point(0, 0)
+ z.i = point(1, 0)
+ z.j = point(0, 1)
+ z.A = point(-1, -1)
+ z.B = point(4, 2)
+ L.AB = line(z.A, z.B)
+ z.S = point(0, 3)
+ L.axis = L.AB:ortho_from(z.S)
+ % new occs
+ O.S = occs(L.axis, z.S)
+ z.u = O.S.x
+ z.v = O.S.y
+ z.ax = O.S.abscissa.pa
+ z.bx = O.S.ordinate.pa
+ z.ay = O.S.abscissa.pb
+ z.by = O.S.ordinate.pb}
+
+\begin{center}
+\begin{tikzpicture}
+ \tkzGetNodes
+ \tkzDrawLines(A,B)
+ \tkzDrawLines[purple,add=4 and 4](ax,ay bx,by)
+ \tkzDrawSegments[->,red,thick](O,i O,j)
+ \tkzDrawSegments[->,purple,thick](S,u S,v)
+ \tkzLabelSegment[below,sloped,pos=.9](A,B){L.AB the directrix}
+ \tkzLabelSegment[below,sloped,pos=3](ax,ay){abscissa}
+ \tkzLabelSegment[below,sloped,pos=5](bx,by){ordinate major\_axis}
+ \tkzLabelPoints(O,S)
+ \tkzLabelPoints[left](j,v)
+ \tkzLabelPoints[below right](i,u)
+\end{tikzpicture}
+\end{center}
+
+% subsection example_attributes_of_occs (end)
+
+\subsection{Methods of the class \texttt{occs}} % (fold)
+\label{sub:methods_of_the_class_occs}
+
+This class provides the following methods:
+
+\begin{itemize}
+  \item \texttt{occs:new(dir, origin)} or \texttt{occs(dir, origin)} — creates the OCCS.
+  \item \texttt{sys:coordinates(P)} — returns the coordinates of a point $P$ in the OCCS.
+\end{itemize}
+
+
+\subsection{Example: Using \texttt{occs} with a parabola} % (fold)
+\label{sub:example_occs_parabola}
+
+
+Let us consider a practical example. Suppose we want to compute the intersection points between a parabola and a line. The parabola is defined by its directrix and focus. In a coordinate system centered at the vertex $S$ of the parabola, with the $x$-axis parallel to the directrix and passing through $S$, the equation of the parabola becomes
+\[
+y = \frac{x^2}{2p}
+\]
+where $p$ is the \emph{latus rectum}, i.e., the distance from the focus to the directrix.
+
+\vspace{1em}
+
+To determine the intersection points, we first express the equation of the given line in the new coordinate system. Then, we solve the equation system using $y = \frac{x^2}{2p}$. Internally, this is handled using two utility functions.
+
+\vspace{1em}
+
+If solutions exist, the result consists of two values $r_1$ and $r_2$, which are the abscissas of the intersection points in the new OCCS. Once the corresponding ordinates are computed, we can either:
+\begin{itemize}
+  \item express the coordinates in \TIKZ{} directly using a projection onto the new OCCS, or
+  \item geometrically reconstruct the points: for each $r$, find the corresponding point $x$ on the new $x$-axis (\code{OCCS.abscissa}), and use it to locate the point on the parabola.
+\end{itemize}
+
+\vspace{1em}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.O = point(0, 0)
+ z.i = point(1, 0)
+ z.j = point(0, 1)
+ z.A = point(-1, 0)
+ z.B = point(5, 4)
+ L.dir = line(z.A, z.B)
+ z.F = point(0, 3)
+ CO.parabola = conic(z.F, L.dir, 1)
+ PA.curve = CO.parabola:points(-3, 3, 50)
+ local p = CO.parabola.p
+ z.P = L.dir:report(p, z.K)
+ z.X = PA:point(p)
+ z.H = L.dir:projection(z.X)
+ z.K = CO.parabola.K
+ z.S = CO.parabola.vertex
+ L.KF = CO.parabola.major_axis
+  % new occs
+ O.SKF = occs(L.KF, z.S)
+ z.u = O.SKF.x
+ z.v = O.SKF.y
+  % line a,b
+ z.a = point(-1, 1)
+ z.b = point(3, 5)
+ L.ab = line(z.a, z.b)
+  % % coordinates in the new occs
+ X, Y = O.SKF:coordinates(z.F)
+ Xa, Ya = O.SKF:coordinates(z.a)
+ Xb, Yb = O.SKF:coordinates(z.b)
+  % solve in the new occs
+ local r, s = tkz.line_coefficients(Xa, Ya, Xb, Yb)
+ r1, r2 = solve_para_line(p, r, s)
+ z.x = O.SKF.abscissa:report(r1, z.K)
+ z.y = O.SKF.abscissa:report(r2, z.K)
+ L1 = L.dir:ortho_from(z.x)
+ L2 = L.dir:ortho_from(z.y)
+ z.s1 = intersection(L.ab, L1)
+ z.s2 = intersection(L.ab, L2)}
+
+\begin{tikzpicture}
+ \tkzGetNodes
+ \tkzDrawCoordinates[smooth,orange,thick](PA.curve)
+ \tkzDrawLines(A,B)
+ \tkzDrawLines[add = 1 and 1](K,F)
+ \tkzDrawSegments[add = .5 and .5,blue](a,b)
+ \tkzDrawSegments[dashed](s1,x s2,y)
+ \tkzDrawPoints(A,B,F,K,S)
+ \tkzDrawPoints[blue,size=2](a,b)
+ \tkzDrawPoints[blue,size=2](s1,s2,x,y)
+ \tkzLabelPoints[blue](a,b)
+ \tkzLabelPoints[blue,above left](s1,s2)
+ \tkzLabelPoints(O,i,u,S,A,B,x,y)
+ \tkzLabelPoints[left](j,v)
+ \tkzLabelPoints[right](F,K)
+ \tkzDrawSegments[->,red,thick](O,i O,j)
+ \tkzDrawSegments[->,purple,thick](S,u S,v)
+ \tkzLabelSegment[below,sloped,pos=.7](A,B){Directrix}
+\end{tikzpicture}
+\end{verbatim}
+
+\directlua{
+ init_elements()
+ z.O = point(0, 0)
+ z.i = point(1, 0)
+ z.j = point(0, 1)
+ z.A = point(-1, 0)
+ z.B = point(5, 4)
+ L.dir = line(z.A, z.B)
+ z.F = point(0, 3)
+ CO.parabola = conic(z.F, L.dir, 1)
+ PA.curve = CO.parabola:points(-3, 3, 50)
+ local p = CO.parabola.p
+ z.P = L.dir:report(p, z.K)
+ z.X = CO.parabola:point(p)
+ z.H = L.dir:projection(z.X)
+ z.K = CO.parabola.K
+ z.S = CO.parabola.vertex
+ L.KF = CO.parabola.major_axis
+  % new occs
+ O.SKF = occs(L.KF, z.S)
+ z.u = O.SKF.x
+ z.v = O.SKF.y
+  % line a,b
+ z.a = point(-1, 1)
+ z.b = point(3, 5)
+ L.ab = line(z.a, z.b)
+  % % coordinates in the new occs
+ X, Y = O.SKF:coordinates(z.F)
+ Xa, Ya = O.SKF:coordinates(z.a)
+ Xb, Yb = O.SKF:coordinates(z.b)
+  % solve in the new occs
+ local r, s = tkz.line_coefficients(Xa, Ya, Xb, Yb)
+ r1, r2 = tkz.solve_quadratic_(1, -2 * p * r, -2 * p * s)
+ z.x = O.SKF.abscissa:report(r1, z.K)
+ z.y = O.SKF.abscissa:report(r2, z.K)
+ local L1 = L.dir:ortho_from(z.x)
+ local L2 = L.dir:ortho_from(z.y)
+ z.s1 = intersection(L.ab, L1)
+ z.s2 = intersection(L.ab, L2)}
+
+\begin{center}
+\begin{tikzpicture}
+ \tkzGetNodes
+ \tkzDrawCoordinates[smooth,orange,thick](PA.curve)
+ \tkzDrawLines(A,B)
+ \tkzDrawLines[add = 1 and 1](K,F)
+ \tkzDrawSegments[add = .5 and .5,blue](a,b)
+ \tkzDrawSegments[dashed](s1,x s2,y)
+ \tkzDrawPoints(A,B,F,K,S)
+ \tkzDrawPoints[blue,size=2](a,b)
+ \tkzDrawPoints[blue,size=2](s1,s2,x,y)
+ \tkzLabelPoints[blue](a,b)
+ \tkzLabelPoints[blue,above left](s1,s2)
+ \tkzLabelPoints(O,i,u,S,A,B,x,y)
+ \tkzLabelPoints[left](j,v)
+ \tkzLabelPoints[right](F,K)
+ \tkzDrawSegments[->,red,thick](O,i O,j)
+ \tkzDrawSegments[->,purple,thick](S,u S,v)
+ \tkzLabelSegment[below,sloped,pos=.7](A,B){Directrix}
+\end{tikzpicture}
+\end{center}
+
+% subsection example_occs_parabola (end)
+% subsection methods_of_the_class_occs (end)
+% section orthormal_cartesian_coordinate_system (end)
+\endinput

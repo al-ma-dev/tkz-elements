@@ -1,0 +1,5366 @@
+\newpage
+
+\section{Examples} % (fold)
+\label{sec:examples}
+
+\subsection{Length transfer} % (fold)
+\label{sub:report_de_distance}
+
+Use of |north and east| functions linked to points, to transfer lengths, See  (\ref{sub:length_of_a_segment})
+
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(3, 0)
+ L.AB = line(z.A, z.B)
+ T.ABC = L.AB:sublime()
+ z.C = T.ABC.pc
+ z.D = z.B:north(tkz.length(z.B, z.C))
+ z.E = z.B:east(L.AB.length)
+ z.M = L.AB.mid
+ z.F = z.E:north(tkz.length(z.C, z.M))}
+\begin{tikzpicture}[gridded,scale=.75]
+ \tkzGetNodes
+ \tkzDrawPolygons(A,B,C)
+ \tkzDrawSegments[gray,dashed](B,D B,E)
+ \tkzDrawSegments[gray,dashed](E,F C,M)
+ \tkzDrawPoints(A,...,F)
+ \tkzLabelPoints(A,B,E,M)
+ \tkzLabelPoints[above right](C,D,F)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(3, 0)
+ L.AB = line(z.A, z.B)
+ T.ABC = L.AB:sublime()
+ z.C = T.ABC.pc
+ z.D = z.B:north(tkz.length(z.B, z.C))
+ z.E = z.B:east(L.AB.length)
+ z.M = L.AB.mid
+ z.F = z.E:north(tkz.length(z.C, z.M))}
+
+\begin{center}
+  \begin{tikzpicture}[gridded,scale=.75]
+     \tkzGetNodes
+     \tkzDrawPolygons(A,B,C)
+     \tkzDrawSegments[gray,dashed](B,D B,E E,F C,M)
+     \tkzDrawPoints(A,...,F)
+     \tkzLabelPoints(A,B,E,M)
+     \tkzLabelPoints[above right](C,D,F)
+  \end{tikzpicture}
+\end{center}
+
+\end{minipage}
+% subsection report_de_distance (end)
+
+
+\subsubsection{Harmonic\_division and ethod \tkzMeth{triangle}{bisector(n)}} %(fold)
+\label{ssub:harmonic_division_and_bisector}
+
+Let four points $A$, $C$, $B$ and $D$, in this order, lying on the straight line $(d)$ and $M$ un point pris hors de $(d)$. Then, if two of the following three propositions are true, then the third is also true:
+   \begin{enumerate}
+   \item  The division(A,B;C,D) is harmonic.($CA/CB = DA/DB$)
+   \item  $(MC)$ is the internal angle bisector of $\widehat{AMB}$.
+   \item  $(MD) \perp(MC)$.
+   \end{enumerate}
+
+  \vspace{1em}
+  \directlua{
+   init_elements()
+   z.A = point(0, 0)
+   z.B = point(6, 0)
+   z.M = point(5, 4)
+   T.AMB = triangle(z.A, z.M, z.B)
+   L.AB = T.AMB.ca
+   L.bis = T.AMB:bisector(1)
+   z.C = L.bis.pb
+   L.bisext = T.AMB:bisector_ext(1)
+   z.D = intersection(L.bisext, L.AB)
+   L.CD = line(z.C, z.D)
+   z.O = L.CD.mid
+   L.AM = line(z.A, z.M)
+   L.LL = L.AM:ll_from(z.B)
+   L.MC = line(z.M, z.C)
+   L.MD = line(z.M, z.D)
+   z.E = intersection(L.LL, L.MC)
+   z.F = intersection(L.LL, L.MD)}
+  \begin{center}
+  \begin{tikzpicture}[scale =.6]
+    \tkzGetNodes
+    \tkzDrawPolygon(A,B,M)
+    \tkzDrawCircle[purple](O,C)
+    \tkzDrawSegments[purple](M,E M,D E,F)
+    \tkzDrawSegments(D,B)
+    \tkzDrawPoints(A,B,M,C,D,E,F)
+    \tkzLabelPoints[below right](A,B,C,D,E)
+    \tkzLabelPoints[above](M,F)
+    \tkzMarkRightAngle[opacity=.4,fill=gray!20](C,M,D)
+    \tkzMarkAngles[mark=||,size=.5](A,M,E E,M,B B,E,M)
+    \tkzMarkAngles[mark=|,size=.5](B,M,F M,F,B)
+    \tkzMarkSegments(B,E B,M B,F)
+  \end{tikzpicture}
+  \end{center}
+
+
+\begin{minipage}{.5\textwidth}
+  \begin{verbatim}
+  \directlua{
+     init_elements()
+     z.A = point(0, 0)
+     z.B = point(6, 0)
+     z.M = point(5, 4)
+     T.AMB = triangle(z.A, z.M, z.B)
+     L.AB = T.AMB.ca
+     L.bis = T.AMB:bisector(1)
+     z.C = L.bis.pb
+     L.bisext = T.AMB:bisector_ext(1)
+     z.D = intersection(L.bisext, L.AB)
+     L.CD = line(z.C, z.D)
+     z.O = L.CD.mid
+     L.AM = line(z.A, z.M)
+     L.LL = L.AM:ll_from(z.B)
+     L.MC = line(z.M, z.C)
+     L.MD = line(z.M, z.D)
+     z.E = intersection(L.LL, L.MC)
+     z.F = intersection(L.LL, L.MD)}
+  \end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\begin{center}
+\begin{tikzpicture}[scale =.4]
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,M)
+  \tkzDrawCircle[purple](O,C)
+  \tkzDrawSegments[purple](M,E M,D E,F)
+  \tkzDrawSegments(D,B)
+  \tkzDrawPoints(A,B,M,C,D,E,F)
+  \tkzLabelPoints[below right](A,B,C,D,E)
+  \tkzLabelPoints[above](M,F)
+  \tkzMarkRightAngle[opacity=.4,
+      fill=gray!20](C,M,D)
+  \tkzMarkAngles[mark=||,size=.5](A,M,E%
+      E,M,B B,E,M)
+  \tkzMarkAngles[mark=|,size=.5](B,M,F)
+  \tkzMarkAngles[mark=|,size=.5](M,F,B)
+  \tkzMarkSegments(B,E B,M B,F)
+\end{tikzpicture}
+\end{center}
+\end{verbatim}
+\end{minipage}
+
+% subsubsection harmonic_division_and_bisector(end)
+
+
+\subsubsection{Harmonic division with tkzphi } % (fold)
+\label{ssub:harmonic_division_with_tkzphi}
+
+\begin{Verbatim}
+\directlua{%
+   init_elements()
+   z.a = point(0, 0)
+   z.b = point(8, 0)
+   L.ab = line(z.a, z.b)
+   z.m, z.n = L.ab:harmonic_both (tkz.phi)
+}
+\begin{tikzpicture}[scale =.5]
+   \tkzGetNodes
+   \tkzDrawLine[add= .2 and .2](a,n)
+   \tkzDrawPoints(a,b,n,m)
+   \tkzLabelPoints(a,b,n,m)
+\end{tikzpicture}
+\end{Verbatim}
+
+
+\directlua{%
+   init_elements()
+   z.a = point(0, 0)
+   z.b = point(8, 0)
+   L.ab = line(z.a, z.b)
+   z.m,z.n = L.ab:harmonic_both(tkz.phi)
+}
+
+\begin{center}
+  \begin{tikzpicture}[scale =.25]
+     \tkzGetNodes
+     \tkzDrawLine[add= .1 and .1](a,n)
+     \tkzDrawPoints(a,b,n,m)
+     \tkzLabelPoints(a,b,n,m)
+  \end{tikzpicture}
+\end{center}
+% subsubsection harmonic_division_with_tkzphi (end)
+
+\subsection{D'Alembert-Monge 1} % (fold)
+\label{sub:d_alembert_1}
+
+\vspace{1em}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.a = point(4, 0)
+ z.B = point(7, -1)
+ z.b = point(5.5, -1)
+ z.C = point(5, -4)
+ z.c = point(4.25, -4)
+ C.Aa = circle(z.A, z.a)
+ C.Bb = circle(z.B, z.b)
+ C.Cc = circle(z.C, z.c)
+ z.I = C.Aa:external_similitude(C.Bb)
+ z.J = C.Aa:external_similitude(C.Cc)
+ z.K = C.Cc:external_similitude(C.Bb)
+ z.Ip = C.Aa:internal_similitude(C.Bb)
+ z.Jp = C.Aa:internal_similitude(C.Cc)
+ z.Kp = C.Cc:internal_similitude(C.Bb)}
+
+\begin{center}
+\begin{tikzpicture}[rotate=30]
+   \tkzGetNodes
+   \tkzDrawCircles(A,a B,b C,c)
+   \tkzDrawPoints(A,B,C,I,J,K,I',J',K')
+   \tkzDrawSegments[new](I,K A,I A,J B,I B,K C,J C,K)
+   \tkzDrawSegments[purple](I,J' I',J I',K)
+   \tkzLabelPoints(I,J,K,I',J',K')
+\end{tikzpicture}
+\end{center}
+
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.a = point(4, 0)
+ z.B = point(7, -1)
+ z.b = point(5.5, -1)
+ z.C = point(5, -4)
+ z.c = point(4.25, -4)
+ C.Aa = circle(z.A, z.a)
+ C.Bb = circle(z.B, z.b)
+ C.Cc = circle(z.C, z.c)
+ z.I = C.Aa:external_similitude(C.Bb)
+ z.J = C.Aa:external_similitude(C.Cc)
+ z.K = C.Cc:external_similitude(C.Bb)
+ z.Ip = C.Aa:internal_similitude(C.Bb)
+ z.Jp = C.Aa:internal_similitude(C.Cc)
+ z.Kp = C.Cc:internal_similitude(C.Bb)}
+\begin{tikzpicture}[rotate=-60]
+  \tkzGetNodes
+  \tkzDrawCircles(A,a B,b C,c)
+  \tkzDrawPoints(A,B,C,I,J,K,I',J',K')
+  \tkzDrawSegments[new](I,K A,I A,J B,I B,K C,J C,K)
+  \tkzDrawSegments[purple](I,J' I',J I',K)
+  \tkzLabelPoints(I,J,K,I',J',K')
+\end{tikzpicture}
+\end{verbatim}
+
+
+% subsection d_alembert_1 (end)
+
+\subsection{D'Alembert-Monge 2} % (fold)
+\label{sub:d_alembert_2}
+
+\vspace{1em}
+
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.a = point(5, 0)
+ z.B = point(7, -1)
+ z.b = point(3, -1)
+ z.C = point(5, -4)
+ z.c = point(2, -4)
+ C.Aa = circle(z.A, z.a)
+ C.Bb = circle(z.B, z.b)
+ C.Cc = circle(z.C, z.c)
+ z.i, z.j = C.Aa:radical_axis(C.Bb):get()
+ z.k, z.l = C.Aa:radical_axis(C.Cc):get()
+ z.m, z.n = C.Bb:radical_axis(C.Cc):get()}
+\begin{center}
+  \begin{tikzpicture}[scale = .75]
+  \tkzGetNodes
+  \tkzDrawCircles(A,a B,b C,c)
+  \tkzDrawLines[new](i,j k,l m,n)
+  \end{tikzpicture}
+\end{center}
+
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.a = point(5, 0)
+ z.B = point(7, -1)
+ z.b = point(3, -1)
+ z.C = point(5, -4)
+ z.c = point(2, -4)
+ C.Aa = circle(z.A, z.a)
+ C.Bb = circle(z.B, z.b)
+ C.Cc = circle(z.C, z.c)
+ z.i, z.j = C.Aa:radical_axis(C.Bb):get()
+ z.k, z.l = C.Aa:radical_axis(C.Cc):get()
+ z.m, z.n = C.Bb:radical_axis(C.Cc):get()}
+\begin{tikzpicture}[scale = .5]
+   \tkzGetNodes
+   \tkzDrawCircles(A,a B,b C,c)
+   \tkzDrawLines[new](i,j k,l m,n)
+\end{tikzpicture}
+\end{verbatim}
+
+
+
+
+% subsection d_alembert_2 (end)
+
+\subsection{Altshiller} % (fold)
+\label{sub:altshiller}
+
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.P = point(0, 0)
+ z.Q = point(5, 0)
+ z.I = point(3, 2)
+ C.QI = circle(z.Q, z.I)
+ C.PE = C.QI:orthogonal_from(z.P)
+ z.E = C.PE.through
+ C.QE = circle(z.Q, z.E)
+ _, z.F = intersection(C.PE, C.QE)
+ z.A = C.PE:point(1 / 9)
+ L.AE = line(z.A, z.E)
+ _, z.C = intersection(L.AE, C.QE)
+ L.AF = line(z.A, z.F)
+ L.CQ = line(z.C, z.Q)
+ z.D = intersection(L.AF, L.CQ)}
+\begin{tikzpicture}
+ \tkzGetNodes
+ \tkzDrawCircles(P,E Q,E)
+ \tkzDrawLines[add=0 and 1](P,Q)
+ \tkzDrawLines[add=0 and 2](A,E)
+ \tkzDrawSegments(P,E E,F F,C A,F C,D)
+ \tkzDrawPoints(P,Q,E,F,A,C,D)
+ \tkzLabelPoints(P,Q,E,F,A,C,D)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ z.P = point(0, 0)
+ z.Q = point(5, 0)
+ z.I = point(3, 2)
+ C.QI = circle(z.Q, z.I)
+ C.PE = C.QI:orthogonal_from(z.P)
+ z.E = C.PE.through
+ C.QE = circle(z.Q, z.E)
+ _, z.F = intersection(C.PE, C.QE)
+ z.A = C.PE:point(1 / 9)
+ L.AE = line(z.A, z.E)
+ _, z.C = intersection(L.AE, C.QE)
+ L.AF = line(z.A, z.F)
+ L.CQ = line(z.C, z.Q)
+ z.D = intersection(L.AF, L.CQ)}
+   \begin{center}
+     \begin{tikzpicture}[scale =.5]
+     \tkzGetNodes
+     \tkzDrawCircles(P,E Q,E)
+     \tkzDrawLines[add=0 and 1](P,Q)
+     \tkzDrawLines[add=0 and 2](A,E)
+     \tkzDrawSegments(P,E E,F F,C A,F C,D)
+     \tkzDrawPoints(P,Q,E,F,A,C,D)
+     \tkzLabelPoints(P,Q,E,F,A,C,D)
+     \end{tikzpicture}
+   \end{center}
+\end{minipage}
+%subsection altshiller (end)
+
+\subsection{Lemoine} % (fold)
+\label{sub:lemoine}
+
+\begin{minipage}{.4\textwidth}
+\begin{verbatim}
+\directlua{
+init_elements()
+z.A = point(1, 0)
+z.B = point(5, 2)
+z.C = point(1.2, 2)
+T.ABC = triangle(z.A, z.B, z.C)
+z.O = T.ABC.circumcenter
+C.OA = circle(z.O, z.A)
+L.tA = C.OA:tangent_at(z.A)
+L.tB = C.OA:tangent_at(z.B)
+L.tC = C.OA:tangent_at(z.C)
+z.P = intersection(L.tA, T.ABC.bc)
+z.Q = intersection(L.tB, T.ABC.ca)
+z.R = intersection(L.tC, T.ABC.ab)}
+\begin{tikzpicture}[scale = 1.25]
+ \tkzGetNodes
+ \tkzDrawPolygon[teal](A,B,C)
+ \tkzDrawCircle(O,A)
+ \tkzDrawPoints(A,B,C,P,Q,R)
+ \tkzLabelPoints(A,B,C,P,Q,R)
+ \tkzDrawLine[blue](Q,R)
+ \tkzDrawLines[red](A,P B,Q R,C)
+ \tkzDrawSegments(A,R C,P C,Q)
+\end{tikzpicture}
+\end{verbatim}
+
+\end{minipage}
+\begin{minipage}{.6\textwidth}
+\directlua{
+init_elements()
+z.A = point(1, 0)
+z.B = point(5, 2)
+z.C = point(1.2, 2)
+T.ABC = triangle(z.A, z.B, z.C)
+z.O = T.ABC.circumcenter
+C.OA = circle(z.O, z.A)
+L.tA = C.OA:tangent_at(z.A)
+L.tB = C.OA:tangent_at(z.B)
+L.tC = C.OA:tangent_at(z.C)
+z.P = intersection(L.tA, T.ABC.bc)
+z.Q = intersection(L.tB, T.ABC.ca)
+z.R = intersection(L.tC, T.ABC.ab)}
+
+\begin{center}
+  \begin{tikzpicture}[rotate=90,scale = .75]
+  \tkzGetNodes
+  \tkzDrawPolygon[teal](A,B,C)
+  \tkzDrawCircle(O,A)
+  \tkzDrawPoints(A,B,C,P,Q,R)
+  \tkzDrawLine[blue](Q,R)
+  \tkzDrawLines[red](A,P B,Q R,C)
+  \tkzDrawSegments(A,R C,P C,Q)
+  \tkzLabelPoints(A,B,C,P,Q,R)
+  \end{tikzpicture}
+\end{center}
+
+\end{minipage}
+%\caption{Lemoine line}
+% subsection lemoine (end)
+
+
+\subsection{Alternate} % (fold)
+\label{sub:alternate}
+\begin{minipage}[t]{.5\textwidth}\vspace{0pt}%
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(6, 0)
+ z.C = point(1, 5)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.I = T.ABC.incenter
+ L.AI = line(z.A, z.I)
+ z.D = intersection(L.AI, T.ABC.bc)
+ L.LLC = T.ABC.ab:ll_from(z.C)
+ z.E = intersection(L.AI, L.LLC)}
+\begin{tikzpicture}
+ \tkzGetNodes
+ \tkzDrawPolygon(A,B,C)
+ \tkzDrawLine[purple](C,E)
+ \tkzDrawSegment[purple](A,E)
+ \tkzFillAngles[purple!30,opacity=.4](B,A,C)
+ \tkzFillAngles[purple!30,opacity=.4](C,E,D)
+  \tkzMarkAngles[mark=|](B,A,D D,A,C C,E,D)
+ \tkzDrawPoints(A,...,E)
+ \tkzLabelPoints(A,B)
+ \tkzLabelPoints[above](C,D,E)
+ \tkzMarkSegments(A,C C,E)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}[t]{.5\textwidth}\vspace{0pt}%
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(6, 0)
+ z.C = point(1, 5)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.I = T.ABC.incenter
+ L.AI = line(z.A, z.I)
+ z.D = intersection(L.AI, T.ABC.bc)
+ L.LLC = T.ABC.ab:ll_from(z.C)
+ z.E = intersection(L.AI, L.LLC)}
+\begin{center}
+  \begin{tikzpicture}[scale=.75]
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawLine[purple](C,E)
+  \tkzDrawSegment[purple](A,E)
+  \tkzFillAngles[purple!30,opacity=.4](B,A,C C,E,D)
+  \tkzMarkAngles[mark=|](B,A,D D,A,C C,E,D)
+  \tkzDrawPoints(A,...,E)
+  \tkzLabelPoints[above](C,D,E)
+  \tkzMarkSegments(A,C C,E)
+  \tkzLabelPoints(A,B)
+  \end{tikzpicture}
+\end{center}
+\end{minipage}
+% subsection alternate (end)
+
+\subsection{Method \tkzMeth{circle}{common tangent}: orthogonality} % (fold)
+\label{sub:common_tangent_orthogonality}
+For two circles  to be orthogonal, it is necessary and sufficient for a secant  passing through one of their common points to be seen from the other common point at a right angle.
+
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(4, 2)
+ L.AB = line(z.A, z.B)
+ z.a = point(1, 2)
+ C.Aa = circle(z.A, z.a)
+ C.BC = C.Aa:orthogonal_from(z.B)
+ z.C, z.D = intersection(C.Aa, C.BC)
+ C.AC = circle(z.A, z.C)
+ L.TTp = C.AC:common_tangent(C.BC)
+ z.T, z.Tp = L.TTp:get()
+ z.M = C.AC:point(0.45)
+ L.MC = line(z.M, z.C)
+ z.Mp = intersection(L.MC, C.BC)
+ L.mm = L.TTp:ll_from(z.C)
+ _, z.M = intersection(L.mm, C.AC)
+ z.Mp = intersection(L.mm, C.BC)}
+\begin{tikzpicture}
+ \tkzGetNodes
+ \tkzDrawCircles(A,C B,C)
+ \tkzDrawSegments(M,M' A,C B,C A,B)
+ \tkzDrawSegments[gray](D,M D,M' T,T')
+ \tkzDrawPoints(A,B,C,D,M,M',T,T')
+ \tkzLabelPoints(A,B,D,M)
+ \tkzLabelPoints[above](C,M',T,T')
+ \tkzMarkRightAngles(M',D,M A,C,B)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+init_elements()
+z.A = point(0, 0)
+z.B = point(4, 2)
+L.AB = line(z.A, z.B)
+z.a = point(1, 2)
+C.Aa = circle(z.A, z.a)
+C.BC = C.Aa:orthogonal_from(z.B)
+z.C, z.D = intersection(C.Aa, C.BC)
+C.AC = circle(z.A, z.C)
+L.TTp = C.AC:common_tangent(C.BC)
+z.T, z.Tp = L.TTp:get()
+z.M = C.AC:point(0.45)
+L.MC = line(z.M, z.C)
+z.Mp = intersection(L.MC, C.BC)
+L.mm = L.TTp:ll_from(z.C)
+_, z.M = intersection(L.mm, C.AC)
+z.Mp = intersection(L.mm, C.BC)}
+
+\begin{center}
+\begin{tikzpicture}[scale=.75]
+   \tkzGetNodes
+   \tkzDrawCircles(A,C B,C)
+   \tkzDrawSegments(M,M' A,C B,C A,B)
+   \tkzDrawSegments[gray](D,M D,M' T,T')
+   \tkzDrawPoints(A,B,C,D,M,M',T,T')
+   \tkzLabelPoints(A,B,D,M)
+   \tkzLabelPoints[above](C,M',T,T')
+   \tkzMarkRightAngles(M',D,M A,C,B)
+\end{tikzpicture}
+\end{center}
+\end{minipage}
+
+% subsection common_tangent_orthogonality (end)
+
+
+\subsection{Apollonius circle} % (fold)
+\label{sub:apollonius_circle}
+
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(6, 0)
+ z.M = point(5, 3)
+ T.MAB = triangle(z.M, z.A, z.B)
+ L.bis = T.MAB:bisector()
+ z.C = L.bis.pb
+ L.bisext = T.MAB:bisector_ext()
+ z.D = intersection(T.MAB.bc, L.bisext)
+ L.CD = line(z.C, z.D)
+ z.O = L.CD.mid
+ L.AM = T.MAB.ab
+ z.E = z.M:symmetry(z.A)}
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(6, 0)
+ z.M = point(5, 3)
+ T.MAB = triangle(z.M, z.A, z.B)
+ L.bis = T.MAB:bisector()
+ z.C = L.bis.pb
+ L.bisext = T.MAB:bisector_ext()
+ z.D = intersection(T.MAB.bc, L.bisext)
+ L.CD = line(z.C, z.D)
+ z.O = L.CD.mid
+ L.AM = T.MAB.ab
+ z.E = z.M:symmetry(z.A)}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+
+\begin{center}
+  \begin{tikzpicture}[scale=.5]
+     \tkzGetNodes
+     \tkzDrawSegment[add=0 and 1](A,M)
+     \tkzDrawSegments[purple](M,C M,D)
+     \tkzDrawCircle[purple](O,C)
+     \tkzDrawSegments(A,B B,M D,B)
+     \tkzDrawPoints(A,B,M,C,D)
+     \tkzLabelPoints[below right](A,B,C,D)
+     \tkzLabelPoints[above](M)
+     \tkzFillAngles[opacity=.4,cyan!20](A,M,B)
+     \tkzFillAngles[opacity=.4,purple!20](B,M,E)
+     \tkzMarkRightAngle[opacity=.4,fill=gray!20](C,M,D)
+     \tkzMarkAngles[mark=|](A,M,C C,M,B)
+     \tkzMarkAngles[mark=||](B,M,D D,M,E)
+  \end{tikzpicture}
+\end{center}
+\end{minipage}
+
+\begin{verbatim}
+\begin{tikzpicture}
+   \tkzGetNodes
+   \tkzDrawSegment[add=0 and 1](A,M)
+   \tkzDrawSegments[purple](M,C M,D)
+   \tkzDrawCircle[purple](O,C)
+   \tkzDrawSegments(A,B B,M D,B)
+   \tkzDrawPoints(A,B,M,C,D)
+   \tkzLabelPoints[below right](A,B,C,D)
+   \tkzLabelPoints[above](M)
+   \tkzFillAngles[opacity=.4,cyan!20](A,M,B)
+   \tkzFillAngles[opacity=.4,purple!20](B,M,E)
+   \tkzMarkRightAngle[opacity=.4,fill=gray!20](C,M,D)
+   \tkzMarkAngles[mark=|](A,M,C C,M,B)
+   \tkzMarkAngles[mark=||](B,M,D D,M,E)
+\end{tikzpicture}
+\end{verbatim}
+
+Remark : The circle can be obtained with:
+
+|C.AB = T.MAB.bc : apollonius (tkz.length(z.M,z.A)/tkz.length(z.M,z.B))|
+
+
+%subsection apollonius_circle (end)
+
+\subsection{Apollonius and circle circumscribed } % (fold)
+\label{sub:apollonius_and_circle_circumscribed}
+
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(6, 0)
+ z.M = point(5, 4)
+ T.AMB = triangle(z.A, z.M, z.B)
+ L.AB = T.AMB.ca
+ z.I = T.AMB.incenter
+ L.MI = line(z.M, z.I)
+ z.C = intersection(L.AB, L.MI)
+ L.MJ = L.MI:ortho_from(z.M)
+ z.D = intersection(L.AB, L.MJ)
+ L.CD = line(z.C, z.D)
+ z.O = L.CD.mid
+ z.G = T.AMB.circumcenter
+ C.GA = circle(z.G, z.A)
+ C.OC = circle(z.O, z.C)
+ _, z.N = intersection(C.GA, C.OC)}
+\begin{tikzpicture}[scale =.75]
+   \tkzGetNodes
+   \tkzDrawPolygon(A,B,M)
+   \tkzDrawCircles[purple](O,C G,A)
+   \tkzDrawSegments[purple](M,D)
+   \tkzDrawSegments(D,B O,G M,C)
+   \tkzDrawSegments[red,dashed](M,N M,O M,G)
+   \tkzDrawPoints(A,B,M,C,D,N,O,G)
+   \tkzLabelPoints[below right](A,B,C,D,N,O,G)
+   \tkzLabelPoints[above](M)
+   \tkzMarkRightAngle[opacity=.4,fill=gray!20](C,M,D)
+\end{tikzpicture}
+\end{verbatim}
+
+
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(6, 0)
+ z.M = point(5, 4)
+ T.AMB = triangle(z.A, z.M, z.B)
+ L.AB = T.AMB.ca
+ z.I = T.AMB.incenter
+ L.MI = line(z.M, z.I)
+ z.C = intersection(L.AB, L.MI)
+ L.MJ = L.MI:ortho_from(z.M)
+ z.D = intersection(L.AB, L.MJ)
+ L.CD = line(z.C, z.D)
+ z.O = L.CD.mid
+ z.G = T.AMB.circumcenter
+ C.GA = circle(z.G, z.A)
+ C.OC = circle(z.O, z.C)
+ _, z.N = intersection(C.GA, C.OC)}
+\begin{center}
+  \begin{tikzpicture}[ scale =.75]
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,M)
+  \tkzDrawCircles[purple](O,C G,A)
+  \tkzDrawSegments[purple](M,D)
+  \tkzDrawSegments(D,B O,G M,C)
+  \tkzDrawSegments[red,dashed](M,N M,O M,G)
+  \tkzDrawPoints(A,B,M,C,D,N,O,G)
+  \tkzLabelPoints[below right](A,B,C,D,N,O,G)
+  \tkzLabelPoints[above](M)
+  \tkzMarkRightAngle[opacity=.4,fill=gray!20](C,M,D)
+  \end{tikzpicture}
+\end{center}
+
+
+% subsection apollonius_and_circle_circumscribed (end)
+
+\subsection{Apollonius circles in a triangle} % (fold)
+\label{sub:apollonius_circles}
+
+
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(6, 0)
+ z.C = point(4.5, 1)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.I = T.ABC.incenter
+ z.O = T.ABC.circumcenter
+ L.CI = line(z.C, z.I)
+ z.Cp = intersection(T.ABC.ab, L.CI)
+ z.x = L.CI.north_pa
+ L.Cx = line(z.C, z.x)
+ z.R = intersection(L.Cx, T.ABC.ab)
+ L.CpR = line(z.Cp, z.R)
+ z.O1 = L.CpR.mid
+ L.AI = line(z.A, z.I)
+ z.Ap = intersection(T.ABC.bc, L.AI)
+ z.y = L.AI.north_pa
+ L.Ay = line(z.A, z.y)
+ z.S = intersection(L.Ay, T.ABC.bc)
+ L.ApS = line(z.Ap, z.S)
+ z.O2 = L.ApS.mid
+ L.BI = line(z.B, z.I)
+ z.Bp = intersection(T.ABC.ca, L.BI)
+ z.z = L.BI.north_pa
+ L.Bz = line(z.B, z.z)
+ z.T = intersection(L.Bz, T.ABC.ca)
+ L.Bpt = line(z.Bp, z.T)
+ z.O3 = L.Bpt.mid}
+\end{verbatim}
+\begin{verbatim}
+\begin{tikzpicture}
+   \tkzGetNodes
+   \tkzDrawCircles[blue!50!black](O1,C' O2,A' O3,B')
+   \tkzDrawSegments[new](B,S C,T A,R)
+   \tkzDrawPolygon(A,B,C)
+   \tkzDrawPoints(A,B,C,A',B',C',O,I,R,S,T,O1,O2,O3)
+   \tkzLabelPoints(A,B,C,A',B',C',O,I)
+   \tkzLabelPoints(O1,O2,O3)
+   \tkzDrawCircle[purple](O,A)
+   \tkzDrawLine(O1,O2)
+\end{tikzpicture}
+\end{verbatim}
+
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(6, 0)
+ z.C = point(4.5, 1)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.I = T.ABC.incenter
+ z.O = T.ABC.circumcenter
+ L.CI = line(z.C, z.I)
+ z.Cp = intersection(T.ABC.ab, L.CI)
+ z.x = L.CI.north_pa
+ L.Cx = line(z.C, z.x)
+ z.R = intersection(L.Cx, T.ABC.ab)
+ L.CpR = line(z.Cp, z.R)
+ z.O1 = L.CpR.mid
+ L.AI = line(z.A, z.I)
+ z.Ap = intersection(T.ABC.bc, L.AI)
+ z.y = L.AI.north_pa
+ L.Ay = line(z.A, z.y)
+ z.S = intersection(L.Ay, T.ABC.bc)
+ L.ApS = line(z.Ap, z.S)
+ z.O2 = L.ApS.mid
+ L.BI = line(z.B, z.I)
+ z.Bp = intersection(T.ABC.ca, L.BI)
+ z.z = L.BI.north_pa
+ L.Bz = line(z.B, z.z)
+ z.T = intersection(L.Bz, T.ABC.ca)
+ L.Bpt = line(z.Bp, z.T)
+ z.O3 = L.Bpt.mid}
+
+
+\begin{center}
+  \begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawCircles[blue!50!black](O1,C' O2,A' O3,B')
+  \tkzDrawSegments[new](B,S C,T A,R)
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawPoints(A,B,C,A',B',C',O,I,R,S,T,O1,O2,O3)
+  \tkzLabelPoints(A,B,C,A',B',C',O,I)
+  \tkzLabelPoints(O1,O2,O3)
+  \tkzDrawCircle[purple](O,A)
+  \tkzDrawLine(O1,O2)
+  \end{tikzpicture}
+\end{center}
+
+% subsection apollonius_circles (end)
+
+\subsection{Apollonius circles in a triangle with method} % (fold)
+\label{sub:apollonius_circles_of_a_triangle}
+
+\emph{The three Apollonius circles of a (non-equilateral) triangle meet at exactly two points.
+}
+
+Proof:
+
+Let $ABC$ be a non-equilateral triangle, say with $AB \not =AC$. By definition, we have directly that if a point belongs to two of the circles, then it belongs to the third. Indeed, if
+
+$\dfrac{MB}{MC} = \dfrac{AB}{AC}$ and $\dfrac{MA}{MB} = \dfrac{CA}{CB}$  then  $\dfrac{MA}{MC} = \dfrac{BA}{BC}$
+
+However,  the circles are neither tangent nor disjoint if $AB \not =AC$ .
+
+The three Apollonius circles are coaxal.
+
+Same result than the previous example using the function |T.ABC.ab : apollonius (k) |
+\vspace{12pt}
+
+
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(5, 0)
+ z.C = point(3.5, 2)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.O = T.ABC.circumcenter
+ C.AB = T.ABC.ab:apollonius(T.ABC.b / T.ABC.a)
+ z.w1, z.t1 = C.AB:get()
+ C.BC = T.ABC.bc:apollonius(T.ABC.c / T.ABC.b)
+ z.w2, z.t2 = C.BC:get()
+ C.AC = T.ABC.ca:apollonius(T.ABC.a / T.ABC.c)
+ z.w3, z.t3 = C.AC:get()}
+\begin{tikzpicture}[scale=.5]
+ \tkzGetNodes
+ \tkzDrawPolygon(A,B,C)
+ \tkzDrawCircle[purple](O,A)
+ \tkzDrawCircles[cyan](w1,t1 w2,t2 w3,t3)
+ \tkzDrawLine(w1,w2)
+ \tkzDrawPoints(A,B,C,w1,w2,w3)
+ \tkzLabelPoints(A,B,w1,w2,w3)
+ \tkzLabelPoints[above](C)
+\end{tikzpicture}
+\end{verbatim}
+
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(5, 0)
+ z.C = point(3.5, 2)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.O = T.ABC.circumcenter
+ C.AB = T.ABC.ab:apollonius(T.ABC.b / T.ABC.a)
+ z.w1, z.t1 = C.AB:get()
+ C.BC = T.ABC.bc:apollonius(T.ABC.c / T.ABC.b)
+ z.w2, z.t2 = C.BC:get()
+ C.AC = T.ABC.ca:apollonius(T.ABC.a / T.ABC.c)
+ z.w3, z.t3 = C.AC:get()}
+\begin{center}
+  \begin{tikzpicture}[scale=.5]
+   \tkzGetNodes
+   \tkzDrawPolygon(A,B,C)
+   \tkzDrawCircle[purple](O,A)
+   \tkzDrawCircles[cyan](w1,t1 w2,t2 w3,t3)
+   \tkzDrawLine(w1,w2)
+   \tkzDrawPoints(A,B,C,w1,w2,w3)
+   \tkzLabelPoints(A,B,w1,w2,w3)
+    \tkzLabelPoints[above](C)
+  \end{tikzpicture}
+\end{center}
+
+% subsection apollonius_circles_of_a_triangle (end)
+
+
+\subsection{Archimedes} % (fold)
+\label{sub:archimedes}
+
+\begin{minipage}[t]{.5\textwidth}\vspace{0pt}%
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.O_1 = point(0, 0)
+ z.O_2 = point(0, 1)
+ z.A = point(0, 3)
+ z.F = point:polar(3, math.pi / 6)
+ L.FO1 = line(z.F, z.O_1)
+ C.O1A = circle(z.O_1, z.A)
+ z.E = intersection(L.FO1, C.O1A)
+ T.ABC = triangle(z.F, z.E, z.O_2)
+ z.x = T.ABC:parallelogram()
+  L.FO2 = line(z.x, z.O_2)
+ C.O2A = circle(z.O_2, z.A)
+ z.C, z.D = intersection( L.FO2, C.O2A)}
+\begin{tikzpicture}
+   \tkzGetNodes
+   \tkzDrawCircles(O_1,A O_2,A)
+   \tkzDrawSegments[new](O_1,A E,F C,D)
+   \tkzDrawSegments[purple](A,E A,F)
+   \tkzDrawPoints(A,O_1,O_2,E,F,C,D)
+   \tkzLabelPoints(A,O_1,O_2,E,F,C,D)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}[t]{.5\textwidth}\vspace{0pt}%
+\directlua{
+ init_elements()
+ z.O_1 = point(0, 0)
+ z.O_2 = point(0, 1)
+ z.A = point(0, 3)
+ z.F = point:polar(3, math.pi / 6)
+ L.FO1 = line(z.F, z.O_1)
+ C.O1A = circle(z.O_1, z.A)
+ z.E = intersection(L.FO1, C.O1A)
+ T.ABC = triangle(z.F, z.E, z.O_2)
+ z.x = T.ABC:parallelogram()
+  L.FO2 = line(z.x, z.O_2)
+ C.O2A = circle(z.O_2, z.A)
+ z.C, z.D = intersection( L.FO2, C.O2A)}
+\begin{center}
+  \begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawCircles(O_1,A O_2,A)
+  \tkzDrawSegments[new](O_1,A E,F C,D)
+  \tkzDrawSegments[purple](A,E A,F)
+  \tkzDrawPoints(A,O_1,O_2,E,F,C,D)
+  \tkzLabelPoints(A,O_1,O_2,E,F,C,D)
+  \end{tikzpicture}
+\end{center}
+
+\end{minipage}
+% subsection archimedes (end)
+
+\subsection{Bankoff circle} % (fold)
+\label{sub:bankoff_circle}
+\begin{verbatim}
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(10, 0)
+  L.AB = line(z.A, z.B)
+  z.C = L.AB:gold_ratio()
+  L.AC = line(z.A, z.C)
+  L.CB = line(z.C, z.B)
+  z.O_0 = L.AB.mid
+  z.O_1 = L.AC.mid
+  z.O_2 = L.CB.mid
+  C.O0B = circle(z.O_0, z.B)
+  C.O1C = circle(z.O_1, z.C)
+  C.O2C = circle(z.O_2, z.B)
+  z.Pp = C.O0B:midarc(z.B, z.A)
+  z.P = C.O1C:midarc(z.C, z.A)
+  z.Q = C.O2C:midarc(z.B, z.C)
+  L.O1O2 = line(z.O_1, z.O_2)
+  L.O0O1 = line(z.O_0, z.O_1)
+  L.O0O2 = line(z.O_0, z.O_2)
+  z.M_0 = L.O1O2:harmonic_ext(z.C)
+  z.M_1 = L.O0O1:harmonic_int(z.A)
+  z.M_2 = L.O0O2:harmonic_int(z.B)
+  L.BP = line(z.B, z.P)
+  L.AQ = line(z.A, z.Q)
+  z.S = intersection(L.BP, L.AQ)
+  L.PpO0 = line(z.Pp, z.O_0)
+  L.PC = line(z.P, z.C)
+  z.Ap = intersection(L.PpO0, L.PC)
+  L.CS = line(z.C, z.S)
+  C.M1A = circle(z.M_1, z.A)
+  C.M2B = circle(z.M_2, z.B)
+  z.P_0 = intersection(L.CS, C.O0B)
+  z.P_1 = intersection(C.M2B, C.O1C)
+  z.P_2 = intersection(C.M1A, C.O2C)
+  T.P0P1P2 = triangle(z.P_0, z.P_1, z.P_2)
+  z.O_4 = T.P0P1P2.circumcenter
+  T.CP1P2 = triangle(z.C, z.P_1, z.P_2)
+  z.O_5 = T.CP1P2.circumcenter}
+\end{verbatim}
+
+\begin{verbatim}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawSemiCircles[teal](O_0,B)
+\tkzDrawSemiCircles[teal,fill=teal!20,opacity=.5](O_1,C O_2,B)
+\tkzDrawCircle[fill=green!10](O_4,P_0)
+\tkzDrawCircle[purple,fill=purple!10,opacity=.5](O_5,C)
+\tkzDrawSegments(A,B O_0,P' B,P A,Q)
+\tkzDrawSegments(P,B Q,O_2 P,O_1)
+\tkzDrawSegments[purple](O_5,P_2 O_5,P_1 O_5,C)
+\tkzDrawPoints(A,B,C,P_0,P_2,P_1,O_0,O_1,O_2,O_4,O_5,Q,P,P',S)
+\tkzLabelPoints[below](A,B,C,O_0,O_1,O_2,P')
+\tkzLabelPoints[above](Q,P)
+\tkzLabelPoints[above right](P_0,P_2,P_1,O_5,O_4,S)
+\begin{scope}[font=\scriptsize]
+  \tkzLabelCircle[above](O_1,C)(120){$(\beta)$}
+  \tkzLabelCircle[above](O_2,B)(70){$(\gamma)$}
+  \tkzLabelCircle[above](O_0,B)(110){$(\alpha)$}
+  \tkzLabelCircle[left](O_4,P_2)(60){$(\delta)$}
+  \tkzLabelCircle[left](O_5,C)(140){$(\epsilon)$}
+\end{scope}
+\end{tikzpicture}
+\end{verbatim}
+
+
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(10, 0)
+  L.AB = line(z.A, z.B)
+  z.C = L.AB:gold_ratio()
+  L.AC = line(z.A, z.C)
+  L.CB = line(z.C, z.B)
+  z.O_0 = L.AB.mid
+  z.O_1 = L.AC.mid
+  z.O_2 = L.CB.mid
+  C.O0B = circle(z.O_0, z.B)
+  C.O1C = circle(z.O_1, z.C)
+  C.O2C = circle(z.O_2, z.B)
+  z.Pp = C.O0B:midarc(z.B, z.A)
+  z.P = C.O1C:midarc(z.C, z.A)
+  z.Q = C.O2C:midarc(z.B, z.C)
+  L.O1O2 = line(z.O_1, z.O_2)
+  L.O0O1 = line(z.O_0, z.O_1)
+  L.O0O2 = line(z.O_0, z.O_2)
+  z.M_0 = L.O1O2:harmonic_ext(z.C)
+  z.M_1 = L.O0O1:harmonic_int(z.A)
+  z.M_2 = L.O0O2:harmonic_int(z.B)
+  L.BP = line(z.B, z.P)
+  L.AQ = line(z.A, z.Q)
+  z.S = intersection(L.BP, L.AQ)
+  L.PpO0 = line(z.Pp, z.O_0)
+  L.PC = line(z.P, z.C)
+  z.Ap = intersection(L.PpO0, L.PC)
+  L.CS = line(z.C, z.S)
+  C.M1A = circle(z.M_1, z.A)
+  C.M2B = circle(z.M_2, z.B)
+  z.P_0 = intersection(L.CS, C.O0B)
+  z.P_1 = intersection(C.M2B, C.O1C)
+  z.P_2 = intersection(C.M1A, C.O2C)
+  T.P0P1P2 = triangle(z.P_0, z.P_1, z.P_2)
+  z.O_4 = T.P0P1P2.circumcenter
+  T.CP1P2 = triangle(z.C, z.P_1, z.P_2)
+  z.O_5 = T.CP1P2.circumcenter}
+
+\begin{center}
+  \begin{tikzpicture}[scale = 1.25]
+  \tkzGetNodes
+  \tkzDrawSemiCircles[teal](O_0,B)
+  \tkzDrawSemiCircles[teal,fill=teal!20,opacity=.5](O_1,C O_2,B)
+  \tkzDrawCircle[fill=green!10](O_4,P_0)
+  \tkzDrawCircle[purple,fill=purple!10,opacity=.5](O_5,C)
+  \tkzDrawSegments(A,B O_0,P' B,P A,Q)
+  \tkzDrawSegments(P,B Q,O_2 P,O_1)
+  \tkzDrawSegments[purple](O_5,P_2 O_5,P_1 O_5,C)
+  \tkzDrawPoints(A,B,C,P_0,P_2,P_1,O_0,O_1,O_2,O_4,O_5,Q,P,P',S)
+  \tkzLabelPoints[below](A,B,C,O_0,O_1,O_2,P')
+  \tkzLabelPoints[above](Q,P)
+  \tkzLabelPoints[above right](P_0,P_2,P_1,O_5,O_4,S)
+  \begin{scope}[font=\scriptsize]
+    \tkzLabelCircle[above](O_1,C)(120){$(\beta)$}
+    \tkzLabelCircle[above](O_2,B)(70){$(\gamma)$}
+    \tkzLabelCircle[above](O_0,B)(110){$(\alpha)$}
+    \tkzLabelCircle[left](O_4,P_2)(60){$(\delta)$}
+    \tkzLabelCircle[left](O_5,C)(140){$(\epsilon)$}
+  \end{scope}
+  \end{tikzpicture}
+\end{center}
+
+% subsection bankoff_circle (end)
+
+\subsection{Symmedian property} % (fold)
+\label{sub:example_symmedian_property}
+
+$L$ is the symmedian point or lemoine point. $\dfrac{CL}{CLc} = \dfrac{a^2+b^2}{a^2+b^2+c^2}$
+
+\vspace{1em}
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(1, 2)
+ z.B = point(5, 1)
+ z.C = point(3, 5)
+ T.ABC = triangle(z.A, z.B, z.C)
+ T.SY = T.ABC:symmedian()
+ z.La, z.Lb, z.Lc = T.SY:get()
+ k = (T.ABC.a * T.ABC.a + T.ABC.b * T.ABC.b)
+  / (T.ABC.a * T.ABC.a + T.ABC.b * T.ABC.b +
+   T.ABC.c * T.ABC.c)
+ L.SY = line(z.C, z.Lc)
+ z.L = L.SY:point(k)}
+\begin{tikzpicture}
+ \tkzGetNodes
+ \tkzDrawPolygons(A,B,C)
+ \tkzDrawPoints(A,B,C,L,Lc)
+ \tkzDrawPoints[red](L)
+ \tkzDrawSegments[cyan](C,Lc)
+ \tkzLabelPoints(A,B,Lc)
+ \tkzLabelPoints[above](C)
+ \tkzLabelPoints[left](L)
+ \tkzLabelSegment(B,C){$a$}
+ \tkzLabelSegment(A,C){$b$}
+ \tkzLabelSegment(A,B){$ca$}
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ z.A = point(1, 2)
+ z.B = point(5, 1)
+ z.C = point(3, 5)
+ T.ABC = triangle(z.A, z.B, z.C)
+ T.SY = T.ABC:symmedian()
+ z.La, z.Lb, z.Lc = T.SY:get()
+ k = (T.ABC.a * T.ABC.a + T.ABC.b * T.ABC.b)
+  / (T.ABC.a * T.ABC.a + T.ABC.b * T.ABC.b +
+   T.ABC.c * T.ABC.c)
+ L.SY = line(z.C, z.Lc)
+ z.L = L.SY:point(k)}
+\begin{center}
+  \begin{tikzpicture}[scale = 1.5]
+  \tkzGetNodes
+  \tkzDrawPolygons(A,B,C)
+  \tkzDrawPoints(A,B,C,L,Lc)
+  \tkzDrawPoints[red](L)
+  \tkzDrawSegments[cyan](C,Lc)
+  \tkzLabelPoints(A,B,Lc)
+  \tkzLabelPoints[above](C)
+  \tkzLabelPoints[left](L)
+  \tkzLabelSegment(B,C){$a$}
+  \tkzLabelSegment(A,C){$b$}
+  \tkzLabelSegment(A,B){$ca$}
+  \end{tikzpicture}
+  \end{center}
+\end{minipage}
+
+% subsection example_symmedian_property (end)
+
+\subsection{Example: Cevian with orthocenter} % (fold)
+\label{sub:example_cevian_with_orthocenter}
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.a = point(1, 2)
+ z.b = point(5, 1)
+ z.c = point(3, 5)
+ T.abc = triangle(z.a, z.b, z.c)
+ z.i = T.abc.orthocenter
+ T.cevian = T.abc:cevian(z.i)
+ z.ta, z.tb, z.tc = T.cevian:get()
+ C.cev = T.abc:cevian_circle(z.i)
+ z.w = C.cev.center}
+\begin{tikzpicture}[scale =  1.5]
+  \tkzGetNodes
+  \tkzDrawPolygons(a,b,c ta,tb,tc)
+  \tkzDrawSegments(a,ta b,tb c,tc)
+  \tkzDrawPoints(a,b,c,i,ta,tb,tc)
+  \tkzLabelPoints(a,b,c,i)
+  \tkzDrawCircles(w,ta)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ z.a = point(1, 2)
+ z.b = point(5, 1)
+ z.c = point(3, 5)
+ T.abc = triangle(z.a, z.b, z.c)
+ z.i = T.abc.orthocenter
+ T.cevian = T.abc:cevian(z.i)
+ z.ta, z.tb, z.tc = T.cevian:get()
+ C.cev = T.abc:cevian_circle(z.i)
+ z.w = C.cev.center}
+\begin{center}
+  \begin{tikzpicture}[scale =  1.5]
+  \tkzGetNodes
+  \tkzDrawPolygons(a,b,c ta,tb,tc)
+  \tkzDrawSegments(a,ta b,tb c,tc)
+  \tkzDrawPoints(a,b,c,i,ta,tb,tc)
+  \tkzLabelPoints(a,b,c,i)
+  \tkzDrawCircles(w,ta)
+  \end{tikzpicture}
+\end{center}
+\end{minipage}
+
+% subsection example_cevian_with_orthocenter (end)
+
+\subsection{Excircles} % (fold)
+\label{sub:excircles}
+
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(6, 0)
+ z.C = point(0.8, 4)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.K = T.ABC.centroid
+ z.J_a, z.J_b, z.J_c = T.ABC:excentral():get()
+ z.T_a, z.T_b, z.T_c = T.ABC:extouch():get()
+ la = line(z.A, z.T_a)
+ lb = line(z.B, z.T_b)
+ z.G = intersection(la, lb)}
+\begin{tikzpicture}[scale  =  0.7]
+   \tkzGetNodes
+   \tkzDrawPoints[new](J_a,J_b,J_c)
+   \tkzClipBB
+   \tkzDrawCircles[gray](J_a,T_a J_b,T_b J_c,T_c)
+   \tkzDrawLines[add=1 and 1](A,B B,C C,A)
+   \tkzDrawSegments[new](A,T_a B,T_b C,T_c)
+   \tkzDrawSegments[new](J_a,T_a J_b,T_b J_c,T_c)
+   \tkzDrawPolygon(A,B,C)
+   \tkzDrawPolygon[new](T_a,T_b,T_c)
+   \tkzDrawPoints(A,B,C,K)
+   \tkzDrawPoints[new](T_a,T_b,T_c)
+   \tkzLabelPoints[below left](A)
+   \tkzLabelPoints[below](B)
+   \tkzLabelPoints[above](C)
+   \tkzLabelPoints[new,below left](T_b)
+   \tkzLabelPoints[new,below right](T_c)
+   \tkzLabelPoints[new,right=6pt](T_a)
+   \tkzMarkRightAngles[fill=gray!15](J_a,T_a,B J_b,T_b,C J_c,T_c,A)
+\end{tikzpicture}
+\end{verbatim}
+
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(6, 0)
+ z.C = point(0.8, 4)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.K = T.ABC.centroid
+ z.J_a, z.J_b, z.J_c = T.ABC:excentral():get()
+ z.T_a, z.T_b, z.T_c = T.ABC:extouch():get()
+ la = line(z.A, z.T_a)
+ lb = line(z.B, z.T_b)
+ z.G = intersection(la, lb)}
+\begin{center}
+  \begin{tikzpicture}[scale=0.7]
+  \tkzGetNodes
+  \tkzDrawPoints[new](J_a,J_b,J_c)
+  \tkzClipBB
+  \tkzDrawCircles[gray](J_a,T_a J_b,T_b J_c,T_c)
+  \tkzDrawLines[add=1 and 1](A,B B,C C,A)
+  \tkzDrawSegments[new](A,T_a B,T_b C,T_c)
+  \tkzDrawSegments[new](J_a,T_a J_b,T_b J_c,T_c)
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawPolygon[new](T_a,T_b,T_c)
+  \tkzDrawPoints(A,B,C,K)
+  \tkzDrawPoints[new](T_a,T_b,T_c)
+  \tkzLabelPoints[below left](A)
+  \tkzLabelPoints[below](B)
+  \tkzLabelPoints[above](C)
+  \tkzLabelPoints[new,below left](T_b)
+  \tkzLabelPoints[new,below right](T_c)
+  \tkzLabelPoints[new,right=6pt](T_a)
+  \tkzMarkRightAngles[fill=gray!15](J_a,T_a,B J_b,T_b,C J_c,T_c,A)
+  \end{tikzpicture}
+\end{center}
+
+
+% subsection excircles (end)
+
+
+\subsection{Divine ratio} % (fold)
+\label{sub:divine_ratio}
+
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(8, 0)
+ L.AB = line(z.A, z.B)
+ z.C = L.AB:gold_ratio()
+ L.AC = line(z.A, z.C)
+ z.O_1 = L.AC.mid
+ _, _, z.G, z.H = L.AB:square():get()
+ _, _, z.E, z.F = L.AC:square():get()
+ L.CB = line(z.C, z.B)
+ z.O_2 = L.CB.mid
+ z.O_0 = L.AB.mid
+ L.BE = line(z.B, z.E)
+ L.GH = line(z.G, z.H)
+ z.K = intersection(L.BE, L.GH)
+ C.zero = circle(z.O_0, z.B)
+ z.R, _ = intersection(L.BE, C.zero)
+ C.two = circle(z.O_2, z.B)
+ z.S, _ = intersection(L.BE, C.two)
+ L.AR = line(z.A, z.R)
+ C.one = circle(z.O_1, z.C)
+ _, z.T = intersection(L.AR, C.one)
+ L.BG = line(z.B, z.G)
+ z.L = intersection(L.AR, L.BG)}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawPolygons(A,C,E,F A,B,G,H)
+\tkzDrawCircles(O_1,C O_2,B O_0,B)
+\tkzDrawSegments(H,C B,K A,L)
+\tkzDrawPoints(A,B,C,K,E,F,G,H,O_0,O_1,O_2,R,S,T,L)
+\tkzLabelPoints(A,B,C,K,E,F,G,H,O_0,O_1,O_2,R,S,T,L)
+\end{tikzpicture}
+\end{verbatim}
+
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(8, 0)
+ L.AB = line(z.A, z.B)
+ z.C = L.AB:gold_ratio()
+ L.AC = line(z.A, z.C)
+ z.O_1 = L.AC.mid
+ _, _, z.G, z.H = L.AB:square():get()
+ _, _, z.E, z.F = L.AC:square():get()
+ L.CB = line(z.C, z.B)
+ z.O_2 = L.CB.mid
+ z.O_0 = L.AB.mid
+ L.BE = line(z.B, z.E)
+ L.GH = line(z.G, z.H)
+ z.K = intersection(L.BE, L.GH)
+ C.zero = circle(z.O_0, z.B)
+ z.R, _ = intersection(L.BE, C.zero)
+ C.two = circle(z.O_2, z.B)
+ z.S, _ = intersection(L.BE, C.two)
+ L.AR = line(z.A, z.R)
+ C.one = circle(z.O_1, z.C)
+ _, z.T = intersection(L.AR, C.one)
+ L.BG = line(z.B, z.G)
+ z.L = intersection(L.AR, L.BG)}
+\begin{center}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawPolygons(A,C,E,F A,B,G,H)
+  \tkzDrawCircles(O_1,C O_2,B O_0,B)
+  \tkzDrawSegments(H,C B,K A,L)
+  \tkzDrawPoints(A,B,C,K,E,F,G,H,O_0,O_1,O_2,R,S,T,L)
+  \tkzLabelPoints(A,B,C,K,E,F,G,H,O_0,O_1,O_2,R,S,T,L)
+\end{tikzpicture}
+\end{center}
+
+
+% subsection divine_ratio (end)
+
+\subsection{Gold division} % (fold)
+\label{sub:gold_division}
+
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(2.5, 0)
+ L.AB = line(z.A, z.B)
+ C.AB = circle(z.A, z.B)
+ C.BA = circle(z.B, z.A)
+ z.J = L.AB:midpoint()
+ L.JB = line(z.J, z.B)
+ z.F, z.E = intersection(C.AB, C.BA)
+ z.I, _ = intersection(L.AB, C.BA)
+ z.K = L.JB:midpoint()
+ L.mediator = L.JB:mediator()
+ z.G = intersection(L.mediator, C.BA)
+ L.EG = line(z.E, z.G)
+ z.C = intersection(L.EG, L.AB)
+ z.O = C.AB:antipode(z.B)}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawArc[delta=5](O,B)(G)
+\tkzDrawCircles(A,B B,A)
+\tkzDrawSegments(A,E B,E O,I)
+\tkzDrawSegments[purple](J,E A,G G,I)
+\tkzDrawSegments[purple](K,G E,G)
+\tkzMarkSegments[mark=s||](A,E B,E O,A)
+\tkzDrawPoints(A,B,C,E,I,J,G,O,K)
+\tkzLabelPoints(A,B,C,E,I,J,G,O,K)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(2.5, 0)
+ L.AB = line(z.A, z.B)
+ C.AB = circle(z.A, z.B)
+ C.BA = circle(z.B, z.A)
+ z.J = L.AB:midpoint()
+ L.JB = line(z.J, z.B)
+ z.F, z.E = intersection(C.AB, C.BA)
+ z.I, _ = intersection(L.AB, C.BA)
+ z.K = L.JB:midpoint()
+ L.mediator = L.JB:mediator()
+ z.G = intersection(L.mediator, C.BA)
+ L.EG = line(z.E, z.G)
+ z.C = intersection(L.EG, L.AB)
+ z.O = C.AB:antipode(z.B)}
+\begin{center}
+\begin{tikzpicture}[scale = .75]
+   \tkzGetNodes
+   \tkzDrawArc[delta=5](O,B)(G)
+   \tkzDrawCircles(A,B B,A)
+   \tkzDrawSegments(A,E B,E O,I)
+   \tkzDrawSegments[purple](J,E A,G G,I K,G E,G)
+   \tkzMarkSegments[mark=s||](A,E B,E O,A)
+   \tkzDrawPoints(A,B,C,E,I,J,G,O,K)
+   \tkzLabelPoints(A,B,C,E,I,J,G,O,K)
+\end{tikzpicture}
+\end{center}
+\end{minipage}
+
+% subsection gold_division (end)
+
+\subsection{Ellipse} % (fold)
+\label{sub:ellipse}
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.C = point(3, 2)
+ z.A = point(5, 1)
+ L.CA = line(z.C, z.A)
+ z.b = L.CA.north_pa
+ L.Cb = line(z.C, z.b)
+ z.B = L.Cb:point(0.5)
+ CO.EL = conic(EL_points(z.C, z.A, z.B))
+ PA.E = CO.EL:points(0, 1, 50)
+ z.F = CO.EL.Fa}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawCircles[teal](C,A)
+\tkzDrawCoordinates[smooth,red,thick](PA.E)
+\tkzLabelPoints(C,A)
+\tkzLabelPoints[left](F)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ z.C = point(3, 2)
+ z.A = point(5, 1)
+ L.CA = line(z.C, z.A)
+ z.b = L.CA.north_pa
+ L.Cb = line(z.C, z.b)
+ z.B = L.Cb:point(0.5)
+ CO.EL = conic(EL_points(z.C, z.A, z.B))
+ PA.E = CO.EL:points(0, 1, 50)
+ z.F = CO.EL.Fa}
+
+
+\begin{center}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawCircles[teal](C,A)
+\tkzDrawCoordinates[smooth,red,thick](PA.E)
+\tkzDrawPoints(C,A,F)
+\tkzLabelPoints(C,A)
+\tkzLabelPoints[left](F)
+\end{tikzpicture}
+\end{center}
+
+
+\end{minipage}
+ % subsection ellipse (end)
+
+\subsection{Ellipse with radii} % (fold)
+\label{sub:ellipse_with_radii}
+
+In this example, $K$ is the projection of the focus $F$ on the directrix.
+
+\directlua{
+ init_elements()
+ z.C = point(0, 4)
+ local b = math.sqrt(8)
+ local a = math.sqrt(32)
+ local c = math.sqrt(a ^ 2 - b ^ 2)
+ local e = c / a
+ z.F = z.C:rotation(math.pi / 4, z.C + point(c, 0))
+ z.K = z.C:rotation(math.pi / 4, z.C + point(a ^ 2 / c, 0))
+ z.Kp = (z.K - z.C):orthogonal(1):at(z.K)
+ L.dir = line(z.K, z.Kp)
+ CO.EL = conic(z.F, L.dir, e)
+ PA.curve = CO.EL:points(0, 1, 50)}
+\begin{center}
+\begin{tikzpicture}[scale=.5]
+ \tkzGetNodes
+ \tkzDrawPoints(C,F,K)
+ \tkzLabelPoints(C,F,K)
+ \tkzDrawCoordinates[smooth](PA.curve)
+\end{tikzpicture}
+\end{center}
+
+
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.C = point(0, 4)
+ local b = math.sqrt(8)
+ local a = math.sqrt(32)
+ local c = math.sqrt(a ^ 2 - b ^ 2)
+ local e = c / a
+ z.F = z.C:rotation(math.pi / 4, z.C + point(c, 0))
+ z.K = z.C:rotation(math.pi / 4, z.C + point(a ^ 2 / c, 0))
+ z.Kp = (z.K - z.C):orthogonal(1):at(z.K)
+ L.dir = line(z.K, z.Kp)
+ CO.EL = conic(z.F, L.dir, e)
+ PA.curve = CO.EL:points(0, 1, 50)}
+\begin{tikzpicture}[scale=.5]
+\tkzGetNodes
+\tkzDrawPoints(C,F,K)
+\tkzLabelPoints(C,F,K)
+\tkzDrawCoordinates[smooth](PA.curve)
+\end{tikzpicture}
+\end{verbatim}
+
+% subsection ellipse_with_radii (end)
+
+\subsection{Ellipse\_with\_foci} % (fold)
+\label{sub:ellipse_with_foci}
+\begin{minipage}{.55\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ local e = 0.8
+ z.A = point(2, 3)
+ z.B = point(5, 4)
+ z.K = point(6, 7)
+ L.AB = line(z.A, z.B)
+ z.C = L.AB.mid
+ local c = point.abs(z.B - z.C)
+ local a = c / e
+ CO.EL = conic(EL_bifocal(z.A, z.B, a))
+ PA.curve = CO.EL:points(0, 1, 50)
+ z.cV = CO.EL.covertex
+ z.V = CO.EL.vertex
+ L.ta, L.tb = CO.EL:tangent_from(z.K)
+ z.F = L.ta.pb
+ z.G = L.tb.pb}
+\begin{tikzpicture}
+ \tkzGetNodes
+ \tkzDrawPoints(A,B,C,K,F,G,V,cV)
+ \tkzLabelPoints(A,B,C,K,F,G,V,cV)
+ \tkzDrawCoordinates[smooth,cyan](PA.curve)
+ \tkzDrawLines(K,F K,G)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.45\textwidth}
+\directlua{
+ init_elements()
+ local e = 0.8
+ z.A = point(2, 3)
+ z.B = point(5, 4)
+ z.K = point(6, 7)
+ L.AB = line(z.A, z.B)
+ z.C = L.AB.mid
+ local c = point.abs(z.B - z.C)
+ local a = c / e
+ CO.EL = conic(EL_bifocal(z.A, z.B, a))
+ PA.curve = CO.EL:points(0, 1, 50)
+ z.cV = CO.EL.covertex
+ z.V = CO.EL.vertex
+ L.ta, L.tb = CO.EL:tangent_from(z.K)
+ z.F = L.ta.pb
+ z.G = L.tb.pb}
+\begin{center}
+  \begin{tikzpicture}
+     \tkzGetNodes
+     \tkzDrawPoints(A,B,C,K,F,G,V,cV)
+     \tkzLabelPoints(A,B,C,K,F,G,V,cV)
+     \tkzDrawCoordinates[smooth,cyan](PA.curve)
+     \tkzDrawLines(K,F K,G)
+  \end{tikzpicture}
+\end{center}
+\end{minipage}
+% subsection ellipse_with_foci (end)
+
+\subsubsection{Parabola with Focus, Axis of Symmetry, and a Point on the Curve} % (fold)
+\label{ssub:parabola_with_focus_axis_of_symmetry_and_curve_point}
+
+This construction illustrates how to define a parabola from its focus, its axis of symmetry, and a single point on the curve.
+The axis is determined as the line orthogonal to the segment joining the focus to the given point, passing through a specific intersection derived from a circle construction.
+This method is particularly useful when the directrix is not known explicitly.
+
+\vspace{1em}
+
+
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.F = point(2, 0)
+ z.A = point(3, 4)
+ L.FA = line(z.A, z.F)
+ z.M = point(-1, 0)
+ C.MF = circle(z.M, z.F)
+ L.ll = L.FA:ll_from(z.M)
+ z.H = intersection(C.MF, L.ll)
+ L.dir = L.FA:ortho_from(z.H)
+ z.K = intersection(L.dir, L.FA)
+ CO.PA = conic(z.F, L.dir, 1)
+ PA.curve = CO.PA:points(-5, 3, 20)}
+\begin{tikzpicture}[gridded]
+ \tkzGetNodes
+ \tkzDrawCoordinates[smooth](PA.curve)
+ \tkzDrawLines(A,K M,H K,H)
+ \tkzDrawSegments[dashed](M,F)
+ \tkzDrawPoints(A,F,M,H,K)
+ \tkzLabelPoints(A,F,M,H,K)
+ \tkzDrawCircle[dashed](M,F)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ z.F = point(2, 0)
+ z.A = point(3, 4)
+ L.FA = line(z.A, z.F)
+ z.M = point(-1, 0)
+ C.MF = circle(z.M, z.F)
+ L.ll = L.FA:ll_from(z.M)
+ z.H = intersection(C.MF, L.ll)
+ L.dir = L.FA:ortho_from(z.H)
+ z.K = intersection(L.dir, L.FA)
+ CO.PA = conic(z.F, L.dir, 1)
+ PA.curve = CO.PA:points(-5, 3, 20)}
+  \begin{center}
+    \begin{tikzpicture}[scale =.75]
+    \tkzGetNodes
+    \tkzDrawCoordinates[smooth](PA.curve)
+    \tkzDrawLines(A,K M,H K,H)
+    \tkzDrawSegments[dashed](M,F)
+    \tkzDrawPoints(A,F,M,H,K)
+    \tkzLabelPoints(A,F,M,H,K)
+    \tkzDrawCircle[dashed](M,F)
+    \end{tikzpicture}
+  \end{center}
+\end{minipage}
+
+% subsubsection parabola_with_focus_axis_of_symmetry_and_curve_point (end)
+
+\subsubsection{Ellipse with Center, Vertex, and Covertex} % (fold)
+\label{ssub:ellipse_with_center_vertex_and_covertex}
+
+This construction defines an ellipse from its center, a vertex, and a covertex.
+From these three points, the semi-axes lengths \( a \) and \( b \) are computed, allowing the eccentricity \( e \) to be derived.
+The foci and the direction of the directrix are then constructed accordingly, making it possible to define the ellipse using the \code{conic} method.
+
+\vspace{1em}
+
+
+\directlua{
+ init_elements()
+ z.C = point(1, -1)
+ z.V = point(4, 3)
+ z.W = (z.C - z.V):orthogonal(3):at(z.C)
+ local a = tkz.length(z.C, z.V)
+ local b = tkz.length(z.C, z.W)
+ local c = math.sqrt(a ^ 2 - b ^ 2)
+ local e = c / a
+ axis = line(z.C, z.V)
+ z.F = axis:report(c, z.C)
+ z.G = z.C:symmetry(z.F)
+ z.K = axis:report(b ^ 2 / c, z.F)
+ z.Kp = axis:report(-b ^ 2 / c, z.G)
+ z.u = (z.C - z.K):orthogonal(2):at(z.K)
+ z.v = (z.C - z.K):orthogonal(-2):at(z.K)
+ L.dir = line(z.u, z.v)
+ z.r = (z.C - z.Kp):orthogonal(2):at(z.Kp)
+ z.s = (z.C - z.Kp):orthogonal(-2):at(z.Kp)
+ CO.EL = conic(z.F, L.dir, e)
+ PA.curve = CO.EL:points(0, 1, 100)}
+
+\begin{center}
+  \begin{tikzpicture}[scale= .75]
+  \tkzGetNodes
+  \tkzDrawCoordinates[smooth](PA.curve)
+  \tkzDrawLines(u,v r,s K,K')
+  \tkzDrawLine(C,V)
+  \tkzDrawPoints(V,W,C,F,K,K',G)
+  \tkzLabelPoints(V,W,C,F,K,K',G)
+  \end{tikzpicture}
+\end{center}
+
+  \begin{verbatim}
+\directlua{
+ init_elements()
+ z.C = point(1, -1)
+ z.V = point(4, 3)
+ z.W = (z.C - z.V):orthogonal(3):at(z.C)
+ local a = tkz.length(z.C, z.V)
+ local b = tkz.length(z.C, z.W)
+ local c = math.sqrt(a ^ 2 - b ^ 2)
+ local e = c / a
+ axis = line(z.C, z.V)
+ z.F = axis:report(c, z.C)
+ z.G = z.C:symmetry(z.F)
+ z.K = axis:report(b ^ 2 / c, z.F)
+ z.Kp = axis:report(-b ^ 2 / c, z.G)
+ z.u = (z.C - z.K):orthogonal(2):at(z.K)
+ z.v = (z.C - z.K):orthogonal(-2):at(z.K)
+ L.dir = line(z.u, z.v)
+ z.r = (z.C - z.Kp):orthogonal(2):at(z.Kp)
+ z.s = (z.C - z.Kp):orthogonal(-2):at(z.Kp)
+ CO.EL = conic(z.F, L.dir, e)
+ PA.curve = CO.EL:points(0, 1, 100)}
+\begin{tikzpicture}[gridded]
+  \tkzGetNodes
+  \tkzDrawCoordinates[smooth](PA.curve)
+  \tkzDrawLines(u,v r,s K,K')
+  \tkzDrawLine(C,V)
+  \tkzDrawPoints(V,W,C,F,K,K',G)
+  \tkzLabelPoints(V,W,C,F,K,K',G)
+  \end{tikzpicture}
+\end{verbatim}
+
+% subsubsection ellipse_with_center_vertex_and_covertex (end)
+
+\subsubsection{Ellipse with Foci and a Point} % (fold)
+\label{ssub:ellipse_with_foci_and_point}
+
+This construction defines an ellipse given its two foci and a single point on the curve.
+The fundamental property \( MF + MG = 2a \), where \( F \) and \( G \) are the foci and \( M \) a point on the ellipse, allows the computation of the semi-major axis \( a \).
+From this, the eccentricity and the direction of the directrix can be derived.
+
+\vspace{1em}
+
+\directlua{
+ init_elements()
+ z.F = point(1, -1)
+ z.G = point(4, 3)
+ z.M = point(2, 3)
+ z.C = tkz.midpoint(z.F, z.G)
+ local a = (tkz.length(z.F, z.M) + tkz.length(z.G, z.M)) / 2
+ local c = tkz.length(z.F, z.G) / 2
+ local b = math.sqrt(a ^ 2 - c ^ 2)
+ local e = c / a
+ axis = line(z.G, z.F)
+ z.K = axis:report(b ^ 2 / c, z.F)
+ z.Kp = axis:report(-b ^ 2 / c, z.G)
+ z.u = (z.C - z.K):orthogonal(2):at(z.K)
+ z.v = (z.C - z.K):orthogonal(-2):at(z.K)
+ L.dir = line(z.u, z.v)
+ z.r = (z.C - z.Kp):orthogonal(2):at(z.Kp)
+ z.s = (z.C - z.Kp):orthogonal(-2):at(z.Kp)
+ CO.EL = conic(z.F, L.dir, e)
+ PA.curve = CO.EL:points(0, 1, 100)}
+\begin{center}
+  \begin{tikzpicture}[scale = .8]
+  \tkzGetNodes
+  \tkzDrawCoordinates[smooth](PA.curve)
+  \tkzDrawLines(u,v r,s K,K')
+  \tkzDrawSegments[dashed](M,F M,G)
+  \tkzDrawLine(F,G)
+  \tkzDrawPoints(C,F,K,K',G,M)
+  \tkzLabelPoints(C,F,K,K',G,M)
+  \end{tikzpicture}
+\end{center}
+
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.F = point(1, -1)
+ z.G = point(4, 3)
+ z.M = point(2, 3)
+ z.C = tkz.midpoint(z.F, z.G)
+ local a = (tkz.length(z.F, z.M) + tkz.length(z.G, z.M)) / 2
+ local c = tkz.length(z.F, z.G) / 2
+ local b = math.sqrt(a ^ 2 - c ^ 2)
+ local e = c / a
+ axis = line(z.G, z.F) % directrix
+ z.K = axis:report(b ^ 2 / c, z.F)
+ z.Kp = axis:report(-b ^ 2 / c, z.G)
+ z.u = (z.C - z.K):orthogonal(2):at(z.K)
+ z.v = (z.C - z.K):orthogonal(-2):at(z.K)
+ L.dir = line(z.u, z.v)
+ z.r = (z.C - z.Kp):orthogonal(2):at(z.Kp)
+ z.s = (z.C - z.Kp):orthogonal(-2):at(z.Kp)
+ CO.EL = conic(z.F, L.dir, e)
+ PA.curve = CO.EL:points(0, 1, 100)}
+\begin{tikzpicture}[scale = .5]
+ \tkzGetNodes
+ \tkzDrawCoordinates[smooth](PA.curve)
+ \tkzDrawLines(u,v r,s K,K')
+ \tkzDrawSegments[dashed](M,F M,G)
+ \tkzDrawLine(F,G)
+ \tkzDrawPoints(C,F,K,K',G,M)
+ \tkzLabelPoints(C,F,K,K',G,M)
+\end{tikzpicture}
+  \end{verbatim}
+
+% subsubsection ellipse_with_foci_and_point (end)
+
+\subsubsection{Orthic\_inellipse with \code{search\_ellipse} } % (fold)
+\label{ssub:example_orthic_inellipse_with}
+
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(6, 0)
+ z.C = point(1, 5)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.H = T.ABC.orthocenter
+ z.O = T.ABC.circumcenter
+ T.orthic = T.ABC:orthic()
+ z.K = T.ABC:symmedian_point()
+ z.Ha, z.Hb, z.Hc = T.orthic:get()
+ z.a, z.b, z.c = T.ABC:tangential():get()
+ z.p, z.q, z.r = T.ABC:circumcevian(z.H):get()
+ z.Sa, z.Sb = z.K:symmetry(z.Ha,z.Hb)
+ local coefficients = search_ellipse("Ha", "Hb", "Hc", "Sa", "Sb")
+ local center, ra, rb, angle = ellipse_axes_angle(coefficients)
+ CO.EL = conic(EL_radii(z.K, ra, rb, angle))
+ PA.curve = CO.EL:points(0, 1, 100)}
+
+\begin{center}
+  \begin{tikzpicture}[gridded,scale = 1.5]
+    \tkzGetNodes
+    \tkzDrawCoordinates[smooth,red](PA.curve)
+    \tkzDrawPolygons[red](A,B,C)
+    \tkzDrawPoints(A,B,C,K,Ha,Hb,Hc)
+    \tkzDrawSegments[red](C,Hc B,Hb A,Ha)
+    \tkzDrawPolygons[blue](Ha,Hb,Hc)
+    \tkzLabelPoints(A,B)
+    \tkzLabelPoints[above](C)
+    \tkzLabelPoints[font=\small,left](Hb)
+    \tkzLabelPoints[font=\small](Hc)
+    \tkzLabelPoints[font=\small](Ha)
+  \end{tikzpicture}
+\end{center}
+
+
+\begin{tkzexample}[code only]
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(6, 0)
+ z.C = point(1, 5)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.H = T.ABC.orthocenter
+ z.O = T.ABC.circumcenter
+ T.orthic = T.ABC:orthic()
+ z.K = T.ABC:symmedian_point()
+ z.Ha, z.Hb, z.Hc = T.orthic:get()
+ z.a, z.b, z.c = T.ABC:tangential():get()
+ z.p, z.q, z.r = T.ABC:circumcevian(z.H):get()
+ z.Sa, z.Sb = z.K:symmetry(z.Ha,z.Hb)
+ local coefficients = search_ellipse("Ha", "Hb", "Hc", "Sa", "Sb")
+ local center, ra, rb, angle = ellipse_axes_angle(coefficients)
+ CO.EL = conic(EL_radii(z.K, ra, rb, angle))
+ PA.curve = CO.EL:points(0, 1, 100)}
+\end{tkzexample}
+
+
+% subsubsection example_orthic_inellipse_with (end)
+
+
+\subsubsection{Kiepert hyperbola} % (fold)
+\label{ssub:kiepert_hyperbola}
+
+In triangle geometry, the Kiepert conics are two special conics associated with the reference triangle. One of them is a hyperbola, called the Kiepert hyperbola and the other is a parabola, called the Kiepert parabola
+
+It has been proved that the Kiepert hyperbola is the hyperbola passing through the vertices, the centroid and the orthocenter of the reference triangle
+[Wikipedia]
+
+
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(5, 0)
+ z.C = point(4, 4)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.K = T.ABC:kimberling(115)
+ z.circumcenter = T.ABC.circumcenter
+ z.G = T.ABC.centroid
+ L.brocard = T.ABC:brocard_axis()
+ C.circum = circle(z.circumcenter, z.A)
+ z.M, z.N = intersection(L.brocard, C.circum)
+ L.asx = T.ABC:simson_line(z.M)
+ L.asy = T.ABC:simson_line(z.N)
+ z.ux, z.uy = L.asx:get()
+ z.vx, z.vy = L.asy:get()
+ CO.HY = T:kiepert_hyperbola()
+ PA.curve = CO.HY:points(-3, 3, 50)
+ PA.curveb = CO.HY:points(-3, 3, 50, swap)
+ z.F_a, z.F_b = CO.HY.Fa, CO.HY.Fb}
+  \begin{tikzpicture}
+   \tkzGetNodes
+   \tkzDrawPolygons(A,B,C)
+   \tkzDrawCoordinates[smooth](PA.curve)
+   \tkzDrawCoordinates[smooth](PA.curveb)
+   \tkzDrawLines(A,B A,C B,C F_a,F_b)
+   \tkzDrawLines[red,add = 8 and 5](K,vy)
+   \tkzDrawLines[red,add = 2 and 1](K,uy)
+   \tkzDrawPoints(A,B,C,K,G,F_a,F_b)
+   \tkzLabelPoints(A,B,C,G)
+   \tkzLabelPoints[right](F_a,F_b,K)
+  \end{tikzpicture}
+\end{verbatim}
+
+
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(5, 0)
+ z.C = point(4, 4)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.K = T.ABC:kimberling(115)
+ z.circumcenter = T.ABC.circumcenter
+ z.G = T.ABC.centroid
+ L.brocard = T.ABC:brocard_axis()
+ C.circum = circle(z.circumcenter, z.A)
+ z.M, z.N = intersection(L.brocard, C.circum)
+ L.asx = T.ABC:simson_line(z.M)
+ L.asy = T.ABC:simson_line(z.N)
+ z.ux, z.uy = L.asx:get()
+ z.vx, z.vy = L.asy:get()
+ CO.HY = T.ABC:kiepert_hyperbola()
+ PA.curve = CO.HY:points(-3, 3, 50)
+ PA.curveb = CO.HY:points(-3, 3, 50, swap)
+ z.F_a, z.F_b = CO.HY.Fa, CO.HY.Fb}
+\begin{center}
+  \begin{tikzpicture}
+   \tkzGetNodes
+   \tkzDrawPolygons(A,B,C)
+   \tkzDrawCoordinates[smooth](PA.curve)
+   \tkzDrawCoordinates[smooth](PA.curveb)
+   \tkzDrawLines(A,B A,C B,C F_a,F_b)
+   \tkzDrawLines[red,add = 8 and 5](K,vy)
+   \tkzDrawLines[red,add = 2 and 1](K,uy)
+   \tkzDrawPoints(A,B,C,K,G,F_a,F_b)
+   \tkzLabelPoints(A,B,C,G)
+   \tkzLabelPoints[right](F_a,F_b,K)
+  \end{tikzpicture}
+\end{center}
+
+% subsubsection kiepert_hyperbola (end)
+
+\subsubsection{Kierpert parabola} % (fold)
+\label{ssub:kierpert_parabola}
+
+The Euler line of a triangle is the conic section directrix of the Kiepert parabola. In fact, the directrices of all parabolas inscribed in a triangle pass through the orthocenter. The  triangle  formed by the points of contact is called the Steiner triangle.
+
+The Kiepert parabola is tangent to the sides of the triangle (or their extensions), the line at infinity, and the Lemoine axis. The focus of the parabola has is Kimberling center \code{X\_(110}).
+
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(6, 0)
+ z.C = point(1.1, 4.5)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.H = T.ABC.orthocenter
+ z.O = T.ABC.circumcenter
+ CO.kiepert = T.ABC:kiepert_parabola()
+ PA.kiepert = CO.kiepert:points(-5, 7, 50)
+ z.F = CO.kiepert.Fa
+ z.S = CO.kiepert.vertex
+ z.K = CO.kiepert.K
+ z.a = intersection(CO.kiepert, T.ABC.ab)
+ z.b = intersection(CO.kiepert, T.ABC.bc)
+ z.c = intersection(CO.kiepert, T.ABC.ca)}
+\begin{tikzpicture}
+   \tkzGetNodes
+   \tkzDrawPolygon[cyan](A,B,C)
+   \tkzDrawPolygon[red](a,b,c)
+   \tkzDrawLines[purple,add = .5 and .5](O,H K,F)
+   \tkzDrawCoordinates[smooth,red](PA.kiepert)
+   \tkzDrawPoints(A,B,C,F,O,H,K,a,b,c)
+   \tkzDrawSegments(C,c C,b)
+   \tkzLabelPoints(B,O,H,K,a,b)
+   \tkzLabelPoints[above](C)
+   \tkzLabelPoints[left](A)
+   \tkzLabelPoints[right](F,c)
+\end{tikzpicture}
+\end{verbatim}
+
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(6, 0)
+ z.C = point(1.1, 4.5)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.H = T.ABC.orthocenter
+ z.O = T.ABC.circumcenter
+ CO.kiepert = T.ABC:kiepert_parabola()
+ PA.kiepert = CO.kiepert:points(-5, 7, 50)
+ z.F = CO.kiepert.Fa
+ z.S = CO.kiepert.vertex
+ z.K = CO.kiepert.K
+ z.a = intersection(CO.kiepert, T.ABC.ab)
+ z.b = intersection(CO.kiepert, T.ABC.bc)
+ z.c = intersection(CO.kiepert, T.ABC.ca)}
+\begin{center}
+\begin{tikzpicture}
+   \tkzGetNodes
+   \tkzDrawPolygon[cyan](A,B,C)
+   \tkzDrawPolygon[red](a,b,c)
+   \tkzDrawLines[purple,add = .5 and .5](O,H K,F)
+   \tkzDrawCoordinates[smooth,red](PA.kiepert)
+   \tkzDrawPoints(A,B,C,F,O,H,K,a,b,c)
+   \tkzDrawSegments(C,c C,b)
+   \tkzLabelPoints(B,O,H,K,a,b)
+   \tkzLabelPoints[above](C)
+   \tkzLabelPoints[left](A)
+   \tkzLabelPoints[right](F,c)
+\end{tikzpicture}
+\end{center}
+% subsubsection kierpert_parabola (end)
+\subsection{Euler relation} % (fold)
+\label{sub:euler_relation}
+
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(5, 0)
+ z.C = point(-0.4, 4)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.J, z.K = T.ABC:ex_circle(2):get()
+ z.X, z.Y, z.K = T.ABC:projection(z.J)
+ z.I, z.H = T.ABC:in_circle():get()
+ z.O = T.ABC.circumcenter
+ C.OA = circle(z.O, z.A)
+ T.IBA = triangle(z.I, z.B, z.A)
+ z.w = T.IBA.circumcenter
+ L.Ow = line(z.O, z.w)
+ _, z.E = intersection(L.Ow, C.OA)}
+   \begin{tikzpicture}
+   \tkzGetNodes
+   \tkzDrawArc(J,X)(Y)
+   \tkzDrawCircles(I,H O,A)
+   \tkzDrawCircle[red](w,I)
+   \tkzDrawLines(Y,C A,B X,C E,w E,B)
+   \tkzDrawSegments[blue](J,C J,K I,H I,O w,B)
+   \tkzDrawPoints(A,B,C,I,J,E,w,H,K,O)
+   \tkzLabelPoints(A,B,C,J,I,w,H,K,E,O)
+   \tkzMarkRightAngles[fill=gray!20,opacity=.4](C,H,I A,K,J)
+   \end{tikzpicture}
+\end{verbatim}
+
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(5, 0)
+ z.C = point(-0.4, 4)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.J, z.K = T.ABC:ex_circle(2):get()
+ z.X, z.Y, z.K = T.ABC:projection(z.J)
+ z.I, z.H = T.ABC:in_circle():get()
+ z.O = T.ABC.circumcenter
+ C.OA = circle(z.O, z.A)
+ T.IBA = triangle(z.I, z.B, z.A)
+ z.w = T.IBA.circumcenter
+ L.Ow = line(z.O, z.w)
+ _, z.E = intersection(L.Ow, C.OA)}
+
+\begin{center}
+  \begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawArc(J,X)(Y)
+  \tkzDrawCircles(I,H O,A)
+  \tkzDrawCircle[red](w,I)
+  \tkzDrawLines(Y,C A,B X,C E,w E,B)
+  \tkzDrawSegments[blue](J,C J,K I,H I,O w,B)
+  \tkzDrawPoints(A,B,C,I,J,E,w,H,K,O)
+  \tkzLabelPoints(A,B,C,J,I,w,H,K,E,O)
+  \tkzMarkRightAngles[fill=gray!20,opacity=.4](C,H,I A,K,J)
+  \end{tikzpicture}
+\end{center}
+
+% subsection euler_relation (end)
+
+\subsection{External angle} % (fold)
+\label{sub:external_angle}
+\begin{minipage}[t]{.5\textwidth}\vspace{0pt}%
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(5, 0)
+ z.C = point(-2, 4)
+ T.ABC = triangle(z.A, z.B, z.C)
+ T.ext = T.ABC:excentral()
+ z.O = T.ABC.circumcenter
+ z.D = intersection(T.ext.ab, T.ABC.ab)
+ z.E = z.C:symmetry(z.B)}
+\begin{tikzpicture}[cale  = .5]
+ \tkzGetNodes
+ \tkzDrawPolygon(A,B,C)
+ \tkzDrawLine[purple,add=0 and .5](B,C)
+ \tkzDrawSegment[purple](A,D)
+ \tkzDrawSegment[orange](C,D)
+ \tkzFillAngles[purple!30,opacity=.2](D,C,A)
+ \tkzFillAngles[purple!30,opacity=.2](E,C,D)
+ \tkzMarkAngles[mark=|](D,C,A E,C,D)
+ \tkzDrawPoints(A,...,D)
+ \tkzLabelPoints[above](C)
+ \tkzLabelPoints(A,B,D)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}[t]{.5\textwidth}\vspace{0pt}%
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(5, 0)
+ z.C = point(-2, 4)
+ T.ABC = triangle(z.A, z.B, z.C)
+ T.ext = T.ABC:excentral()
+ z.O = T.ABC.circumcenter
+ z.D = intersection(T.ext.ab, T.ABC.ab)
+ z.E = z.C:symmetry(z.B)}
+
+\begin{center}
+  \begin{tikzpicture}[scale = .6]
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawLine[purple,add=0 and .5](B,C)
+  \tkzDrawSegment[purple](A,D)
+  \tkzDrawSegment[orange](C,D)
+  \tkzFillAngles[purple!30,opacity=.2](D,C,A E,C,D)
+  \tkzMarkAngles[mark=|](D,C,A E,C,D)
+  \tkzDrawPoints(A,...,D)
+  \tkzLabelPoints[above](C)
+  \tkzLabelPoints(A,B,D)
+  \end{tikzpicture}
+\end{center}
+\end{minipage}
+% subsection external_angle (end)
+
+\subsection{Internal angle} % (fold)
+\label{sub:internal_angle}
+\begin{minipage}[t]{.5\textwidth}\vspace{0pt}%
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(6, 0)
+ z.C = point(1, 5)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.I = T.ABC.incenter
+ L.AI = line(z.A, z.I)
+ z.D = intersection(L.AI, T.bc)
+ L.LL = T.ABC.ab:ll_from(z.C)
+ L.AD = line(z.A, z.D)
+ z.E = intersection(L.LL, L.AD)}
+\begin{tikzpicture}[scale=.8]
+ \tkzGetNodes
+ \tkzDrawPolygon(A,B,C)
+ \tkzDrawLine[purple](C,E)
+ \tkzDrawSegment[purple](A,E)
+ \tkzFillAngles[purple!30,opacity=.4](B,A,C)
+ \tkzFillAngles[purple!30,opacity=.4](C,E,D)
+ \tkzMarkAngles[mark=|](B,A,D D,A,C C,E,D)
+ \tkzDrawPoints(A,...,E)
+ \tkzLabelPoints(A,B)
+ \tkzLabelPoints[above](C,D,E)
+ \tkzMarkSegments(A,C C,E)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}[t]{.5\textwidth}\vspace{0pt}%
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(6, 0)
+ z.C = point(1, 5)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.I = T.ABC.incenter
+ L.AI = line(z.A, z.I)
+ z.D = intersection(L.AI, T.ABC.bc)
+ L.LL = T.ABC.ab:ll_from(z.C)
+ L.AD = line(z.A, z.D)
+ z.E = intersection(L.LL, L.AD)}
+
+\begin{center}
+  \begin{tikzpicture}[scale =  .8]
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawLine[purple](C,E)
+  \tkzDrawSegment[purple](A,E)
+  \tkzFillAngles[purple!30,opacity=.4](B,A,C C,E,D)
+  \tkzMarkAngles[mark=|](B,A,D D,A,C C,E,D)
+  \tkzDrawPoints(A,...,E)
+  \tkzLabelPoints(A,B)
+  \tkzLabelPoints[above](C,D,E)
+  \tkzMarkSegments(A,C C,E)
+  \end{tikzpicture}
+\end{center}
+
+\end{minipage}
+%subsection internal_angle (end)
+
+\subsubsection{Morley triangle} % (fold)
+\label{ssub:morley_triangle}
+
+\begin{tkzexample}[latex = .5\textwidth]
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(5, 0)
+ z.C = point(1, 4)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.a1,z.a2 = tkz.trisector(z.A, z.B, z.C)
+ z.b1,z.b2 = tkz.trisector(z.B, z.C, z.A)
+ z.c1,z.c2 = tkz.trisector(z.C, z.A, z.B)
+ z.D = intersection_ll_(z.A, z.a1, z.B, z.b2)
+ z.E = intersection_ll_(z.B, z.b1, z.C, z.c2)
+ z.F = intersection_ll_(z.C, z.c1, z.A, z.a2)
+}
+
+\begin{center}
+  \begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawSegments(A,D A,F B,D B,E C,E C,F)
+  \tkzFillPolygon[orange](D,E,F)
+  \tkzDrawPolygons[thick](A,B,C D,E,F)
+  \end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+% subsubsection morley_triangle (end)
+
+
+\subsection{Feuerbach theorem} % (fold)
+\label{sub:nine_points}
+
+
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(5, -0.5)
+ z.C = point(-0.5, 3)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.O = T.ABC.circumcenter
+ z.N = T.ABC.eulercenter
+ z.I, z.K = T.ABC:in_circle():get()
+ z.H = T.ABC.ab:projection(z.I)
+ z.Ap, z.Bp, z.Cp = T.ABC:medial():get()
+ C.IH = circle(z.I, z.H)
+ C.NAp = circle(z.N, z.Ap)
+ C.OA = circle(z.O, z.A)
+ z.U = C.OA.south
+ z.L = C.NAp.south
+ z.M = C.NAp.north
+ z.X = T.ABC.ab:projection(z.C)
+ L.CU = line(z.C, z.U)
+ L.ML = line(z.M, z.L)
+ z.P = L.CU:projection(z.A)
+ z.Q = L.CU:projection(z.B)
+ L.LH = line(z.L, z.H)
+ z.F = intersection(L.LH, C.IH)}
+\begin{tikzpicture}[scale = .8]
+   \tkzGetNodes
+   \tkzDrawLine(L,F)
+   \tkzDrawCircle[red](N,A')
+   \tkzDrawCircle[blue](I,H)
+   \tkzDrawCircles[teal](O,A L,C')
+   \tkzDrawSegments(M,L B,U Q,C C,X A,P B,Q)
+   \tkzDrawPolygons(A,B,C A',B',C')
+   \tkzDrawPoints(A,B,C,N,H,A',B',C',U,L,M,P,Q,F,I)
+   \tkzLabelPoints(A,B,C,N,H,A',B',C',U,L,M,P,Q,F,I)
+\end{tikzpicture}
+\end{verbatim}
+
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(5, -0.5)
+ z.C = point(-0.5, 3)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.O = T.ABC.circumcenter
+ z.N = T.ABC.eulercenter
+ z.I, z.K = T.ABC:in_circle():get()
+ z.H = T.ABC.ab:projection(z.I)
+ z.Ap, z.Bp, z.Cp = T.ABC:medial():get()
+ C.IH = circle(z.I, z.H)
+ C.NAp = circle(z.N, z.Ap)
+ C.OA = circle(z.O, z.A)
+ z.U = C.OA.south
+ z.L = C.NAp.south
+ z.M = C.NAp.north
+ z.X = T.ABC.ab:projection(z.C)
+ L.CU = line(z.C, z.U)
+ L.ML = line(z.M, z.L)
+ z.P = L.CU:projection(z.A)
+ z.Q = L.CU:projection(z.B)
+ L.LH = line(z.L, z.H)
+ z.F = intersection(L.LH, C.IH)}
+
+\begin{center}
+  \begin{tikzpicture}[scale =1.25,rotate=90]
+  \tkzGetNodes
+  \tkzDrawLine(L,F)
+  \tkzDrawCircle[red](N,A')
+  \tkzDrawCircle[blue](I,H)
+  \tkzDrawCircles[teal](O,A L,C')
+  \tkzDrawSegments(M,L B,U Q,C C,X A,P B,Q)
+  \tkzDrawPolygons(A,B,C A',B',C')
+  \tkzDrawPoints(A,B,C,N,H,A',B',C',U,L,M,P,Q,F,I)
+  \tkzLabelPoints(A,B,C,N,H,A',B',C',U,L,M,P,Q,F,I)
+  \end{tikzpicture}
+\end{center}
+
+
+% subsection nine_points (end)
+
+\subsection{Gold ratio with segment} % (fold)
+\label{sub:gold_ratio_with_segment}
+\begin{minipage}{.5\textwidth}
+ \begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(6, 0)
+ L.AB = line(z.A, z.B)
+ _, _, z.X, z.Y = L.AB:square():get()
+ L.BX = line(z.B, z.X)
+ z.M = L.BX.mid
+ C.MA = circle(z.M, z.A)
+ _, z.K = intersection(L.BX, C.MA)
+ L.AK = line(z.Y, z.K)
+ z.C = intersection(L.AK, L.AB)}
+\begin{tikzpicture}[scale = .5]
+ \tkzGetNodes
+ \tkzDrawLines(A,B X,K)
+ \tkzDrawLine[teal](Y,K)
+ \tkzDrawPoints(A,B,C,X,Y,M,K)
+ \tkzDrawArc[delta=20](M,A)(K)
+ \tkzLabelPoints(A,B,C)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(6, 0)
+ L.AB = line(z.A, z.B)
+ _, _, z.X, z.Y = L.AB:square():get()
+ L.BX = line(z.B, z.X)
+ z.M = L.BX.mid
+ C.MA = circle(z.M, z.A)
+ _, z.K = intersection(L.BX, C.MA)
+ L.AK = line(z.Y, z.K)
+ z.C = intersection(L.AK, L.AB)}
+\begin{center}
+  \begin{tikzpicture}[scale = .5]
+  \tkzGetNodes
+  \tkzDrawLines(A,B X,K)
+  \tkzDrawLine[teal](Y,K)
+  \tkzDrawPoints(A,B,C,X,Y,M,K)
+  \tkzDrawArc[delta=20](M,A)(K)
+  \tkzLabelPoints(A,B,C)
+  \end{tikzpicture}
+\end{center}
+
+\end{minipage}
+%subsection gold_ratio_with_segment (end)
+
+\subsection{Gold Arbelos} % (fold)
+\label{sub:gold_arbelos}
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.C = point(6, 0)
+ L.AC = line(z.A, z.C)
+ _, _, z.x, z.y = L.AC:square():get()
+ z.O_1 = L.AC.mid
+ C.one = circle(z.O_1, z.x)
+ z.B = intersection(L.AC, C.one)
+ L.CB = line(z.C, z.B)
+ z.O_2 = L.CB.mid
+ L.AB = line(z.A, z.B)
+ z.O_0 = L.AB.mid}
+\begin{tikzpicture}[ scale    = .6]
+ \tkzGetNodes
+ \tkzDrawCircles(O_1,C O_2,B O_0,B)
+ \tkzDrawPoints(A,C,B,O_1,O_2,O_0)
+ \tkzLabelPoints(A,C,B)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.C = point(6, 0)
+ L.AC = line(z.A, z.C)
+ _, _, z.x, z.y = L.AC:square():get()
+ z.O_1 = L.AC.mid
+ C.one = circle(z.O_1, z.x)
+ z.B = intersection(L.AC, C.one)
+ L.CB = line(z.C, z.B)
+ z.O_2 = L.CB.mid
+ L.AB = line(z.A, z.B)
+ z.O_0 = L.AB.mid}
+\begin{center}
+  \begin{tikzpicture}[scale    = .4]
+  \tkzGetNodes
+  \tkzDrawCircles(O_1,C O_2,B O_0,B O_1,x)
+  \tkzDrawPoints(A,C,B,O_1,O_2,O_0,x)
+  \tkzLabelPoints[below right](A,C,B)
+  \end{tikzpicture}
+\end{center}
+
+\end{minipage}
+% subsection gold_arbelos (end)
+
+\subsection{Points cocylics with Arbelos} % (fold)
+\label{sub:points_cocylics_with_arbelos}
+
+\begin{verbatim}
+\directlua{
+ init_elements()
+ dofile("preamble.lua")
+ L.OA = line(z.O, z.A)
+ z.Op = intersection(L.OA, L.CD)
+ L.BQ = line(z.B, z.Q)
+ z.P_0p = intersection(L.CD, L.BQ)
+ C.AD = circle(z.A, z.D)
+ L.OpD = line(z.Op, z.D)
+ _, z.Dp = intersection(L.OpD, C.AD)
+ C.AD = circle(z.A, z.D)
+ z.P_1p, z.Tp = C.AD:inversion(z.P_1, z.T)
+ T.O3p = triangle(z.P_0p, z.P_1p, z.Q)
+ z.O_3p = T.O3p.circumcenter}
+\hspace{\fill}
+\begin{tikzpicture}
+ \tkzGetNodes
+ \tkzDrawCircles(O_0,A O_4,C O_3',Q)
+ \tkzDrawCircles[red](O_3,P_0)
+ \tkzDrawSemiCircles[teal](O_1,C O_2,B)
+ \tkzDrawArc[delta=10,gray,dashed](A,D')(D)
+ \tkzDrawArc[delta=10,gray,dashed](P,A)(P_0)
+ \tkzDrawArc[delta=10,gray,dashed](Q,P_0)(B)
+ \tkzDrawArc[delta=10,gray,dashed](O,B)(A)
+ \tkzDrawSegments[new](A,B A,P_0 P_0,B A,Q A,P_1')
+ \tkzDrawSegments[cyan](A,T' B,P O,P_0)
+ \tkzDrawSegments[step 2](B,P_0' A,O'  B,O)
+ \tkzDrawLines[add=0 and .8,step 1](B,P_1')
+ \tkzDrawLines[add=0 and .1,step 1](O',D)
+ \tkzDrawPoints(A,B,C,P_2,P_0,P_1,O,D,D',P,Q,P_1',O',P_0',O,T,T',O_4,O_3',O_5)
+ \tkzDrawPoints[red](O_3)
+ \tkzLabelPoints(A,B,C,P_2,O,P_1',O_4,O_3',O_5)
+ \tkzLabelPoints[above right](P_1,P_0,D,D',P,Q,O',T,T')
+ \tkzLabelPoints[above left](P_0')
+ \tkzLabelPoints[below,red](O_3)
+ \tkzLabelLine[left,pos=1.25](C,D){$\ell$}
+ \tkzLabelLine[left,pos=1.5](B,P_1'){${\ell}'$}
+ \tkzLabelCircle[above=4pt,font=\scriptsize](O_0,B)(150){$(\alpha)$}
+ \tkzLabelCircle[above=2pt,font=\scriptsize](O_1,C)(120){$(\beta)$}
+ \tkzLabelCircle[above=4pt,font=\scriptsize](O_2,B)(50){$(\gamma)$}
+ \tkzLabelCircle[above,font=\scriptsize,red](O_3,P_2)(180){$(\delta)$}
+ \tkzLabelCircle[left](O_4,C)(-30){$(\epsilon)$}
+  \end{tikzpicture}
+\end{verbatim}
+
+\directlua{
+ init_elements()
+ dofile("preamble.lua")
+}
+
+\begin{center}
+  \begin{tikzpicture}
+     \tkzGetNodes
+     \tkzDrawCircles(O_0,A O_4,C O_3',Q)
+     \tkzDrawCircles[red](O_3,P_0)
+     \tkzDrawSemiCircles[teal](O_1,C O_2,B)
+     \tkzDrawArc[delta=10,gray,dashed](A,D')(D)
+     \tkzDrawArc[delta=10,gray,dashed](P,A)(P_0)
+     \tkzDrawArc[delta=10,gray,dashed](Q,P_0)(B)
+     \tkzDrawArc[delta=10,gray,dashed](O,B)(A)
+     \tkzDrawSegments[new](A,B A,P_0 P_0,B A,Q A,P_1')
+     \tkzDrawSegments[cyan](A,T' B,P O,P_0)
+     \tkzDrawSegments[step 2](B,P_0' A,O'  B,O)
+     \tkzDrawLines[add=0 and .8,step 1](B,P_1')
+     \tkzDrawLines[add=0 and .1,step 1](O',D)
+     \tkzDrawPoints(A,B,C,P_2,P_0,P_1,O,D,D',P,Q,P_1',O',P_0',O,T,T',O_4,O_3',O_5)
+     \tkzDrawPoints[red](O_3)
+     \tkzLabelPoints(A,B,C,P_2,O,P_1',O_4,O_3',O_5)
+     \tkzLabelPoints[above right](P_1,P_0,D,D',P,Q,O',T,T')
+     \tkzLabelPoints[above left](P_0')
+     \tkzLabelPoints[below,red](O_3)
+     \tkzLabelLine[left,pos=1.25](C,D){$\ell$}
+     \tkzLabelLine[left,pos=1.5](B,P_1'){${\ell}'$}
+     \tkzLabelCircle[above=4pt,font=\scriptsize](O_0,B)(150){$(\alpha)$}
+     \tkzLabelCircle[above=2pt,font=\scriptsize](O_1,C)(120){$(\beta)$}
+     \tkzLabelCircle[above=4pt,font=\scriptsize](O_2,B)(50){$(\gamma)$}
+     \tkzLabelCircle[above,font=\scriptsize,red](O_3,P_2)(180){$(\delta)$}
+     \tkzLabelCircle[left](O_4,C)(-30){$(\epsilon)$}
+   \end{tikzpicture}
+\end{center}
+
+% subsection points_cocylics_with_arbelos (end)
+
+
+\subsection{Harmonic division v1} % (fold)
+\label{sub:harmonic_division_v1}
+\begin{minipage}[t]{.4\textwidth}\vspace{0pt}%
+
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(4, 0)
+ z.G = point(2, 2)
+ L.AG = line(z.A, z.G)
+ L.AB = line(z.A, z.B)
+ z.E = L.AG:colinear_at(z.B, 0.5)
+ L.GE = line(z.G, z.E)
+ z.D = intersection(L.GE, L.AB)
+ z.F = z.B:symmetry(z.E)
+ L.GF = line(z.G, z.F)
+ z.C = intersection(L.GF, L.AB)}
+\begin{tikzpicture}[ scale =.75]
+ \tkzGetNodes
+ \tkzDrawLines(A,B A,G A,D A,G F,E)
+ \tkzDrawLines(G,F G,D)
+ \tkzDrawPoints(A,B,G,E,F,C,D)
+ \tkzLabelPoints(A,B,G,E,F,C,D)
+ \tkzMarkSegments(F,B B,E)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}[t]{.6\textwidth}\vspace{0pt}%
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(4, 0)
+ z.G = point(2, 2)
+ L.AG = line(z.A, z.G)
+ L.AB = line(z.A, z.B)
+ z.E = L.AG:colinear_at(z.B, 0.5)
+ L.GE = line(z.G, z.E)
+ z.D = intersection(L.GE, L.AB)
+ z.F = z.B:symmetry(z.E)
+ L.GF = line(z.G, z.F)
+ z.C = intersection(L.GF, L.AB)}
+
+\begin{center}
+  \begin{tikzpicture}[ scale=.75]
+   \tkzGetNodes
+   \tkzDrawLines(A,B A,G A,D A,G F,E G,F G,D)
+   \tkzDrawPoints(A,B,G,E,F,C,D)
+   \tkzLabelPoints(A,B,G,E,F,C,D)
+   \tkzMarkSegments(F,B B,E)
+  \end{tikzpicture}
+\end{center}
+\end{minipage}
+% subsection harmonic_division_v1 (end)
+
+\subsection{Harmonic division v2} % (fold)
+\label{sub:harmonic_division_v2}
+\begin{minipage}[t]{.45\textwidth}\vspace{0pt}%
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(6, 0)
+ z.D = point(12, 0)
+ L.AB = line(z.A, z.B)
+ z.X = L.AB.north_pa
+ L.XB = line(z.X, z.B)
+ z.E = L.XB.mid
+ L.ED = line(z.E, z.D)
+ L.AX = line(z.A, z.X)
+ L.AE = line(z.A, z.E)
+ z.F = intersection(L.ED, L.AX)
+ L.BF = line(z.B, z.F)
+ z.G = intersection(L.AE, L.BF)
+ L.GX = line(z.G, z.X)
+ z.C = intersection(L.GX, L.AB)}
+ \end{verbatim}
+\end{minipage}
+\begin{minipage}[t]{.55\textwidth}\vspace{0pt}%
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(6, 0)
+ z.D = point(12, 0)
+ L.AB = line(z.A, z.B)
+ z.X = L.AB.north_pa
+ L.XB = line(z.X, z.B)
+ z.E = L.XB.mid
+ L.ED = line(z.E, z.D)
+ L.AX = line(z.A, z.X)
+ L.AE = line(z.A, z.E)
+ z.F = intersection(L.ED, L.AX)
+ L.BF = line(z.B, z.F)
+ z.G = intersection(L.AE, L.BF)
+ L.GX = line(z.G, z.X)
+ z.C = intersection(L.GX, L.AB)}
+
+\begin{center}
+  \begin{tikzpicture}[scale  = .5]
+  \tkzGetNodes
+  \tkzDrawLines(A,D A,E B,F D,F X,A X,B X,C)
+  \tkzDrawPoints(A,...,G,X)
+  \tkzLabelPoints(A,...,G,X)
+  \end{tikzpicture}
+\end{center}
+\end{minipage}
+
+ \begin{verbatim}
+\begin{tikzpicture}[ scale  = .5]
+  \tkzGetNodes
+  \tkzDrawLines(A,D A,E B,F D,F X,A X,B X,C)
+  \tkzDrawPoints(A,...,G,X)
+  \tkzLabelPoints(A,...,G,X)
+\end{tikzpicture}
+\end{verbatim}
+% subsection harmonic_division_v2 (end)
+
+\subsection{Menelaus} % (fold)
+\label{sub:menelaus}
+\begin{minipage}{.4\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(6, 0)
+ z.C = point(5, 4)
+ z.P = point(-1, 0)
+ z.X = point(6, 3)
+ L.AC = line(z.A, z.C)
+ L.PX = line(z.P, z.X)
+ L.BC = line(z.B, z.C)
+ z.Q = intersection(L.AC, L.PX)
+ z.R = intersection(L.BC, L.PX)}
+\begin{tikzpicture}
+   \tkzGetNodes
+   \tkzDrawPolygon(A,B,C)
+   \tkzDrawLine[new](P,R)
+   \tkzDrawLines(P,B A,C B,C)
+   \tkzDrawPoints(P,Q,R,A,B,C)
+   \tkzLabelPoints(A,B,C,P,Q,R)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.6\textwidth}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(6, 0)
+ z.C = point(5, 4)
+ z.P = point(-1, 0)
+ z.X = point(6, 3)
+ L.AC = line(z.A, z.C)
+ L.PX = line(z.P, z.X)
+ L.BC = line(z.B, z.C)
+ z.Q = intersection(L.AC, L.PX)
+ z.R = intersection(L.BC, L.PX)}
+\begin{center}
+  \begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawLine[new](P,R)
+  \tkzDrawLines(P,B A,C B,C)
+  \tkzDrawPoints(P,Q,R,A,B,C)
+  \tkzLabelPoints(A,B,C,P,Q,R)
+  \end{tikzpicture}
+\end{center}
+
+\end{minipage}
+% subsection menelaus (end)
+
+\subsubsection{Orthopole and Simson line} % (fold)
+\label{ssub:orthopole_and_simson_line}
+
+\begin{tkzexample}[latex=.5\textwidth]
+  \directlua{
+    init_elements()
+    z.A  = point:new(0, 0)
+    z.B  = point:new(5, 0)
+    z.C  = point:new(0.5, 3)
+    T.ABC  = triangle:new(z.A, z.B, z.C)
+    z.O  = T.ABC.circumcenter
+    C.circum = circle(z.O, z.A)
+    z.H  = T.ABC.orthocenter
+    L.OH = line(z.O, z.H)
+    z.P = T.ABC:orthopole(L.OH)
+    L.ortho = L.OH:orthogonal_from(z.P)
+    z.p = L.ortho.pb
+    z.Q = intersection(T.ABC.ab,L.ortho)
+    L.perp = T.ABC.ab:orthogonal_from(z.Q)
+    z.q = L.perp.pb
+    z.x, z.y = intersection(C.circum,L.perp)
+    L.simson = T.ABC:simson_line(z.x)
+    z.sa, z.sb = L.simson:get()
+    z.h = intersection(L.simson,L.OH)
+  }
+\begin{center}
+\begin{tikzpicture}
+ \tkzGetNodes
+ \tkzDrawPolygons[cyan](A,B,C)
+ \tkzDrawCircle(O,A)
+  \tkzDrawLines[purple,
+    add = 1.5 and 1.5](O,H)
+ \tkzDrawLines[green!50!black,
+    add = .5 and .5](P,p sa,sb)
+ \tkzDrawPoints(A,B,C,O,H,P)
+ \tkzLabelPoints(A,B,H,O)
+ \tkzLabelPoints[above](C,P)
+ \tkzLabelLine[above,sloped,
+    pos=0](sa,sb){Simson line}
+ \tkzMarkRightAngle(P,h,H)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+
+
+% subsubsection orthopole_and_simson_line (end)
+\subsection{Euler ellipse} % (fold)
+\label{sub:hexagram}
+\directlua{
+ init_elements()
+ z.A = point(2, 3.8)
+ z.B = point(0, 0)
+ z.C = point(6.2, 0)
+ L.AB = line(z.A, z.B)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.N = T.ABC.eulercenter
+ z.G = T.ABC.centroid
+ z.O = T.ABC.circumcenter
+ z.H = T.ABC.orthocenter
+ z.Ma, z.Mb, z.Mc = T.ABC:medial():get()
+ z.Ha, z.Hb, z.Hc = T.ABC:orthic():get()
+ z.Ea, z.Eb, z.Ec = T.ABC:extouch():get()
+ L.euler = T.ABC:euler_line()
+ C.circum = T.ABC:circum_circle()
+ C.euler = T.ABC:euler_circle()
+ z.I, z.J = intersection(L.euler, C.euler)
+ local a = 0.5 * tkz.length(z.I, z.J)
+ CO.E = conic(EL_bifocal(z.O, z.H, a))
+ PA.E = CO.E:points(0, 1, 50)
+ L.AH = line(z.A, z.H)
+ L.BH = line(z.B, z.H)
+ L.CH = line(z.C, z.H)
+ z.X = intersection(L.AH, C.circum)
+ _, z.Y = intersection(L.BH, C.circum)
+ _, z.Z = intersection(L.CH, C.circum)
+ L.BC = line(z.B, z.C)
+ L.XO = line(z.X, z.O)
+ L.YO = line(z.Y, z.O)
+ L.ZO = line(z.Z, z.O)
+ z.x = intersection(L.BC, L.XO)
+ z.U = intersection(L.XO, CO.E)
+ _, z.V = intersection(L.YO, CO.E)
+ _, z.W = intersection(L.ZO, CO.E)}
+
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(2, 3.8)
+ z.B = point(0, 0)
+ z.C = point(6.2, 0)
+ L.AB = line(z.A, z.B)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.N = T.ABC.eulercenter
+ z.G = T.ABC.centroid
+ z.O = T.ABC.circumcenter
+ z.H = T.ABC.orthocenter
+ z.Ma, z.Mb, z.Mc = T.ABC:medial():get()
+ z.Ha, z.Hb, z.Hc = T.ABC:orthic():get()
+ z.Ea, z.Eb, z.Ec = T.ABC:extouch():get()
+ L.euler = T.ABC:euler_line()
+ C.circum = T.ABC:circum_circle()
+ C.euler = T.ABC:euler_circle()
+ z.I, z.J = intersection(L.euler, C.euler)
+ local a = 0.5 * tkz.length(z.I, z.J)
+ CO.E = conic(EL_bifocal(z.O, z.H, a))
+ PA.E = CO.E:points(0, 1, 50)
+ L.AH = line(z.A, z.H)
+ L.BH = line(z.B, z.H)
+ L.CH = line(z.C, z.H)
+ z.X = intersection(L.AH, C.circum)
+ _, z.Y = intersection(L.BH, C.circum)
+ _, z.Z = intersection(L.CH, C.circum)
+ L.BC = line(z.B, z.C)
+ L.XO = line(z.X, z.O)
+ L.YO = line(z.Y, z.O)
+ L.ZO = line(z.Z, z.O)
+ z.x = intersection(L.BC, L.XO)
+ z.U = intersection(L.XO, CO.E)
+ _, z.V = intersection(L.YO, CO.E)
+ _, z.W = intersection(L.ZO, CO.E)}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\hfill
+\begin{tikzpicture}[scale = 1.2]
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawCircles[red](N,Ma O,A)
+  \tkzDrawCoordinates[smooth,cyan](PA.E)
+  \tkzDrawSegments(A,X B,Y C,Z B,Hb C,Hc X,O Y,O Z,O)
+  \tkzDrawPolygon[red](U,V,W)
+  \tkzLabelPoints[red](U,V,W)
+  \tkzLabelPoints(A,B,C,X,Y,Z)
+  \tkzDrawLine[blue](I,J)
+  \tkzLabelPoints[blue,right](O,N,G,H,I,J)
+  \tkzDrawPoints(I,J,U,V,W)
+  \tkzDrawPoints(A,B,C,N,G,H,O,X,Y,Z,Ma,Mb,Mc,Ha,Hb,Hc)
+\end{tikzpicture}
+
+\end{minipage}
+
+\begin{verbatim}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawCircles[red](N,Ma O,A)
+  \tkzDrawCoordinates[smooth,cyan](PA.E)
+  \tkzDrawSegments(A,X B,Y C,Z B,Hb C,Hc X,O Y,O Z,O)
+  \tkzDrawPolygon[red](U,V,W)
+  \tkzLabelPoints[red](U,V,W)
+  \tkzLabelPoints(A,B,C,X,Y,Z)
+  \tkzDrawLine[blue](I,J)
+  \tkzLabelPoints[blue,right](O,N,G,H,I,J)
+  \tkzDrawPoints(I,J,U,V,W)
+  \tkzDrawPoints(A,B,C,N,G,H,O,X,Y,Z,Ma,Mb,Mc,Ha,Hb,Hc)
+\end{tikzpicture}
+
+\end{verbatim}
+
+% subsection hexagram (end)
+
+\subsection{Gold Arbelos properties} % (fold)
+\label{sub:gold_arbelos_properties}
+
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(10, 0)
+ L.AB = line(z.A, z.B)
+ z.C = L.AB:gold_ratio()
+ z.O_1 = L.AB.mid
+ L.AC = line(z.A, z.C)
+ z.O_2 = L.AC.mid
+ L.CB = line(z.C, z.B)
+ z.O_3 = L.CB.mid
+ C.one = circle(z.O_1, z.B)
+ C.two = circle(z.O_2, z.C)
+ C.three = circle(z.O_3, z.B)
+ z.Q = C.two.north
+ z.P = C.three.north
+ L.O23 = line(z.O_2, z.O_3)
+ z.M_0 = L.O23:harmonic_ext(z.C)
+ L.O12 = line(z.O_1, z.O_2)
+ z.M_1 = L.O12:harmonic_int(z.A)
+ L.O13 = line(z.O_1, z.O_3)
+ z.M_2 = L.O13:harmonic_int(z.B)
+ L.bq = line(z.B, z.Q)
+ L.ap = line(z.A, z.P)
+ z.S = intersection(L.bq, L.ap)
+ z.x = z.C:north()
+ L.Cx = line(z.C, z.x)
+ z.D, _ = intersection(L.Cx, C.one)
+ L.CD = line(z.C, z.D)
+ z.O_7 = L.CD.mid
+ C.DC = circle(z.D, z.C)
+ z.U, z.V = intersection(C.DC, C.one)
+ L.UV = line(z.U, z.V)
+ z.R, z.S = L.UV:projection(z.O_2, z.O_3)
+ L.O1D = line(z.O_1, z.D)
+ z.W = intersection(L.UV, L.O1D)
+ z.O = C.DC:inversion(z.W)}
+
+\begin{minipage}{.42\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(10, 0)
+ L.AB = line(z.A, z.B)
+ z.C = L.AB:gold_ratio()
+ z.O_1 = L.AB.mid
+ L.AC = line(z.A, z.C)
+ z.O_2 = L.AC.mid
+ L.CB = line(z.C, z.B)
+ z.O_3 = L.CB.mid
+ C.one = circle(z.O_1, z.B)
+ C.two = circle(z.O_2, z.C)
+ C.three = circle(z.O_3, z.B)
+ z.Q = C.two.north
+ z.P = C.three.north
+ L.O23 = line(z.O_2, z.O_3)
+ z.M_0 = L.O23:harmonic_ext(z.C)
+ L.O12 = line(z.O_1, z.O_2)
+ z.M_1 = L.O12:harmonic_int(z.A)
+ L.O13 = line(z.O_1, z.O_3)
+ z.M_2 = L.O13:harmonic_int(z.B)
+ L.bq = line(z.B, z.Q)
+ L.ap = line(z.A, z.P)
+ z.S = intersection(L.bq, L.ap)
+ z.x = z.C:north()
+ L.Cx = line(z.C, z.x)
+ z.D, _ = intersection(L.Cx, C.one)
+ L.CD = line(z.C, z.D)
+ z.O_7 = L.CD.mid
+ C.DC = circle(z.D, z.C)
+ z.U,
+ z.V = intersection(C.DC, C.one)
+ L.UV = line(z.U, z.V)
+ z.R,
+ z.S = L.UV:projection(z.O_2, z.O_3)
+ L.O1D = line(z.O_1, z.D)
+ z.W = intersection(L.UV, L.O1D)
+ z.O = C.DC:inversion(z.W)}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.58\textwidth}
+\begin{center}
+  \begin{tikzpicture}[scale = .7]
+  \tkzGetNodes
+  \tkzDrawCircles[teal](O_1,B)
+  \tkzDrawSemiCircles[thin,teal](O_2,C O_3,B)
+  \tkzDrawArc[purple,delta=0](D,U)(V)
+  \tkzDrawCircle[new](O_7,C)
+  \tkzDrawSegments[thin,purple](A,D D,B C,R C,S C,D U,V)
+  \tkzDrawSegments[thin,red](O,D A,O O,B)
+  \tkzDrawPoints(A,B,C,D,O_7) %,
+  \tkzDrawPoints(O_1,O_2,O_3,U,V,R,S,W,O)
+  \tkzDrawSegments[cyan](O_3,S O_2,R)
+  \tkzDrawSegments[very thin](A,B)
+  \tkzDrawSegments[cyan,thin](C,U U,D)
+  \tkzMarkRightAngles[size=.2,fill=gray!40,opacity=.4](D,C,A A,D,B
+   D,S,C D,W,V O_3,S,U O_2,R,U)
+  \tkzFillAngles[cyan!40,opacity=.4](B,A,D A,D,O_1
+   C,D,B D,C,R B,C,S A,R,O_2)
+  \tkzFillAngles[green!40,opacity=.4](S,C,D W,R,D
+   D,B,C R,C,A O_3,S,B)
+  \tkzLabelPoints[below](C,O_2,O_3,O_1)
+  \tkzLabelPoints[above](D)
+  \tkzLabelPoints[below](O)
+  \tkzLabelPoints[below left](A)
+  \tkzLabelPoints[above left](R)
+  \tkzLabelPoints[above right](S)
+  \tkzLabelPoints[left](V)
+  \tkzLabelPoints[below right](B,U,W,O_7)
+  \end{tikzpicture}
+\end{center}
+
+
+\end{minipage}
+
+\begin{verbatim}
+\begin{tikzpicture}
+   \tkzGetNodes
+   \tkzDrawCircles[teal](O_1,B)
+   \tkzDrawSemiCircles[thin,teal](O_2,C O_3,B)
+   \tkzDrawArc[purple,delta=0](D,U)(V)
+   \tkzDrawCircle[new](O_7,C)
+   \tkzDrawSegments[thin,purple](A,D D,B C,R C,S C,D U,V)
+   \tkzDrawSegments[thin,red](O,D A,O O,B)
+   \tkzDrawPoints(A,B,C,D,O_7) %,
+   \tkzDrawPoints(O_1,O_2,O_3,U,V,R,S,W,O)
+   \tkzDrawSegments[cyan](O_3,S O_2,R)
+   \tkzDrawSegments[very thin](A,B)
+   \tkzDrawSegments[cyan,thin](C,U U,D)
+   \tkzMarkRightAngles[size=.2,fill=gray!40,opacity=.4](D,C,A A,D,B
+     D,S,C D,W,V O_3,S,U O_2,R,U)
+   \tkzFillAngles[cyan!40,opacity=.4](B,A,D A,D,O_1
+     C,D,B D,C,R B,C,S A,R,O_2)
+   \tkzFillAngles[green!40,opacity=.4](S,C,D W,R,D
+     D,B,C R,C,A O_3,S,B)
+   \tkzLabelPoints[below](C,O_2,O_3,O_1)
+   \tkzLabelPoints[above](D)
+   \tkzLabelPoints[below](O)
+   \tkzLabelPoints[below left](A)
+   \tkzLabelPoints[above left](R)
+   \tkzLabelPoints[above right](S)
+   \tkzLabelPoints[left](V)
+   \tkzLabelPoints[below right](B,U,W,O_7)
+\end{tikzpicture}
+\end{verbatim}
+% subsection gold_arbelos_properties (end)
+
+\subsection{Apollonius circle v1 with inversion} % (fold)
+\label{sub:apollonius_circle_v1_with_inversion}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(6, 0)
+ z.C = point(0.8, 4)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.N = T.ABC.eulercenter
+ z.Ea, z.Eb, z.Ec = T.ABC:feuerbach():get()
+ z.Ja, z.Jb, z.Jc = T.ABC:excentral():get()
+ z.S = T.ABC:spieker_center()
+ C.JaEa = circle(z.Ja, z.Ea)
+ C.ortho = C.JaEa:orthogonal_from(z.S)
+ z.a = C.ortho.south
+ C.euler = T.ABC:euler_circle()
+ C.apo = C.ortho:inversion(C.euler)
+ z.O = C.apo.center
+ z.xa, z.xb, z.xc = C.ortho:inversion(z.Ea, z.Eb, z.Ec)}
+
+\begin{tikzpicture}[scale= .7]
+   \tkzGetNodes
+\tkzDrawCircles[red](O,xa N,Ea)
+\tkzFillCircles[green!30!black,opacity=.3](O,xa)
+\tkzFillCircles[yellow!30,opacity=.7](Ja,Ea Jb,Eb Jc,Ec)
+\tkzFillCircles[teal!30!black,opacity=.3](S,a)
+\tkzFillCircles[green!30,opacity=.3](N,Ea)
+\tkzDrawPoints[red](Ea,Eb,Ec,xa,xb,xc,N)
+\tkzClipCircle(O,xa)
+\tkzDrawLines[add=3 and 3](A,B A,C B,C)
+\tkzDrawCircles(Ja,Ea Jb,Eb Jc,Ec)
+\tkzFillCircles[lightgray!30,opacity=.7](Ja,Ea Jb,Eb Jc,Ec)
+\tkzDrawCircles[teal](S,a)
+\tkzDrawPoints(A,B,C,O)
+\tkzDrawPoints[teal](S)
+\tkzLabelPoints(A,B,C,O,S,N)
+\end{tikzpicture}
+\end{verbatim}
+
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(6, 0)
+ z.C = point(0.8, 4)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.N = T.ABC.eulercenter
+ z.Ea, z.Eb, z.Ec = T.ABC:feuerbach():get()
+ z.Ja, z.Jb, z.Jc = T.ABC:excentral():get()
+ z.S = T.ABC:spieker_center()
+ C.JaEa = circle(z.Ja, z.Ea)
+ C.ortho = C.JaEa:orthogonal_from(z.S)
+ z.a = C.ortho.south
+ C.euler = T.ABC:euler_circle()
+ C.apo = C.ortho:inversion(C.euler)
+ z.O = C.apo.center
+ z.xa, z.xb, z.xc = C.ortho:inversion(z.Ea, z.Eb, z.Ec)}
+
+\begin{center}
+  \begin{tikzpicture}[scale= .5]
+     \tkzGetNodes
+  \tkzDrawCircles[red](O,xa N,Ea)
+  \tkzFillCircles[green!30!black,opacity=.3](O,xa)
+  \tkzFillCircles[yellow!30,opacity=.7](Ja,Ea Jb,Eb Jc,Ec)
+  \tkzFillCircles[teal!30!black,opacity=.3](S,a)
+  \tkzFillCircles[green!30,opacity=.3](N,Ea)
+  \tkzDrawPoints[red](Ea,Eb,Ec,xa,xb,xc,N)
+  \tkzClipCircle(O,xa)
+  \tkzDrawLines[add=3 and 3](A,B A,C B,C)
+  \tkzDrawCircles(Ja,Ea Jb,Eb Jc,Ec)
+  \tkzFillCircles[lightgray!30,opacity=.7](Ja,Ea Jb,Eb Jc,Ec)
+  \tkzDrawCircles[teal](S,a)
+  \tkzDrawPoints(A,B,C,O)
+  \tkzDrawPoints[teal](S)
+  \tkzLabelPoints(A,B,C,O,S,N)
+  \end{tikzpicture}
+\end{center}
+
+
+% subsection apollonius_circle_v1_with_inversion (end)
+
+\subsection{Apollonius circle v2} % (fold)
+\label{sub:apollonius_circle_v2}
+\begin{verbatim}
+\directlua{
+init_elements()
+z.A = point(0, 0)
+z.B = point(6, 0)
+z.C = point(0.8, 4)
+T.ABC = triangle(z.A, z.B, z.C)
+z.O = T.ABC.circumcenter
+z.H = T.ABC.orthocenter
+z.G = T.ABC.centroid
+z.L = T.ABC:lemoine_point()
+z.S = T.ABC:spieker_center()
+C.euler = T.ABC:euler_circle()
+z.N, z.Ma = C.euler:get()
+C.exA = T.ABC:ex_circle()
+z.Ja, z.Xa = C.exA:get()
+C.exB = T.ABC:ex_circle(1)
+z.Jb, z.Xb = C.exB:get()
+C.exC = T.ABC:ex_circle(2)
+z.Jc, z.Xc = C.exC:get()
+L.OL = line(z.O, z.L)
+L.NS = line(z.N, z.S)
+z.o = intersection(L.OL, L.NS)
+L.NMa = line(z.N, z.Ma)
+L.ox = L.NMa:ll_from(z.o)
+L.MaS = line(z.Ma, z.S)
+z.t = intersection(L.ox, L.MaS)}
+
+\begin{tikzpicture}[scale= .5]
+   \tkzGetNodes
+   \tkzDrawLines[add=1 and 1](A,B A,C B,C)
+   \tkzDrawCircles(Ja,Xa Jb,Xb Jc,Xc o,t N,Ma) %
+   \tkzClipCircle(o,t)
+   \tkzDrawLines[red](o,L N,o Ma,t)
+   \tkzDrawLines[cyan,add=4 and 4](Ma,N o,t)
+   \tkzDrawPoints(A,B,C,Ma,Ja,Jb,Jc)
+   \tkzDrawPoints[red](N,O,L,S,o,t)
+   \tkzLabelPoints[right,font=\tiny](A,B,C,Ja,Jb,Jc,O,N,L,S,Ma,o)
+\end{tikzpicture}
+\end{verbatim}
+
+\directlua{
+init_elements()
+z.A = point(0, 0)
+z.B = point(6, 0)
+z.C = point(0.8, 4)
+T.ABC = triangle(z.A, z.B, z.C)
+z.O = T.ABC.circumcenter
+z.H = T.ABC.orthocenter
+z.G = T.ABC.centroid
+z.L = T.ABC:lemoine_point()
+z.S = T.ABC:spieker_center()
+C.euler = T.ABC:euler_circle()
+z.N, z.Ma = C.euler:get()
+C.exA = T.ABC:ex_circle()
+z.Ja, z.Xa = C.exA:get()
+C.exB = T.ABC:ex_circle(1)
+z.Jb, z.Xb = C.exB:get()
+C.exC = T.ABC:ex_circle(2)
+z.Jc, z.Xc = C.exC:get()
+L.OL = line(z.O, z.L)
+L.NS = line(z.N, z.S)
+z.o = intersection(L.OL, L.NS)
+L.NMa = line(z.N, z.Ma)
+L.ox = L.NMa:ll_from(z.o)
+L.MaS = line(z.Ma, z.S)
+z.t = intersection(L.ox, L.MaS)}
+
+\begin{center}
+  \begin{tikzpicture}[scale =.5]
+  \tkzGetNodes
+  \tkzDrawLines[add=1 and 1](A,B A,C B,C)
+  \tkzDrawCircles(Ja,Xa Jb,Xb Jc,Xc o,t N,Ma)
+  \tkzClipCircle(o,t)
+  \tkzDrawLines[red](o,L N,o Ma,t)
+  \tkzDrawLines[cyan,add=4 and 4](Ma,N o,t)
+  \tkzDrawPoints(A,B,C,Ma,Ja,Jb,Jc)
+  \tkzDrawPoints[red](N,O,L,S,o,t)
+  \tkzLabelPoints[right,font=\tiny](A,B,C,Ja,Jb,Jc,O,N,L,S,Ma,o)
+  \end{tikzpicture}
+\end{center}
+% subsection apollonius_circle_v2 (end)
+
+
+
+\subsection{Orthogonal circles} % (fold)
+\label{sub:orthogonal_circles_v2}
+
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.O = point(2, 2)
+ z.Op = point(-4, 1)
+ z.P = point:polar(4, 0)
+ C.OP = circle(z.O, z.P)
+ C.Oz1 = C.OP:orthogonal_from(z.Op)
+ z.z1 = C.Oz1.through
+ L.OP = line(z.O, z.P)
+ C.Opz1 = circle(z.Op, z.z1)
+ L.T, L.Tp = C.Opz1:tangent_from(z.O)
+ z.T = L.T.pb
+ z.Tp = L.Tp.pb
+ L.OOp = line(z.O, z.Op)
+ z.M = L.OOp.mid}
+\begin{tikzpicture}[ scale = .5]
+   \tkzGetNodes
+   \tkzDrawCircle[red](O,P)
+   \tkzDrawCircle[purple](O',z1)
+   \tkzDrawCircle[cyan](M,T)
+   \tkzDrawSegments(O',T O,T' O',T')
+   \tkzDrawSegment[purple](O',T)
+   \tkzDrawSegments[red](O,T O,O')
+   \tkzDrawPoints(O,O',T,T',M)
+   \tkzMarkRightAngle[fill=gray!10](O',T,O)
+   \tkzLabelPoint[below](O){$O$}
+   \tkzLabelPoint[above](T){$T$}
+   \tkzLabelPoint[above](M){$M$}
+   \tkzLabelPoint[below](T'){$T'$}
+   \tkzLabelPoint[above left](O'){$O'$}
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ z.O = point(2, 2)
+ z.Op = point(-4, 1)
+ z.P = point:polar(4, 0)
+ C.OP = circle(z.O, z.P)
+ C.Oz1 = C.OP:orthogonal_from(z.Op)
+ z.z1 = C.Oz1.through
+ L.OP = line(z.O, z.P)
+ C.Opz1 = circle(z.Op, z.z1)
+ L.T, L.Tp = C.Opz1:tangent_from(z.O)
+ z.T = L.T.pb
+ z.Tp = L.Tp.pb
+ L.OOp = line(z.O, z.Op)
+z.M = L.OOp.mid}
+
+  \begin{center}
+    \begin{tikzpicture}[ scale = .5]
+    \tkzGetNodes
+    \tkzDrawCircle[red](O,P)
+    \tkzDrawCircle[purple](O',z1)
+    \tkzDrawCircle[cyan](M,T)
+    \tkzDrawSegments(O',T O,T' O',T')
+    \tkzDrawSegment[purple](O',T)
+    \tkzDrawSegments[red](O,T O,O')
+    \tkzDrawPoints(O,O',T,T',M)
+    \tkzMarkRightAngle[fill=gray!10](O',T,O)
+    \tkzLabelPoint[below](O){$O$}
+    \tkzLabelPoint[above](T){$T$}
+    \tkzLabelPoint[above](M){$M$}
+    \tkzLabelPoint[below](T'){$T'$}
+    \tkzLabelPoint[above left](O'){$O'$}
+    \end{tikzpicture}
+  \end{center}
+\end{minipage}
+
+
+
+% subsection orthogonal_circles_v2 (end)
+%
+\subsection{Orthogonal circle to two circles} % (fold)
+\label{sub:orthogonal_circle_to_two_circles}
+
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.O  = point(-1, 0)
+ z.B  = point(0, 2)
+ z.Op = point(4, -1)
+ z.D  = point(4, 0)
+ C.OB  = circle(z.O, z.B)
+ C.OpD = circle(z.Op, z.D)
+ z.E,z.F = C.OB:radical_axis(C.OpD):get()
+ L.EF = line(z.E,z.F)
+ z.M  = L.EF:point(.25)
+ L.T,L.Tp = C.OB:tangent_from(z.M)
+ L.K,L.Kp = C.OpD:tangent_from(z.M)
+ z.T = L.T.pb
+ z.K = L.K.pb
+ z.Tp = L.Tp.pb
+ z.Kp = L.Kp.pb}
+\begin{tikzpicture}[scale = .75]
+ \tkzGetNodes
+ \tkzDrawCircles(O,B O',D)
+ \tkzDrawLine[cyan](E,F)
+ \tkzDrawLines[add=.5 and .5,
+     orange](O,O' O,T)
+ \tkzDrawLines[add=.5 and .5,orange](O,T')
+ \tkzDrawSegments[cyan](M,T M,T' M,K M,K')
+ \tkzDrawCircle(M,T)
+ \tkzDrawPoints(O,O',T,M,T',K,K')
+ \tkzLabelPoints(O,O',T,T',M,K,K')
+\end{tikzpicture}
+  \end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ z.O  = point(-1, 0)
+ z.B  = point(0, 2)
+ z.Op = point(4, -1)
+ z.D  = point(4, 0)
+ C.OB  = circle(z.O, z.B)
+ C.OpD = circle(z.Op, z.D)
+ z.E,z.F = C.OB:radical_axis(C.OpD):get()
+ L.EF = line(z.E,z.F)
+ z.M  = L.EF:point(.25)
+ L.T,L.Tp = C.OB:tangent_from(z.M)
+ L.K,L.Kp = C.OpD:tangent_from(z.M)
+ z.T = L.T.pb
+ z.K = L.K.pb
+ z.Tp = L.Tp.pb
+ z.Kp = L.Kp.pb}
+\begin{center}
+  \begin{tikzpicture}[scale = .75]
+  \tkzGetNodes
+  \tkzDrawCircles(O,B O',D)
+  \tkzDrawLine[cyan](E,F)
+  \tkzDrawLines[add=.5 and .5,orange](O,O' O,T O,T')
+  \tkzDrawSegments[cyan](M,T M,T' M,K M,K')
+  \tkzDrawCircle(M,T)
+  \tkzDrawPoints(O,O',T,M,T',K,K')
+  \tkzLabelPoints(O,O',T,T',M,K,K')
+  \end{tikzpicture}
+\end{center}
+\end{minipage}
+
+% subsection Orthogonal to two circles (fold)
+
+\subsection{Midcircles} % (fold)
+\label{sub:midcircles}
+
+\directlua{
+init_elements()
+z.A = point(0, 0)
+z.B = point(10, 0)
+L.AB = line(z.A, z.B)
+z.C = L.AB:gold_ratio()
+L.AC = line(z.A, z.C)
+L.CB = line(z.C, z.B)
+z.O_0 = L.AB.mid
+z.O_1 = L.AC.mid
+z.O_2 = L.CB.mid
+C.O0B = circle(z.O_0, z.B)
+C.O1C = circle(z.O_1, z.C)
+C.O2C = circle(z.O_2, z.B)
+z.Q = C.O1C:midarc(z.C, z.A)
+z.P = C.O2C:midarc(z.B, z.C)
+L.O1O2 = line(z.O_1, z.O_2)
+L.O0O1 = line(z.O_0, z.O_1)
+L.O0O2 = line(z.O_0, z.O_2)
+z.M_0 = L.O1O2:harmonic_ext(z.C)
+z.M_1 = L.O0O1:harmonic_int(z.A)
+z.M_2 = L.O0O2:harmonic_int(z.B)
+L.BQ = line(z.B, z.Q)
+L.AP = line(z.A, z.P)
+z.S = intersection(L.BQ, L.AP)
+L.CS = line(z.C, z.S)
+C.M1A = circle(z.M_1, z.A)
+C.M2B = circle(z.M_2, z.B)
+z.P_0 = intersection(L.CS, C.O0B)
+z.P_1 = intersection(C.M2B, C.O1C)
+z.P_2 = intersection(C.M1A, C.O2C)
+T.P012 = triangle(z.P_0, z.P_1, z.P_2)
+z.O_4 = T.P012.circumcenter
+T.CP12 = triangle(z.C, z.P_1, z.P_2)
+z.O_5 = T.CP12.circumcenter
+z.BN = z.B:north()
+L.BBN = line(z.B, z.BN)
+L.M1P2 = line(z.M_1, z.P_2)
+z.J = intersection(L.BBN, L.M1P2)
+L.AP0 = line(z.A, z.P_0)
+L.BP0 = line(z.B, z.P_0)
+C.O4P0 = circle(z.O_4, z.P_0)
+_, z.G = intersection(L.AP0, C.O4P0)
+z.H = intersection(L.BP0, C.O4P0)
+z.Ap = z.M_1:symmetry(z.A)
+z.H_4, z.F, z.E, z.H_0 = L.AB:projection(z.O_4, z.G, z.H, z.P_0)}
+
+\begin{center}
+  \begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawCircle[thin,fill=green!10](O_4,P_0)
+  \tkzDrawCircle[purple,fill=purple!10,opacity=.5](O_5,C)
+  \tkzDrawSemiCircles[teal](O_0,B)
+  \tkzDrawSemiCircles[thin,teal,fill=teal!20,opacity=.5](O_1,C O_2,B)
+  \tkzDrawSemiCircles[color = orange](M_2,B)
+  \tkzDrawSemiCircles[color = orange](M_1,A')
+  \tkzDrawArc[purple,delta=0](M_0,P_0)(C)
+  \tkzDrawSegments[very thin](A,B A,P B,Q)
+  \tkzDrawSegments[color=cyan](O_0,P_0 B,J G,J G,O_0 H,O_2)
+  \tkzDrawSegments[ultra thin,purple](M_1,P_0 M_2,P_0 M_1,M_0 M_0,P_1 M_0,P_0 M_1,J)
+  \tkzDrawPoints(A,B,C,P_0,P_2,P_1,M_0,M_1,M_2,J,P,Q,S)
+  \tkzDrawPoints(O_0,O_1,O_2,O_4,O_5,G,H)
+  \tkzMarkRightAngle[size=.2,fill=gray!20,opacity=.4](O_0,P_0,M_0)
+  \tkzLabelPoints[below](A,B,C,M_0,M_1,M_2,O_1,O_2,O_0)
+  \tkzLabelPoints[above](P_0,O_5,O_4)
+  \tkzLabelPoints[above](P_1,J)
+  \tkzLabelPoints[above](P_2,P,Q,S)
+  \tkzLabelPoints[above right](H,E)
+  \tkzLabelPoints[above left](F,G)
+  \tkzLabelPoints[below right](H_0)
+  \tkzLabelCircle[below=4pt,font=\scriptsize](O_1,C)(80){$(\beta)$}
+  \tkzLabelCircle[below=4pt,font=\scriptsize](O_2,B)(80){$(\gamma)$}
+  \tkzLabelCircle[below=4pt,font=\scriptsize](O_0,B)(110){$(\alpha)$}
+  \tkzLabelCircle[left,font=\scriptsize](O_4,P_2)(60){$(\delta)$}
+  \tkzLabelCircle[above left,font=\scriptsize](O_5,C)(40){$(\epsilon)$}
+  \end{tikzpicture}
+\end{center}
+
+\begin{verbatim}
+\directlua{
+init_elements()
+z.A = point(0, 0)
+z.B = point(10, 0)
+L.AB = line(z.A, z.B)
+z.C = L.AB:gold_ratio()
+L.AC = line(z.A, z.C)
+L.CB = line(z.C, z.B)
+z.O_0 = L.AB.mid
+z.O_1 = L.AC.mid
+z.O_2 = L.CB.mid
+C.O0B = circle(z.O_0, z.B)
+C.O1C = circle(z.O_1, z.C)
+C.O2C = circle(z.O_2, z.B)
+z.Q = C.O1C:midarc(z.C, z.A)
+z.P = C.O2C:midarc(z.B, z.C)
+L.O1O2 = line(z.O_1, z.O_2)
+L.O0O1 = line(z.O_0, z.O_1)
+L.O0O2 = line(z.O_0, z.O_2)
+z.M_0 = L.O1O2:harmonic_ext(z.C)
+z.M_1 = L.O0O1:harmonic_int(z.A)
+z.M_2 = L.O0O2:harmonic_int(z.B)
+L.BQ = line(z.B, z.Q)
+L.AP = line(z.A, z.P)
+z.S = intersection(L.BQ, L.AP)
+L.CS = line(z.C, z.S)
+C.M1A = circle(z.M_1, z.A)
+C.M2B = circle(z.M_2, z.B)
+z.P_0 = intersection(L.CS, C.O0B)
+z.P_1 = intersection(C.M2B, C.O1C)
+z.P_2 = intersection(C.M1A, C.O2C)
+T.P012 = triangle(z.P_0, z.P_1, z.P_2)
+z.O_4 = T.P012.circumcenter
+T.CP12 = triangle(z.C, z.P_1, z.P_2)
+z.O_5 = T.CP12.circumcenter
+z.BN = z.B:north()
+L.BBN = line(z.B, z.BN)
+L.M1P2 = line(z.M_1, z.P_2)
+z.J = intersection(L.BBN, L.M1P2)
+L.AP0 = line(z.A, z.P_0)
+L.BP0 = line(z.B, z.P_0)
+C.O4P0 = circle(z.O_4, z.P_0)
+_, z.G = intersection(L.AP0, C.O4P0)
+z.H = intersection(L.BP0, C.O4P0)
+z.Ap = z.M_1:symmetry(z.A)
+z.H_4, z.F, z.E, z.H_0 = L.AB:projection(z.O_4, z.G, z.H, z.P_0)}
+\end{verbatim}
+
+\begin{verbatim}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawCircle[thin,fill=green!10](O_4,P_0)
+\tkzDrawCircle[purple,fill=purple!10,opacity=.5](O_5,C)
+\tkzDrawSemiCircles[teal](O_0,B)
+\tkzDrawSemiCircles[thin,teal,fill=teal!20,opacity=.5](O_1,C O_2,B)
+\tkzDrawSemiCircles[color = orange](M_2,B)
+\tkzDrawSemiCircles[color = orange](M_1,A')
+\tkzDrawArc[purple,delta=0](M_0,P_0)(C)
+\tkzDrawSegments[very thin](A,B A,P B,Q)
+\tkzDrawSegments[color=cyan](O_0,P_0 B,J G,J G,O_0 H,O_2)
+\tkzDrawSegments[ultra thin,purple](M_1,P_0 M_2,P_0 M_1,M_0 M_0,P_1 M_0,P_0 M_1,J)
+\tkzDrawPoints(A,B,C,P_0,P_2,P_1,M_0,M_1,M_2,J,P,Q,S)
+\tkzDrawPoints(O_0,O_1,O_2,O_4,O_5,G,H)
+\tkzMarkRightAngle[size=.2,fill=gray!20,opacity=.4](O_0,P_0,M_0)
+\tkzLabelPoints[below](A,B,C,M_0,M_1,M_2,O_1,O_2,O_0)
+\tkzLabelPoints[above](P_0,O_5,O_4)
+\tkzLabelPoints[above](P_1,J)
+\tkzLabelPoints[above](P_2,P,Q,S)
+\tkzLabelPoints[above right](H,E)
+\tkzLabelPoints[above left](F,G)
+\tkzLabelPoints[below right](H_0)
+\tkzLabelCircle[below=4pt,font=\scriptsize](O_1,C)(80){$(\beta)$}
+\tkzLabelCircle[below=4pt,font=\scriptsize](O_2,B)(80){$(\gamma)$}
+\tkzLabelCircle[below=4pt,font=\scriptsize](O_0,B)(110){$(\alpha)$}
+\tkzLabelCircle[left,font=\scriptsize](O_4,P_2)(60){$(\delta)$}
+\tkzLabelCircle[above left,font=\scriptsize](O_5,C)(40){$(\epsilon)$}
+\end{tikzpicture}
+\end{verbatim}
+
+
+% subsection midcircles (end)
+
+\subsection{Pencil v1} % (fold)
+\label{sub:pencil_v1}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 2)
+ z.B = point(0, -2)
+ z.C_0 = point(-3, 0)
+ z.C_1 = point(2, 0)
+ z.C_3 = point(2.5, 0)
+ z.C_5 = point(1, 0)
+ L.BA = line(z.B, z.A)
+ z.M_0 = L.BA:point(1.25)
+ z.M_1 = L.BA:point(1.5)
+ C.C0A = circle(z.C_0, z.A)
+ z.x, z.y = C.C0A:orthogonal_from(z.M_0):get()
+ z.xp, z.yp = C.C0A:orthogonal_from(z.M_1):get()
+ z.O = L.BA.mid}
+\end{verbatim}
+
+\directlua{
+ init_elements()
+ z.A = point(0, 2)
+ z.B = point(0, -2)
+ z.C_0 = point(-3, 0)
+ z.C_1 = point(2, 0)
+ z.C_3 = point(2.5, 0)
+ z.C_5 = point(1, 0)
+ L.BA = line(z.B, z.A)
+ z.M_0 = L.BA:point(1.25)
+ z.M_1 = L.BA:point(1.5)
+ C.C0A = circle(z.C_0, z.A)
+ z.x, z.y = C.C0A:orthogonal_from(z.M_0):get()
+ z.xp, z.yp = C.C0A:orthogonal_from(z.M_1):get()
+ z.O = L.BA.mid}
+
+\begin{center}
+  \begin{tikzpicture}[scale=.75]
+  \tkzGetNodes
+  \tkzDrawCircles(C_0,A C_1,A C_3,A C_5,A)
+  \tkzDrawCircles[thick,color=red](M_0,x M_1,x')
+  \tkzDrawCircles[thick,color=blue](O,A)
+  \tkzDrawLines(C_0,C_1 B,M_1)
+  \tkzDrawPoints(A,B,C_0,C_1,M_0,M_1,x,y)
+  \tkzLabelPoints[below right](A,B,C_0,C_1,M_0,M_1,x,y)
+  \tkzLabelLine[pos=1.25,right]( M_0,M_1){$(\Delta)$}
+  \end{tikzpicture}
+\end{center}
+
+\begin{verbatim}
+  \begin{tikzpicture}[scale=.75]
+  \tkzGetNodes
+  \tkzDrawCircles(C_0,A C_1,A C_3,A C_5,A)
+  \tkzDrawCircles[thick,color=red](M_0,x M_1,x')
+  \tkzDrawCircles[thick,color=blue](O,A)
+  \tkzDrawLines(C_0,C_1 B,M_1)
+  \tkzDrawPoints(A,B,C_0,C_1,M_0,M_1,x,y)
+  \tkzLabelPoints[below right](A,B,C_0,C_1,M_0,M_1,x,y)
+  \tkzLabelLine[pos=1.25,right]( M_0,M_1){$(\Delta)$}
+  \end{tikzpicture}
+\end{verbatim}
+
+% subsection pencil_v1 (end)
+
+\subsection{Pencil v2} % (fold)
+\label{sub:pencil_v2}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(1, 0)
+ z.C_0 = point(-2, 0)
+ z.C_1 = point(4, 0)
+ C.C0A = circle(z.C_0, z.A)
+ C.C1B = circle(z.C_1, z.B)
+ L.EF = C.C0A:radical_axis(C.C1B)
+ z.M_0 = L.EF:point(0.4)
+ z.M_1 = L.EF:point(0.1)
+ z.M_2 = L.EF:point(0.6)
+ C.orth0 = C.C0A:orthogonal_from(z.M_0)
+ C.orth1 = C.C0A:orthogonal_from(z.M_1)
+ C.orth2 = C.C0A:orthogonal_from(z.M_2)
+ z.u = C.orth0.through
+ z.v = C.orth1.through
+ z.t = C.orth2.through}
+\end{verbatim}
+
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(1, 0)
+ z.C_0 = point(-2, 0)
+ z.C_1 = point(4, 0)
+ C.C0A = circle(z.C_0, z.A)
+ C.C1B = circle(z.C_1, z.B)
+ L.EF = C.C0A:radical_axis(C.C1B)
+ z.M_0 = L.EF:point(0.4)
+ z.M_1 = L.EF:point(0.1)
+ z.M_2 = L.EF:point(0.6)
+ C.orth0 = C.C0A:orthogonal_from(z.M_0)
+ C.orth1 = C.C0A:orthogonal_from(z.M_1)
+ C.orth2 = C.C0A:orthogonal_from(z.M_2)
+ z.u = C.orth0.through
+ z.v = C.orth1.through
+ z.t = C.orth2.through}
+\begin{center}
+  \begin{tikzpicture}[scale=.75]
+  \tkzGetNodes
+  \tkzDrawCircles(C_0,A C_1,B)
+  \tkzDrawCircles[thick,color=red](M_0,u M_1,v M_2,t)
+  \tkzDrawLines[add= .75 and .75](C_0,C_1 M_0,M_1)
+  \tkzDrawPoints(A,B,C_0,C_1,M_0,M_1,M_2)
+  \tkzLabelPoints[below right](A,B,C_0,C_1,M_0,M_1,M_2)
+  \tkzLabelLine[pos=2,right]( M_0,M_1){$(\Delta)$}
+  \end{tikzpicture}
+\end{center}
+
+\begin{verbatim}
+\begin{tikzpicture}[scale=.75]
+   \tkzGetNodes
+   \tkzDrawCircles(C_0,A C_1,B)
+   \tkzDrawCircles[thick,color=red](M_0,u M_1,v M_2,t)
+   \tkzDrawLines[add= .75 and .75](C_0,C_1 M_0,M_1)
+   \tkzDrawPoints(A,B,C_0,C_1,M_0,M_1,M_2)
+   \tkzLabelPoints[below right](A,B,C_0,C_1,M_0,M_1,M_2)
+   \tkzLabelLine[pos=2,right]( M_0,M_1){$(\Delta)$}
+\end{tikzpicture}
+\end{verbatim}
+
+%subsection pencil_v2 (end)
+
+
+\subsection{Reim v1} % (fold)
+\label{sub:reim_v1}
+
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.E = point(-2, 2)
+ C.AE = circle(z.A, z.E)
+ z.C = C.AE:point(0.65)
+ z.D = C.AE:point(0.5)
+ z.F = C.AE:point(0.30)
+ L.EC = line(z.E, z.C)
+ z.H = L.EC:point(1.5)
+ T.CDH = triangle(z.C, z.D, z.H)
+ z.B = T.CDH.circumcenter
+ C.BD = circle(z.B, z.D)
+ L.FD = line(z.F, z.D)
+ z.G = intersection(L.FD, C.BD)
+ z.O = intersection(L.EC, L.FD)}
+\begin{tikzpicture}
+ \tkzGetNodes
+ \tkzDrawCircles(A,E B,H)
+ \tkzDrawSegments(E,D C,F)
+ \tkzDrawLines(E,O F,O)
+ \tkzDrawLines[red](E,F H,G)
+ \tkzDrawPoints(A,...,H,O)
+ \tkzLabelPoints(A,B,D,F,G,O)
+ \tkzLabelPoints[above](E,C,H)
+ \tkzMarkAngles[size=.5](E,C,F E,D,F)
+ \tkzFillAngles[green!40,opacity=.4,
+      size=.5](E,C,F E,D,F)
+ \tkzMarkAngles[size=.5](F,C,H G,D,E)
+ \tkzFillAngles[red!40,opacity=.4,
+      size=.5](F,C,H G,D,E)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.E = point(-2, 2)
+ C.AE = circle(z.A, z.E)
+ z.C = C.AE:point(0.65)
+ z.D = C.AE:point(0.5)
+ z.F = C.AE:point(0.30)
+ L.EC = line(z.E, z.C)
+ z.H = L.EC:point(1.5)
+ T.CDH = triangle(z.C, z.D, z.H)
+ z.B = T.CDH.circumcenter
+ C.BD = circle(z.B, z.D)
+ L.FD = line(z.F, z.D)
+ z.G = intersection(L.FD, C.BD)
+ z.O = intersection(L.EC, L.FD)}
+\begin{center}
+\begin{tikzpicture}[scale = .5]
+  \tkzGetNodes
+  \tkzDrawCircles(A,E B,H)
+  \tkzDrawSegments(E,D C,F)
+  \tkzDrawLines(E,O F,O)
+  \tkzDrawLines[red](E,F H,G)
+  \tkzDrawPoints(A,...,H,O)
+  \tkzLabelPoints(A,B,D,F,G,O)
+  \tkzLabelPoints[above](E,C,H)
+  \tkzMarkAngles[size=.5](E,C,F E,D,F)
+  \tkzFillAngles[green!40,opacity=.4,size=.5](E,C,F E,D,F)
+  \tkzMarkAngles[size=.5](F,C,H G,D,E)
+  \tkzFillAngles[red!40,opacity=.4,size=.5](F,C,H G,D,E)
+\end{tikzpicture}
+\end{center}
+\end{minipage}
+
+
+
+% subsection reim_v1 (end)
+
+\subsection{Reim v2} % (fold)
+\label{sub:reim_v2}
+
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(10, 0)
+ z.C = point(4, 0)
+ C.AC = circle(z.A, z.C)
+ z.c, z.cp = C.AC:tangent_at(z.C):get()
+ z.M = C.AC:point(0.6)
+ L.MC = line(z.M, z.C)
+ C.BC = circle(z.B, z.C)
+ z.N = intersection(L.MC, C.BC)
+ z.m, z.mp = C.AC:tangent_at(z.M):get()
+ z.n, z.np = C.BC:tangent_at(z.N):get()}
+  \end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(10, 0)
+ z.C = point(4, 0)
+ C.AC = circle(z.A, z.C)
+ z.c, z.cp = C.AC:tangent_at(z.C):get()
+ z.M = C.AC:point(0.6)
+ L.MC = line(z.M, z.C)
+ C.BC = circle(z.B, z.C)
+ z.N = intersection(L.MC, C.BC)
+ z.m, z.mp = C.AC:tangent_at(z.M):get()
+ z.n, z.np = C.BC:tangent_at(z.N):get()}
+
+\begin{center}
+  \begin{tikzpicture}[scale = .25]
+  \tkzGetNodes
+  \tkzDrawCircles(A,C B,C)
+  \tkzDrawLines[new,add=1 and 1](M,m N,n C,c)
+  \tkzDrawSegment(M,N)
+  \tkzDrawPoints(A,B,C,M,N)
+  \tkzLabelPoints[below right](A,B,C,M,N)
+  \tkzFillAngles[blue!30,opacity=.3](m',M,C N,C,c' M,C,c n',N,C)
+  \tkzLabelCircle[below=4pt,font=\scriptsize](A,C)(90){$(\alpha)$}
+  \tkzLabelCircle[left=4pt,font=\scriptsize](B,C)(-90){$(\beta)$}
+  \end{tikzpicture}
+\end{center}
+\end{minipage}
+
+\begin{verbatim}
+  \begin{tikzpicture}[scale = .25]
+     \tkzGetNodes
+     \tkzDrawCircles(A,C B,C)
+     \tkzDrawLines[new,add=1 and 1](M,m N,n C,c)
+     \tkzDrawSegment(M,N)
+     \tkzDrawPoints(A,B,C,M,N)
+     \tkzLabelPoints[below right](A,B,C,M,N)
+     \tkzFillAngles[blue!30,opacity=.3](m',M,C N,C,c' M,C,c n',N,C)
+     \tkzLabelCircle[below=4pt,font=\scriptsize](A,C)(90){$(\alpha)$}
+     \tkzLabelCircle[left=4pt,font=\scriptsize](B,C)(-90){$(\beta)$}
+  \end{tikzpicture}
+\end{verbatim}
+
+% subsection reim_v2 (end)
+
+\subsection{Reim v3} % (fold)
+\label{sub:reim_v3}
+
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(8, 0)
+  z.C = point(2, 6)
+  L.AB = line(z.A, z.B)
+  L.AC = line(z.A, z.C)
+  L.BC = line(z.B, z.C)
+  z.I = L.BC:point(0.75)
+  z.J = L.AC:point(0.4)
+  z.K = L.AB:point(0.5)
+  T.AKJ = triangle(z.A, z.K, z.J)
+  T.BIK = triangle(z.B, z.I, z.K)
+  T.CIJ = triangle(z.C, z.I, z.J)
+  z.x = T.AKJ.circumcenter
+  z.y = T.BIK.circumcenter
+  z.z = T.CIJ.circumcenter
+  C.xK = circle(z.x, z.K)
+  C.yK = circle(z.y, z.K)
+  z.O, _ = intersection(C.xK, C.yK)
+  C.zO = circle(z.z, z.O)
+  L.KO = line(z.K, z.O)
+  z.D = intersection(L.KO, C.zO)}
+\begin{tikzpicture}
+   \tkzGetNodes
+   \tkzDrawSegments(K,D D,C)
+   \tkzDrawPolygon[teal](A,B,C)
+   \tkzDrawCircles[orange](x,A y,B z,C)
+   \tkzDrawPoints[fill=white](A,B,C,I,J,K,D)
+   \tkzLabelPoints[below](A,B,J,K,O)
+   \tkzLabelPoints[above](C,D,I)
+   \tkzDrawPoints[fill=black](O)
+   \tkzLabelCircle[below=4pt,
+      font=\scriptsize](x,A)(20){$(\alpha)$}
+   \tkzLabelCircle[left=4pt,
+      font=\scriptsize](y,B)(60){$(\beta)$}
+   \tkzLabelCircle[below=4pt,
+      font=\scriptsize](z,C)(60){$(\gamma)$}
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(8, 0)
+  z.C = point(2, 6)
+  L.AB = line(z.A, z.B)
+  L.AC = line(z.A, z.C)
+  L.BC = line(z.B, z.C)
+  z.I = L.BC:point(0.75)
+  z.J = L.AC:point(0.4)
+  z.K = L.AB:point(0.5)
+  T.AKJ = triangle(z.A, z.K, z.J)
+  T.BIK = triangle(z.B, z.I, z.K)
+  T.CIJ = triangle(z.C, z.I, z.J)
+  z.x = T.AKJ.circumcenter
+  z.y = T.BIK.circumcenter
+  z.z = T.CIJ.circumcenter
+  C.xK = circle(z.x, z.K)
+  C.yK = circle(z.y, z.K)
+  z.O, _ = intersection(C.xK, C.yK)
+  C.zO = circle(z.z, z.O)
+  L.KO = line(z.K, z.O)
+  z.D = intersection(L.KO, C.zO)}
+\begin{center}
+  \begin{tikzpicture}[scale = .75]
+  \tkzGetNodes
+  \tkzDrawSegments(K,D D,C)
+  \tkzDrawPolygon[teal](A,B,C)
+  \tkzDrawCircles[orange](x,A y,B z,C)
+  \tkzDrawPoints[fill=white](A,B,C,I,J,K,D)
+  \tkzLabelPoints[below](A,B,J,K,O)
+  \tkzLabelPoints[above](C,D,I)
+  \tkzDrawPoints[fill=black](O)
+  \tkzLabelCircle[below=4pt,font=\scriptsize](x,A)(20){$(\alpha)$}
+  \tkzLabelCircle[left=4pt,font=\scriptsize](y,B)(60){$(\beta)$}
+  \tkzLabelCircle[below=4pt,font=\scriptsize](z,C)(60){$(\gamma)$}
+  \end{tikzpicture}
+\end{center}
+\end{minipage}
+
+% subsection reim_v3 (end)
+
+\subsection{Circle and path} % (fold)
+\label{sub:circle_and_path}
+
+\begin{tkzexample}[vbox]
+\directlua{
+  z.O  = point(0, 0)
+  z.A  = point(1, 1)
+  C.OA = circle(z.O, z.A)
+  z.B = C.OA:point(0.15)
+  z.C = C.OA:point(0.45)
+  z.D = C.OA:point(0.75)
+  C.RBC = C.OA:orthogonal_through(z.B,z.C)
+  z.R = C.RBC.center
+  C.SDA = C.OA:orthogonal_through(z.D,z.A)
+  z.S = C.SDA.center
+  C.TAB = C.OA:orthogonal_through(z.B,z.A)
+  z.T = C.TAB.center
+  C.UCD = C.OA:orthogonal_through(z.C,z.D)
+  z.U = C.UCD.center
+  PA.AB = C.OA:path(z.A, z.B, 20)
+  PA.CD = C.OA:path(z.C, z.D, 20)
+  PA.CB = C.RBC:path(z.C, z.B, 20)
+  PA.AD = C.SDA:path(z.A, z.D, 20)
+  PA.zone = PA.AB - PA.CB + PA.CD - PA.AD
+}
+\begin{center}
+  \begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawCoordinates[smooth,red,
+    ultra thick,fill = purple!20](PA.zone)
+  \tkzDrawCircles(O,A R,B S,D T,A U,D)
+   \tkzDrawArc(R,C)(B)
+   \tkzDrawArc(S,A)(D)
+   \tkzDrawPoints(A,B,C,D,O)
+    \tkzLabelPoints(A,B,C,D,O)
+    \tkzDrawLines(O,B R,B)
+  \end{tikzpicture}
+\end{center}
+
+\end{tkzexample}
+
+
+% subsection circle_and_path (end)
+
+\subsection{Tangent and circle} % (fold)
+\label{sub:tangent_and_circle}
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+  init_elements()
+  z.A = point(1, 0)
+  z.B = point(2, 2)
+  z.E = point(5, -4)
+  L.AE = line(z.A, z.E)
+  C.AB = circle(z.A, z.B)
+  z.S = C.AB.south
+  z.M = L.AE.mid
+  L.Ti, L.Tj = C.AB:tangent_from(z.E)
+  z.i = L.Ti.pb
+  z.j = L.Tj.pb
+  z.k, z.l = C.AB:tangent_at(z.B):get()}
+\begin{tikzpicture}[scale = .75]
+   \tkzGetNodes
+   \tkzDrawCircles(A,B M,A)
+   \tkzDrawPoints(A,B,E,i,j,M,S)
+   \tkzDrawLines(E,i E,j k,l)
+   \tkzLabelPoints[right,
+       font=\small](A,B,E,S,M)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+  init_elements()
+  z.A = point(1, 0)
+  z.B = point(2, 2)
+  z.E = point(5, -4)
+  L.AE = line(z.A, z.E)
+  C.AB = circle(z.A, z.B)
+  z.S = C.AB.south
+  z.M = L.AE.mid
+  L.Ti, L.Tj = C.AB:tangent_from(z.E)
+  z.i = L.Ti.pb
+  z.j = L.Tj.pb
+  z.k, z.l = C.AB:tangent_at(z.B):get()}
+
+\begin{center}
+  \begin{tikzpicture}[scale = .75]
+  \tkzGetNodes
+  \tkzDrawCircles(A,B M,A)
+  \tkzDrawPoints(A,B,E,i,j,M,S)
+  \tkzDrawLines(E,i E,j k,l)
+  \tkzLabelPoints[right,font=\small](A,B,E,S,M)
+  \end{tikzpicture}
+\end{center}
+
+\end{minipage}
+% subsection tangent_and_circle (end)
+
+\subsection{Tangent and chord} % (fold)
+\label{sub:tangent_and_chord}
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(6, 0)
+  z.C = point(1, 5)
+  z.Bp = point(2, 0)
+  T.ABC = triangle(z.A, z.B, z.C)
+  L.AB = line(z.A, z.B)
+  z.O = T.ABC.circumcenter
+  C.OA = circle(z.O, z.A)
+  z.D = C.OA:point(4.5)
+  L.AO = line(z.A, z.O)
+  z.b1, z.b2 = C.OA:tangent_at(z.B):get()
+  z.H = L.AB:projection(z.O)}
+\begin{tikzpicture}[scale   = 0.75]
+ \tkzGetNodes
+ \tkzDrawCircle(O,A)
+ \tkzDrawPolygon(A,B,C)
+ \tkzDrawSegments[new](A,O B,O O,H)
+ \tkzDrawSegments[new](A,D D,B)
+ \tkzDrawLine(b1,b2)
+ \tkzDrawPoints(A,B,C,D,H,O)
+ \tkzFillAngles[green!20,opacity=.3](H,O,B)
+ \tkzFillAngles[green!20,opacity=.3](A,C,B)
+ \tkzFillAngles[green!20,opacity=.3](A,B,b1)
+ \tkzFillAngles[teal!20,opacity=.3](A,D,B)
+ \tkzFillAngles[teal!20,opacity=.3](b2,B,A)
+ \tkzLabelPoints(A,B,C,D,H,O)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(6, 0)
+  z.C = point(1, 5)
+  z.Bp = point(2, 0)
+  T.ABC = triangle(z.A, z.B, z.C)
+  L.AB = line(z.A, z.B)
+  z.O = T.ABC.circumcenter
+  C.OA = circle(z.O, z.A)
+  z.D = C.OA:point(4.5)
+  L.AO = line(z.A, z.O)
+  z.b1, z.b2 = C.OA:tangent_at(z.B):get()
+  z.H = L.AB:projection(z.O)}
+\begin{center}
+  \begin{tikzpicture}[scale   = 0.75]
+  \tkzGetNodes
+  \tkzDrawCircle(O,A)
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawSegments[new](A,O B,O O,H A,D D,B)
+  \tkzDrawSegment(b1,b2)
+  \tkzDrawPoints(A,B,C,D,H,O)
+  \tkzFillAngles[green!20,opacity=.3](H,O,B A,C,B  A,B,b1)
+  \tkzFillAngles[teal!20,opacity=.3](A,D,B b2,B,A)
+  \tkzLabelPoints(A,B,C,D,H,O)
+  \end{tikzpicture}
+\end{center}
+
+\end{minipage}
+% subsection tangent_and_chord (end)
+
+
+\subsection{Three chords} % (fold)
+\label{sub:three_chords}
+
+\directlua{
+  init_elements()
+  z.O = point(0, 0)
+  z.B = point(0, 2)
+  z.P = point(1, -0.5)
+  C.OB = circle(z.O, z.B)
+  C.PB = circle(z.P, z.B)
+  _, z.A = intersection(C.OB, C.PB)
+  z.D = C.PB:point(0.85)
+  z.C = C.PB:point(0.5)
+  z.E = C.OB:point(0.6)
+  L.AB = line(z.A, z.B)
+  L.CD = line(z.C, z.D)
+  z.G = intersection(L.AB, L.CD)
+  L.GE = line(z.G, z.E)
+  z.F, _ = intersection(L.GE, C.OB)
+  T.CDE = triangle(z.C, z.D, z.E)
+  T.BFD = triangle(z.B, z.F, z.D)
+  z.w = T.CDE.circumcenter
+  z.x = T.BFD.circumcenter
+  L.GB = line(z.G, z.B)
+  L.GE = line(z.G, z.E)
+  L.GD = line(z.G, z.D)
+  C.xB = circle(z.x, z.B)
+  C.xF = circle(z.x, z.F)
+  C.xD = circle(z.x, z.D)
+  z.Ap = intersection(L.GB, C.xB)
+  z.Ep, _ = intersection(L.GE, C.xF)
+  z.Cp, _ = intersection(L.GD, C.xD)}
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+  init_elements()
+  z.O = point(0, 0)
+  z.B = point(0, 2)
+  z.P = point(1, -0.5)
+  C.OB = circle(z.O, z.B)
+  C.PB = circle(z.P, z.B)
+  _, z.A = intersection(C.OB, C.PB)
+  z.D = C.PB:point(0.85)
+  z.C = C.PB:point(0.5)
+  z.E = C.OB:point(0.6)
+  L.AB = line(z.A, z.B)
+  L.CD = line(z.C, z.D)
+  z.G = intersection(L.AB, L.CD)
+  L.GE = line(z.G, z.E)
+  z.F, _ = intersection(L.GE, C.OB)
+  T.CDE = triangle(z.C, z.D, z.E)
+  T.BFD = triangle(z.B, z.F, z.D)
+  z.w = T.CDE.circumcenter
+  z.x = T.BFD.circumcenter
+  L.GB = line(z.G, z.B)
+  L.GE = line(z.G, z.E)
+  L.GD = line(z.G, z.D)
+  C.xB = circle(z.x, z.B)
+  C.xF = circle(z.x, z.F)
+  C.xD = circle(z.x, z.D)
+  z.Ap = intersection(L.GB, C.xB)
+  z.Ep, _ = intersection(L.GE, C.xF)
+  z.Cp, _ = intersection(L.GD, C.xD)}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\begin{center}
+  \begin{tikzpicture}[scale=.75]
+  \tkzGetNodes
+  \tkzDrawCircles(O,B)
+  \tkzDrawCircles[cyan](P,B)
+  \tkzDrawCircles[red](w,E)
+  \tkzDrawCircles[new](x,F)
+  \tkzDrawSegments(A,G E,G C,G)
+  \tkzDrawPolygons[new](A,E,C A',E',C')
+  \tkzDrawPoints(A,...,G,A',E',C',O,P)
+  \begin{scope}[font=\scriptsize]
+     \tkzLabelPoints(A,...,F)
+     \tkzLabelPoints[above left](G,A',E',C')
+     \tkzLabelCircle[left](O,B)(30){$(\beta)$}
+     \tkzLabelCircle[below](P,A)(40){$(\gamma)$}
+     \tkzLabelCircle[right](w,C)(90){$(\alpha)$}
+     \tkzLabelCircle[left](x,B)(-230){$((\delta))$}
+  \end{scope}
+  \end{tikzpicture}
+\end{center}
+\end{minipage}
+
+\begin{verbatim}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawCircles(O,B)
+  \tkzDrawCircles[cyan](P,B)
+  \tkzDrawCircles[red](w,E)
+  \tkzDrawCircles[new](x,F)
+  \tkzDrawSegments(A,G E,G C,G)
+  \tkzDrawPolygons[new](A,E,C A',E',C')
+  \tkzDrawPoints(A,...,G,A',E',C',O,P)
+  \begin{scope}[font=\scriptsize]
+  \tkzLabelPoints(A,...,F)
+  \tkzLabelPoints[above left](G,A',E',C')
+  \tkzLabelCircle[left](O,B)(30){$(\beta)$}
+  \tkzLabelCircle[below](P,A)(40){$(\gamma)$}
+  \tkzLabelCircle[right](w,C)(90){$(\alpha)$}
+  \tkzLabelCircle[left](x,B)(-230){$((\delta))$}
+  \end{scope}
+\end{tikzpicture}
+\end{verbatim}
+
+% subsection three_chords (end)
+
+\subsection{Three tangents} % (fold)
+\label{sub:three_tangents}
+
+\begin{minipage}[t]{.5\textwidth}\vspace{0pt}%
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(-1, 0)
+ z.C = point(4, -1.5)
+ z.E = point(1, -1)
+ z.F = point(1.5, 2.5)
+ T.AEF = triangle(z.A, z.E, z.F)
+ T.CEF = triangle(z.C, z.E, z.F)
+ z.w = T.AEF.circumcenter
+ z.x = T.CEF.circumcenter
+ C.wE = circle(z.w, z.E)
+ C.xE = circle(z.x, z.E)
+ L.Aw = line(z.A, z.w)
+ L.Cx = line(z.C, z.x)
+ z.G = intersection(L.Aw, L.Cx)
+ L.TA = C.wE:tangent_at(z.A)
+ L.TC = C.xE:tangent_at(z.C)
+ z.I = intersection(L.TA, L.TC)}
+\begin{tikzpicture}
+   \tkzGetNodes
+   \tkzDrawCircles(w,E)
+   \tkzDrawCircles[cyan](x,E)
+   \tkzDrawCircles[red](G,A)
+   \tkzDrawLines(A,I C,I F,I)
+   \tkzDrawPoints(A,C,E,F)
+   \tkzLabelPoints[right](A)
+   \tkzLabelPoints[above right](E,F)
+   \tkzLabelPoints[below](C)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}[t]{.5\textwidth}\vspace{0pt}%
+\directlua{
+ init_elements()
+ z.A = point(-1, 0)
+ z.C = point(4, -1.5)
+ z.E = point(1, -1)
+ z.F = point(1.5, 2.5)
+ T.AEF = triangle(z.A, z.E, z.F)
+ T.CEF = triangle(z.C, z.E, z.F)
+ z.w = T.AEF.circumcenter
+ z.x = T.CEF.circumcenter
+ C.wE = circle(z.w, z.E)
+ C.xE = circle(z.x, z.E)
+ L.Aw = line(z.A, z.w)
+ L.Cx = line(z.C, z.x)
+ z.G = intersection(L.Aw, L.Cx)
+ L.TA = C.wE:tangent_at(z.A)
+ L.TC = C.xE:tangent_at(z.C)
+ z.I = intersection(L.TA, L.TC)}
+
+\begin{center}
+  \begin{tikzpicture}[scale=.75]
+  \tkzGetNodes
+  \tkzDrawCircles(w,E)
+  \tkzDrawCircles[cyan](x,E)
+  \tkzDrawCircles[red](G,A)
+  \tkzDrawLines(A,I C,I F,I)
+  \tkzDrawPoints(A,C,E,F)
+  \tkzLabelPoints[right](A)
+  \tkzLabelPoints[above right](E,F)
+  \tkzLabelPoints[below](C)
+  \end{tikzpicture}
+\end{center}
+\end{minipage}
+% subsection three_tangents (end)
+
+\subsection{Midarc} % (fold)
+\label{sub:midarc}
+\begin{minipage}[t]{.5\textwidth}\vspace{0pt}%
+\begin{verbatim}
+\directlua{
+init_elements()
+z.A = point(-1, 0)
+z.B = point(2, 4)
+C.AB = circle(z.A, z.B)
+z.C = z.A:rotation(math.pi / 3, z.B)
+z.D = C.AB:midarc(z.B, z.C)}
+\begin{tikzpicture}
+   \tkzGetNodes
+   \tkzDrawPoints(A,B,C)
+   \tkzDrawCircles(A,B)
+   \tkzDrawPoints(A,...,D)
+   \tkzLabelPoints(A,...,D)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}[t]{.5\textwidth}\vspace{0pt}%
+\directlua{
+init_elements()
+z.A  = point(-1, 0)
+z.B  = point(2, 4)
+C.AB = circle(z.A, z.B)
+z.C =  z.A:rotation (math.pi/3, z.B)
+z.D = C.AB:midarc (z.B, z.C)
+}
+
+\begin{center}
+  \begin{tikzpicture}[scale = .5]
+  \tkzGetNodes
+  \tkzDrawPoints(A,B,C)
+  \tkzDrawCircles(A,B)
+  \tkzDrawPoints(A,...,D)
+  \tkzLabelPoints(A,...,D)
+  \end{tikzpicture}
+\end{center}
+\end{minipage}
+% subsection midarc (end)
+
+\subsection{Lemoine axis without macro} % (fold)
+\label{sub:lemoine_line_without_macro}
+
+\begin{minipage}[t]{.5\textwidth}\vspace{0pt}%
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(1, 0)
+ z.B = point(5, 2)
+ z.C = point(1.2, 2)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.O = T.ABC.circumcenter
+ L.AB = line(z.A, z.B)
+ L.AC = line(z.A, z.C)
+ L.BC = line(z.B, z.C)
+ C.OA = circle(z.O, z.A)
+ z.Ar, z.Al = C.OA:tangent_at(z.A):get()
+ z.Br, z.Bl = C.OA:tangent_at(z.B):get()
+ z.Cr, z.Cl = C.OA:tangent_at(z.C):get()
+ L.tA = line(z.Ar, z.Al)
+ L.tB = line(z.Br, z.Bl)
+ L.tC = line(z.Cr, z.Cl)
+ z.P = intersection(L.tA, L.BC)
+ z.Q = intersection(L.tB, L.AC)
+ z.R = intersection(L.tC, L.AB)}
+\begin{tikzpicture}[scale= 1.6]
+   \tkzGetNodes
+   \tkzDrawPolygon[teal](A,B,C)
+   \tkzDrawCircle(O,A)
+   \tkzDrawPoints(A,B,C,P,Q,R)
+   \tkzLabelPoints(A,B,C,P,Q,R)
+   \tkzDrawLine[blue](Q,R)
+   \tkzDrawLines[red](Ar,Al Br,Q Cr,Cl)
+   \tkzDrawSegments(A,R C,P C,Q)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}[t]{.5\textwidth}\vspace{0pt}%
+\directlua{
+ init_elements()
+ z.A = point(1, 0)
+ z.B = point(5, 2)
+ z.C = point(1.2, 2)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.O = T.ABC.circumcenter
+ L.AB = line(z.A, z.B)
+ L.AC = line(z.A, z.C)
+ L.BC = line(z.B, z.C)
+ C.OA = circle(z.O, z.A)
+ z.Ar, z.Al = C.OA:tangent_at(z.A):get()
+ z.Br, z.Bl = C.OA:tangent_at(z.B):get()
+ z.Cr, z.Cl = C.OA:tangent_at(z.C):get()
+ L.tA = line(z.Ar, z.Al)
+ L.tB = line(z.Br, z.Bl)
+ L.tC = line(z.Cr, z.Cl)
+ z.P = intersection(L.tA, L.BC)
+ z.Q = intersection(L.tB, L.AC)
+ z.R = intersection(L.tC, L.AB)}
+\begin{center}
+  \begin{tikzpicture}[scale = 0.75]
+  \tkzGetNodes
+  \tkzDrawPolygon[teal](A,B,C)
+  \tkzDrawCircle(O,A)
+  \tkzDrawPoints(A,B,C,P,Q,R)
+  \tkzLabelPoints(A,B,C,P,Q,R)
+  \tkzDrawLine[blue](Q,R)
+  \tkzDrawLines[red](Ar,Al Br,Q Cr,Cl)
+  \tkzDrawSegments(A,R C,P C,Q)
+  \end{tikzpicture}
+\end{center}
+\end{minipage}
+% subsection lemoine_line_without_macro (end)
+
+\subsection{First Lemoine circle} % (fold)
+\label{sub:first_lemoine_circle}
+
+Draw lines through the symmedian point $L$ and parallel to the sides of the triangle. The points where the parallel lines intersect the sides of the triangle then lie on a circle known as the first Lemoine circle.  It has center at the Brocard midpoint, i.e., the midpoint of $[OL]$, where $O$ is the circumcenter and $K$ is the symmedian point
+
+[\href{https://mathworld.wolfram.com/FirstLemoineCircle.html}{Weisstein, Eric W. "First Lemoine Circle." From MathWorld--A Wolfram Web Resource.}]
+
+\vspace{1em}
+\directlua{
+ init_elements()
+ z.A = point(1, 1)
+ z.B = point(5, 1)
+ z.C = point(2.2, 4)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.O = T.ABC.circumcenter
+ C.first_lemoine = T.ABC:first_lemoine_circle()
+ z.o, z.w = C.first_lemoine:get()
+ z.Ar, z.Al = C.first_lemoine:tangent_at(z.A):get()
+ z.Br, z.Bl = C.first_lemoine:tangent_at(z.B):get()
+ z.Cr, z.Cl = C.first_lemoine:tangent_at(z.C):get()
+ z.y1, z.y2 = intersection(T.ABC.ab, C.first_lemoine)
+ z.y5, z.y6 = intersection(T.ABC.bc, C.first_lemoine)
+ z.y3, z.y4 = intersection(T.ABC.ca, C.first_lemoine)
+ z.L = T.ABC:lemoine_point()}
+\begin{center}
+\begin{tikzpicture}[scale = 1.25]
+   \tkzGetNodes
+   \tkzDrawPolygons(A,B,C)
+   \tkzDrawPoints(A,B,C,o,O,L,y1,y2,y3,y4,y5,y6)
+   \tkzLabelPoints(A,B,C,o,O,L,y1,y2,y3,y4,y5,y6)
+   \tkzDrawCircles(o,w)
+   \tkzDrawLines(y1,y6 y5,y4 y2,y3 O,L)
+\end{tikzpicture}
+\end{center}
+
+\begin{tkzexample}[code only]
+\directlua{
+ init_elements()
+ z.A = point(1, 1)
+ z.B = point(5, 1)
+ z.C = point(2.2, 4)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.O = T.ABC.circumcenter
+ C.first_lemoine = T.ABC:first_lemoine_circle()
+ z.o, z.w = C.first_lemoine:get()
+ z.Ar, z.Al = C.first_lemoine:tangent_at(z.A):get()
+ z.Br, z.Bl = C.first_lemoine:tangent_at(z.B):get()
+ z.Cr, z.Cl = C.first_lemoine:tangent_at(z.C):get()
+ z.y1, z.y2 = intersection(T.ABC.ab, C.first_lemoine)
+ z.y5, z.y6 = intersection(T.ABC.bc, C.first_lemoine)
+ z.y3, z.y4 = intersection(T.ABC.ca, C.first_lemoine)
+ z.L = T.ABC:lemoine_point()}
+  \begin{tikzpicture}
+     \tkzGetNodes
+     \tkzDrawPolygons(A,B,C)
+     \tkzDrawPoints(A,B,C,o,O,L,y1,y2,y3,y4,y5,y6)
+     \tkzLabelPoints(A,B,C,o,O,L,y1,y2,y3,y4,y5,y6)
+     \tkzDrawCircles(o,w)
+     \tkzDrawLines(y1,y6 y5,y4 y2,y3 O,L)
+  \end{tikzpicture}
+\end{tkzexample}
+
+% subsection first_lemoine_circle (end)
+
+\subsection{First and second Lemoine circles} % (fold)
+\label{sub:first_and_second_lemoine_circles}
+
+Draw antiparallels through the symmedian point $L$. The points where these lines intersect the sides then lie on a circle, known as the cosine circle (or sometimes the second Lemoine circle). See  [\ref{sub:antiparallel_through_lemoine_point}]
+
+[\href{https://mathworld.wolfram.com/CosineCircle.html}{Weisstein, Eric W. "Cosine Circle." From MathWorld--A Wolfram Web Resource.}]
+
+
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.a = point(0, 0)
+ z.b = point(5, 0)
+ z.c = point(2, 3)
+ T.abc = triangle(z.a, z.b, z.c)
+ z.O = T.abc.circumcenter
+ z.o, z.p = T.abc:first_lemoine_circle():get()
+ L.ab = line(z.a, z.b)
+ L.ca = line(z.c, z.a)
+ L.bc = line(z.b, z.c)
+ z.L, z.x = T.abc:second_lemoine_circle():get()
+ C.first_lemoine = circle(z.o, z.p)
+ z.y1, z.y2 = intersection(L.ab, C.first_lemoine)
+ z.y5, z.y6 = intersection(L.bc, C.first_lemoine)
+ z.y3, z.y4 = intersection(L.ca, C.first_lemoine)
+ C.second_lemoine = circle(z.L, z.x)
+ z.x1, z.x2 = intersection(L.ab, C.second_lemoine)
+ z.x3, z.x4 = intersection(L.bc, C.second_lemoine)
+ z.x5, z.x6 = intersection(L.ca, C.second_lemoine)
+ L.y1y6 = line(z.y1, z.y6)
+ L.y4y5 = line(z.y4, z.y5)
+ L.y2y3 = line(z.y2, z.y3)}
+\begin{tikzpicture}[scale = 1.5]
+   \tkzGetNodes
+   \tkzDrawPolygons(a,b,c y1,y2,y3,y4,y5,y6)
+   \tkzDrawPoints(x1,x2,x3,x4,x5,x6,L)
+   \tkzDrawPoints(a,b,c,o,O,y1,y2,y3,y4,y5,y6)
+   \tkzLabelPoints[below right](a,b,c,o,O,y1,y2,y3,y4,y5,y6)
+   \tkzLabelPoints[below left](x1,x2,x3,x4,x5,x6)
+   \tkzLabelPoints[above](L)
+   \tkzDrawCircles(L,x o,p O,a)
+   \tkzDrawSegments(L,O x1,x4 x2,x5 x3,x6)
+\end{tikzpicture}
+\end{verbatim}
+
+\directlua{
+ init_elements()
+ z.a = point(0, 0)
+ z.b = point(5, 0)
+ z.c = point(2, 3)
+ T.abc = triangle(z.a, z.b, z.c)
+ z.O = T.abc.circumcenter
+ z.o, z.p = T.abc:first_lemoine_circle():get()
+ L.ab = line(z.a, z.b)
+ L.ca = line(z.c, z.a)
+ L.bc = line(z.b, z.c)
+ z.L, z.x = T.abc:second_lemoine_circle():get()
+ C.first_lemoine = circle(z.o, z.p)
+ z.y1, z.y2 = intersection(L.ab, C.first_lemoine)
+ z.y5, z.y6 = intersection(L.bc, C.first_lemoine)
+ z.y3, z.y4 = intersection(L.ca, C.first_lemoine)
+ C.second_lemoine = circle(z.L, z.x)
+ z.x1, z.x2 = intersection(L.ab, C.second_lemoine)
+ z.x3, z.x4 = intersection(L.bc, C.second_lemoine)
+ z.x5, z.x6 = intersection(L.ca, C.second_lemoine)
+ L.y1y6 = line(z.y1, z.y6)
+ L.y4y5 = line(z.y4, z.y5)
+ L.y2y3 = line(z.y2, z.y3)}
+\begin{center}
+  \begin{tikzpicture}[scale = 1.5]
+  \tkzGetNodes
+  \tkzDrawPolygons(a,b,c y1,y2,y3,y4,y5,y6)
+  \tkzDrawPoints(x1,x2,x3,x4,x5,x6,L)
+  \tkzDrawPoints(a,b,c,o,O,y1,y2,y3,y4,y5,y6)
+  \tkzLabelPoints[below right](a,b,c,o,O,y1,y2,y3,y4,y5,y6)
+  \tkzLabelPoints[below left](x1,x2,x3,x4,x5,x6)
+  \tkzLabelPoints[above](L)
+  \tkzDrawCircles(L,x o,p O,a)
+  \tkzDrawSegments(L,O x1,x4 x2,x5 x3,x6)
+  \end{tikzpicture}
+\end{center}
+
+
+% subsection first_and_second_lemoine_circles (end)
+
+\subsection{Inversion} % (fold)
+\label{sub:inversion}
+
+\directlua{
+ init_elements()
+ z.A = point(-1, 0)
+ z.B = point(2, 2)
+ z.C = point(2, 4)
+ z.E = point(1, 6)
+ C.AC = circle(z.A, z.C)
+ L.Tt1, L.Tt2 = C.AC:tangent_from(z.E)
+ z.t1 = L.Tt1.pb
+ z.t2 = L.Tt2.pb
+ L.AE = line(z.A, z.E)
+ z.H = L.AE:projection(z.t1)
+ z.Bp, z.Ep, z.Cp = C.AC:inversion(z.B, z.E, z.C)}
+
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(-1, 0)
+ z.B = point(2, 2)
+ z.C = point(2, 4)
+ z.E = point(1, 6)
+ C.AC = circle(z.A, z.C)
+ L.Tt1, L.Tt2 = C.AC:tangent_from(z.E)
+ z.t1 = L.Tt1.pb
+ z.t2 = L.Tt2.pb
+ L.AE = line(z.A, z.E)
+ z.H = L.AE:projection(z.t1)
+ z.Bp, z.Ep,
+ z.Cp = C.AC:inversion(z.B, z.E, z.C)}
+\begin{tikzpicture}[scale = .5]
+  \tkzGetNodes
+  \tkzDrawPoints(A,B,C)
+  \tkzDrawCircles(A,C A,B)
+  \tkzDrawLines(A,B' E,t1 E,t2 t1,t2 A,E)
+  \tkzDrawPoints(A,B,C,E,t1,t2,H,B',E')
+  \tkzLabelPoints(A,B,C,E,t1,t2,B',E')
+  \tkzLabelPoints[above](C')
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+ \begin{center}
+   \begin{tikzpicture}[scale=.6]
+     \tkzGetNodes
+     \tkzDrawPoints(A,B,C)
+     \tkzDrawCircles(A,C A,B)
+     \tkzDrawLines(A,B' E,t1 E,t2 t1,t2 A,E)
+     \tkzDrawPoints(A,B,C,E,t1,t2,H,B',E')
+     \tkzLabelPoints(A,B,C,E,t1,t2,B',E')
+     \tkzLabelPoints[above](C')
+   \end{tikzpicture}
+ \end{center}
+
+\end{minipage}
+% subsection inversion (end)
+
+\subsection{Pappus chain} % (fold)
+\label{sub:pappus_chain}
+
+\directlua{
+init_elements()
+xC, nc = 10, 16
+xB = xC * tkz.invphi
+xD = (xC * xC) / xB
+xJ = (xC + xD) / 2
+r = xD - xJ
+z.A = point(0, 0)
+z.B = point(xB, 0)
+z.C = point(xC, 0)
+L.AC = line(z.A, z.C)
+z.i = L.AC.mid
+L.AB = line(z.A, z.B)
+z.j = L.AB.mid
+z.D = point(xD, 0)
+C.AC = circle(z.A, z.C)
+for i = -nc, nc do
+	z["J" .. i] = point(xJ, 2 * r * i)
+	z["H" .. i] = point(xJ, 2 * r * i - r)
+	z["J" .. i .. "p"], z["H" .. i .. "p"] = C.AC:inversion(z["J" .. i], z["H" .. i])
+	L.AJ = line(z.A, z["J" .. i])
+	C.JH = circle(z["J" .. i], z["H" .. i])
+	z["S" .. i], z["T" .. i] = intersection(L.AJ, C.JH)
+	z["S" .. i .. "p"], z["T" .. i .. "p"] = C.AC:inversion(z["S" .. i], z["T" .. i])
+	L.SpTp = line(z["S" .. i .. "p"], z["T" .. i .. "p"])
+	z["I" .. i] = L.SpTp.mid
+end}
+
+\begin{verbatim}
+\directlua{
+ init_elements()
+ xC, nc = 10, 16
+ xB = xC * tkz.invphi
+ xD = (xC * xC) / xB
+ xJ = (xC + xD) / 2
+ r = xD - xJ
+ z.A = point(0, 0)
+ z.B = point(xB, 0)
+ z.C = point(xC, 0)
+ L.AC = line(z.A, z.C)
+ z.i = L.AC.mid
+ L.AB = line(z.A, z.B)
+ z.j = L.AB.mid
+ z.D = point(xD, 0)
+ C.AC = circle(z.A, z.C)
+ for i = -nc, nc do
+ 	z["J" .. i] = point(xJ, 2 * r * i)
+ 	z["H" .. i] = point(xJ, 2 * r * i - r)
+ 	z["J" .. i .. "p"], z["H" .. i .. "p"] = C.AC:inversion(z["J" .. i], z["H" .. i])
+ 	L.AJ = line(z.A, z["J" .. i])
+ 	C.JH = circle(z["J" .. i], z["H" .. i])
+ 	z["S" .. i], z["T" .. i] = intersection(L.AJ, C.JH)
+ 	z["S" .. i .. "p"], z["T" .. i .. "p"] = C.AC:inversion(z["S" .. i], z["T" .. i])
+ 	L.SpTp = line(z["S" .. i .. "p"], z["T" .. i .. "p"])
+ 	z["I" .. i] = L.SpTp.mid
+ end}
+\end{verbatim}
+
+
+\begin{verbatim}
+\def\nc{\tkzUseLua{nc}}
+\begin{tikzpicture}[ultra thin]
+   \tkzGetNodes
+   \tkzDrawCircle[fill=teal!20](i,C)
+   \tkzDrawCircle[fill=PineGreen!60](j,B)
+   \foreach \i in {-\nc,...,0,...,\nc} {
+   \tkzDrawCircle[fill=teal]({I\i},{S\i'})
+  }
+\end{tikzpicture}
+\end{verbatim}
+
+ \def\nc{\tkzUseLua{nc}}
+
+ \begin{tikzpicture}[ultra thin,scale = 1]
+    \tkzGetNodes
+    \tkzDrawCircle[fill=teal!20](i,C)
+    \tkzDrawCircle[fill=PineGreen!60](j,B)
+    \foreach \i in {-\nc,...,0,...,\nc} {
+    \tkzDrawCircle[fill=teal]({I\i},{S\i'})
+   }
+ \end{tikzpicture}
+
+% subsection pappus_chain (end)
+
+\subsection{Three Circles} % (fold)
+\label{sub:three_circles}
+Construct a circle tangent to two circles tangent to each other and to a straight line.
+
+\begin{verbatim}
+\directlua{
+init_elements()
+function threecircles(c1, r1, c2, r2, c3, h1, h3, h2)
+	local xk = math.sqrt(r1 * r2)
+	local cx = (2 * r1 * math.sqrt(r2)) / (math.sqrt(r1) + math.sqrt(r2))
+	local cy = (r1 * r2) / (math.sqrt(r1) + math.sqrt(r2)) ^ 2
+	z[c2] = point(2 * xk, r2)
+	z[h2] = point(2 * xk, 0)
+	z[c1] = point(0, r1)
+	z[h1] = point(0, 0)
+	L.h1h2 = line(z[h1], z[h2])
+	z[c3] = point(cx, cy)
+	z[h3] = L.h1h2:projection(z[c3])
+end
+threecircles("A", 4, "B", 3, "C", "E", "G", "F")}
+
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawSegment[color = red](E,F)
+  \tkzDrawCircle[orange,fill=orange!20](A,E)
+  \tkzDrawCircle[purple,fill=purple!20](B,F)
+  \tkzDrawCircle[teal,fill=teal!20](C,G)
+\end{tikzpicture}
+\end{verbatim}
+
+
+\directlua{
+init_elements()
+function threecircles(c1, r1, c2, r2, c3, h1, h3, h2)
+	local xk = math.sqrt(r1 * r2)
+	local cx = (2 * r1 * math.sqrt(r2)) / (math.sqrt(r1) + math.sqrt(r2))
+	local cy = (r1 * r2) / (math.sqrt(r1) + math.sqrt(r2)) ^ 2
+	z[c2] = point(2 * xk, r2)
+	z[h2] = point(2 * xk, 0)
+	z[c1] = point(0, r1)
+	z[h1] = point(0, 0)
+	L.h1h2 = line(z[h1], z[h2])
+	z[c3] = point(cx, cy)
+	z[h3] = L.h1h2:projection(z[c3])
+end
+threecircles("A", 4, "B", 3, "C", "E", "G", "F")}
+
+\begin{center}
+  \begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawSegment[color = red](E,F)
+  \tkzDrawCircle[orange,fill=orange!20](A,E)
+  \tkzDrawCircle[purple,fill=purple!20](B,F)
+  \tkzDrawCircle[teal,fill=teal!20](C,G)
+  \end{tikzpicture}
+\end{center}
+
+% subsection three_circles (end)
+
+\subsection{Pentagons in a golden arbelos} % (fold)
+\label{sub:golden_arbelos}
+
+\directlua{
+init_elements()
+z.A = point(0, 0)
+z.B = point(10, 0)
+L.AB = line(z.A, z.B)
+z.C = L.AB:gold_ratio()
+L.AC = line(z.A, z.C)
+L.CB = line(z.C, z.B)
+z.O_0 = L.AB.mid
+z.O_1 = L.AC.mid
+z.O_2 = L.CB.mid
+C.O0B = circle(z.O_0, z.B)
+C.O1C = circle(z.O_1, z.C)
+C.O2B = circle(z.O_2, z.B)
+z.M_0 = C.O1C:external_similitude(C.O2B)
+L.O0C = line(z.O_0, z.C)
+T.golden = L.O0C:golden()
+z.L = T.golden.pc
+L.O0L = line(z.O_0, z.L)
+z.D = intersection(L.O0L, C.O0B)
+L.DB = line(z.D, z.B)
+_, z.Z = intersection(L.DB, C.O2B)
+L.DA = line(z.D, z.A)
+z.I = intersection(L.DA, C.O1C)
+L.O2Z = line(z.O_2, z.Z)
+z.H = intersection(L.O2Z, C.O0B)
+C.BD = circle(z.B, z.D)
+C.DB = circle(z.D, z.B)
+_, z.G = intersection(C.BD, C.O0B)
+z.E = intersection(C.DB, C.O0B)
+C.GB = circle(z.G, z.B)
+_, z.F = intersection(C.GB, C.O0B)
+k = 1 / tkz.phi ^ 2
+kk = tkz.phi
+z.D_1, z.E_1, z.F_1, z.G_1 = z.B:homothety(k, z.D, z.E, z.F, z.G)
+z.D_2, z.E_2, z.F_2, z.G_2 = z.M_0:homothety(kk, z.D_1, z.E_1, z.F_1, z.G_1)}
+
+\begin{verbatim}
+\directlua{
+init_elements()
+z.A = point(0, 0)
+z.B = point(10, 0)
+L.AB = line(z.A, z.B)
+z.C = L.AB:gold_ratio()
+L.AC = line(z.A, z.C)
+L.CB = line(z.C, z.B)
+z.O_0 = L.AB.mid
+z.O_1 = L.AC.mid
+z.O_2 = L.CB.mid
+C.O0B = circle(z.O_0, z.B)
+C.O1C = circle(z.O_1, z.C)
+C.O2B = circle(z.O_2, z.B)
+z.M_0 = C.O1C:external_similitude(C.O2B)
+L.O0C = line(z.O_0, z.C)
+T.golden = L.O0C:golden()
+z.L = T.golden.pc
+L.O0L = line(z.O_0, z.L)
+z.D = intersection(L.O0L, C.O0B)
+L.DB = line(z.D, z.B)
+z.Z = intersection(L.DB, C.O2B)
+L.DA = line(z.D, z.A)
+z.I = intersection(L.DA, C.O1C)
+L.O2Z = line(z.O_2, z.Z)
+z.H = intersection(L.O2Z, C.O0B)
+C.BD = circle(z.B, z.D)
+C.DB = circle(z.D, z.B)
+_, z.G = intersection(C.BD, C.O0B)
+z.E = intersection(C.DB, C.O0B)
+C.GB = circle(z.G, z.B)
+_, z.F = intersection(C.GB, C.O0B)
+k = 1 / tkz.phi ^ 2
+kk = tkz.phi
+z.D_1, z.E_1, z.F_1, z.G_1 = z.B:homothety(k, z.D, z.E, z.F, z.G)
+z.D_2, z.E_2, z.F_2, z.G_2 = z.M_0:homothety(kk, z.D_1, z.E_1, z.F_1, z.G_1)}
+\end{verbatim}
+
+\begin{verbatim}
+\begin{tikzpicture}[scale=.8]
+\tkzGetNodes
+\tkzDrawPolygon[red](O_2,O_0,I,D,H)
+\tkzDrawPolygon[blue](B,D_1,E_1,F_1,G_1)
+\tkzDrawPolygon[green](C,D_2,E_2,F_2,G_2)
+\tkzDrawPolygon[purple](B,D,E,F,G)
+\tkzDrawCircles(O_0,B O_1,C O_2,B)
+\tkzFillPolygon[fill=red!20,opacity=.20](O_2,O_0,I,D,H)
+\tkzFillPolygon[fill=blue!20,opacity=.20](B,D_1,E_1,F_1,G_1)
+\tkzFillPolygon[fill=green!60,opacity=.20](C,D_2,E_2,F_2,G_2)
+\tkzFillPolygon[fill=purple!20,opacity=.20](B,D,E,F,G)
+\tkzDrawCircles(O_0,B O_1,C O_2,B)
+\tkzDrawSegments[new](A,B)
+\tkzDrawPoints(A,B,C,O_0,O_1,O_2,Z,I,H,B,D,E,F)
+\tkzDrawPoints(D_1,E_1,F_1,G_1)
+\tkzDrawPoints(D_2,E_2,F_2,G_2)
+\tkzDrawPoints[red](F_1)
+\tkzLabelPoints(A,B,C,O_0,O_2)
+\tkzLabelPoints[below](O_1,G)
+\tkzLabelPoints[above right](D,H)
+\tkzLabelPoints[above left](E,E_1,E_2)
+\tkzLabelPoints[below left](F,F_1,F_2)
+\tkzLabelPoints(D_1,G_1)
+\tkzLabelPoints(D_2,G_2)
+\end{tikzpicture}
+\end{verbatim}
+
+\begin{center}
+  \begin{tikzpicture}[scale = 1]
+  \tkzGetNodes
+  \tkzDrawPolygon[red](O_2,O_0,I,D,H)
+  \tkzDrawPolygon[blue](B,D_1,E_1,F_1,G_1)
+  \tkzDrawPolygon[green](C,D_2,E_2,F_2,G_2)
+  \tkzDrawPolygon[purple](B,D,E,F,G)
+  \tkzDrawCircles(O_0,B O_1,C O_2,B)
+  \tkzFillPolygon[fill=red!20,opacity=.20](O_2,O_0,I,D,H)
+  \tkzFillPolygon[fill=blue!20,opacity=.20](B,D_1,E_1,F_1,G_1)
+  \tkzFillPolygon[fill=green!60,opacity=.20](C,D_2,E_2,F_2,G_2)
+  \tkzFillPolygon[fill=purple!20,opacity=.20](B,D,E,F,G)
+  \tkzDrawCircles(O_0,B O_1,C O_2,B)
+  \tkzDrawSegments[new](A,B)
+  \tkzDrawPoints(A,B,C,O_0,O_1,O_2,Z,I,H,B,D,E,F)
+  \tkzDrawPoints(D_1,E_1,F_1,G_1)
+  \tkzDrawPoints(D_2,E_2,F_2,G_2)
+  \tkzDrawPoints[red](F_1)
+  \tkzLabelPoints(A,B,C,O_0,O_2)
+  \tkzLabelPoints[below](O_1,G)
+  \tkzLabelPoints[above right](D,H)
+  \tkzLabelPoints[above left](E,E_1,E_2)
+  \tkzLabelPoints[below left](F,F_1,F_2)
+  \tkzLabelPoints(D_1,G_1)
+  \tkzLabelPoints(D_2,G_2)
+  \end{tikzpicture}
+\end{center}
+
+
+
+
+
+% subsection golden_arbelos (end)
+
+\subsection{Polar and Pascal's theorem} % (fold)
+\label{sub:polar_and_pascal_s_theorem}
+
+
+Given a cyclic quadrilateral $ABCD$  if the intersection of $(AC)$ and $(BD)$ is $P$, the intersection of $(AB)$ and $(CD)$ is $Q$ and the intersection of $(AD)$ and $(BC)$ is $R$, prove the polar of
+$P$ with respect of $\mathcal{C}(O,A)$ passes through $Q$ and $R$.
+
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.O = point(0, 0)
+ z.D = point(3, 0)
+ C.OD = circle(z.O, z.D)
+ z.B = C.OD:point(0.25)
+ z.A = C.OD:point(0.45)
+ z.C = C.OD:point(0.10)
+ L.AC = line(z.A, z.C)
+ L.AB = line(z.A, z.B)
+ L.CD = line(z.C, z.D)
+ L.AD = line(z.A, z.D)
+ L.BD = line(z.B, z.D)
+ L.BC = line(z.B, z.C)
+ z.X = intersection(L.AC, L.BD)
+ z.Q = intersection(L.AB, L.CD)
+ z.R = intersection(L.AD, L.BC)
+ L.QR = line(z.Q, z.R)
+ L.Ta = C.OD:tangent_at(z.A)
+ L.Tb = C.OD:tangent_at(z.B)
+ L.Tc = C.OD:tangent_at(z.C)
+ L.Td = C.OD:tangent_at(z.D)
+ z.Ax, z.Ay = L.Ta:get()
+ z.Bx, z.By = L.Tb:get()
+ z.Cx, z.Cy = L.Tc:get()
+ z.Dx, z.Dy = L.Td:get()
+ z.Ibd = intersection(L.Tb, L.Td)
+ z.P = intersection(L.Ta, L.Tc)
+ z.T = intersection(L.Tb, L.Td)
+ z.Ibc = intersection(L.Tb, L.Tc)
+}
+\begin{tikzpicture}[scale = .8]
+  \tkzGetNodes
+  \tkzDrawCircle(O,A)
+  \tkzDrawLines[cyan, thick](P,R)
+  \tkzDrawLines(A,P Bx,By C,P Dx,Dy)
+  \tkzDrawLines[orange](A,Q D,Q B,D A,C B,R A,R)
+  \tkzDrawPoints(A,...,D,X,Q,R,Ibd,Ibc,O,P,T)
+  \tkzLabelPoints[below right](C)
+  \tkzLabelPoints[below left](D)
+  \tkzLabelPoints[below](O,X)
+  \tkzLabelPoints[above left](A,B)
+  \tkzLabelPoints[above right](P,Q,R,T)
+\end{tikzpicture}
+\end{verbatim}
+
+
+\directlua{
+ init_elements()
+ z.O = point(0, 0)
+ z.D = point(3, 0)
+ C.OD = circle(z.O, z.D)
+ z.B = C.OD:point(0.25)
+ z.A = C.OD:point(0.45)
+ z.C = C.OD:point(0.10)
+ L.AC = line(z.A, z.C)
+ L.AB = line(z.A, z.B)
+ L.CD = line(z.C, z.D)
+ L.AD = line(z.A, z.D)
+ L.BD = line(z.B, z.D)
+ L.BC = line(z.B, z.C)
+ z.X = intersection(L.AC, L.BD)
+ z.Q = intersection(L.AB, L.CD)
+ z.R = intersection(L.AD, L.BC)
+ L.QR = line(z.Q, z.R)
+ L.Ta = C.OD:tangent_at(z.A)
+ L.Tb = C.OD:tangent_at(z.B)
+ L.Tc = C.OD:tangent_at(z.C)
+ L.Td = C.OD:tangent_at(z.D)
+ z.Ax, z.Ay = L.Ta:get()
+ z.Bx, z.By = L.Tb:get()
+ z.Cx, z.Cy = L.Tc:get()
+ z.Dx, z.Dy = L.Td:get()
+ z.Ibd = intersection(L.Tb, L.Td)
+ z.P = intersection(L.Ta, L.Tc)
+ z.T = intersection(L.Tb, L.Td)
+ z.Ibc = intersection(L.Tb, L.Tc)
+}
+
+  \begin{center}
+    \begin{tikzpicture}[scale = .8]
+      \tkzGetNodes
+      \tkzDrawCircle(O,A)
+      \tkzDrawLines[cyan, thick](P,R)
+      \tkzDrawLines(A,P Bx,By C,P Dx,Dy)
+      \tkzDrawLines[orange](A,Q D,Q B,D A,C B,R A,R)
+      \tkzDrawPoints(A,...,D,X,Q,R,Ibd,Ibc,O,P,T)
+      \tkzLabelPoints[below right](C)
+      \tkzLabelPoints[below left](D)
+      \tkzLabelPoints[below](O,X)
+      \tkzLabelPoints[above left](A,B)
+      \tkzLabelPoints[above right](P,Q,R,T)
+    \end{tikzpicture}
+  \end{center}
+
+% subsection polar_and_pascal_s_theorem (end)
+
+\subsection{Iran Lemma} % (fold)
+\label{sub:iran_lemma}
+
+Let $ABC$ be a triangle. Let $I$ be the incenter, $M_a$, $M_b$, $M_c$ be the midpoints of $[BC]$, $[CA]$, $[AB]$ and let $T_a$, $T_b$, $T_c$ be the points of tangency of the incircle with $[BC]$, $[CA]$, $[AB]$. Then $(AI)$, $M_aM_b$, $T_aT_c$, the circle $\mathcal{C}(G,A)$  and the circle $\mathcal{C}(M_b,A)$ concur.
+
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(1, 4)
+ z.B = point(0, 0)
+ z.C = point(5, 0)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.I = T.ABC.incenter
+ z.T_a, z.T_b, z.T_c = T.ABC:projection(z.I)
+ z.M_a = T.ABC.bc.mid
+ z.M_b = T.ABC.ca.mid
+ z.M_c = T.ABC.ab.mid
+ L.MaMb = line(z.M_a, z.M_b)
+ L.MaMc = line(z.M_a, z.M_c)
+ L.MbMc = line(z.M_b, z.M_c)
+ L.AI = line(z.A, z.I)
+ L.BI = line(z.B, z.I)
+ L.CI = line(z.C, z.I)
+ z.G = T.ABC.circumcenter
+ C.Hc = circle:diameter(z.I, z.C)
+ z.Hc = C.Hc.center
+ C.Ha = circle:diameter(z.I, z.A)
+ z.Ha = C.Ha.center
+ C.Hb = circle:diameter(z.I, z.B)
+ z.Hb = C.Hb.center
+ z.J = intersection(L.AI, L.MaMb)
+ z.K = intersection(L.BI, L.MaMb)
+ z.L = intersection(L.CI, L.MbMc)
+}
+\begin{tikzpicture}[scale = 1.5]
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawCircles[lightgray](I,T_a Hc,I Ha,I Hb,I M_b,A M_a,C M_c,B)
+  \tkzDrawSegments(A,J B,K C,L J,L J,K M_b,L T_c,K)
+  \tkzDrawLine(M_a,M_c)
+  \tkzDrawPoints(A,B,C,T_a,T_b,T_c,I,M_a,M_b,M_c,J,K,L,Hc)
+  \tkzLabelPoints[below right](B,C,T_a,T_c,I,M_a,J,Hc)
+  \tkzLabelPoints[above right](A,T_b,M_b,K,L,M_c)
+  \end{tikzpicture}
+\end{verbatim}
+
+
+\directlua{
+init_elements()
+z.A = point(1, 4)
+z.B = point(0, 0)
+z.C = point(5, 0)
+T.ABC = triangle(z.A, z.B, z.C)
+z.I = T.ABC.incenter
+z.T_a, z.T_b, z.T_c = T.ABC:projection(z.I)
+z.M_a = T.ABC.bc.mid
+z.M_b = T.ABC.ca.mid
+z.M_c = T.ABC.ab.mid
+L.MaMb = line(z.M_a, z.M_b)
+L.MaMc = line(z.M_a, z.M_c)
+L.MbMc = line(z.M_b, z.M_c)
+L.AI = line(z.A, z.I)
+L.BI = line(z.B, z.I)
+L.CI = line(z.C, z.I)
+z.G = T.ABC.circumcenter
+C.Hc = circle:diameter(z.I, z.C)
+z.Hc = C.Hc.center
+C.Ha = circle:diameter(z.I, z.A)
+z.Ha = C.Ha.center
+C.Hb = circle:diameter(z.I, z.B)
+z.Hb = C.Hb.center
+z.J = intersection(L.AI, L.MaMb)
+z.K = intersection(L.BI, L.MaMb)
+z.L = intersection(L.CI, L.MbMc)
+}
+
+\begin{center}
+  \begin{tikzpicture}[scale = 1.5]
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawCircles[lightgray](I,T_a Hc,I Ha,I Hb,I M_b,A M_a,C M_c,B)
+  \tkzDrawSegments(A,J B,K C,L J,L J,K M_b,L T_c,K)
+  \tkzDrawLine(M_a,M_c)
+  \tkzDrawPoints(A,B,C,T_a,T_b,T_c,I,M_a,M_b,M_c,J,K,L,Hc)
+  \tkzLabelPoints[below right](B,C,T_a,T_c,I,M_a,J,Hc)
+  \tkzLabelPoints[above right](A,T_b,M_b,K,L,M_c)
+  \end{tikzpicture}
+\end{center}
+
+% subsection iran_lemma (end)
+
+\subsection{Adams's circle} % (fold)
+\label{sub:adams_circle}
+
+Given a triangle $ABC$, construct the contact triangle. Now extend lines parallel to the sides of the contact triangle from the Gergonne point. These intersect the triangle $ABC$ in the six points $M$, $N$, $I$, $J$, $K$, $L$. Adams proved in 1843 that these points are concyclic in a circle now known as the Adams' circle.
+[\href{https://mathworld.wolfram.com/AdamsCircle.html}{Weisstein, Eric W. "Adams' Circle." From MathWorld--A Wolfram Web Resource.}
+]
+\begin{tkzexample}[overhang,vbox]
+  \directlua{
+    z.A = point(0.5, 4)
+    z.B = point(0, 0)
+    z.C = point(5, 0)
+    T.ABC = triangle(z.A, z.B, z.C)
+    T.ins = T.ABC:contact()
+    z.D, z.E, z.F = T.ins:get()
+    z.i = T.ABC.incenter
+    z.G_e = T.ABC:gergonne_point()
+    local function find_points(side1, side2, side3)
+      local line = side1:ll_from(z.G_e)
+      local p1 = intersection(line, side2)
+      local p2 = intersection(line, side3)
+      return p1, p2
+    end
+    z.M, z.J = find_points(T.ins.ca, T.ABC.ab, T.ABC.bc)
+    z.N, z.K = find_points(T.ins.bc, T.ABC.ab, T.ABC.ca)
+    z.I, z.L = find_points(T.ins.ab, T.ABC.bc, T.ABC.ca)
+  }
+  \begin{center}
+    \begin{tikzpicture}[scale = 2]
+      \tkzGetNodes
+      \tkzDrawPolygon(A,B,C)
+      \tkzDrawPolygon[orange](D,E,F)
+      \tkzDrawCircles(i,D)
+      \tkzDrawCircles[thick,purple](i,M)
+      \tkzDrawSegments(A,D B,E C,F)
+      \tkzDrawSegments[orange](M,J N,K I,L)
+      \tkzDrawPoints(A,...,F,G_e,I,J,K,L,M,N)
+      \tkzLabelPoints(B,C,D,I,J)
+      \tkzLabelPoints[above](A,E,L,K)
+      \tkzLabelPoints[above left](F,M,N)
+    \end{tikzpicture}
+  \end{center}
+\end{tkzexample}
+
+% subsection adams_circle (end)
+
+\subsection{Van Lamoen's circle} % (fold)
+\label{sub:van_lamoen_s_circle}
+
+Divide a triangle by its three medians into six smaller triangles. Surprisingly, the circumcenters  of the six circumcircles of these smaller triangles  are concyclic. Their circumcircle  is known as the van Lamoen circle.
+ [\href{https://mathworld.wolfram.com/vanLamoenCircle.html}{Weisstein, Eric W. "van Lamoen Circle." From MathWorld--A Wolfram Web Resource.} ]
+
+ \vspace{1em}
+\begin{tkzexample}[vbox]
+\directlua{
+ init_elements()
+ z.A = point(2.2, 3)
+ z.B = point(0, 0)
+ z.C = point(5, 0)
+ T.ABC = triangle(z.A, z.B, z.C)
+ T.med = T.ABC:medial()
+ z.ma, z.mb, z.mc = T.med:get()
+ z.G = T.ABC.centroid
+ z.wab = triangle(z.A, z.mb, z.G).circumcenter
+ z.wac = triangle(z.A, z.mc, z.G).circumcenter
+ z.wba = triangle(z.B, z.ma, z.G).circumcenter
+ z.wbc = triangle(z.B, z.mc, z.G).circumcenter
+ z.wca = triangle(z.C, z.ma, z.G).circumcenter
+ z.wcb = triangle(z.C, z.mb, z.G).circumcenter
+ T.lamoen = triangle(z.wab, z.wac, z.wba)
+ z.w = T.lamoen.circumcenter}
+\begin{center}
+  \begin{tikzpicture}[scale = 1.5]
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawCircles(wab,A wac,A wba,B wbc,B wca,C wcb,C)
+  \tkzDrawPoints(A,B,C,G,ma,mb,mc)
+  \tkzDrawCircle[purple](w,wab)
+  \tkzDrawPoints[size=2,purple,fill=white](wab,wac,wba,wbc,wca,wcb)
+  \tkzLabelPoints(A,B,C)
+  \end{tikzpicture}
+\end{center}
+\end{tkzexample}
+% subsection van_lamoen_s_circle (end)
+
+\subsection{Yiu's circles variant one} % (fold)
+\label{sub:yiu_circles_variant_one}
+
+The Yiu circles of a reference triangle is the circles passing through one vertex  and the reflections of other vertices  with respect to the opposite sides. All three circles have one thing in common: their \code{radical center}.
+
+\begin{minipage}{.45\textwidth}
+\begin{tkzexample}[code only]
+ \directlua{
+  z.A = point(0, 2)
+  z.B = point(0, 0)
+  z.C = point(5, 0.8)
+  T.ABC = triangle(z.A, z.B, z.C)
+  z.Ap = T.ABC.bc:reflection(z.A)
+  z.Bp = T.ABC.ca:reflection(z.B)
+  z.Cp = T.ABC.ab:reflection(z.C)
+  T.A = triangle(z.A, z.Bp, z.Cp)
+  T.B = triangle(z.B, z.Ap, z.Cp)
+  T.C = triangle(z.C, z.Ap, z.Bp)
+  z.O_A = T.A.circumcenter
+  z.O_B = T.B.circumcenter
+  z.O_C = T.C.circumcenter
+  T.O = triangle(z.O_A, z.O_B, z.O_C)
+  C.A = circle(z.O_A, z.A)
+  C.B = circle(z.O_B, z.B)
+  C.C = circle(z.O_C, z.C)
+  z.R = C.A:radical_center(C.B,C.C)
+  z.a,z.b = C.A:radical_axis(C.B):get()
+  z.c,z.d = C.A:radical_axis(C.C):get()
+  z.e,z.f = C.B:radical_axis(C.C):get()}
+\end{tkzexample}
+\end{minipage}
+\begin{minipage}{.55\textwidth}
+\begin{tkzexample}[code only]
+  \begin{tikzpicture}[scale = 0.75]
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawPolygon(O_A,O_B,O_C)
+  \tkzDrawCircles[purple](O_A,A O_B,B O_C,C)
+  \tkzDrawLines(a,b c,d e,f)
+  \tkzDrawSegments[orange,dashed](A,A' B,B' C,C')
+  \tkzDrawPoints(A,B,C,A',B',C',O_A,O_B,O_C,R)
+  \tkzLabelPoints(B,C,A',C')
+  \tkzLabelPoints[above](A,B',R)
+  \end{tikzpicture}
+\end{tkzexample}
+\end{minipage}
+
+\directlua{
+  init_elements()
+  z.A = point(0, 2)
+  z.B = point(0, 0)
+  z.C = point(5, 0.8)
+  T.ABC = triangle(z.A, z.B, z.C)
+  z.Ap = T.ABC.bc:reflection(z.A)
+  z.Bp = T.ABC.ca:reflection(z.B)
+  z.Cp = T.ABC.ab:reflection(z.C)
+  T.A = triangle(z.A, z.Bp, z.Cp)
+  T.B = triangle(z.B, z.Ap, z.Cp)
+  T.C = triangle(z.C, z.Ap, z.Bp)
+  z.O_A = T.A.circumcenter
+  z.O_B = T.B.circumcenter
+  z.O_C = T.C.circumcenter
+  T.O = triangle(z.O_A, z.O_B, z.O_C)
+  C.A = circle(z.O_A, z.A)
+  C.B = circle(z.O_B, z.B)
+  C.C = circle(z.O_C, z.C)
+  z.R = C.A:radical_center(C.B,C.C)
+  z.a,z.b = C.A:radical_axis(C.B):get()
+  z.c,z.d = C.A:radical_axis(C.C):get()
+  z.e,z.f = C.B:radical_axis(C.C):get()}
+\begin{center}
+  \begin{tikzpicture}[scale = 0.75]
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawPolygon(O_A,O_B,O_C)
+  \tkzDrawCircles[purple](O_A,A O_B,B O_C,C)
+  \tkzDrawLines(a,b c,d e,f)
+  \tkzDrawSegments[orange,dashed](A,A' B,B' C,C')
+  \tkzDrawPoints(A,B,C,A',B',C',O_A,O_B,O_C,R)
+  \tkzLabelPoints(B,C,A',C')
+  \tkzLabelPoints[above](A,B',R)
+  \end{tikzpicture}
+\end{center}
+
+
+% subsection yiu_circles_variant_one (end)
+
+\subsection{Yiu's circles variant two} % (fold)
+\label{sub:yiu_s_circles_variant_two}
+
+\directlua{
+ z.A = point(3.8, 4.5)
+ z.B = point(0, 0)
+ z.C = point(6, 0.5)
+ T.ABC = triangle(z.A,z.B,z.C)
+ z.Ap = T.ABC.bc:reflection(z.A)
+ z.Bp = T.ABC.ca:reflection(z.B)
+ z.Cp = T.ABC.ab:reflection(z.C)
+ T.ABpC = triangle(z.A, z.Bp, z.C)
+ T.BACp = triangle(z.B, z.A, z.Cp)
+ T.CApB = triangle(z.C, z.Ap, z.B)
+ z.O_A = T.ABpC.circumcenter
+ z.O_B = T.BACp.circumcenter
+ z.O_C = T.CApB.circumcenter
+ z.H = T.ABC.orthocenter}
+\begin{center}
+ \begin{tikzpicture}[scale = .75]
+ \tkzGetNodes
+ \tkzDrawPolygon(A,B,C)
+ \tkzDrawPolygon(O_A,O_B,O_C)
+ \tkzDrawCircles[purple](O_A,A O_B,B O_C,C)
+ \tkzDrawCircles[red](H,O_A)
+ \tkzDrawSegments[orange,dashed](A,A' B,B' C,C')
+ \tkzDrawPoints(A,B,C,A',B',C',O_A,O_B,O_C)
+ \tkzLabelPoints(B,C,A',C',O_A,O_B,O_C)
+ \tkzLabelPoints[above](A,B')
+ \end{tikzpicture}
+\end{center}
+
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ z.A = point(3.8, 4.5)
+ z.B = point(0, 0)
+ z.C = point(6, 0.5)
+ T.ABC = triangle(z.A,z.B,z.C)
+ z.Ap = T.ABC.bc:reflection(z.A)
+ z.Bp = T.ABC.ca:reflection(z.B)
+ z.Cp = T.ABC.ab:reflection(z.C)
+ T.ABpC = triangle(z.A, z.Bp, z.C)
+ T.BACp = triangle(z.B, z.A, z.Cp)
+ T.CApB = triangle(z.C, z.Ap, z.B)
+ z.O_A = T.ABpC.circumcenter
+ z.O_B = T.BACp.circumcenter
+ z.O_C = T.CApB.circumcenter
+ z.H = T.ABC.orthocenter}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+ \begin{tikzpicture}[scale = .75]
+ \tkzGetNodes
+ \tkzDrawPolygon(A,B,C)
+ \tkzDrawPolygon(O_A,O_B,O_C)
+ \tkzDrawCircles[purple](O_A,A O_B,B O_C,C)
+ \tkzDrawCircles[red](H,O_A)
+ \tkzDrawSegments[orange,
+                 dashed](A,A' B,B' C,C')
+ \tkzDrawPoints(A,B,C,A',B',C',O_A,O_B,O_C)
+ \tkzLabelPoints(B,C,A',C',O_A,O_B,O_C)
+ \tkzLabelPoints[above](A,B')
+ \end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+
+
+% subsection yiu_s_circles_variant_two (end)
+
+\subsection{Yff's circles variant one} % (fold)
+\label{sub:yff_s_circles_variant_one}
+
+\begin{tkzexample}[overhang,vbox]
+\directlua{
+  init_elements()
+  z.A = point(3.8, 2.5)
+  z.B = point(0, 0)
+  z.C = point(6, 0.5)
+  T.ABC = triangle(z.A, z.B, z.C)
+  z.I = T.ABC.incenter
+  z.O = T.ABC.circumcenter
+  z.Y = T.ABC:kimberling(55)
+  local r = T.ABC.inradius
+  local R = T.ABC.circumradius
+  local rho = (r * R) / (R + r)
+  C.Y = circle:new(through(z.Y, rho))
+  z.T = C.Y.through
+  local bisectors = {
+    {z.A, z.I, "wa", T.ABC.ab},
+    {z.B, z.I, "wb", T.ABC.bc},
+    {z.C, z.I, "wc", T.ABC.ca}
+  }
+  for _, bisector in ipairs(bisectors) do
+    local origin, incenter, name, side = unpack(bisector)
+    local L = line:new(origin, incenter)
+    local x, y = intersection(C.Y, L)
+    local d = side:distance(x)
+    if math.abs(d - C.Y.radius) < tkz.epsilon then
+      z[name] = x
+    else
+      z[name] = y
+    end
+  end
+}
+
+  \begin{center}
+    \begin{tikzpicture}[scale = 1.5]
+    \tkzGetNodes
+    \tkzDrawPolygon(A,B,C)
+    \tkzDrawPolygon[orange](wa,wb,wc)
+    \tkzDrawCircle[orange](Y,wa)
+    \tkzDrawCircles[purple](wc,Y wb,Y wa,Y)
+    \tkzDrawPoints(A,B,C,O,I,Y,wa,wb,wc)
+    \tkzLabelPoints(B,C,O,I,Y,wa,wb,wc)
+    \tkzDrawLine(O,I)
+    \tkzLabelPoints[above](A)
+    \end{tikzpicture}
+  \end{center}
+\end{tkzexample}
+
+% subsection yff_s_circles_variant_one (end)
+
+\subsection{Yff's circles variant two} % (fold)
+\label{sub:yff_s_circles_variant_two}
+
+\begin{tkzexample}[overhang,vbox]
+\directlua{
+  init_elements()
+  z.A = point(3.8, 2.5)
+  z.B = point(0, 0)
+  z.C = point(6, 0.5)
+  T.ABC = triangle(z.A, z.B, z.C)
+  z.I = T.ABC.incenter
+  z.O = T.ABC.circumcenter
+  z.Y = T.ABC:kimberling(56)
+  local r = T.ABC.inradius
+  local R = tkz.length(z.O, z.A)
+  local rho = (r * R) / (R - r)
+  local C = circle(through(z.Y, rho))
+  z.T = C.through
+  local bisectors = {
+    {z.A, z.I, "wa", T.ABC.ab},
+    {z.B, z.I, "wb", T.ABC.bc},
+    {z.C, z.I, "wc", T.ABC.ca}
+  }
+  for _, bisector in ipairs(bisectors) do
+    local origin, incenter, name, side = unpack(bisector)
+    local L = line(origin, incenter)
+    local x, y = intersection(C, L)
+    local d = side:distance(x)
+    if math.abs(d - C.radius) < tkz.epsilon then
+      z[name] = x
+    else
+      z[name] = y
+    end
+  end
+}
+\begin{center}
+  \begin{tikzpicture}[scale=1.5]
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawCircles[purple](wc,Y wb,Y wa,Y)
+  \tkzDrawCircles[red](Y,T)
+  \tkzLabelPoints(B,C,O,I,Y,wa,wb,wc)
+  \tkzDrawLine[add=0.5 and .5](O,Y)
+  \tkzDrawLines[add=0 and .5](B,A C,A)
+  \tkzDrawPoints(A,B,C,O,I,Y,wa,wb,wc)
+  \tkzLabelPoints[above](A)
+  \end{tikzpicture}
+\end{center}
+
+\end{tkzexample}
+
+% subsection yff_s_circles_variant_two (end)
+
+% section examples (end)

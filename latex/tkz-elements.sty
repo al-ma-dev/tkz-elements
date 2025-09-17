@@ -1,0 +1,161 @@
+% encoding : utf8
+% File: tkz-elements.sty
+% Version: 4.20c   Date: 2025/09/17
+% Copyright (c) 2023–2025 Alain Matthes
+% SPDX-License-Identifier: LPPL-1.3c
+% Maintainer: Alain Matthes
+
+\ProvidesPackage{tkz-elements}[2025/09/17 version 4.20c Graphic Object Library]
+\RequirePackage{iftex}
+\ifluatex\else
+  \PackageError{tkz-elements}{%
+    This package requires LuaLaTeX.%
+  }{%
+    Please compile with LuaLaTeX.\MessageBreak
+    Aborted compilation.%
+  }
+\fi
+ \directlua{
+      require "tkz_elements_main"
+      init_elements()}%
+
+\newenvironment{tkzelements}
+  {  \directlua{ z = {}
+                 C = {}
+                 L = {}
+                 M = {}
+                 O = {}
+                 P = {}
+                 PA = {}
+                 Q = {}
+                 R = {}
+                 RP= {}
+                 S = {}
+                 T = {}
+                 V = {}
+                 CO={}}
+      \luacode}
+  {\endluacode}%
+
+% new version of the next macro proposed by Sanskar Singh
+\makeatletter
+\let\percentchar\@percentchar
+\@ifpackageloaded{tkz-euclide}{%
+  \@ifpackagelater{tkz-euclide}{2024/04/19}{%
+   \def\tkzGetNodes{\directlua{%
+     for K,V in pairs(z) do
+        local n,sd,ft
+        n = string.len(K)
+        if n > 1 then
+        _,_,ft, sd = string.find(K, "(.+)(.)" )
+       if sd == "p" then   K=ft.."'" end
+       _,_,xft, xsd = string.find(ft, "(.+)(.)" )
+       if xsd == "p" then  K=xft.."'".."'" end
+         end
+    tex.sprint("\\coordinate ("..K..") at ("..V.re..","..V.im..") ; \string\r")
+   end
+   }}
+\def\tkzDrawLuaEllipse{\pgfutil@ifnextchar[{\tkz@DrawLuaEllipse}{\tkz@DrawLuaEllipse[]}}
+\def\tkz@DrawLuaEllipse[#1](#2,#3,#4){%
+\begingroup
+\draw[#1](#2) ellipse [x radius=\tkzUseLua{length_(z.#3,z.#2)}, y radius =
+ \tkzUseLua{length_(z.#4,z.#2)},rotate=\tkzUseLua{math.deg(slope_ (z.#3,z.#2))}];
+\endgroup}%
+
+\def\tkzDrawCoordinates{\pgfutil@ifnextchar[{\tkz@DrawCoordinates}{\tkz@DrawCoordinates[]}}
+\def\tkz@DrawCoordinates[#1](#2){%
+\begingroup
+\draw[#1] plot coordinates {\directlua{tex.print(#2)}};
+\endgroup}%
+
+ \let\tkzDrawPath\tkzDrawCoordinates
+
+\def\tkzDrawPointOnCurve{\pgfutil@ifnextchar[{\tkz@DrawPointOnCurve}{\tkz@DrawPointOnCurve[]}}
+\def\tkz@DrawPointOnCurve[#1](#2){%
+\begingroup
+    \draw[#1] plot coordinates {(#2)};
+\endgroup}%
+
+\def\tkzPrintNumber{\pgfutil@ifnextchar[{\tkz@PrintNumber}{\tkz@PrintNumber[2]}}%
+\def\tkz@PrintNumber[#1]#2{%
+  \begingroup
+    \pgfkeys{/pgf/number format/.cd,fixed,precision=#1}%
+    \pgfmathprintnumber{#2}%
+  \endgroup
+}
+\let\tkzPN\tkzPrintNumber
+
+\def\tkzDrawSegmentsFromPaths{\pgfutil@ifnextchar[{\tkz@DrawSegmentsFromPaths}{\tkz@DrawSegmentsFromPaths[]}}
+\def\tkz@DrawSegmentsFromPaths[#1](#2,#3){%
+\begingroup
+\directlua{%
+  for i = 1, #2:count() do
+    local x1, y1 = #2:get_number_path(i)
+    local x2, y2 = #3:get_number_path(i)
+    tex.print("\\tkzDefPoint("..x1..","..y1.."){start}")
+    tex.print("\\tkzDefPoint("..x2..","..y2.."){end}")
+    tex.print("\\tkzDrawSegment[" .. "\luatexluaescapestring{#1}" .. "](start,end)")
+   end
+}%
+\endgroup}%
+
+\def\tkzUseLua#1{\directlua{tex.sprint(#1)}}
+
+\def\tkzDrawPointsFromPath{\pgfutil@ifnextchar[{\tkz@DrawPointsFromPath}{\tkz@DrawPointsFromPath[]}}
+\def\tkz@DrawPointsFromPath[#1](#2){%
+  \begingroup
+   \foreach[expand list] \r/\s in {\directlua{tex.sprint(#2:concat_rawpair(","))}} {%
+    \tkzDrawPoint[#1](\r,\s)%
+  }%
+  \endgroup
+}
+
+\def\tkzGetPointsFromPath{\pgfutil@ifnextchar[{\tkz@GetPointsFromPath}{%
+\tkz@GetPointsFromPath[]}}
+\def\tkz@GetPointsFromPath[#1](#2,#3){%
+  \begingroup
+   \foreach[expand list][count = \i] \r/\s in {\directlua{tex.sprint(#2:concat_rawpair(","))}} {%
+    \tkzDefPoint(\r,\s){#3_\i}%
+  }%
+  \endgroup
+}
+\def\tkzDrawCirclesFromPaths{\pgfutil@ifnextchar[{\tkz@DrawCirclesFromPaths}{\tkz@DrawCirclesFromPaths[]}}
+\def\tkz@DrawCirclesFromPaths[#1](#2,#3){%
+  \begingroup
+  \directlua{
+    for i = 1, #2:count() do
+      local cx, cy = #2:get_number_path(i)
+      local tx, ty = #3:get_number_path(i)
+      tex.print("\\node[" .. "\luatexluaescapestring{#1}" .. ",circle through={(" .. tx .. "," .. ty .. ")}] at (" .. cx .. "," .. cy .. ") {};")
+    end
+  }
+  \endgroup
+}
+
+}{%
+\PackageWarning{tkz-elements}{%
+      tkz-euclide is loaded but too old.\MessageBreak
+      Minimum version required : 5.10c 2024/04/19%
+}}}{%
+}%
+
+
+\def\tkzGetNodesMP#1{\directlua{
+  local out = assert(io.open("#1.mp", "w"))
+  local names = {}
+  for K, _ in pairs(z) do
+    table.insert(names, tostring(K))
+  end
+  table.sort(names)
+  out:write("pair ", table.concat(names, ", "), ";\string\n")
+  for _, name in ipairs(names) do
+    local V = z[name]
+    if V then
+      out:write(name, " := (", V.re, "cm,", V.im, "cm);\string\n")
+    end
+  end
+  out:close()
+}}
+\makeatother
+\def\tkzEraseLuaObj#1{\directlua{#1 = nil}}
+\endinput

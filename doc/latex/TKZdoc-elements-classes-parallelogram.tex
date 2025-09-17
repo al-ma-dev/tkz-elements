@@ -1,0 +1,217 @@
+\newpage
+\section{Class \tkzClass{parallelogram}} % (fold)
+The variable \tkzVar{parallelogram}{P} holds a table used to store parallelograms. It is optional, and you are free to choose the variable name. However, using \code{P} is a recommended convention for clarity and consistency. If you use a custom variable (e.g., parall), you must initialize it manually. The \code{init\_elements()} function reinitializes the \code{P} table if used.
+
+\subsection{Creating a parallelogram} % (fold)
+\label{sub:creating_a_parallelogram}
+
+The \tkzClass{parallelogram} class creates a parallelogram using three points. The fourth vertex is computed automatically.
+
+\medskip
+The resulting object is stored in \tkzVar{parallelogram}{P}. You are free to use another name, but \tkzVar{parallelogram}{P} is preferred for consistency.
+
+\begin{mybox}
+\begin{verbatim}
+P.ABCD = parallelogram:new(z.A, z.B, z.C)
+\end{verbatim}
+\end{mybox}
+
+\paragraph{Short form.}
+You may also use the short form:
+
+\begin{mybox}
+\begin{verbatim}
+P.ABCD = parallelogram(z.A, z.B, z.C)
+\end{verbatim}
+\end{mybox}
+% subsection creating_a_parallelogram (end)
+
+
+\subsection{Parallelogram attributes} % (fold)
+\label{sub:parallelogram_attributes}
+
+% subsection square_attributes (end)
+Points are created in the direct direction. A test is performed to check whether the points form a parallelogram, otherwise compilation is blocked.
+
+\begin{mybox}
+Creation | P.new = parallelogram(z.A,z.B,z.C,z.D)|
+\end{mybox}
+
+\begin{center}
+  \bgroup
+  \catcode`_=12
+  \small
+  \captionof{table}{Parallelogram attributes.}\label{parallelogram:att}
+  \begin{tabular}{lll}
+  \toprule
+  \textbf{Attributes}         & \textbf{Application}  &  \\
+  \midrule
+  \tkzAttr{parallelogram}{pa}   & |z.A = P.new.pa|     &  \\
+  \tkzAttr{parallelogram}{pb}   & |z.B = P.new.pb|     &  \\
+  \tkzAttr{parallelogram}{pc}   & |z.C = P.new.pc|     &  \\
+  \tkzAttr{parallelogram}{pd}   & |z.D = P.new.pd|     &  \\
+  \tkzAttr{parallelogram}{type} & |P.new.type= 'parallelogram'|&  \\
+  \tkzAttr{parallelogram}{i}    & |z.I = P.new.i|  & intersection of diagonals \\
+  \tkzAttr{parallelogram}{ab}   & |P.new.ab|    &  line passing through two vertices \\
+  \tkzAttr{parallelogram}{ac}   & |P.new.ca|           &  idem. \\
+  \tkzAttr{parallelogram}{ad}   & |P.new.ad|           &  idem. \\
+  \tkzAttr{parallelogram}{bc}   & |P.new.bc|           &  idem. \\
+  \tkzAttr{parallelogram}{bd}   & |P.new.bd|           &  idem. \\
+  \tkzAttr{parallelogram}{cd}   & |P.new.cd|           &  idem. \\
+  \bottomrule %
+  \end{tabular}
+  \egroup
+\end{center}
+
+
+
+\subsubsection{Example: attributes } % (fold)
+\label{ssub:example_attributes}
+
+% subsubsection example_attributes (end)
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(4, 1)
+ z.C = point(7, 5)
+ z.D = point(3, 4)
+ P.new = parallelogram(z.A, z.B, z.C, z.D)
+ z.B = P.new.pb
+ z.C = P.new.pc
+ z.D = P.new.pd
+ z.I = P.new.center}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawPolygon(A,B,C,D)
+\tkzDrawPoints(A,B,C,D)
+\tkzLabelPoints(A,B)
+\tkzLabelPoints[above](C,D)
+\tkzDrawPoints[red](I)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(4, 1)
+ z.C = point(7, 5)
+ z.D = point(3, 4)
+ P.new = parallelogram(z.A, z.B, z.C, z.D)
+ z.B = P.new.pb
+ z.C = P.new.pc
+ z.D = P.new.pd
+ z.I = P.new.center}
+
+\begin{center}
+  \begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C,D)
+  \tkzDrawPoints(A,B,C,D)
+  \tkzLabelPoints(A,B)
+  \tkzLabelPoints[above](C,D)
+  \tkzDrawPoints[red](I)
+  \end{tikzpicture}
+\end{center}
+
+\end{minipage}
+
+
+\newpage
+
+\subsection{Parallelogram functions} % (fold)
+\label{sub:parallelogram_methods}
+
+% subsection parallelogram_methods (end)
+\begin{center}
+  \bgroup
+  \catcode`_=12
+  \small
+  \captionof{table}{Parallelogram functions.}\label{parallelogram:met}
+  \begin{tabular}{ll}
+  \toprule
+  \textbf{Functions} & \textbf{Reference}    \\
+  \midrule   
+  \tkzMeth{parallelogram}{new (za, zb, zc, zd)} & \ref{ssub:example_attributes}\\
+  \tkzMeth{parallelogram}{fourth (za,zb,zc)} & \ref{ssub:parallelogram_with_fourth_method} \\
+  \bottomrule %
+  \end{tabular}
+  \egroup
+\end{center}
+
+
+\subsubsection{Method \tkzMeth{parallelogram}{new(pt,pt,pt,pt)}} % (fold)
+\label{ssub:function_parallelogram_new}
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+ z.A = point(0, 0)
+ z.B = point(4, 1)
+ z.C = point(7, 5)
+ z.D = point(3, 4)
+ P.ABCD = parallelogram(z.A, z.B, z.C, z.D)
+ z.B = P.ABCD.pb
+ z.C = P.ABCD.pc
+ z.D = P.ABCD.pd
+ z.I = P.ABCD.center}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawPolygon(A,B,C,D)
+\tkzDrawPoints(A,B,C,D)
+\tkzLabelPoints(A,B)
+\tkzLabelPoints[above](C,D)
+\tkzDrawPoints[red](I)
+\end{tikzpicture}
+\end{tkzexample}
+
+% subsubsection function_parallelogram_new (end)
+
+\subsubsection{Method \tkzMeth{parallelogram}{fourth(pt,pt,pt)}} % (fold)
+\label{ssub:parallelogram_with_fourth_method}
+completes a triangle by parallelogram (See  next example)
+
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+init_elements()
+z.A = point(0, 0)
+z.B = point(3, 1)
+z.C = point(4, 3)
+P.four= parallelogram:fourth(z.A, z.B, z.C)
+z.D = P.four.pd
+z.I = P.four.center}
+\begin{tikzpicture}[ scale = .75]
+\tkzGetNodes
+\tkzDrawPolygon(A,B,C,D)
+\tkzDrawPoints(A,B,C,D)
+\tkzLabelPoints(A,B)
+\tkzLabelPoints[above](C,D)
+\tkzDrawPoints[red](I)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(3, 1)
+ z.C = point(4, 3)
+ P.four= parallelogram:fourth(z.A, z.B, z.C)
+ z.D = P.four.pd
+ z.I = P.four.center}
+\begin{center}
+  \begin{tikzpicture}[scale = .75]
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C,D)
+  \tkzDrawPoints(A,B,C,D)
+  \tkzLabelPoints(A,B)
+  \tkzLabelPoints[above](C,D)
+  \tkzDrawPoints[red](I)
+  \end{tikzpicture}
+\end{center}
+\end{minipage}
+
+% subsubsection parallelogram_with_fourth_method (end)
+% subsubsection parallelogram_with_side_method (end)

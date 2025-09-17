@@ -1,0 +1,231 @@
+\newpage
+\section{Class \tkzClass{square}} % (fold)
+The variable \tkzVar{square}{S} holds a table used to store squares. It is optional, and you are free to choose the variable name. However, using \code{S} is a recommended convention for clarity and consistency. If you use a custom variable (e.g., Squares), you must initialize it manually. The \code{init\_elements()} function reinitializes the \code{S} table if used.
+
+\subsection{Creating a square} % (fold)
+\label{sub:creating_a_square}
+
+The \tkzClass{square} class constructs a square from two adjacent vertices. The order of the points defines the orientation.
+
+
+\medskip
+The result is stored in \tkzVar{square}{S}.
+
+\begin{mybox}
+\begin{verbatim}
+S.ABCD = square:new(z.A, z.B)
+\end{verbatim}
+\end{mybox}
+
+\paragraph{Short form.}
+The short form \code{square(z.A, z.B)} is equivalent:
+
+\begin{mybox}
+\begin{verbatim}
+S.ABCD = square(z.A, z.B)
+\end{verbatim}
+\end{mybox}
+% subsection creating_a_square (end)
+
+\subsection{Square attributes} % (fold)
+\label{sub:square_attributes}
+
+% subsection square_attributes (end)
+Points are created in the direct direction. A test is performed to check whether the points form a square. Otherwise, compilation is blocked."
+\begin{mybox}
+Creation | S.AB = square(z.A,z.B,z.C,z.D)|
+\end{mybox}
+
+\begin{center}
+  \bgroup
+  \catcode`_=12
+  \small
+  \captionof{table}{Square attributes.}\label{square:att}
+  \begin{tabular}{lll}
+  \toprule
+  \textbf{Attributes}        & \textbf{Application}  &  \\
+  \midrule
+  \tkzAttr{square}{pa}         & |z.A = S.AB.pa|       &  \\
+  \tkzAttr{square}{pb}         & |z.B = S.AB.pb|       &  \\
+  \tkzAttr{square}{pc}         & |z.C = S.AB.pc|       &  \\
+  \tkzAttr{square}{pd}         & |z.D = S.AB.pd|       &  \\
+  \tkzAttr{square}{type}       & |S.AB.type= 'square'| &  \\
+  \tkzAttr{square}{side}       & |s = S.AB.center|     & s = length of side   \\
+  \tkzAttr{square}{center}     & |z.I = S.AB.center|   & center of the square \\
+  \tkzAttr{square}{circumradius}   & |S.AB.circumradius|       & radius of the circumscribed circle \\
+  \tkzAttr{square}{inradius}   & |S.AB.inxradius|      & radius of the inscribed circle   \\
+  \tkzAttr{square}{proj}       & |S.AB.proj|           & projection of the center on one side \\
+  \tkzAttr{square}{ab}         & |S.AB.ab|             &  line passing through two vertices   \\
+  \tkzAttr{square}{ac}         & |S.AB.ca|             &  idem. \\
+  \tkzAttr{square}{ad}         & |S.AB.ad|             &  idem. \\
+  \tkzAttr{square}{bc}         & |S.AB.bc|             &  idem. \\
+  \tkzAttr{square}{bd}         & |S.AB.bd|             &  idem. \\
+  \tkzAttr{square}{cd}         & |S.AB.cd|             &  idem. \\
+  \bottomrule %
+  \end{tabular}
+  \egroup
+\end{center}
+
+
+
+\subsubsection{Example: square attributes } % (fold)
+\label{ssub:example_square_attributes}
+
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(4, 0)
+ z.C = point(4, 4)
+ z.D = point(0, 4)
+ S.new = square(z.A, z.B, z.C, z.D)
+ z.I = S.new.center
+ z.H = S.new.proj}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawCircles[orange](I,A I,H)
+\tkzDrawPolygon(A,B,C,D)
+\tkzDrawPoints(A,B,C,D,H,I)
+\tkzLabelPoints(A,B,H,I)
+\tkzLabelPoints[above](C,D)
+\tkzDrawSegments(I,B I,H)
+\tkzLabelSegment[sloped](I,B){%
+  \pmpn{\tkzUseLua{S.new.circumradius}}}
+\tkzLabelSegment[sloped](I,H){%
+  \pmpn{\tkzUseLua{S.new.inradius}}}
+\tkzLabelSegment[sloped](D,C){%
+  \pmpn{\tkzUseLua{S.new.side}}}
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(4, 0)
+ z.C = point(4, 4)
+ z.D = point(0, 4)
+ S.new = square(z.A, z.B, z.C, z.D)
+ z.I = S.new.center
+ z.H = S.new.proj}
+
+\begin{center}
+  \begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawCircles[orange](I,A I,H)
+  \tkzDrawPolygon(A,B,C,D)
+  \tkzDrawPoints(A,B,C,D,H,I)
+  \tkzLabelPoints(A,B,H,I)
+  \tkzLabelPoints[above](C,D)
+  \tkzDrawSegments(I,B I,H)
+  \tkzLabelSegment[sloped](I,B){\pmpn{\tkzUseLua{S.new.circumradius}}}
+  \tkzLabelSegment[sloped](I,H){\pmpn{\tkzUseLua{S.new.inradius}}}
+  \tkzLabelSegment[sloped](D,C){\pmpn{\tkzUseLua{S.new.side}}}
+  \end{tikzpicture}
+\end{center}
+\end{minipage}
+
+
+\newpage
+
+\subsection{Square Methods} % (fold)
+\label{sub:square_methods}
+
+\begin{center}
+  \bgroup
+  \catcode`_=12
+  \small
+  \captionof{table}{Square methods}\label{square:met}
+  \begin{tabular}{lll}
+  \toprule
+  \textbf{Methods} & \textbf{Reference}&    \\
+  \midrule  
+  \tkzMeth{square}{rotation (zi,za)} &[\ref{ssub:method_square_rotation}]\\
+   
+  \tkzMeth{square}{side (za,zb,"swap")} & \ref{ssub:square_with_side_method} \\
+  \bottomrule %
+  \end{tabular}
+  \egroup
+\end{center}
+
+
+\subsubsection{Method \tkzFct{square}{rotation(pt,pt)}} % (fold)
+\label{ssub:method_square_rotation}
+$I$ square center; $A$ first vertex
+
+\vspace{1em}
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+ z.A  = point(0, 0)
+ z.I  = point(2, -1)
+ S    = square:rotation(z.I, z.A)
+ z.B  = S.pb
+ z.C  = S.pc
+ z.D  = S.pd
+ z.I  = S.center}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawPolygon(A,B,C,D)
+\tkzDrawPoints(A,B,C,D)
+\tkzLabelPoints(B)
+\tkzLabelPoints[above](A)
+\tkzLabelPoints[right](C,D)
+\tkzDrawPoints[red](I)
+\end{tikzpicture}
+\end{tkzexample}
+
+% subsubsection method_square_rotation(end)
+
+\subsubsection{Method \tkzFct{square}{side (za,zb)}} % (fold)
+\label{ssub:square_with_side_method}
+With the option \code{"swap"} then the square is defined in counterclockwise. The result can also be obtained from a line  [\ref{ssub:method_line_square}].
+
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(2, 1)
+ S.side = square:side(z.A, z.B)
+ z.B = S.side.pb
+ z.C = S.side.pc
+ z.D = S.side.pd
+ z.I = S.side.center}
+\begin{tikzpicture}[scale = 2]
+   \tkzGetNodes
+   \tkzDrawPolygon(A,B,C,D)
+   \tkzDrawPoints(A,B,C,D)
+   \tkzLabelPoints(A,B)
+   \tkzLabelPoints[above](C,D)
+   \tkzDrawPoints[red](I)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(2, 1)
+ S.side = square:side(z.A, z.B)
+ z.B = S.side.pb
+ z.C = S.side.pc
+ z.D = S.side.pd
+ z.I = S.side.center}
+\begin{center}
+  \begin{tikzpicture}[scale = 2]
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C,D)
+  \tkzDrawPoints(A,B,C,D)
+  \tkzLabelPoints(A,B)
+  \tkzLabelPoints[above](C,D)
+  \tkzDrawPoints[red](I)
+  \end{tikzpicture}
+\end{center}
+
+\end{minipage}
+% subsubsection square_with_side_method (end)
+
+% subsubsection example_square_attributes (end)
+
+% subsection square_methods (end)

@@ -1,0 +1,675 @@
+\newpage
+\section{Class \tkzClass{{path}} % (fold)
+\label{sec:section_name}
+This class was developed in response to a question posted on \code{tex.stackexchange.com} [\href{https://tex.stackexchange.com/questions/741663/fill-a-space-made-by-three-arcs/741758#741758}{fill-a-space-made-by-three-arcs}].
+
+The concept was missing from the package, although in some cases it was possible to work around this using \TIKZ{} paths. When creating the \code{conic} class, I frequently had to manipulate tables of coordinates, so it became natural to formalize these as \code{paths}.
+
+\directlua{
+ z.O = point(0, 0)
+ z.A = point(8, 0)
+ z.E = z.O:rotation(2*math.pi / 3, z.A)
+ z.C = z.O:rotation(-2*math.pi / 3, z.A)
+ z.F, z.D, z.B = z.O:rotation(math.pi / 3, z.A, z.E, z.C)
+ L.AC = line(z.A, z.C)
+ L.OB = line(z.O, z.B)
+ L.OD = line(z.O, z.D)
+ L.CE = line(z.C, z.E)
+ L.AE = line(z.A, z.E)
+ L.OF = line(z.O, z.F)
+ z.G = intersection(L.AC, L.OB)
+ z.H = intersection(L.CE, L.OD)
+ z.I = intersection(L.AE, L.OF)
+ C.GA = circle(z.G, z.A)
+ C.FE = circle(z.F, z.E)
+ C.BA = circle(z.B, z.A)
+ C.IE = circle(z.I, z.E)
+ C.DE = circle(z.D, z.E)
+ C.FA = circle(z.F, z.A)
+ C.HE = circle(z.H, z.E)
+ C.GC = circle(z.G, z.C)
+ _,z.J = intersection(C.GA, C.FE)
+ _,z.K = intersection(C.BA, C.IE)
+ _,z.L = intersection(C.DE, C.IE)
+ _,z.M = intersection(C.FA, C.HE)
+ z.N = intersection(C.BA, C.HE)
+ z.P = intersection(C.DE, C.GC)
+ % the paths
+ local nb = 40
+ PA.th1 = C.IE:path(z.E, z.L, nb) + C.DE:path(z.L, z.O, nb) - C.FA:path(z.E, z.O, nb)
+ PA.th2 = C.IE:path(z.G, z.A, nb) - C.FA:path(z.M, z.A, nb) - C.HE:path(z.G, z.M, nb)
+ PA.th3 = C.IE:path(z.H, z.K, nb) + C.BA:path(z.K, z.C, nb) - C.GC:path(z.H, z.C, nb)
+ PA.th4 = C.GA:path(z.A, z.J, nb) + C.FA:path(z.J, z.O, nb) - C.BA:path(z.A, z.O, nb)
+ PA.th5 = C.HE:path(z.C, z.N, nb) + C.BA:path(z.N, z.O, nb) - C.DE:path(z.C, z.O, nb)
+ PA.th6 = C.HE:path(z.I, z.E, nb) - C.DE:path(z.P, z.E, nb) - C.GA:path(z.I, z.P, nb)}
+\begin{center}
+  \begin{tikzpicture}[scale = .5, rotate = -30]
+    \tkzGetNodes
+    \tkzFillCircle[fill=yellow!20](O,A)
+    \tkzDrawCircle[ultra thick,black](O,A)
+    \tkzClipCircle(O,A)
+    \tkzDrawCoordinates[draw,ultra thick,fill=green!15](PA.th1)
+    \tkzDrawCoordinates[draw,ultra thick,fill=green!15](PA.th2)
+    \tkzDrawCoordinates[draw,ultra thick,fill=blue!15](PA.th3)
+    \tkzDrawCoordinates[draw,ultra thick,fill=blue!15](PA.th4)
+    \tkzDrawCoordinates[draw,ultra thick,fill=red!15](PA.th5)
+    \tkzDrawCoordinates[draw,ultra thick,fill=red!15](PA.th6)
+    \tkzDrawCircle[ultra thick,black](O,A)
+    \end{tikzpicture}
+\end{center}
+
+\begin{verbatim}
+
+\directlua{
+ z.O = point(0, 0)
+ z.A = point(8, 0)
+ z.E = z.O:rotation(2*math.pi / 3, z.A)
+ z.C = z.O:rotation(-2*math.pi / 3, z.A)
+ z.F, z.D, z.B = z.O:rotation(math.pi / 3, z.A, z.E, z.C)
+ L.AC = line(z.A, z.C)
+ L.OB = line(z.O, z.B)
+ L.OD = line(z.O, z.D)
+ L.CE = line(z.C, z.E)
+ L.AE = line(z.A, z.E)
+ L.OF = line(z.O, z.F)
+ z.G = intersection(L.AC, L.OB)
+ z.H = intersection(L.CE, L.OD)
+ z.I = intersection(L.AE, L.OF)
+ C.GA = circle(z.G, z.A)
+ C.FE = circle(z.F, z.E)
+ C.BA = circle(z.B, z.A)
+ C.IE = circle(z.I, z.E)
+ C.DE = circle(z.D, z.E)
+ C.FA = circle(z.F, z.A)
+ C.HE = circle(z.H, z.E)
+ C.GC = circle(z.G, z.C)
+ _,z.J = intersection(C.GA, C.FE)
+ _,z.K = intersection(C.BA, C.IE)
+ _,z.L = intersection(C.DE, C.IE)
+ _,z.M = intersection(C.FA, C.HE)
+ z.N = intersection(C.BA, C.HE)
+ z.P = intersection(C.DE, C.GC)
+ % the paths
+ local nb = 40
+ PA.th1 = C.IE:path(z.E, z.L, nb) + C.DE:path(z.L, z.O, nb) - C.FA:path(z.E, z.O, nb)
+ PA.th2 = C.IE:path(z.G, z.A, nb) - C.FA:path(z.M, z.A, nb) - C.HE:path(z.G, z.M, nb)
+ PA.th3 = C.IE:path(z.H, z.K, nb) + C.BA:path(z.K, z.C, nb) - C.GC:path(z.H, z.C, nb)
+ PA.th4 = C.GA:path(z.A, z.J, nb) + C.FA:path(z.J, z.O, nb) - C.BA:path(z.A, z.O, nb)
+ PA.th5 = C.HE:path(z.C, z.N, nb) + C.BA:path(z.N, z.O, nb) - C.DE:path(z.C, z.O, nb)
+ PA.th6 = C.HE:path(z.I, z.E, nb) - C.DE:path(z.P, z.E, nb) - C.GA:path(z.I, z.P, nb)}
+\begin{center}
+  \begin{tikzpicture}[scale = .5, rotate = -30]
+    \tkzGetNodes
+    \tkzFillCircle[fill=yellow!20](O,A)
+    \tkzDrawCircle[ultra thick,black](O,A)
+    \tkzClipCircle(O,A)
+    \tkzDrawCoordinates[draw,ultra thick,fill=green!15](PA.th1)
+    \tkzDrawCoordinates[draw,ultra thick,fill=green!15](PA.th2)
+    \tkzDrawCoordinates[draw,ultra thick,fill=blue!15](PA.th3)
+    \tkzDrawCoordinates[draw,ultra thick,fill=blue!15](PA.th4)
+    \tkzDrawCoordinates[draw,ultra thick,fill=red!15](PA.th5)
+    \tkzDrawCoordinates[draw,ultra thick,fill=red!15](PA.th6)
+    \tkzDrawCircle[ultra thick,black](O,A)
+    \end{tikzpicture}
+\end{center}
+
+\end{verbatim}
+
+\medskip
+
+In addition to manually constructing paths from a list of points, you can also automatically generate paths using geometric classes. This is particularly useful when drawing arcs, segments, or interpolated curves. Currently, the following classes provide built-in methods to generate path objects:
+
+\begin{itemize}
+\item \tkzClass{line} — segment interpolation between two points See [\ref{ssub:line_path}]
+\item \tkzClass{triangle} — triangle outline as a path. See [\ref{ssub:method_tkzmeth_triangle_path}]
+\item \tkzClass{circle} — circular arcs between two points on the circumference See [\ref{ssub:circle_path}]
+\item \tkzClass{conic} — arcs or full curves parameterized. See [\ref{ssub:conic_path}]
+\end{itemize}
+
+These methods typically return a \tkzClass{path} object with a default or user-defined number of points. For instance:
+
+\begin{verbatim}
+PA.arc = C.OA:path(z.A, z.B, 40) -- circular arc from A to B on circle OA
+PA.seg = L.AB:path(10) -- line segment from A to B with 10 points
+PA.tri = T.ABC:path() -- triangle outline path
+PA.co = CO.EL:points(0, 1, 50) -- conic arc from t=0 to t=1
+\end{verbatim}
+
+These generated paths can be combined, reversed, filled, or used for \TIKZ{} decorations.
+
+
+\subsection{Overview} % (fold)
+\label{sub:Overview}
+
+The path object represents an ordered sequence of 2D complex points, stored as TikZ-compatible strings in the form "(x,y)". It supports geometric operations such as translation, homothety, and rotation, and can be combined with other paths using Lua operator overloading.
+
+The variable \code{PA} holds a table used to store paths. It is optional, and you are free to choose the variable name. However, using \code{PA} is a recommended convention for clarity and consistency. If you use a custom variable (e.g., Paths), you must initialize it manually. The \tkzFct{tkz-elements}{init\_elements()} function reinitializes the \code{PA} table if used.
+ It is primarily intended for geometric constructions and drawing operations in \TIKZ{} via lua\LATEX{}.
+
+It supports arithmetic operations for combining and manipulating paths, as well as geometric transformations such as translation, rotation, homothety, and reversal.
+% subsection Overview (end)
+
+\subsection{Constructor}
+
+\begin{center}
+  \begin{verbatim}
+ PA.name = path(table_of_points) -- Creates a new path object.
+  \end{verbatim}
+\end{center}
+
+
+If data is provided, the input should be a table of points written as strings, e.g., |{ "(0,0)", "(1,0)"|, |"(1,1)" }| otherwise creates an empty path.
+
+Here is a \tkzname{path} representing a simple triangle:
+
+  \begin{mybox}
+    \begin{verbatim}
+      PA.triangle = path({ "(0, 0)", "(1, 0)","(1, 1)" })
+    \end{verbatim}
+  \end{mybox}
+
+
+\subsection{Operator Overloading}
+
+\begin{itemize}
+  \item \code{p1 + p2} — \textbf{Concatenation} \\
+  Returns a new path by appending \code{p2} after \code{p1}.
+
+  \item \code{-p} — \textbf{Reversal} \\
+  Returns a copy of the path in reverse order.
+
+  \item \code{p1 - p2} — \textbf{Subtraction} \\
+  Equivalent to \code{p1 + (-p2)} (concatenates \code{p1} with the reversed \code{p2}).
+\end{itemize}
+
+\subsection{Methods}
+
+\begin{center}
+  \bgroup
+  \catcode`\_ = 12
+  \small
+  \captionof{table}{Methods of the \texttt{path} class.}\label{tab:path_methods}
+  \begin{tabular}{ll}
+    \toprule
+    \textbf{Method} & \textbf{Reference} \\
+    \midrule
+\tkzMeth{path}{add\_point(z)}       & See [\ref{ssub:method_tkzmeth_path_add__point}]\\
+
+
+\tkzMeth{path}{copy()}          & See [\ref{ssub:method_tkzmeth_path_copy}] \\
+
+\tkzMeth{path}{translate(dx, dy)} & See [\ref{ssub:method_tkzmeth_path_translate}] \\
+
+\tkzMeth{path}{homothety(pt, k)} & See [\ref{ssub:method_tkzmeth_path_homothety}] \\
+
+\tkzMeth{path}{rotate(pt, an)}  & See [\ref{ssub:method_tkzmeth_path_rotate}] \\
+
+\tkzMeth{path}{close()}      & See [\ref{ssub:method_tkzmeth_path_close}]\\
+
+\tkzMeth{path}{sub(i1, i2)}   & See [\ref{ssub:method_tkzmeth_path_sub_i1_i2}] \\
+
+\tkzMeth{path}{show()}    & See [\ref{ssub:method_tkzmeth_path_show}] \\
+
+
+\tkzMeth{path}{add\_pair\_to\_path(z1, z2, n)}  & See [\ref{ssub:subsubsection_name}] \\
+
+\tkzMeth{path}{path\_from\_pairs(pt, pt, n)}  & See [\ref{ssub:subsubsection_name}] \\
+
+\tkzMeth{path}{stock\_paths(...}  & See [\ref{ssub:subsubsection_name}] \\
+
+\tkzMeth{path}{concat(sep)}       & See [\ref{ssub:method_tkzmeth_path_concat}]\\
+
+\bottomrule
+\end{tabular}
+\egroup
+\end{center}
+
+\subsubsection{Notes} % (fold)
+\label{ssub:notes}
+\begin{itemize}
+\item Points are internally stored as strings like "(x,y)", and parsing is done via a utility function parse\_point.
+
+
+\item Number formatting (e.g., for \TIKZ{} compatibility) should be handled by checknumber, assumed to be defined globally or in a utility module.
+
+\item The class is designed to be lightweight and compatible with TikZ/LuaLaTeX workflows.
+
+\end{itemize}
+
+% subsubsection notes (end)
+
+
+\subsection{String Representation}
+
+The \code{tostring} metamethod provides a readable form, mainly for debugging:
+
+\begin{verbatim}
+tostring(p) --> path: { (x1,y1) , (x2,y2) , ... }
+\end{verbatim}
+
+\subsection{Example}
+
+\begin{tkzexample}[latex=.45\textwidth]
+\directlua{
+  z.O = point(0, 0)
+  z.A = point(5, 0)
+  C.OA = circle(z.O, z.A)
+  z.S = C.OA.south
+  C.SO = circle(z.S, z.O)
+  z.B, z.C = intersection(C.OA, C.SO)
+  C.BC = circle(z.B, z.C)
+  z.D = intersection(C.OA, C.BC)
+  C.CD = circle(z.C, z.D)
+
+  local p1 = C.SO:path(z.C, z.B, 50)
+  local p2 = C.BC:path(z.C, z.D, 50)
+  local p3 = C.CD:path(z.D, z.B, 50)
+  thepath = (-p1) + p2 + p3 }
+\begin{tikzpicture}[scale=.5]
+  \tkzGetNodes
+  \tkzDrawCircles(O,A S,O)
+  \tkzDrawArc(B,C)(D)
+  \tkzDrawArc(C,D)(B)
+  \tkzDrawCoordinates[fill = purple!20,
+                      opacity=.4](thepath)
+  \tkzDrawCoordinates[smooth,red,thick](thepath)
+  \tkzDrawPoints(A,O,B,C,S,D)
+  \tkzLabelPoints(A,B,C)
+\end{tikzpicture}
+\end{tkzexample}
+
+\subsubsection*{Using Indexed Names for Paths} % (fold)
+
+When working with path objects—especially when several intermediate curves are involved—it is strongly recommended to use indexed names such as \code{PA.p1}, \code{PA.p2}, etc., rather than a generic name like \code{PA.p}.
+
+\begin{mybox}
+\textbf{Rule — Prefer explicit, indexed names:}
+Using \code{PA.p1}, \code{PA.p2}, \code{PA.result}, etc., improves clarity, avoids accidental overwriting, and ensures that all geometric data can be reset with a single call to \tkzFct{init\_elements()}.
+\end{mybox}
+
+This approach aligns with the overall philosophy of \tkzNamePack{tkz-elements}, where named tables like \code{PA}, \code{T}, \code{C}, and \code{L} are used to store structured geometric information. Indexing also helps make diagrams more readable, reproducible, and easier to debug.
+
+\subsubsection{Metamethod \tkzMeta{path}{tostring}} % (fold)
+\label{ssub:metamethod_tkzmeta_path_tostring}
+
+% subsubsection metamethod_tkzmeta_path_tostring (end)
+
+\subsubsection{Method \tkzMeth{path}{add\_point(pt,<n>)}} % (fold)
+\label{ssub:method_tkzmeth_path_add__point}
+
+Adds a point (given as a complex table) to the path. Let's take one of the first examples: | PA.triangle = path({ "(0, 0)", "(1, 0)","(1, 1)" })|and use the method to build the path automatically
+
+\begin{tkzexample}[latex=.3\textwidth]
+\directlua{
+  PA.triangle = path()
+  z.A = point(0, 0)
+  z.B = point(1, 0)
+  z.C = point(1, 1)
+  PA.triangle:add_point(z.A, 0)
+  PA.triangle:add_point(z.B, 0)
+  PA.triangle:add_point(z.C, 0)
+  tex.print(tostring(PA.triangle))}
+\end{tkzexample}
+% subsubsection method_tkzmeth_path_add__point (end)
+
+
+\subsubsection{Method \tkzMeth{path}{copy()}} % (fold)
+\label{ssub:method_tkzmeth_path_copy}
+
+Returns a deep copy of the path
+
+\begin{tkzexample}[latex=.3\textwidth]
+\directlua{
+  PA.p1 = path({ "(0, 0)", "(1, 0)","(1, 1)" })
+  PA.p2 = PA.p1:copy()
+  PA.p2:add_point(point(0, 0),0)}
+\begin{tikzpicture}
+  \tkzDrawCoordinates(PA.p2)
+\end{tikzpicture}
+\end{tkzexample}
+% subsubsection method_tkzmeth_path_copy (end)
+
+\subsubsection{Method \tkzMeth{path}{translate(dx,dy)}} % (fold)
+\label{ssub:method_tkzmeth_path_translate}
+
+Translates the path by a given vector \((dx,dy)\)
+
+\begin{tkzexample}[latex=.3\textwidth]
+\directlua{
+  PA.p1 = path({ "(0,0)", "(1,0)", "(1,1)" })
+  PA.p2 = PA.p1:translate(2,1)}
+\begin{tikzpicture}
+\tkzDrawCoordinates(PA.p2)
+\end{tikzpicture}
+\end{tkzexample}
+% subsubsection method_tkzmeth_path_translate_r_r (end)
+
+\subsubsection{Method \tkzMeth{path}{homothety(pt,r)}} % (fold)
+\label{ssub:method_tkzmeth_path_homothety}
+
+Applies a homothety centered at \(pt\) with ratio \(k\)
+
+
+\begin{tkzexample}[latex=.3\textwidth]
+\directlua{
+   z.O = point(0, 0)
+   PA.base = path({ "(0,0)", "(1,0)", "(1,1)" })
+   PA.scaled = PA.base:homothety(z.O, -2)}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawCoordinates(PA.base)
+  \tkzDrawCoordinates(PA.scaled)
+  \tkzDrawPoint(O)
+\end{tikzpicture}
+\end{tkzexample}
+% subsubsection method_tkzmeth_path_homothety (end)
+
+
+
+\subsubsection{Method \tkzMeth{path}{rotate(pt, an)}} % (fold)
+\label{ssub:method_tkzmeth_path_rotate}
+
+ Rotates the path around \(pt\) by angle \(\theta\) (radians)
+
+\begin{tkzexample}[latex=.3\textwidth]
+\directlua{
+   z.O = point(1, 1)
+   PA.base = path({ "(1,0)", "(2,0)", "(2,1)" })
+   PA.rotated = PA.base:rotate(z.O, math.pi / 2)}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawCoordinates(PA.base)
+  \tkzDrawCoordinates(PA.rotated)
+  \tkzDrawPoint(O)
+\end{tikzpicture}
+\end{tkzexample}
+
+% subsubsection method_tkzmeth_path_rotate (end)
+
+\subsubsection{Method \tkzMeth{path}{close()}} % (fold)
+\label{ssub:method_tkzmeth_path_close}
+
+Closes the path by repeating the first point at the end
+
+\begin{tkzexample}[latex=.3\textwidth]
+\directlua{
+  PA.p = path({ "(0,0)", "(1,0)", "(1,1)" })
+  PA.closed = PA.p:close()}
+\begin{tikzpicture}
+  \tkzDrawCoordinates[fill=green!20](PA.closed)
+\end{tikzpicture}
+\end{tkzexample}
+
+% subsubsection method_tkzmeth_path_close (end)
+
+
+\subsubsection{Method \tkzMeth{path}{sub(i1, i2)}} % (fold)
+\label{ssub:method_tkzmeth_path_sub_i1_i2}
+
+Returns a subpath between two indices
+
+
+\begin{tkzexample}[latex=.3\textwidth]
+\directlua{
+  PA.full = path({ "(0,0)", "(1,0)", "(1,1)", "(0,1)", "(0,0)" })
+  PA.part = PA.full:sub(2, 4)}
+\begin{tikzpicture}
+  \tkzDrawCoordinates[fill=green!20](PA.part)
+\end{tikzpicture}
+\end{tkzexample}
+
+\subsubsection{Method \tkzMeth{path}{show()}} % (fold)
+\label{ssub:method_tkzmeth_path_show}
+
+Prints the path in the terminal (for debugging)
+
+\begin{tkzexample}[latex=.45\textwidth]
+\directlua{
+  PA.p = path({ "(0,0)", "(1,0)", "(1,1)" })
+  PA.p:show()}
+\end{tkzexample}
+
+% subsubsectionmethod_tkzmeth_path_show (end)
+
+\subsubsection{Method \tkzMeth{path}{add\_pair\_to\_path(p, p, n)}} % (fold)
+\label{ssub:subsubsection_name}
+Adds a formatted point pair to a \tkzname{path} object. The coordinates of \code{z1} and \code{z2} are extracted, formatted with a fixed number of decimals, and combined into a string \code{"x1/y1/x2/y2"} appended to the path.
+
+\paragraph{Arguments}
+\begin{itemize}
+  \item \code{z1}, \code{z2} – points given as tables \code{\{re, im\}}.
+  \item \code{decimals} (optional) – number of decimals (default: \code{5}).
+\end{itemize}
+
+\paragraph{Returns} Nothing (modifies the path in place).
+
+\paragraph{Example}
+\begin{verbatim}
+local PA.p = path() -- chemin vide
+local z.A = point(1, 2)
+local z.B = point(3, 4)
+add_pair_to_path(PA.p, z.A, z.B, 2)
+-- PA.p = {"1.00/2.00/3.00/4.00"}
+\end{verbatim}
+% subsubsection subsubsection_name (end)
+
+
+\subsubsection{Method \tkzMeth{path}{path\_from\_pairs(p, p, n)}} % (fold)
+\label{ssub:method_tkzmeth_path_path_from_pairs}
+
+Creates a new \tkzname{path} object by combining pairs of points taken from two parallel paths. Each resulting entry is a string \code{"x1/y1/x2/y2"}.
+
+\paragraph{Arguments}
+\begin{itemize}
+  \item \code{p1}, \code{p2} – tables of point strings \code{"(x,y)"}.
+  \item \code{decimals} (optional) – number of decimals to retain (default: \code{5}).
+\end{itemize}
+
+\paragraph{Returns} A new \tkzname{path} object.
+
+\paragraph{Errors} Raises an error if the paths do not have the same length.
+
+\paragraph{Example}
+\begin{verbatim}
+local PA.p1 = {point(0,0), point(1,1)}
+local PA.p2 = {point(1,0), point(2,1)}
+local PA.result = path_from_pairs(PA.p1, PA.p2, 1)
+-- PA.result = {"0.0/0.0/1.0/0.0", "1.0/1.0/2.0/1.0"}
+\end{verbatim}
+
+% subsubsection method_tkzmeth_path_path_from_pairs (end)
+
+\subsubsection{Method \tkzMeth{path}{stock\_paths(...)}} % (fold)
+\label{ssub:method_tkzmeth_path_stock__paths}
+
+Combines an arbitrary number of paths into a single \tkzname{path}. Each entry contains the concatenated coordinates of corresponding points from all input paths, formatted as \code{"x1/y1/x2/y2/..."}.
+
+\paragraph{Arguments}
+\begin{itemize}
+  \item \code{...} – one or more tables of TikZ-style points \code{"(x,y)"}. An optional final argument may specify the number of decimals.
+\end{itemize}
+
+\paragraph{Returns} A new \tkzname{path} object.
+
+\paragraph{Example}
+\begin{verbatim}
+local PA.A = {point(1,2), point(2,2)}
+local PA.B = {point(1,3), point(2,3)}
+local PA.path = stock_paths(PA.A, PA.B, 2)
+-- PA.path = {"1.00/2.00/1.00/3.00", "2.00/2.00/2.00/3.00"}
+\end{verbatim}
+
+
+\paragraph{Errors} All paths must have the same number of points.
+
+% subsubsection method_tkzmeth_path_stock__paths (end)
+
+
+
+\subsubsection{Method \tkzMeth{path}{concat(<'sep'>)}} % (fold)
+\label{ssub:method_tkzmeth_path_concat}
+
+Concatenates the path into a string (default sep: space)
+
+\begin{tkzexample}[latex=.3\textwidth]
+\directlua{
+ PA.p = path({ "(0,0)", "(1,0)", "(1,1)" })
+ PA.p:concat(" -- ")}
+\begin{tikzpicture}
+  \tkzDrawCoordinates(PA.p)
+\end{tikzpicture}
+\end{tkzexample}
+
+% subsubsection method_tkzmeth_path_concat_string (end)
+
+\subsubsection{Example : Director circle } % (fold)
+\label{ssub:director_circle}
+
+
+Conics are drawn using the \tkzClass{path} tool.
+
+
+\begin{minipage}{.55\textwidth}
+  \begin{verbatim}
+   \directlua{
+    init_elements()
+    z.O = point(0, 0)
+    z.F1 = point(4, 1)
+    z.F2 = point(-4, -1)
+    z.H = point(4 * math.sqrt(2), 0)
+    local a = tkz.length(z.O, z.H)
+    CO.EL = conic(EL_bifocal(z.F2, z.F1, a))
+    PA.curve = CO.EL:points(0, 1, 50)
+    z.A = CO.EL.covertex
+    T.HOA = triangle(z.H, z.O, z.A)
+    z.P = T.HOA:parallelogram()
+    C.OP = circle(z.O, z.P)
+    z.L = C.OP:point(0.25)
+    T.LJ, T.LK = CO.EL:tangent_from(z.L)
+    z.J = T.LJ.pb
+    z.K = T.LK.pb}
+  \end{verbatim}
+\end{minipage}
+\begin{minipage}{.45\textwidth}
+   \directlua{
+    init_elements()
+    z.O = point(0, 0)
+    z.F1 = point(4, 1)
+    z.F2 = point(-4, -1)
+    z.H = point(4 * math.sqrt(2), 0)
+    local a = tkz.length(z.O, z.H)
+    CO.EL = conic(EL_bifocal(z.F2, z.F1, a))
+    PA.curve = CO.EL:points(0, 1, 50)
+    z.A = CO.EL.covertex
+    T.HOA = triangle(z.H, z.O, z.A)
+    z.P = T.HOA:parallelogram()
+    C.OP = circle(z.O, z.P)
+    z.L = C.OP:point(0.25)
+    T.LJ, T.LK = CO.EL:tangent_from(z.L)
+    z.J = T.LJ.pb
+    z.K = T.LK.pb}
+\begin{center}
+  \begin{tikzpicture}[scale = .4]
+   \tkzGetNodes
+   \tkzDrawPoints(F1,F2,O)
+   \tkzDrawCircles[teal](O,P)
+   \tkzDrawPolygon(H,O,A,P)
+   \tkzDrawCoordinates[smooth,cyan](PA.curve)
+   \tkzDrawSegments[orange](O,P O,L L,J L,K)
+   \tkzDrawPoints(F1,F2,O,H,A,P,L,J,K)
+   \tkzLabelPoints(F1,F2,O,H,A,P,L,J,K)
+  \end{tikzpicture}
+\end{center}
+\end{minipage}
+
+\begin{verbatim}
+\begin{tikzpicture}
+ \tkzGetNodes
+ \tkzDrawPoints(F1,F2,O)
+ \tkzDrawCircles[teal](O,P)
+ \tkzDrawPolygon(H,O,A,P)
+ \tkzDrawCoordinates[smooth,cyan](PA.curve)
+ \tkzDrawSegments[orange](O,P O,L L,J L,K)
+ \tkzDrawPoints(F1,F2,O,H,A,P,L,J,K)
+ \tkzLabelPoints(F1,F2,O,H,A,P,L,J,K)
+\end{tikzpicture}
+\end{verbatim}
+
+% subsubsection director_circle (end)
+
+\subsubsection{Classic parabola} % (fold)
+\label{ssub:classic_parabola}
+
+This example moves away from the concept of Euclidean geometry, but the method used can be reused.
+Here we want to draw a parabola whose axis of symmetry is parallel to the y-axis.
+Knowing three of its points, we can determine the equation. The set of points for tracing the parabola is obtained using the tools provided by the \tkzClass{path} class.
+
+\begin{minipage}{.55\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.a = point(1, 0)
+ z.b = point(3, 2)
+ z.c = point(0, 2)
+ local A, B, C = parabola(z.a, z.b, z.c)
+
+ function f(t0, t1, n)
+ 	local PA.tbl = path()
+ 	for t = t0, t1, (t1 - t0) / n do
+ 		local y = A * t ^ 2 + B * t + C
+    local pt = point(t, y)
+    PA.tbl:add_point(pt)
+ 	end
+ 	return PA.tbl
+ end}
+ \end{verbatim}
+\end{minipage}
+\begin{minipage}{.45\textwidth}
+  \directlua{
+   init_elements()
+   z.a = point(1, 0)
+   z.b = point(3, 2)
+   z.c = point(0, 2)
+   local A, B, C = tkz.parabola(z.a, z.b, z.c)
+
+   function def_curve(t0, t1, n)
+   local p = path()
+   for t = t0,t1,(t1-t0)/n  do
+       y = A*t^2+B*t +C
+       pt = point(t, y)
+       p:add_point(pt)
+    end
+    return p
+   end
+
+   PA.curve = def_curve(-1,3,100)}
+
+  \begin{center}
+    \begin{tikzpicture}
+       \tkzGetNodes
+       \tkzInit[xmin = -2,xmax=4,ymin =-1,ymax=6]
+       \tkzDrawX\tkzDrawY
+       \tkzDrawPoints[red,size=4pt](a,b,c)
+      \tkzDrawCoordinates[smooth,purple](PA.curve)
+    \end{tikzpicture}
+  \end{center}
+\end{minipage}
+
+
+\begin{verbatim}
+\begin{tikzpicture}
+ \tkzGetNodes
+ \tkzInit[xmin = -2,xmax=4,ymin =-1,ymax=6]
+ \tkzDrawX\tkzDrawY
+ \tkzDrawPoints[red,size=4pt](a,b,c)
+ \draw[smooth] plot coordinates {%
+ \directlua{tex.print(f(-1,3,100))}};
+\end{tikzpicture}
+\end{verbatim}
+
+
+% subsubsection classic_parabola (end)
+
+
+% subsection example_director_circle (end)
+% section section_name (end)

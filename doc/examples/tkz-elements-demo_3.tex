@@ -1,0 +1,61 @@
+% !TEX TS-program = lualatex
+% Created by Alain Matthes on 2024-12-25.
+% Copyright (c) 2024 AlterMundus.
+\documentclass[margin = 12pt]{standalone} 
+\usepackage[mini]{tkz-euclide}
+\usepackage{tkz-elements}
+\begin{document}
+
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(5, 1)
+  L.AB = line(z.A, z.B)
+  z.C = point(0.8, 3)
+  T.ABC = triangle(z.A, z.B, z.C)
+  z.N = T.ABC.eulercenter
+  z.G = T.ABC.centroid
+  z.O = T.ABC.circumcenter
+  z.H = T.ABC.orthocenter
+  z.Ma, z.Mb, z.Mc = get_points(T.ABC:medial())
+  z.Ha, z.Hb, z.Hc = get_points(T.ABC:orthic())
+  z.Ea, z.Eb, z.Ec = get_points(T.ABC:extouch())
+  L.euler = T.ABC:euler_line()
+  C.circum = T.ABC:circum_circle()
+  C.euler = T.ABC:euler_circle()
+  z.I, z.J = intersection(L.euler, C.euler)
+  CO.E = conic(EL_bifocal(z.H, z.O, z.I))
+  PA.curve = CO.E:points(0, 1, 50)
+  L.AH = line(z.A, z.H)
+  L.BH = line(z.B, z.H)
+  L.CH = line(z.C, z.H)
+  z.X = intersection(L.AH, C.circum)
+  _, z.Y = intersection(L.BH, C.circum)
+  _, z.Z = intersection(L.CH, C.circum)
+  L.BC = line(z.B, z.C)
+  L.XO = line(z.X, z.O)
+  L.YO = line(z.Y, z.O)
+  L.ZO = line(z.Z, z.O)
+  z.x = intersection(L.BC, L.XO)
+  z.U = intersection(L.XO, CO.E)
+  _, z.V = intersection(L.YO, CO.E)
+  _, z.W = intersection(L.ZO, CO.E)
+}
+
+\begin{tikzpicture}[scale = 2]
+   \tkzGetNodes
+   \tkzDrawPolygon(A,B,C)
+    \tkzDrawCoordinates[smooth,cyan](PA.curve)
+   \tkzDrawCircles[red](N,Ma O,A)
+   \tkzDrawSegments(A,X B,Y C,Z B,Hb C,Hc X,O Y,O Z,O)
+   \tkzDrawPolygon[red](U,V,W)
+   \tkzDrawLine[blue](I,J)
+   \tkzDrawPoints(I,J,U,V,W)
+   \tkzDrawPoints(A,B,C,N,G,H,O,X,Y,Z,Ma,Mb,Mc,Ha,Hb,Hc)
+   \tkzLabelPoints[blue,right](O,N,G,H,I,J)
+   \tkzLabelPoints[red](U,V,W)
+   \tkzLabelPoints(A,B,Z)
+   \tkzLabelPoints[above](C,X,Y)
+\end{tikzpicture}
+\end{document}
+

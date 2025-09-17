@@ -1,0 +1,284 @@
+\newpage
+\section{Why tkz-elements?} % (fold)
+\label{sec:why_tkz_elements}
+
+The \tkzNamePack{tkz-elements} package was created to address two key challenges in geometric work with TeX. First, TeX alone lacks the numerical precision and flexibility required for complex geometric calculations. By leveraging \tkzname{Lua}, \tkzNamePack{tkz-elements} provides accurate and stable computations for operations such as intersections, projections, and transformations.
+
+Second, the package introduces an object-oriented approach to geometry. Geometric entities—such as points, vectors, lines, circles, and conics—are modeled as structured objects with associated methods. This allows users to express geometric relationships in a more natural and readable way, similar to mathematical language.
+
+Beyond these two core ideas, \tkzNamePack{tkz-elements} offers several additional benefits:
+
+\begin{itemize}
+ 
+ \item  Simplified computations: \tkzname{Lua}'s floating-point arithmetic and expressive syntax make geometric calculations much easier to write and understand than in pure TeX.
+
+\item   Extensibility: Thanks to its modular design and use of classes, new geometric objects and methods can be added with minimal effort, making the package scalable and adaptable.
+
+\item   Interoperability: Calculated points and data integrate smoothly with \TIKZ{} or other TeX drawing tools, allowing users to combine computation and visualization effectively.
+ 
+ \item  Pedagogical clarity: With its structured and expressive syntax, \tkzNamePack{tkz-elements} is well-suited for educational purposes, where clarity of construction and notation is essential.
+\end{itemize}
+
+Altogether, \tkzNamePack{tkz-elements} provides a modern, object-oriented, and Lua-powered framework for geometric constructions within the TeX ecosystem.
+
+
+
+
+
+\subsection{Calculation accuracy} % (fold)
+\label{sub:calculation_accuracy}
+
+\subsubsection{Calculation accuracy in \TIKZ} % (fold)
+\label{ssub:calculation_accuracy_in_tikz}
+
+With \TIKZ,  the expression \tkzimp{|veclen(x,y)|} calculates the expression $\sqrt{x^2+y^2}$.
+This calculation is achieved through a polynomial approximation, drawing inspiration from the ideas  of \tkzimp{Rouben Rostamian}.
+
+\pgfkeys{/pgf/number format/.cd,std,precision=5} \pgfmathparse{veclen(65,72)} 
+\begin{mybox}{}
+\begin{verbatim}
+   pgfmathparse{veclen(65,72)} \pgfmathresult
+\end{verbatim}
+\end{mybox}
+
+ \tkzHand $\sqrt{65^2+72^2} \approx \pmpn{\pgfmathresult} $ \tkzRBomb.
+% subsubsection calculation_accuracy_in_tikz (end)
+
+\subsubsection{Calculation accuracy in Lua} % (fold)
+\label{ssub:calculation_accuracy_in_lua}
+
+A |luaveclen| macro can be defined as follows:
+
+\begin{mybox}{}
+\begin{verbatim}
+\def\luaveclen#1#2{\directlua{tex.print(string.format(
+'\percentchar.5f',math.sqrt((#1)*(#1)+(#2)*(#2))))}}
+\end{verbatim}
+\end{mybox}
+
+and
+
+\begin{mybox}
+\begin{verbatim}
+\luaveclen{65}{72}
+\end{verbatim}
+\end{mybox}
+
+gives 
+\tkzHand $\sqrt{65^2+72^2} = \pmpn{\luaveclen{65}{72}} $ {\color{red}!!}
+
+The error, though insignificant when it comes to the placement of an object on a page by a hundredth of a point, becomes problematic for the results of mathematical demonstrations. Moreover, these inaccuracies can accumulate and lead to erroneous constructions.
+
+\vspace{.5em}
+To address this lack of precision, I initially introduced the \tkzNamePack{fp}, followed by the package \tkzNamePack{xfp}. More recently, with the emergence of lua\LATEX{}, I incorporated a \tkzname{Lua} option aimed at performing calculations with \tkzname{Lua}.
+
+This was the primary motivation behind creating the package, with the secondary goal being the introduction of object-oriented programming (OOP) and simplifying programming with Lua. The concept of OOP persuaded me to explore its various possibilities further.
+
+At that time, I had received some Lua programming examples from {\tkzimpbf{Nicolas Kisselhoff}}, but I struggled to understand the code initially, so I dedicated time to studying Lua patiently. Eventually, I was able to develop \tkzname{\tkznameofpack}, incorporating many of his ideas that I adapted for the package.
+
+
+% subsubsection calculation_accuracy_in_lua (end)
+\subsubsection{Using objects} % (fold)
+\label{ssub:using_objects}
+
+Subsequently, I came across an article by \tkzimp{Roberto Giacomelli}\footnote{\href{https://www.guitex.org/home/images/meeting2012/slides/presentazione_giacomell_guitmeeting_2012.pdf}{Grafica ad oggetti con LuaTEX}}  on object-oriented programming using \tkzname{Lua} and \tkzNamePack{\TIKZ} tools. This served as my second source of inspiration.   Not only did this approach enable programming to be executed step-by-step, but the introduction of objects facilitated a direct link between the code and geometry. As a result, the code became more readable, explicit, and better structured.
+
+\subsubsection{Example: Apollonius circle (new version 2025/05/12)} % (fold)
+\label{ssub:example_apollonius_circle}
+
+\begin{mybox}{Problem:}
+The objective is to identify an inner tangent circle to the three exinscribed circles of a triangle.\end{mybox}
+
+
+For additional information, you can consult the corresponding entry on \href{https://mathworld.wolfram.com/ApolloniusCircle.html}{MathWorld}.
+This example was used as a reference to test the \tkzNamePack{tkz-euclide} package. Initially, the results obtained with basic methods and available tools lacked precision. Thanks to \tkzNamePack{tkz-elements}, more powerful and accurate tools are now available — and they are also easier to use.
+The core principles of figure construction with \tkzNamePack{tkz-euclide} remain unchanged: definitions, calculations, drawings, and labels, all following a step-by-step process that mirrors classical compass-and-straightedge constructions.
+This version takes advantage of the simplest construction method enabled by \tkzname{Lua}.
+
+
+\begin{mybox}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(6, 0)
+ z.C = point(0.8, 4)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.N = T.ABC.eulercenter
+ z.S = T.ABC.spiekercenter
+ T.feuerbach = T.ABC:feuerbach()
+ z.Ea, z.Eb, z.Ec = T.feuerbach:get()
+ T.excentral = T.ABC:excentral()
+ z.Ja, z.Jb, z.Jc = T.excentral:get()
+ C.JaEa = circle(z.Ja, z.Ea)
+% C.ortho = circle:radius(z.S, math.sqrt(C.JaEa:power(z.S)))
+ C.ortho = C.JaEa:orthogonal_from(z.S) % 2025/05/12
+ z.a = C.ortho.through
+ C.euler = T.ABC:euler_circle()
+ C.apo = C.ortho:inversion(C.euler)
+ z.O = C.apo.center
+ z.xa, z.xb, z.xc = C.ortho:inversion(z.Ea, z.Eb, z.Ec)}
+\end{verbatim}
+\end{mybox}
+
+Creating an object involves defining its attributes and methods — that is, its properties and the actions it can perform. Once created, the object is associated with a name (or reference) by storing it in a table. This table acts as an associative array, linking a \code{key} (the reference) to a \code{value} (the object itself). These concepts will be explored in more detail later.
+
+For instance, suppose \code{T} is a table that associates the triangle object with the key \code{ABC}. Then \code{T.ABC} refers to another table containing the attributes of the triangle — such as its vertices, sides, or angles — each accessible via a specific key. These attributes are predefined within the package to support geometric operations.
+
+\vspace{1em}
+\begin{mybox}
+\begin{verbatim}
+ z.N = T.ABC.eulercenter 
+\end{verbatim}
+\end{mybox}
+
+\code{N} is the name of the point, \code{eulercenter} is an attribute of the triangle.
+\footnote{ The center of the Euler circle, or center of the nine-point circle, is a characteristic of every triangle.}
+
+\begin{mybox}
+\begin{verbatim}
+ T.excentral     = T.ABC : excentral () 
+\end{verbatim}
+\end{mybox}
+
+In this context, \tkzname{excentral} is a method associated with the \tkzname{T.ABC }object. It defines the triangle formed by the centers of the exinscribed circles. 
+
+
+
+\begin{tcolorbox}[
+  title=Deprecated Code,
+  colframe=red!50,
+  colback=red!5,
+  coltitle=black,
+  sharp corners,
+  fonttitle=\bfseries,
+  leftrule=1mm,
+  rightrule=1mm,
+  toprule=0.5mm,
+  bottomrule=0.5mm
+]
+\textbf{Note:} This code has been replaced by a more elegant version.
+
+Two lines were particularly noteworthy. The first demonstrates how the exceptional precision of \tkzname{Lua} allows a radius to be defined through a complex computation.
+
+The radius of the radical circle is given by:
+\[
+\sqrt{\Pi(S,\mathcal{C}(Ja,Ea))}
+\]
+(the square root of the power of the point $S$ with respect to the exinscribed circle centered at |Ja| and passing through |Ea|).
+
+\begin{mybox}{}
+\begin{verbatim}
+  C.ortho  = circle: radius (z.S,math.sqrt(C.JaEa: power(z.S)))
+\end{verbatim}
+\end{mybox}
+\end{tcolorbox}
+
+\begin{tcolorbox}[
+  title=Revised Code,
+  colframe=cyan!60!black,
+  colback=cyan!5,
+  coltitle=white,
+  sharp corners,
+  fonttitle=\bfseries,
+  leftrule=1mm,
+  rightrule=1mm,
+  toprule=0.5mm,
+  bottomrule=0.5mm
+]
+\textbf{Note:} The following code replaces the previous version with a more elegant and object-oriented approach.
+The previous code demonstrated the kinds of calculations that can be performed manually. However, \tkzNamePack{tkz-elements} offers a wide range of methods associated with the various geometric objects. Among the methods related to circles is one that allows you to define a circle orthogonal to another, given a center point.
+
+We want to obtain the circle orthogonal to the three exinscribed circles of the triangle. Its center ($S$) is the radical center of these three circles. It suffices to compute a circle orthogonal to one of them \footnote{Given a main circle and two secondary circles, a specific method exists for defining the radical circle orthogonal to all three.}, taking as center the point $S$.  
+
+The second important line performs an inversion with respect to this orthogonal circle.
+
+\begin{mybox}{}
+\begin{verbatim}
+  C.ortho  = C.JaEa:orthogonal_from(z.S)
+\end{verbatim}
+\end{mybox}
+\end{tcolorbox}
+
+\vspace{1em}
+
+Lastly, it's worth noting that the inversion of the Euler circle with respect to the radical circle yields the Apollonius circle.\footnote{The nine-point circle, also known as Euler's circle, is externally tangent to the three exinscribed circles. The points of tangency form the Feuerbach triangle.}  
+
+This transformation requires an object as a parameter. The method automatically detects the object type (as all objects in the package are typed) and selects the appropriate algorithm accordingly.
+
+\begin{mybox}{}
+\begin{verbatim}
+  C.apo   = C.ortho : inversion (C.euler) 
+\end{verbatim}
+\end{mybox}
+
+Now that all relevant points have been defined, it is time to begin drawing the geometric paths. To do this, the corresponding nodes must first be created. This is precisely the role of the macro \tkzMacro{tkz-elements}{tkzGetNodes} (see Section~\ref{ssub:points_transfer}).
+
+The subsequent section exclusively deals with drawings, and is managed by \tkzNamePack{tkz-euclide}.
+
+\begin{verbatim}
+\begin{tikzpicture}
+   \tkzGetNodes
+   \tkzFillCircles[green!30](O,xa)
+   \tkzFillCircles[teal!30](Ja,Ea Jb,Eb Jc,Ec)
+   \tkzFillCircles[lightgray](S,a)
+   \tkzFillCircles[green!30](N,Ea)
+   \tkzDrawPoints(xa,xb,xc)
+   \tkzDrawCircles(Ja,Ea Jb,Eb Jc,Ec S,a O,xa N,Ea)
+   \tkzClipCircle(O,xa)
+   \tkzDrawLines[add=3 and 3](A,B A,C B,C)
+   \tkzDrawPoints(O,A,B,C,S,Ea,Eb,Ec,N)
+   \tkzDrawSegments[dashed](S,xa S,xb S,xc)
+   \tkzLabelPoints(O,N,A,B)
+   \tkzLabelPoints[right](S,C)
+\end{tikzpicture}
+\end{verbatim}
+
+\vspace{1em}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(6, 0)
+ z.C = point(0.8, 4)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.N = T.ABC.eulercenter
+ z.S = T.ABC.spiekercenter
+ T.feuerbach = T.ABC:feuerbach()
+ z.Ea, z.Eb, z.Ec = T.feuerbach:get()
+ T.excentral = T.ABC:excentral()
+ z.Ja, z.Jb, z.Jc = T.excentral:get()
+ C.JaEa = circle(z.Ja, z.Ea)
+ C.ortho = C.JaEa:orthogonal_from(z.S)
+ z.a = C.ortho.through
+ C.euler = T.ABC:euler_circle()
+ C.apo = C.ortho:inversion(C.euler)
+ z.O = C.apo.center
+ z.xa, z.xb, z.xc = C.ortho:inversion(z.Ea, z.Eb, z.Ec)
+}
+\begin{minipage}{\textwidth}
+
+\begin{center}
+\begin{tikzpicture}[ scale  = .4]
+   \tkzGetNodes
+   \tkzFillCircles[green!30](O,xa)
+   \tkzFillCircles[teal!30](Ja,Ea Jb,Eb Jc,Ec)
+   \tkzFillCircles[lightgray](S,a)
+   \tkzFillCircles[green!30](N,Ea)
+   \tkzDrawPoints(xa,xb,xc)
+   \tkzDrawCircles(Ja,Ea Jb,Eb Jc,Ec S,a O,xa N,Ea)
+   \tkzClipCircle(O,xa)
+   \tkzDrawLines[add=3 and 3](A,B A,C B,C)
+   \tkzDrawPoints(O,A,B,C,S,Ea,Eb,Ec,N)
+   \tkzDrawSegments[dashed](S,xa S,xb S,xc)
+   \tkzLabelPoints(O,N,A,B)
+   \tkzLabelPoints[right](S,C)
+\end{tikzpicture}
+\end{center}
+
+ 
+\end{minipage}
+
+% subsubsection example_apollonius_circle (end)
+% subsubsection using_objects (end)
+% subsection calculation_accuracy (end)
+% section why_tkz_elements (end)

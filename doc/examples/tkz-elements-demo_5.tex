@@ -1,0 +1,28 @@
+% !TEX TS-program = lualatex
+% Created by Alain Matthes on 2024-12-25.
+% Copyright (c) 2024 AlterMundus.
+\documentclass[margin = 12pt]{standalone} 
+\usepackage[mini]{tkz-euclide}
+\usepackage{tkz-elements}
+
+\begin{document} 
+
+\directlua{
+  init_elements()
+  z.A = point:new(0, 0)
+  z.B = point:new(8, 0)
+  z.C = point:new(2, 6)
+  loadfile("ex_search_circle.lua")(1.4)
+}
+
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzFillPolygon[lightgray!30](A,B,C)
+\foreach \n/\c in {1/red,2/orange,3/yellow,4/green,5/blue,6/violet} 
+  {\tkzFillCircle[\c!30,opacity=.4](c\n,t\n)
+  \tkzDrawCircle[thick,\c](c\n,t\n) }
+\tkzDrawPolygon[thick](A,B,C)
+\tkzDrawPoints(A,B,C)
+\end{tikzpicture}
+\end{document}
+

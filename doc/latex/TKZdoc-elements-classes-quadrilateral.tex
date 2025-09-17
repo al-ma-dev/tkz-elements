@@ -1,0 +1,244 @@
+\newpage
+\section{Class \tkzClass{quadrilateral}} % (fold)
+
+\vspace{1em}
+The variable \tkzVar{quadrilateral}{Q} holds a table used to store quadrilaterals. It is optional, and you are free to choose the variable name. However, using \code{Q} is a recommended convention for clarity and consistency. If you use a custom variable (e.g., Quad), you must initialize it manually. The \tkzFct{tkz-elements}{init\_elements()} function reinitializes the \code{Q} table if used.
+
+\subsection{Creating a quadrilateral} % (fold)
+\label{sub:creating_a_quadrilateral}
+
+The \tkzClass{quadrilateral} class requires four points. The order defines the sides of the quadrilateral. 
+
+\medskip
+The object is usually stored in \tkzVar{quadrilateral}{Q}, which is the recommended variable name.
+
+\begin{mybox}
+\begin{verbatim}
+Q.ABCD = quadrilateral:new(z.A, z.B, z.C, z.D)
+\end{verbatim}
+\end{mybox}
+
+\paragraph{Short form.}
+A shorter syntax is also available:
+
+\begin{mybox}
+\begin{verbatim}
+Q.ABCD = quadrilateral(z.A, z.B, z.C, z.D)
+\end{verbatim}
+\end{mybox}
+% subsection creating_a_quadrilateral (end)
+
+\subsection{Quadrilateral Attributes} % (fold)
+\label{sub:quadrilateral_attributes}
+
+Points are created in the direct direction. A test is performed to check whether the points form a rectangle, otherwise compilation is blocked.
+
+
+\begin{center}
+ \code{ Creation : Q.new = rectangle : new (z.A,z.B,z.C,z.D)}
+\end{center}
+
+
+\begin{center}
+  \bgroup
+  \catcode`_=12
+  \small
+  \captionof{table}{rectangle attributes.}\label{quadrilateral:att}
+  \begin{tabular}{lll}
+  \toprule
+  \textbf{Attributes}         & \textbf{Application} & \\
+  \tkzAttr{quadrilateral}{pa}   & |z.A = Q.new.pa| & \\
+  \tkzAttr{quadrilateral}{pb}   & |z.B = Q.new.pb| & \\
+  \tkzAttr{quadrilateral}{pc}   & |z.C = Q.new.pc| & \\
+  \tkzAttr{quadrilateral}{pd}   & |z.D = Q.new.pd| & \\
+  \tkzAttr{quadrilateral}{type} & |Q.new.type= 'quadrilateral'|  &\\
+  \tkzAttr{quadrilateral}{i}    & |z.I = Q.new.i| & intersection of diagonals\\
+  \tkzAttr{quadrilateral}{g}    & |z.G = Q.new.g| & barycenter\\
+  \tkzAttr{quadrilateral}{a}    & |AB = Q.new.a| & barycenter\\
+  \tkzAttr{quadrilateral}{b}    & |BC = Q.new.b| & barycenter\\
+  \tkzAttr{quadrilateral}{c}    & |CD = Q.new.c| & barycenter\\
+  \tkzAttr{quadrilateral}{d}    & |DA = Q.new.d| & barycenter\\
+  \tkzAttr{quadrilateral}{ab}   & |Q.new.ab|   &  line passing through two vertices   \\
+  \tkzAttr{quadrilateral}{ac}   & |Q.new.ca|   &  idem. \\
+  \tkzAttr{quadrilateral}{ad}   & |Q.new.ad|   &  idem. \\
+  \tkzAttr{quadrilateral}{bc}   & |Q.new.bc|   &  idem. \\
+  \tkzAttr{quadrilateral}{bd}   & |Q.new.bd|   &  idem. \\
+  \tkzAttr{quadrilateral}{cd}   & |Q.new.cd|   &  idem. \\
+  \bottomrule                      
+  \end{tabular}
+  \egroup
+\end{center}
+
+
+\subsubsection{Quadrilateral attributes} % (fold)
+\label{ssub:quadrilateral_attributes}
+
+\vspace{1em}
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+init_elements()
+z.A = point(0, 0)
+z.B = point(4, 0)
+z.C = point(5, 1)
+z.D = point(0, 3)
+Q.ABCD = quadrilateral(z.A, z.B, z.C, z.D)
+z.I = Q.ABCD.i
+z.G = Q.ABCD.g}
+
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawPolygon(A,B,C,D)
+\tkzDrawSegments(A,C B,D)
+\tkzDrawPoints(A,B,C,D,I,G)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(4, 0)
+ z.C = point(5, 1)
+ z.D = point(0, 3)
+ Q.ABCD = quadrilateral(z.A, z.B, z.C, z.D)
+ z.I = Q.ABCD.i
+ z.G = Q.ABCD.g}
+
+\begin{center}
+  \begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C,D)
+  \tkzDrawSegments(A,C B,D)
+  \tkzDrawPoints(A,B,C,D,I,G)
+  \end{tikzpicture}
+\end{center}
+
+\end{minipage}
+
+% subsubsection quadrilateral_attributes (end)
+% subsection quadrilateral_attributes (end)
+
+\subsection{Quadrilateral methods} % (fold)
+\label{sub:quadrilateral_methods}
+
+\vspace{1em}
+\begin{center}
+  \bgroup
+  \catcode`_=12
+  \small
+  \captionof{table}{Quadrilateral methods.}\label{quadrilateral:met}
+  \begin{tabular}{ll}
+  \toprule
+  \textbf{Methods} & \textbf{Reference}    \\
+  \midrule  
+  \tkzMeth{quadrilateral}{iscyclic ()} & [\ref{ssub:inscribed_quadrilateral}]\\
+    \tkzMeth{quadrilateral}{poncelet\_point()} & [\ref{ssub:poncelet_point}]\\
+  \bottomrule %
+  \end{tabular}
+  \egroup
+\end{center}
+
+
+\subsubsection{Method \tkzMeth{quadrilateral}{is\_cyclic()}} % (fold)
+\label{ssub:inscribed_quadrilateral}
+
+Inscribed quadrilateral
+
+\vspace{1em}
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(4, 0)
+ z.D = point:polar(4, 2 * math.pi / 3)
+ L.DB = line(z.D, z.B)
+ T.equ = L.DB:equilateral()
+ z.C = T.equ.pc
+ Q.new = quadrilateral(z.A, z.B, z.C, z.D)
+ bool = Q.new:iscyclic()
+ if bool == true then
+ 	C.cir = triangle(z.A, z.B, z.C):
+   circum_circle()
+ 	z.O = C.cir.center
+ end}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C,D)
+  \tkzDrawPoints(A,B,C,D)
+  \tkzDrawCircle(O,A)
+  \ifthenelse{\equal{\tkzUseLua{bool}}{
+     true}}{\tkzDrawCircle(O,A)}{}
+  \tkzLabelPoints(A,B)
+  \tkzLabelPoints[above](C,D)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+init_elements()
+z.A = point(0, 0)
+z.B = point(4, 0)
+z.D = point:polar(4, 2 * math.pi / 3)
+L.DB = line(z.D, z.B)
+T.equ = L.DB:equilateral()
+z.C = T.equ.pc
+Q.new = quadrilateral(z.A, z.B, z.C, z.D)
+bool = Q.new:iscyclic()
+if bool == true then
+	C.cir = triangle(z.A, z.B, z.C):circum_circle()
+	z.O = C.cir.center
+end
+}
+\begin{center}
+\begin{tikzpicture}[scale = .75 ]
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C,D)
+  \tkzDrawPoints(A,B,C,D)
+  \tkzDrawCircle(O,A)
+  \ifthenelse{\equal{\tkzUseLua{bool}}{
+   true}}{\tkzDrawCircle(O,A)}{}
+  \tkzLabelPoints(A,B)
+  \tkzLabelPoints[above](C,D)
+\end{tikzpicture}
+\end{center}
+
+\end{minipage}
+% subsubsection inscribed_quadrilateral (end)
+
+\subsubsection{Method \tkzMeth{quadrilateral}{poncelet\_point}} % (fold)
+\label{ssub:poncelet_point}
+
+See [\ref{ssub:method_triangle_poncelet_point}] for the definition.
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+ init_elements()
+ z.A = point(1, 1)
+ z.B = point(6, 0)
+ z.D = point(0, 5)
+ z.C = point(6, 2)
+ Q.ABCD = quadrilateral(z.A, z.B, z.C, z.D)   
+ z.P = Q.ABCD:poncelet_point()
+ T.ABC = triangle(z.A,z.B,z.C)   
+ z.I = T.ABC.eulercenter
+ z.Mc = tkz.midpoint(z.A, z.B)
+ T.ABD = triangle(z.A, z.B, z.D)
+ z.I1 = T.ABD.eulercenter}
+\begin{center}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawPolygons(A,B,C,D)
+  \tkzDrawPoints(A,B,C,D,P,Mc)
+  \tkzDrawCircles[red](I,Mc I1,Mc)
+  \tkzLabelPoints(A,B)
+  \tkzLabelPoints[above](C,D,P)
+\end{tikzpicture}
+\end{center}
+
+\end{tkzexample}
+
+% subsubsection method_tkzmeth_quadrilateral_poncelet__point (end)
+
+% subsection quadrilateral_methods (end)

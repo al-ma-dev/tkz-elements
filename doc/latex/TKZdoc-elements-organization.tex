@@ -1,0 +1,115 @@
+\section{Work organization} % (fold)
+\label{sec:work_organization}
+
+
+Here is a sample organization for working with \tkzNamePack{tkz-euclide} and \tkzEngine{lua\LATEX}.
+
+\begin{itemize}
+  \item \textbf{Compilation:} Add the line:
+  \begin{verbatim}
+  % !TEX TS-program = lualatex
+  \end{verbatim}
+  to ensure that your document compiles with \tkzEngine{lua\LATEX}.
+
+  \item \textbf{Document Class:} The \texttt{standalone} class is recommended when the goal is simply to create a figure, as it avoids unnecessary overhead.
+
+  \item \textbf{Package Loading:} You can load \tkzNamePack{tkz-euclide} in two ways:
+  \begin{itemize}
+    \item \tkzcname{usepackage\{tkz-euclide\} }gives you full access to the entire package.
+    \item The recommended method is to use the \tkzPopt{tkz-euclide}{mini} option, which loads only the necessary modules for drawing. You still retain the ability to draw with \TIKZ{} if desired.
+  \end{itemize}
+
+  \item \textbf{Conditionals:} The package \tkzNamePack{ifthen} is useful when you need to evaluate Boolean conditions within your document.
+
+  \item \textbf{Lua Code Organization:} While you can embed Lua code directly with \verb|\directlua|, externalizing the code offers several advantages:
+  \begin{itemize}
+    \item Better syntax highlighting and code presentation in editors that support \tkzname{Lua} and \LATEX{}.
+    \item Simplified commenting: \tkzname{Lua} uses \verb|--|, while \LATEX{} uses \verb|%|. Keeping Lua in a separate file avoids confusion.
+    \item Reusability: external code files can be reused across multiple documents or figures.
+  \end{itemize}
+\end{itemize}
+
+For simplicity, this documentation uses embedded Lua code in most cases. However, in some examples, external files are used to show you how it's done.
+
+
+\vspace{12pt}
+\begin{minipage}{.55\textwidth}
+\begin{verbatim}
+% !TEX TS-program = lualatex
+% Created by Alain Matthes on 2024-01-09.
+\documentclass[margin = 12pt]{standalone} 
+\usepackage[mini]{tkz-euclide}
+\usepackage{tkz-elements,ifthen}
+
+\begin{document}  
+\directlua{
+ init_elements() % Clear tables
+ dofile ("sangaku.lua") % Load the lua code 
+}
+\begin{tikzpicture}[ scale = .75]
+ \tkzGetNodes
+ \tkzDrawCircle(I,F)
+ \tkzFillPolygon[color = purple](A,C,D)
+ \tkzFillPolygon[color = blue!50!black](A,B,C)
+ \tkzFillCircle[color = orange](I,F)
+\end{tikzpicture}
+\end{document}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.45\textwidth}
+\directlua{
+ init_elements()
+ dofile ("sangaku.lua")
+}
+
+\begin{center}
+\begin{tikzpicture}[ scale = .75]
+  \tkzGetNodes
+  \tkzDrawCircle(I,F)
+  \tkzFillPolygon[color = purple](A,C,D)
+  \tkzFillPolygon[color = blue!50!black](A,B,C)
+  \tkzFillCircle[color = orange](I,F)
+\end{tikzpicture}
+\end{center}
+\end{minipage}
+
+\vspace{12pt}
+And here is the code for the \tkzname{Lua} part: the file |ex_sangaku.lua|
+
+\vspace{1em}
+\begin{minipage}{.5\textwidth}
+\begin{mybox}
+\begin{verbatim}
+ z.A = point(0, 0)
+ z.B = point(8, 0)
+ L.AB = line(z.A, z.B)
+ S.AB = L.AB:square()
+ _, _, z.C, z.D = S.AB:get()
+ z.F = S.ac:projection(z.B)
+ L.BF = line(z.B, z.F)
+ T.ABC = triangle(z.A, z.B, z.C)
+ L.bi = T.ABC:bisector(2)
+ z.c = L.bi.pb
+ L.Cc = line(z.C, z.c)
+ z.I = intersection(L.Cc, L.BF)
+\end{verbatim}
+\end{mybox}
+\end{minipage}
+
+\subsection{Scaling Policy Update} % (fold)
+\label{sub:scale_problem}
+
+In previous versions, it was recommended to apply scaling within the Lua part of the code. However, this guidance has now changed.
+
+Since all geometric computations are handled in \tkzname{Lua}, applying scaling in \TIKZ{} no longer presents any issues. On the contrary, performing scaling in \tkzname{Lua} has led to several complications—particularly with the recent implementation of conic-related functions, which involve numerous distance calculations using real numbers.
+
+These challenges prompted a review of several functions, during which some bugs related to Lua-side scaling were identified and resolved.
+
+\medskip
+\noindent
+\textbf{\textcolor{red}{New Recommendation:}} From now on, scaling should be applied exclusively in the \TIKZ{} part. The \tkzname{Lua} code should operate in an unscaled, consistent coordinate system to ensure the reliability of all geometric computations.
+
+The following documentation uses only scaling in the \tkzEnv{tikz}{tikzpicture} environment.
+
+% subsection scale_problem (end)
+% section work_organization (end)

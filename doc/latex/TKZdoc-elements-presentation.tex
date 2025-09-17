@@ -1,0 +1,291 @@
+\newpage
+\section{Presentation}
+
+\subsection{Geometric Construction Philosophy} % (fold)
+\label{sub:construction_philosophy}
+
+\tkzNamePack{tkz-elements} is built around the principles of classical Euclidean geometry, emphasizing constructions achievable with an unmarked straightedge and a compass. The library favors a declarative and geometric approach over algebraic or numeric definitions.
+
+This philosophy means that all geometric objects — points, lines, circles, triangles, and so on — are primarily defined by other points. Explicit numerical values such as coordinates, distances, or angles are deliberately avoided unless they are essential to the construction. This is in line with a traditional ruler-and-compass mindset, where geometric reasoning emerges from visual configurations and not from numbers.
+
+For example:
+\begin{itemize}
+  \item A circle is defined by its center and a point on the circumference,
+  \item A perpendicular bisector is constructed using midpoint and symmetry,
+  \item An angle is inferred from three points rather than given as a numeric value.
+\end{itemize}
+
+This design decision also explains why constructors based on scalar values, such as OCCS (One Center and a Scalar), are not part of the default interface. Their use would introduce numerical dependency at odds with the intended geometric abstraction.
+
+\bigskip
+While \tkzNamePack{tkz-elements} promotes a high-level, point-based approach to geometry, it relies internally on \textbf{Lua} for performing all necessary calculations. Lua is not exposed to the user as a scripting tool, but rather serves as a powerful computational engine that enables precise and robust geometric operations behind the scenes.
+
+This separation of concerns allows users to focus entirely on geometric constructions while benefiting from Lua’s computational precision and performance. In the next section, we will explain how Lua integrates with \LaTeX\ in the context of this package — not as a programming layer, but as an invisible partner enabling advanced constructions.
+
+
+\subsection{With Lua} % (fold)
+\label{sub:with_lua}
+
+
+The primary purpose of \tkzNamePack{tkz-elements} is to perform geometric computations and define points using \tkzname{Lua}. You can think of it as a computational kernel that can be used by either \tkzNamePack{tkz-euclide} or directly with \tkzNamePack{\TIKZ}.
+
+\tkzname{Lua} code can be executed in two ways: directly, using the \tkzMacro{lualatex}{directlua} primitive, or within a \tkzEnv{tkz-elements}{tkzelements} environment based on the \tkzNamePack{luacode} package (which must be loaded separately).
+When using \tkzMacro{lualatex}{directlua}, especially in complex documents, you can reset internal data structures — such as coordinate tables and scaling factors — using the \tkzFct{package}{init\_elements()} function.
+
+\begin{minipage}[t]{.52\textwidth}\vspace{0pt}%
+   The key points are: 
+   \begin{itemize}
+      \item The source file must be \tkzRHand\ {\color{red}\uline{ \color{black}UTF-8}}  encoded.
+      \item Compilation must be done with  \tkzRHand\ {\color{red}\uline{ \color{black}lua\LATEX{}}}.
+      \item You need to load \tkzNamePack{tkz-euclide} and \code{tkz-elements}.
+      \item All definitions and calculations are carried out in an \tkzClass{occs} (orthonormal cartesian coordinate system,) using Lua either via the macro \tkzMacro{lualatex}{directlua} or within the  \tkzEnv{tkz-elements}{tkzelements} environment.
+   \end{itemize}
+   
+On the right, you will find a minimal template.
+  
+The code is divided into two main parts:  the Lua code (executed using \tkzMacro{lualatex}{directlua} or placed inside a \tkzEnv{tkz-elements}{tkzelements} environment), and the  \tkzEnv{tikz}{tikzpicture} environment, where drawing commands — typically from \tkzNamePack{tkz-euclide} — are issued.
+
+When using \tkzNamePack{tkz-euclide}, the mini option is recommended to load only the macros needed for drawing.
+Within the \tkzname{Lua} section, it is best practice to systematically call the \tkzFct{package}{init\_elements()} function. This function resets internal tables.
+Important: From this point on, all scaling operations must be avoided in the \tkzname{Lua} code.
+
+\vspace*{4.1 cm}%
+\end{minipage}\hspace*{\fill}
+\begin{minipage}[t]{.45\textwidth}\vspace{0pt}%
+\begin{mybox}
+\begin{verbatim}
+% !TEX TS-program = lualatex
+% Created by Alain Matthes
+\documentclass{standalone} 
+\usepackage[mini]{tkz-euclide}
+% or simply TikZ
+\usepackage{tkz-elements}
+begin{document} 
+    
+\directlua{
+init_elements()
+% definition of some points
+z.A = point(   ,   )
+z.B = point(   ,   )
+% or
+z.A = point:new(   ,   )
+z.B = point:new(   ,   )
+
+ ...code...
+}
+
+\begin{tikzpicture}
+% points transfer to Nodes
+% from Lua to tikz (tkz-euclide)
+\tkzGetNodes
+
+\end{tikzpicture}
+\end{document}
+\end{verbatim}
+\end{mybox}
+\end{minipage}
+% subsection with_lua (end)
+
+\subsection{The main process} % (fold)
+\label{sub:the_main_process}
+
+\tikzset{concept/.append style={fill={none}}}
+\tikzset{root concept/.style=   {minimum size=3cm,text width=2.8cm}}%
+\tikzset{level 1 concept/.append style={minimum size=4cm, font=\large, text width=3cm}}%
+\begin{tikzpicture}
+  \path[mindmap,concept color=orange,text=black]
+    node[concept] {Transfers\\\textcolor{orange}{ \textbackslash{tkzGetNodes}}}
+    child[concept color=red,grow=right] {
+      node[concept] {Drawings\\\textcolor{red}{tkz-euclide}\\\textcolor{red}{\TIKZ}} }
+    child[concept color=purple,grow=left] { 
+    node[concept] {Definitions\\Calculations\\\textcolor{purple}{tkz-elements}} };
+\end{tikzpicture}
+
+After obtaining all the necessary points for the drawing, they must be transformed into \tkzname{nodes} so that \tkzNamePack{\TIKZ} or \tkzNamePack{tkz-euclide} can render the figure. This is accomplished using the macro \tkzMacro{tkz-elements}{tkzGetNodes}. This macro iterates through  all the elements of the table \tkzname{z} using the key (which is essentially the name of the point) and retrieves the associated values, namely the coordinates of the point (node).
+% subsection the_main_process (end)
+
+\subsection{Complete example: Pappus circle} % (fold)
+\label{sub:the_figure_pappus_circle}
+
+\subsubsection{The figure} 
+
+\directlua{
+z.A = point(0, 0)
+z.B = point(10, 0)
+L.AB = line(z.A, z.B)
+z.C = L.AB:gold_ratio()
+L.AC = line(z.A, z.C)
+L.CB = line(z.C, z.B)
+L.AB = line(z.A, z.B)
+z.O_0 = L.AB.mid
+z.O_1 = L.AC.mid
+z.O_2 = L.CB.mid
+C.AB = circle(z.O_0, z.B)
+C.AC = circle(z.O_1, z.C)
+C.CB = circle(z.O_2, z.B)
+z.P = C.CB.north
+z.Q = C.AC.north
+z.O = C.AB.south
+z.c = z.C:north(2)
+C.PC = circle(z.P, z.C)
+C.QA = circle(z.Q, z.A)
+z.P_0 = intersection(C.PC, C.AB)
+z.P_1 = intersection(C.PC, C.AC)
+_, z.P_2 = intersection(C.QA, C.CB)
+T.P = triangle(z.P_0, z.P_1, z.P_2)
+z.O_3 = T.P.circumcenter
+}
+
+\begin{center}
+\begin{tikzpicture}[scale = .75]
+ \tkzGetNodes
+ \tkzDrawCircle[black,fill=yellow!20,opacity=.4](O_0,B)
+ \tkzDrawCircles[teal,fill=teal!40,opacity=.6](O_1,C O_2,B)
+ \tkzDrawCircle[purple,fill=purple!20,opacity=.4](O_3,P_0)
+ \tkzDrawArc[cyan,delta=10](Q,A)(P_0)
+ \tkzDrawArc[cyan,delta=10](P,P_0)(B)
+ \tkzDrawArc[cyan,delta=10](O,B)(A)
+ \tkzDrawPoints(A,B,C,O_0,O_1,O_2,P,Q,P_0,P_0,P_1,P_2,O)
+ \tkzLabelPoints(A,B,C,O_0,O_1,O_2,P,Q,P_0,P_0,P_1,P_2,O)
+\end{tikzpicture}
+\end{center}
+
+
+% subsection the_figure_pappus_circle (end)
+
+\subsubsection{The code} % (fold)
+\label{ssub:the_code}
+
+\begin{verbatim}
+% !TEX TS-program = lualatex
+\documentclass{article}
+\usepackage[mini]{tkz-euclide} % mini = only tracing function
+\usepackage{tkz-elements}
+\begin{document}
+
+\directlua{
+  init_elements()  % Clear tables
+  z.A = point(0, 0)
+  z.B = point(10, 0)  %  creation of two fixed points $A$ and $B$
+  L.AB = line(z.A, z.B)
+  z.C = L.AB:gold_ratio()       %  use of a method linked to “line”
+  z.O_0 = line(z.A, z.B).mid % midpoint of segment with an attribute of “line”
+  z.O_1 = line(z.A, z.C).mid %  objects are not stored and cannot be reused.
+  z.O_2 = line(z.C, z.B).mid   
+  C.AB = circle(z.O_0, z.B)  %  new object “circle” stored and reused
+  C.AC = circle(z.O_1, z.C) 
+  C.CB = circle(z.O_2, z.B)
+  z.P = C.CB.north            %  “north” atrributes of a circle
+  z.Q = C.AC.north
+  z.O = C.AB.south
+  z.c = z.C:north(2)   %“north” method of a point (needs a parameter)
+  C.PC = circle(z.P, z.C)
+  C.QA = circle(z.Q, z.A)
+  z.P_0 = intersection(C.PC,C.AB)   %  search for intersections of two circles.
+  z.P_1 = intersection(C.PC,C.AC)   %   idem
+  _,z.P_2 = intersection(C.QA,C.CB)   %  idem
+  T.P = triangle(z.P_0, z.P_1, z.P_2)
+  z.O_3 = T.P.circumcenter  % circumcenter attribute of “triangle”
+}
+\end{verbatim}
+
+\begin{verbatim}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawCircle[black,fill=yellow!20,opacity=.4](O_0,B)
+  \tkzDrawCircles[teal,fill=teal!40,opacity=.6](O_1,C O_2,B)
+  \tkzDrawCircle[purple,fill=purple!20,opacity=.4](O_3,P_0)
+  \tkzDrawArc[cyan,delta=10](Q,A)(P_0)
+  \tkzDrawArc[cyan,delta=10](P,P_0)(B)
+  \tkzDrawArc[cyan,delta=10](O,B)(A)
+  \tkzDrawPoints(A,B,C,O_0,O_1,O_2,P,Q,P_0,P_0,P_1,P_2,O)
+  \tkzLabelPoints(A,B,C,O_0,O_1,O_2,P,Q,P_0,P_0,P_1,P_2,O)
+\end{tikzpicture}
+\end{document}
+\end{verbatim}
+% subsubsection the_code (end)
+
+\subsection{Another example with comments: South Pole} % (fold)
+\label{sub:south_pole}
+
+Here's another example with comments
+
+\begin{verbatim}
+% !TEX TS-program = lualatex
+\documentclass{standalone}
+\usepackage[mini]{tkz-euclide}
+\usepackage{tkz-elements}
+\begin{document}
+\directlua{
+ init_elements()                     % Clear tables 
+ z.A = point(2, 4)
+ z.B = point(0, 0)                   % three fixed points are used
+ z.C = point(8, 0)                   %
+ T.ABC = triangle(z.A, z.B, z.C)     % we create a new triangle object
+ C.ins = T.ABC:in_circle()           % we get the incircle of this triangle
+ z.I = C.ins.center                  % center is an attribute of the circle
+ z.T = C.ins.through                 % through is also an attribute
+ z.I, z.T = C.ins:get()              % get() is a shortcut
+ C.cir = T.ABC:circum_circle()       % we get the  circumscribed circle
+ z.W = C.cir.center                  % we get the center of this circle
+ z.O = C.cir.south                   % now we get the south pole of this circle
+ L.AO = line(z.A, z.O)               % we create an object "line"
+ L.BC = T.ABC.bc                     % we get the line (BC)
+ z.I_A = intersection(L.AO, L.BC)    % we search the intersection of the last lines
+}
+\end{verbatim}
+
+\directlua{
+ init_elements()
+ z.A = point(2, 4)
+ z.B = point(0, 0)
+ z.C = point(8, 0)
+ T.ABC = triangle(z.A, z.B, z.C)
+ C.ins = T.ABC:in_circle()
+ z.I = C.ins.center
+ z.T = C.ins.through
+ C.cir = T.ABC:circum_circle()
+ z.W = C.cir.center
+ z.O = C.cir.south
+ L.AO = line(z.A, z.O)
+ L.BC = T.ABC.bc
+ z.I_A = intersection(L.AO, L.BC)
+}
+
+\begin{center}
+  \begin{tikzpicture}[ scale= 1.2]
+  \tkzGetNodes
+  \tkzDrawCircles(W,A I,T)
+  \tkzDrawArc(O,C)(B)
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawSegments[new](A,O B,O C,O)
+  \tkzDrawLine(B,I)
+  \tkzDrawPoints(A,B,C,I,I_A,W,O)
+  \tkzFillAngles[green!20,opacity=.3](A,O,B A,C,B)
+  \tkzFillAngles[teal!20,opacity=.3](O,B,C B,C,O B,A,O O,A,C)
+  \tkzLabelPoints(I,I_A,W,B,C,O)
+  \tkzLabelPoints[above](A)
+  \end{tikzpicture}
+\end{center}
+
+
+
+\vspace{12pt}
+Here's the \tkzEnv{tikz}{tikzpicture} environment to obtain the drawing:
+\begin{verbatim}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawCircles(W,A I,T)
+\tkzDrawArc(O,C)(B)
+\tkzDrawPolygon(A,B,C)
+\tkzDrawSegments[new](A,O B,O C,O)
+\tkzDrawLine(B,I)
+\tkzDrawPoints(A,B,C,I,I_A,W,O)
+\tkzFillAngles[green!20,opacity=.3](A,O,B A,C,B)
+\tkzFillAngles[teal!20,opacity=.3](O,B,C B,C,O B,A,O O,A,C)
+\tkzLabelPoints(I,I_A,W,B,C,O)
+\tkzLabelPoints[above](A)
+\end{tikzpicture}
+\end{verbatim}
+% subsection south_pole (end)
+\endinput

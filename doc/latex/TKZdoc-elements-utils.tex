@@ -1,0 +1,262 @@
+\newpage
+
+\section{Module utils} % (fold)
+\label{sec:utils}
+
+The \tkzname{utils} module provides a collection of general-purpose utility functions used throughout the \tkzNamePack{tkz-elements} library. These functions are designed to support common tasks such as numerical rounding, type checking, floating-point comparisons, and table operations.
+
+\vspace{1em}
+Although these functions are not directly related to geometric constructions, they play a vital role in ensuring the consistency, robustness, and readability of the core algorithms. Most of them are small, efficient, and reusable in other contexts.
+
+\vspace{1em}
+This module is loaded automatically by \tkzNamePack{tkz-elements}, but its functions can also be used independently if needed.
+
+\subsection{Table of module functions \tkzname{utils} } % (fold)
+\label{sub:table_of_module_functions_tkzname_utils}
+
+\begin{table}[htbp]
+\centering
+\caption{Functions of the module \tkzMod{utils}.}
+\label{tab:utils:functions}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Function} & \textbf{Reference} \\
+\midrule
+
+\tkzFct{utils}{utils.parse\_point(str)}        & [\ref{sub:function_utils_parse_point}] \\
+
+\tkzFct{utils}{utils.format\_number(r, n)}     & [\ref{sub:function_utils_format_number}]\\
+
+\tkzFct{utils}{utils.format\_coord(x, decimals)} & [\ref{sub:function_utils_format_coord}]\\
+
+\tkzFct{utils}{utils.format\_point(z, decimals)} & [\ref{sub:function_utils_format_point}]\\
+
+\tkzFct{utils}{utils.checknumber(x, decimals)}  & [\ref{sub:function_utils_checknumber}]\\
+
+\tkzFct{utils}{utils.almost\_equal(a, b, eps)}  & [\ref{sub:function_utils_almost_equal}]\\
+
+\tkzFct{utils}{utils.wlog(...)}              & [\ref{sub:function_utils_wlog}]\\
+\bottomrule
+\end{tabular}
+\end{table}
+% subsection table_of_module_functions_tkzname_utils (end)
+
+\subsection{Function \tkzFct{utils}{parse\_point(str)}} % (fold)
+\label{sub:function_utils_parse_point}
+
+Parses a string of the form \code{"(x,y)"} and returns the corresponding numeric coordinates. This function supports optional spaces and scientific notation.
+
+\paragraph{Syntax.}
+\begin{center}
+\code{local x, y = utils.parse\_point("(1.5, -2.3)")}
+\end{center}
+
+\paragraph{Description.}
+The function takes a string argument and parses it to extract the \code{x} and \code{y} components as numbers. The input string must follow the format \code{"(x, y)"} where \code{x} and \code{y} can be floating-point values written in decimal or scientific notation.
+
+\paragraph{Arguments.}
+\begin{itemize}
+\item \code{str} – A string representing a point, e.g., \code{"(3.5, -2.0)"}.
+\end{itemize}
+
+\paragraph{Returns.}
+\code{x}, \code{y} – numeric coordinates as Lua numbers.
+Two numerical values: the real and imaginary parts of the point.
+
+\paragraph{Features.}
+\begin{itemize}
+\item Accepts optional spaces around numbers and commas.
+\item Accepts scientific notation (\code{1e-2}, \code{3.4E+1}).
+\item Raises an error for invalid formats.
+\end{itemize}
+
+
+\paragraph{Example.}
+\begin{verbatim}
+local x, y = utils.parse_point("(3.5, -2)")
+-- x = 3.5, y = -2.0
+\end{verbatim}
+
+\paragraph{Related functions.}
+\begin{itemize}
+\item \tkzFct{utils}{format\_point(z, decimals)}
+\item \tkzFct{utils}{format\_number(x, decimals)}
+\end{itemize}
+
+% subsection function_utils_parse_point (end)
+
+\subsection{Function \tkzFct{utils}{format\_number(x, decimals)}} % (fold)
+\label{sub:function_utils_format_number}
+
+This function formats a numeric value (or a numeric string) into a string representation with a fixed number of decimal places.
+
+\paragraph{Syntax.}
+\begin{center}
+\code{local str = utils.format\_number(math.pi, 3)}
+\end{center}
+
+\paragraph{Description.}
+The function converts a number (or a string that can be converted to a number) into a string with the specified number of decimal digits. It is especially useful when generating clean numerical output for display or export to \TIKZ{} coordinates.
+
+\paragraph{Arguments.}
+\begin{itemize}
+\item \code{x} – A number or a string convertible to a number.
+\item \code{decimals} – Optional. The number of decimal places (default is 5).
+\end{itemize}
+
+\paragraph{Returns.}
+A string representing the value of \code{x} with the specified number of decimals.
+
+\paragraph{Features.}
+\begin{itemize}
+\item Automatically converts strings to numbers if possible.
+\item Ensures consistent formatting for \TIKZ{} coordinates or LaTeX output.
+\item Raises an error if the input is not valid.
+\end{itemize}
+
+\paragraph{Example.}
+\begin{verbatim}
+local a = utils.format_number(math.pi, 3)
+% a = "3.142"
+
+local b = utils.format_number("2.718281828", 2)
+% b = "2.72"
+\end{verbatim}
+
+\paragraph{Error handling.}
+An error is raised if \code{x} is not a valid number or numeric string.
+
+\paragraph{Related functions.}
+\begin{itemize}
+\item \tkzFct{utils}{to\_decimal\_string(x, decimals)}
+\item \tkzFct{utils}{format\_point(z, decimals)}
+\end{itemize}
+
+% subsection function_utils_format_number (end)
+
+
+\subsection{Function \tkzFct{utils}{format\_coord(x, decimals)}} % (fold)
+\label{sub:function_utils_format_coord}
+
+This function formats a numerical value into a string with a fixed number of decimal places. It is a lighter version of \tkzFct{utils}{format\_number}, intended for internal use when inputs are guaranteed to be numeric.
+
+\paragraph{Syntax.}
+\begin{center}
+\code{local s = utils.format\_coord(3.14159, 2)} \hfill $\rightarrow$ \code{"3.14"}
+\end{center}
+
+\paragraph{Arguments.}
+\begin{itemize}
+\item \code{x} – A number (not validated).
+\item \code{decimals} – Optional number of decimal places (default: 5).
+\end{itemize}
+
+\paragraph{Returns.}
+A string with fixed decimal formatting.
+
+\paragraph{Notes.}
+This function is used internally by \tkzFct{path}{add\_pair\_to\_path} and other path-building methods. Unlike \tkzFct{utils}{format\_number}, it does not perform input validation and should only be used with known numeric inputs.
+
+\paragraph{Related functions.}
+\begin{itemize}
+\item \tkzFct{utils}{format\_number(x, decimals)} – safer alternative with validation
+\end{itemize}
+
+% subsection function_utils_format_coord (end)
+
+
+\subsection{Function \tkzFct{utils}{checknumber(x, decimals)}} % (fold)
+\label{sub:function_utils_checknumber}
+
+Validates and converts a number or numeric string into a fixed-format decimal string.
+
+\paragraph{Syntax.}
+\begin{center}
+\code{local s = utils.checknumber("2.71828", 4)} \hfill $\rightarrow$ \code{"2.7183"}
+\end{center}
+
+\paragraph{Arguments.}
+\begin{itemize}
+\item \code{x} – A number or numeric string.
+\item \code{decimals} – Optional number of decimal digits (default: 5).
+\end{itemize}
+
+\paragraph{Returns.}
+A formatted string representing the value rounded to the specified number of decimal places.
+
+\paragraph{Remarks.}
+Used internally to validate input before formatting. Returns an error if the input is not convertible.
+
+\paragraph{Related functions.}
+\begin{itemize}
+\item \tkzFct{utils}{format\_number}
+\end{itemize}
+
+% subsection function_utils_checknumber (end)
+
+
+\subsection{Function \tkzFct{utils}{format\_point(z, decimals)}} % (fold)
+\label{sub:function_utils_format_point}
+
+Converts a complex point into a string representation suitable for coordinate output.
+
+\paragraph{Syntax.}
+\begin{center}
+\code{local s = utils.format\_point(z, 4)} \hfill $\rightarrow$ \code{"(1.0000,2.0000)"}
+\end{center}
+
+\paragraph{Arguments.}
+\begin{itemize}
+\item \code{z} – A table with fields \code{re} and \code{im}.
+\item \code{decimals} – Optional precision (default: 5).
+\end{itemize}
+
+\paragraph{Returns.}
+A string representing the point as \code{"(x,y)"}.
+
+\paragraph{Error handling.}
+Raises an error if \code{z} does not have numeric \code{re} and \code{im} components.
+
+\paragraph{Related functions.}
+\begin{itemize}
+\item \tkzFct{utils}{format\_coord}
+\end{itemize}
+
+% subsection function_utils_format_point (end)
+
+\subsection{Function \tkzFct{utils}{almost\_equal(a, b, epsilon)}} % (fold)
+\label{sub:function_utils_almost_equal}
+
+Returns \code{true} if two numbers are approximately equal within a given tolerance.
+
+\paragraph{Syntax.}
+\begin{center}
+\code{if utils.almost\_equal(x, y) then ... end}
+\end{center}
+
+\paragraph{Arguments.}
+\begin{itemize}
+\item \code{a}, \code{b} – Two numbers to compare.
+\item \code{epsilon} – Optional tolerance (default: \code{tkz\_epsilon}).
+\end{itemize}
+
+\paragraph{Returns.}
+A boolean: \code{true} if the values differ by less than the tolerance.
+
+
+\subsection{Function \tkzFct{utils}{wlog(...)}} % (fold)
+\label{sub:function_utils_wlog}
+
+Logs a formatted message to the .log file only, with a \code{[tkz-elements]} prefix.
+
+\paragraph{Syntax.}
+\begin{center}
+\code{utils.wlog("Internal value: \%s", tostring(value))}
+\end{center}
+
+\paragraph{Returns.}
+No return value. Logging only.
+
+
+% section utils (end)
+\endinput

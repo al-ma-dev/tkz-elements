@@ -1,0 +1,371 @@
+\newpage
+\section{Class \tkzClass{rectangle}} % (fold)
+The variable \code{R} holds a table used to store triangles. It is optional, and you are free to choose the variable name. However, using \code{R} is a recommended convention for clarity and consistency. If you use a custom variable (e.g., rectangles), you must initialize it manually. The \code{init\_elements()} function reinitializes the \code{R} table if used.
+
+\subsection{Rectangle attributes} % (fold)
+\label{sub:rectangle_attributes}
+
+
+Points are created in the direct direction. A test is performed to check whether the points form a rectangle, otherwise compilation is blocked.
+
+\begin{mybox}
+Creation | R.ABCD = rectangle : new (z.A,z.B,z.C,z.D)|
+\end{mybox}
+
+\begin{center}
+  \bgroup
+  \catcode`_=12
+  \small
+  \captionof{table}{rectangle attributes.}\label{rectangle:att}
+  \begin{tabular}{lll}
+  \toprule
+  \textbf{Attributes}       & \textbf{Application} & \\
+  \midrule
+  \tkzAttr{rectangle}{pa}     & |z.A = R.ABCD.pa| & \\
+  \tkzAttr{rectangle}{pb}     & |z.B = R.ABCD.pb| & \\
+  \tkzAttr{rectangle}{pc}     & |z.C = R.ABCD.pc| & \\
+  \tkzAttr{rectangle}{pd}     & |z.D = R.ABCD.pd| & \\
+  \tkzAttr{rectangle}{type}   &  |R.ABCD.type= 'rectangle'|  &\\
+  \tkzAttr{rectangle}{center} & |z.I = R.ABCD.center| & center of the rectangle\\
+  \tkzAttr{rectangle}{length} &  |R.ABCD.length| & the length \\
+  \tkzAttr{rectangle}{width}  &  |R.ABCD.width| & the width \\
+  \tkzAttr{rectangle}{diagonal}  &  |R.ABCD.diagonal| & diagonal length\\
+  \tkzAttr{rectangle}{ab}     &  |R.ABCD.ab|   &  line passing through two vertices   \\
+  \tkzAttr{rectangle}{ac}     &  |R.ABCD.ca|   &  idem. \\
+  \tkzAttr{rectangle}{ad}     &  |R.ABCD.ad|   &  idem. \\
+  \tkzAttr{rectangle}{bc}     &  |R.ABCD.bc|   &  idem. \\
+  \tkzAttr{rectangle}{bd}     &  |R.ABCD.bd|   &  idem. \\
+  \tkzAttr{rectangle}{cd}     &  |R.ABCD.cd|   &  idem. \\
+  \bottomrule
+  \end{tabular}
+  \egroup
+\end{center}
+
+
+\subsubsection{Example} % (fold)
+\label{ssub:example}
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(4, 0)
+ z.C = point(4, 4)
+ z.D = point(0, 4)
+ R.new = rectangle(z.A, z.B, z.C, z.D)
+ z.I = R.new.center}
+
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawPolygon(A,B,C,D)
+\tkzDrawPoints(A,B,C,D)
+\tkzLabelPoints(A,B)
+\tkzLabelPoints[above](C,D)
+\tkzDrawPoints[red](I)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\hspace{\fill}\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(4, 0)
+ z.C = point(4, 4)
+ z.D = point(0, 4)
+ R.new = rectangle(z.A, z.B, z.C, z.D)
+ z.I = R.new.center}
+
+\begin{tikzpicture}[scale =1.5]
+ \tkzGetNodes
+ \tkzDrawPolygon(A,B,C,D)
+ \tkzDrawSegment[dashed](A,C)
+ \tkzDrawPoints(A,B,C,D)
+ \tkzLabelPoints(A,B)
+ \tkzLabelPoints[above](C,D)
+ \tkzDrawPoints[red](I)
+ \tkzLabelPoint[right = 10pt](I){$I$\\ |R.new.center|}
+ \tkzLabelSegment[sloped,above](C,D){|R.new.length| =    
+    \pmpn{\tkzUseLua{R.new.length}}}
+ \tkzLabelSegment[sloped,above](A,C){|R.new.diagonal| = 
+   \pmpn{\tkzUseLua{R.new.diagonal}}}
+   % \tkzUseLua{R.new.length} and \tkzUseLua{R.new.diagonal} to get the values.
+\end{tikzpicture}
+\end{minipage}
+% subsubsection example (end)
+% subsection rectangle_attributes (end)
+
+\newpage
+\subsection{Rectangle methods} % (fold)
+\label{sub:rectangle_methods}
+
+\begin{center}
+  \bgroup
+  \catcode`_=12
+  \small
+  \captionof{table}{Rectangle methods.}\label{rectangle:met}
+  \begin{tabular}{lll}
+  \toprule
+  \textbf{Functions} & \textbf{Reference}  &  \\
+  \midrule  
+  \tkzFct{rectangle}{angle (zi, za, angle)} &\\
+  \tkzFct{rectangle}{gold (za, zb)} & \\
+  \tkzFct{rectangle}{diagonal (za, zc)} &\\
+  \tkzFct{rectangle}{side (za, zb, d)} & \\
+  \midrule 
+  \textbf{Methods} & \textbf{Reference}  &  \\
+  \toprule 
+  \tkzMeth{rectangle}{new(za ,zb, zc, zd)} &\\
+  \tkzMeth{rectangle}{get\_lengths ()} & \\
+  \bottomrule %
+  \end{tabular}
+  \egroup
+\end{center}
+
+\subsubsection{Method \tkzMeth{rectangle}{new(pt,pt,pt,pt)}} % (fold)
+\label{ssub:function_igfct_rectangle_new_pt_pt_pt_pt}
+This function creates a square using four points. No test is performed, and verification is left to the user.
+
+\begin{tkzexample}[latex=.5\textwidth]
+  \directlua{
+  z.A = point(0, 0)
+  z.B = point(4, 0)
+  z.C = point(4, 3)
+  z.D = point(-2, -3)
+  L.AB = line(z.A,z.B)
+  L.CD = line(z.C,z.D)
+  z.I = intersection(L.AB, L.CD)
+  C.I = circle(through(z.I, 3.5))
+  z.G,z.E = intersection(L.AB, C.I)
+  z.F,z.H = intersection(L.CD, C.I)
+  R.I = rectangle(z.E, z.F, z.G, z.H)
+  z.X = R.I.ab:projection(z.I)}
+  \begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawPolygon(E,F,G,H)
+  \tkzDrawPoints(A,B,C,D,I,E,F,G,H,X)
+  \tkzLabelPoints(A,B,C,D,I,E,F,G,H,X)
+  \tkzDrawPoints(I)
+  \end{tikzpicture}
+\end{tkzexample}
+
+
+% subsubsection function_igfct_rectangle_new_pt_pt_pt_pt (end)
+
+\subsubsection{Method \tkzMeth{rectangle}{angle(pt,pt,an)}} % (fold)
+\label{ssub:angle_method}
+
+|R.ang = rectangle : angle (z.I,z.A)| ; |z.A | vertex ; ang angle between 2 vertices
+
+
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(4, 0)
+ z.I = point(4, 3)
+ P.ABCD = rectangle:angle(z.I, z.A,
+          math.pi / 6)
+ z.B = P.ABCD.pb
+ z.C = P.ABCD.pc
+ z.D = P.ABCD.pd}
+\begin{tikzpicture}[scale   = .5]
+\tkzGetNodes
+\tkzDrawPolygon(A,B,C,D)
+\tkzDrawPoints(A,B,C)
+\tkzLabelPoints(A,B,C,D)
+\tkzDrawPoints[new](I)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(4, 0)
+ z.I = point(4, 3)
+ P.ABCD = rectangle:angle(z.I, z.A, math.pi / 6)
+ z.B = P.ABCD.pb
+ z.C = P.ABCD.pc
+ z.D = P.ABCD.pd}
+\begin{tikzpicture}[scale  = .5]
+\tkzGetNodes
+\tkzDrawPolygon(A,B,C,D)
+\tkzDrawPoints(A,B,C)
+\tkzLabelPoints(A,B)
+\tkzLabelPoints[above](C,D)
+\tkzDrawPoints[new](I)
+\tkzLabelSegment[sloped,above](A,B){%
+    |rectangle: angle (z.C,z.A,math.pi/6)|}
+\end{tikzpicture}
+\end{minipage}
+% subsubsection angle_method (end)
+
+\subsubsection{Method \tkzMeth{rectangle}{side(pt,pt,d)}} % (fold)
+\label{ssub:side_method}
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(4, 3)
+ R.side = rectangle:side(z.A, z.B, 3)
+ z.C = R.side.pc
+ z.D = R.side.pd
+ z.I = R.side.center}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawPolygon(A,B,C,D)
+\tkzDrawPoints(A,B,C,D)
+\tkzLabelPoints(A,B)
+\tkzLabelPoints[above](C,D)
+\tkzDrawPoints[red](I)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(4, 3)
+ R.side = rectangle:side(z.A, z.B, 3)
+ z.C = R.side.pc
+ z.D = R.side.pd
+ z.I = R.side.center}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawPolygon(A,B,C,D)
+\tkzDrawPoints(A,B,C,D)
+\tkzLabelPoints(A,B)
+\tkzLabelPoints[above](C,D)
+\tkzDrawPoints[red](I)
+\tkzLabelSegment[sloped,above](A,B){%
+   |rectangle : side (z.A,z.B,3)|}
+\end{tikzpicture}
+\end{minipage}
+% subsubsection side_method (end)
+
+\subsubsection{Method \tkzMeth{rectangle}{diagonal(pt,pt)}} % (fold)
+\label{ssub:diagonal_method}
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+init_elements()
+z.A = point(0, 0)
+z.C = point(4, 3)
+R.diag = rectangle:diagonal(z.A, z.C)
+z.B = R.diag.pb
+z.D = R.diag.pd
+z.I = R.diag.center}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawPolygon(A,B,C,D)
+\tkzDrawPoints(A,B,C,D)
+\tkzLabelPoints(A,B)
+\tkzLabelPoints[above](C,D)
+\tkzDrawPoints[red](I)
+\tkzLabelSegment[sloped,above](A,B){%
+    |rectangle:diagonal(z.A,z.C)|}
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+ z.A = point(0, 0)
+ z.C = point(4, 3)
+ R.diag = rectangle:diagonal(z.A, z.C)
+ z.B = R.diag.pb
+ z.D = R.diag.pd
+ z.I = R.diag.center}
+
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawPolygon(A,B,C,D)
+\tkzDrawPoints(A,B,C,D)
+\tkzLabelPoints(A,B)
+\tkzLabelPoints[above](C,D)
+\tkzDrawPoints[red](I)
+\tkzLabelSegment[sloped,above](A,B){%
+   |rectangle : diagonal (z.A,z.C)|}
+\end{tikzpicture}
+\end{minipage}
+% subsubsection diagonal_method (end)
+
+\subsubsection{Method \tkzMeth{rectangle}{gold(pt,pt)}} % (fold)
+\label{ssub:gold_method}
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.X = point(0, 0)
+ z.Y = point(4, 2)
+ R.gold = rectangle:gold(z.X, z.Y)
+ z.Z = R.gold.pc
+ z.W = R.gold.pd
+ z.I = R.gold.center}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawPolygon(X,Y,Z,W)
+\tkzDrawPoints(X,Y,Z,W)
+\tkzLabelPoints(X,Y)
+\tkzLabelPoints[above](Z,W)
+\tkzDrawPoints[red](I)
+\tkzLabelSegment[sloped,above](X,Y){%
+|rectangle :  gold (z.X,z.Y)|}
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+init_elements()
+z.X = point(0, 0)
+z.Y = point(4, 2)
+R.gold = rectangle:gold(z.X, z.Y)
+z.Z = R.gold.pc
+z.W = R.gold.pd
+z.I = R.gold.center}
+
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawPolygon(X,Y,Z,W)
+\tkzDrawPoints(X,Y,Z,W)
+\tkzLabelPoints(X,Y)
+\tkzLabelPoints[above](Z,W)
+\tkzDrawPoints[red](I)
+\tkzLabelSegment[sloped,above](X,Y){%
+  |rectangle :  gold (z.X,z.Y)|}
+\end{tikzpicture}
+\end{minipage}
+% subsubsection gold_method (end)
+
+\subsubsection{Method \tkzMeth{rectangle}{get\_lengths}()} % (fold)
+\label{ssub:function_rectangle_get__lengths}
+
+\begin{tkzexample}[latex=.45\textwidth]
+\directlua{
+ init_elements()
+ z.I = point(2, 1)
+ z.A = point(0, 0)
+ R.ABCD = rectangle:angle(z.I, z.A, math.pi / 3)
+ z.B = R.ABCD.pb
+ z.C = R.ABCD.pc
+ z.D = R.ABCD.pd
+ tkzx,tkzy = R.ABCD:get_lengths()}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawPolygon(A,B,C,D)
+\tkzDrawCircle(I,A)
+\tkzDrawPoints(A,B,C,D)
+\tkzLabelPoints(A,B)
+\tkzLabelPoints[above](C,D)
+\tkzDrawPoints[](I)
+\tkzLabelSegment(A,B){%
+    $\pmpn{\tkzUseLua{tkzx}}$}
+\tkzLabelSegment[right](B,C){%
+    $\pmpn{\tkzUseLua{tkzy}}$}
+\end{tikzpicture}
+\end{tkzexample}
+
+
+% subsubsection function_rectangle_get__lengths (end)
+% subsection rectangle_methods (end)

@@ -1,0 +1,60 @@
+\section{Getting started} % (fold)
+\label{sec:getting_started}
+
+A quick introduction to get you started. We assume that the following packages are installed:  \tkzNamePack{tkz-euclide}, and \tkzNamePack{tkz-elements}.
+Compile the following code using the \tkzEngine{lualatex} engine; you should obtain a line passing through points $A$ and $B$.
+
+\begin{minipage}{.6\textwidth}
+  \begin{tkzexample}[code only]
+  % !TEX TS-program = lualatex
+  \documentclass{article} 
+  \usepackage[mini]{tkz-euclide}
+  \usepackage{tkz-elements}
+  \begin{document}
+  \directlua{
+    init_elements()
+    z.A = point(0, 1) 
+    % or z.A = point:new(0, 1)
+    z.B = point(2, 0)
+  }
+  \begin{tikzpicture}
+   \tkzGetNodes
+   \tkzDrawLine(A,B)
+   \tkzDrawPoints(A,B)
+   \tkzLabelPoints(A,B)
+  \end{tikzpicture}
+  \end{document}
+  \end{tkzexample}
+\end{minipage}
+\begin{minipage}{.4\textwidth}
+  \directlua{
+    z.A = point(0, 1)
+    z.B = point(2, 0)
+  }
+  \begin{tikzpicture}
+   \tkzGetNodes
+   \tkzDrawLine(A,B)
+   \tkzDrawPoints(A,B)
+   \tkzLabelPoints(A,B)
+  \end{tikzpicture}
+\end{minipage}
+
+To test your installation and follow the examples in this documentation, you need to load two packages: \tkzNamePack{tkz-euclide} and \tkzNamePack{tkz-elements}. The first package automatically loads \tkzNamePack{\TIKZ}, which is necessary for all graphical rendering.
+
+
+The \tkzname{Lua} code is provided as an argument to the \tkzMacro{lualatex}{directlua} macro. I will often see  this code block as the \tkzname{Lua part}\footnote{This code can also be placed in an external file, e.g., \texttt{file.lua}.}. This part depends entirely on the \tkzNamePack{tkz-elements} package.
+
+A crucial component in the \tkzEnv{tikz}{tikzpicture} environment is the macro \tkzMacro{tkz-elements}{tkzGetNodes}. This macro transfers the points defined in \tkzname{Lua} to \tkzNamePack{\TIKZ} by creating the corresponding nodes. All such points are stored in a table named \tkzname{z} and are accessed using the syntax \tkzname{z.label}. These labels are then reused within \tkzNamePack{tkz-euclide}.
+
+When you define a point by assigning it a label and coordinates, it is internally represented as a complex number — the affix of the point. This representation allows the point to be located within an orthonormal Cartesian coordinate system.
+
+If you want to use a different method for rendering your objects, this is the macro to modify. For example, Section~\ref{sec:metapost} presents \tkzMacro{tkz-elements}{tkzGetNodesMP}, a variant that enables communication with \code{MetaPost}.
+
+Another essential element is the use of the function \tkzFct{tkz-elements}{init\_elements()}, which clears internal tables\footnote{All geometric objects are stored in Lua tables. These tables must be cleaned regularly, especially when creating multiple figures in sequence.} when working with multiple figures.
+
+If everything worked correctly with the previous code, you're ready to begin creating geometric objects. Section~\ref{sec:class_and_object} introduces the available options and object structures.
+
+Finally, it is important to be familiar with basic drawing commands in \tkzNamePack{tkz-euclide}, as they will be used to render the objects defined in \tkzname{Lua}.
+
+
+% section getting_started (end)

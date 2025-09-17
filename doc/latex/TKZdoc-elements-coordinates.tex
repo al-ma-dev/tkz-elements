@@ -1,0 +1,155 @@
+\newpage\section{Coordinates} % (fold)
+\label{sec:coordinates}
+This section outlines the various coordinate systems available to users. Given the removal of scaling operations from the \tkzname{Lua} layer, such clarification seems more necessary than ever.
+
+
+\subsection{Common Use of Coordinates} % (fold)
+\label{sub:common_use_of_coordinates}
+As with \tkzNamePack{tkz-euclide}, \tkzNamePack{tkz-elements} is based on a two-dimensional orthonormal Cartesian coordinate system, using centimeters as the default unit.
+
+It would be inconsistent to use what we will see  as an \emph{occs} (orthogonal coordinate coordinate system) in a context focused on Euclidean geometry.
+
+Moreover, the concept of a point in \tkzNamePack{tkz-elements} is tied to the affix of a complex number. To maintain code clarity and consistency, the option to modify units within Lua has been deliberately omitted.
+
+\medskip
+\noindent
+\textbf{Conclusion:} For any figure created with \tkzNamePack{tkz-elements}, all points are placed within a 2D orthonormal system using centimeters.
+
+   \begin{tikzpicture}
+   \pgfkeys{/pgf/number format/.cd,std,precision=2}
+   \let\pmpn\pgfmathprintnumber
+   \tkzDefPoints{2/3/M,0/0/O,2/0/A,0/3/B}
+   \tkzLabelPoints(O)
+   \tkzLabelPoint[right](M){$M: z_M = 2 + 3i$}
+   \tkzDrawPoints(M,O)
+   \tkzPointShowCoord(M)
+   \tkzLabelPoint[below,teal](A){$2$}
+   \tkzLabelPoint[left,teal](B){$3$}
+   \tkzDrawSegments[->,add = 0 and 0.25](O,B O,A)
+   \begin{scope}[every annotation/.style={fill=lightgray!15,anchor = east}]
+   \node [annotation,font =\small,text width=6cm] at (current bounding box.west) {
+Coordinates of $M$ 
+   \begin{mybox}{}
+   \code{ z.A = point(2, 3)}
+   \end{mybox}
+       };
+   \end{scope}
+   \end{tikzpicture}
+% subsection common_use_of_coordinates (end)
+
+\subsection{Use of barycentric coordinates.} % (fold)
+\label{sub:use_of_barycentric_coordinates}
+
+A barycentric coordinate system describes the position of a point relative to a reference triangle. Any point in the plane can be expressed with barycentric coordinates, which are defined up to a scalar multiple (homothety). Alternatively, they may be normalized so their sum equals 1.
+
+Barycentric coordinates are particularly useful in triangle geometry, especially when analyzing properties invariant under affine transformations—those not dependent on angles.
+
+Consider a triangle $ABC$. One can define key points like the centroid and orthocenter using barycentric coordinates.
+
+\paragraph{About the Orthocenter.}
+Computing barycentric coordinates for the orthocenter requires knowledge of the triangle's angles. These are stored as attributes in the table \texttt{T.ABC}:
+\begin{itemize}
+  \item \texttt{T.ABC.alpha} — angle $\widehat{A}$ at vertex $A$
+  \item \texttt{T.ABC.beta}  — angle $\widehat{B}$ at vertex $B$
+  \item \texttt{T.ABC.gamma} — angle $\widehat{C}$ at vertex $C$
+\end{itemize}
+
+See  [\ref{ssub:_triangle_barycentric_ka_kb_kc}]
+
+\paragraph{Retrieving Barycentric Coordinates.}
+It is possible to compute the barycentric coordinates of a given point with respect to a triangle. The returned values are automatically normalized. See Section~[\ref{ssub:_triangle_barycentric__coordinates_pt}] for usage.
+
+
+\begin{minipage}{.5\textwidth}
+\directlua{
+z.A = point(0, 0)
+z.B = point(3, 1)
+z.C = point(1, 3)
+T.ABC = triangle(z.A, z.B, z.C)
+z.G = T.ABC:barycentric(1,1,1)
+z.H = T.ABC:barycentric(math.tan(T.ABC.alpha),
+                        math.tan(T.ABC.beta),
+                        math.tan(T.ABC.gamma))}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawPolygon(A,B,C)
+\tkzDrawPoints(A,B,C,G,H)
+\tkzLabelPoints(A,B,G)
+\tkzLabelPoints[above](C,H)
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\begin{tkzexample}[code only]
+\directlua{
+z.A = point(0, 0)
+z.B = point(3, 1)
+z.C = point(1, 3)
+T.ABC = triangle(z.A, z.B, z.C)
+z.G = T.ABC:barycentric(1,1,1)
+z.H = T.ABC:barycentric(math.tan(T.ABC.alpha),
+                        math.tan(T.ABC.beta),
+                        math.tan(T.ABC.gamma))}
+\end{tkzexample}
+\end{minipage}
+
+
+% subsection use_of_barycentric_coordinates (end)
+
+\subsection{Use of Trilinear Coordinates} % (fold)
+\label{sub:use_of_trilinear_coordinates}
+
+The trilinear coordinates of a point $P$ with respect to a triangle $ABC$ are a triple of values proportional to the directed distances from $P$ to each of the triangle’s sides. These coordinates are homogeneous and typically written as $x : y : z$ or $(x, y, z)$.
+
+Since only the ratio between the coordinates is relevant, trilinear coordinates are particularly well suited for expressing geometric relationships that are invariant under scaling.
+
+So
+
+$ a' : b' : c' = ka : kb : kc$ in the next example ($a = BC, b = AC, c = AB$).
+
+
+\begin{minipage}{.5\textwidth}
+\directlua{
+z.A = point(0, 0)
+z.B = point(5, 0)
+z.C = point(1, 3)
+T.ABC = triangle(z.A, z.B, z.C)
+z.L = T.ABC:trilinear(T.ABC.a,
+                      T.ABC.b,
+                      T.ABC.c)
+z.a, z.b, z.c = T.ABC:projection(z.L)}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawPolygon(A,B,C)
+\tkzDrawSegments(L,a L,b L,c)
+\tkzDrawPoints(A,B,C,L)
+\tkzLabelPoints(A,B)
+\tkzLabelPoints[above](C,L)
+\tkzLabelSegment[left](L,a){$ka$}
+\tkzLabelSegment[above](L,b){$kb$}
+\tkzLabelSegment[right](L,c){$kc$}
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\begin{tkzexample}[code only]
+\directlua{
+z.A = point(0, 0)
+z.B = point(5, 0)
+z.C = point(1, 3)
+T.ABC = triangle(z.A, z.B, z.C)
+z.L = T.ABC:trilinear(T.ABC.a,
+                      T.ABC.b,
+                      T.ABC.c)
+z.a, z.b, z.c = T.ABC:projection(z.L)}
+\end{tkzexample}
+\end{minipage}
+
+% subsection use_of_trilinear_coordinates (end)
+
+\subsection{OCCS} % (fold)
+\label{sub:occs}
+
+Objects in this class are \emph{orthonormal Cartesian coordinate system}. They are obtained from the reference system by translation and rotation. They can be used to simplify certain expressions and coordinates.
+See  [\ref{sec:orthonormal_cartesian_coordinate_system}
+]
+% subsection occs (end)
+% section coordinates (end)

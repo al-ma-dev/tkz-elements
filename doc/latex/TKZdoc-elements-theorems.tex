@@ -1,0 +1,772 @@
+\newpage
+
+\section{Some theorems} % (fold)
+\label{sec:some_theorems}
+
+\subsection{Viviani's Theorem} % (fold)
+\label{sub:viviani_s_theorem}
+Viviani's theorem, named after Vincenzo Viviani, states that the sum of the shortest distances from any interior point to the sides of an equilateral triangle equals the length of the triangle's altitude.
+[Wikipedia].
+
+Here's the visual demonstration I gave at the CAPES oral exam in 1989 to become a teacher.
+
+\vspace{1em}
+\begin{minipage}{0.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(8, 0)
+ L.AB = line(z.A, z.B)
+ T.equ = L.AB:equilateral()
+ z.C = T.equ.pc
+ z.I = point(3, 2)
+ L.IAB = T.equ.ab:ll_from(z.I)
+ L.IBC = T.equ.bc:ll_from(z.I)
+ L.ICA = T.equ.ca:ll_from(z.I)
+ z.b = intersection(L.IAB, T.equ.ca)
+ z.a = intersection(L.IAB, T.equ.bc)
+ z.c = intersection(L.IBC, T.equ.ab)
+ z.d = intersection(L.IBC, T.equ.ca)
+ z.e = intersection(L.ICA, T.equ.ab)
+ z.f = intersection(L.ICA, T.equ.bc)
+ L.last = T.equ.ab:ll_from(z.f)
+ z.g = intersection(L.last, T.equ.ca)
+ z.pC = L.last:projection(z.C)
+ z.pIca = T.equ.ca:projection(z.I)
+ z.pIbc = T.equ.bc:projection(z.I)
+ z.pIAB = L.IAB:projection(z.f)
+ z.pIab = T.equ.ab:projection(z.I)}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawPolygons(A,B,C)
+\tkzDrawSegments(a,b c,d e,f f,g)
+\tkzDrawSegments[red,thick](C,pC I,pIab)
+\tkzDrawSegments[red, dashed](I,pIbc)
+\tkzDrawSegments[red,thick](f,pIAB)
+\tkzDrawSegments[red, dashed](I,pIca)
+
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(8, 0)
+ L.AB = line(z.A, z.B)
+ T.equ = L.AB:equilateral()
+ z.C = T.equ.pc
+ z.I = point(3, 2)
+ L.IAB = T.equ.ab:ll_from(z.I)
+ L.IBC = T.equ.bc:ll_from(z.I)
+ L.ICA = T.equ.ca:ll_from(z.I)
+ z.b = intersection(L.IAB, T.equ.ca)
+ z.a = intersection(L.IAB, T.equ.bc)
+ z.c = intersection(L.IBC, T.equ.ab)
+ z.d = intersection(L.IBC, T.equ.ca)
+ z.e = intersection(L.ICA, T.equ.ab)
+ z.f = intersection(L.ICA, T.equ.bc)
+ L.last = T.equ.ab:ll_from(z.f)
+ z.g = intersection(L.last, T.equ.ca)
+ z.pC = L.last:projection(z.C)
+ z.pIca = T.equ.ca:projection(z.I)
+ z.pIbc = T.equ.bc:projection(z.I)
+ z.pIAB = L.IAB:projection(z.f)
+ z.pIab = T.equ.ab:projection(z.I)}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawPolygons(A,B,C)
+\tkzDrawSegments(a,b c,d e,f f,g)
+\tkzDrawSegments[red,thick](C,pC I,pIab f,pIAB)
+\tkzDrawSegments[red, dashed](I,pIbc I,pIca)
+\end{tikzpicture}
+\end{minipage}
+
+% subsection viviani_s_theorem (end)
+
+
+\subsection{Reuschle's theorem} % (fold)
+\label{sub:reuschle_s_theorem}
+In elementary geometry, Reuschle's theorem describes a property of the cevians of a triangle intersecting in a common point and is named after the German mathematician Karl Gustav Reuschle (1812–1875). It is also known as Terquem's theorem after the French mathematician Olry Terquem (1782–1862), who published it in 1842.
+
+\vspace{1em}
+
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(8, 0)
+ z.C = point(5, 5)
+ z.P = point(4, 2)
+ T.ABC = triangle(z.A, z.B, z.C)
+ T.cev = T.ABC:cevian(z.P)
+ z.D, z.E, z.F = T.cev:get()
+ C.cev = T.ABC:cevian_circle(z.P)
+ z.O = C.cev.center
+ z.T = C.cev.through
+ z.G = intersection(C.cev, T.ABC.ca)
+ _, z.H = intersection(C.cev, T.ABC.ab)
+ z.I = intersection(C.cev, T.ABC.bc)
+ L.AI = line(z.A, z.I)
+ L.BG = line(z.B, z.G)
+ z.K = intersection(L.AI, L.BG)}
+\begin{tikzpicture}
+ \tkzGetNodes
+ \tkzDrawPolygons(A,B,C)
+ \tkzDrawPoints(A,...,I,P,K)
+ \tkzDrawSegments(A,D B,E C,F A,I B,G C,H)
+ \tkzDrawCircle(O,T)
+ \tkzLabelPoints[below](A,B)
+ \tkzLabelPoints[above](C,I,E,D,G,K)
+ \tkzLabelPoints[below](F,P,H)
+\end{tikzpicture}
+\end{verbatim}
+
+
+
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(8, 0)
+ z.C = point(5, 5)
+ z.P = point(4, 2)
+ T.ABC = triangle(z.A, z.B, z.C)
+ T.cev = T.ABC:cevian(z.P)
+ z.D, z.E, z.F = T.cev:get()
+ C.cev = T.ABC:cevian_circle(z.P)
+ z.O = C.cev.center
+ z.T = C.cev.through
+ z.G = intersection(C.cev, T.ABC.ca)
+ _, z.H = intersection(C.cev, T.ABC.ab)
+ z.I = intersection(C.cev, T.ABC.bc)
+ L.AI = line(z.A, z.I)
+ L.BG = line(z.B, z.G)
+ z.K = intersection(L.AI, L.BG)}
+\begin{center}
+  \begin{tikzpicture}[scale = 1]
+   \tkzGetNodes
+   \tkzDrawPolygons(A,B,C)
+   \tkzDrawPoints(A,...,I,P,K)
+   \tkzDrawSegments(A,D B,E C,F A,I B,G C,H)
+   \tkzDrawCircle(O,T)
+   \tkzLabelPoints[below](A,B)
+   \tkzLabelPoints[above](C,I,E,D,G,K)
+   \tkzLabelPoints[below](F,P,H)
+  \end{tikzpicture}
+\end{center}
+
+% subsection reuschle_s_theorem (end)
+
+\subsection{Thébault's problem III} % (fold)
+\label{sub:thebault_s_problemIII}
+Given any triangle ABC, and any point M on BC, construct the incircle and circumcircle of the triangle. Then construct two additional circles, each tangent to AM, BC, and to the circumcircle. Then their centers and the center of the incircle are collinear.[wikipedia]
+\vspace{1em}
+
+\begin{minipage}{0.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(8, 0)
+ z.C = point(1, 6)
+ z.M = point(5, 0)
+ L.CM = line(z.C, z.M)
+ T.ABC = triangle(z.A, z.B, z.C)
+ C.circ = T.ABC:circum_circle()
+ z.O = C.circ.center
+ C.ins = T.ABC:in_circle()
+ z.I = C.ins.center
+ z.T = C.ins.through
+ L.ll = T.ABC.ab:ll_from(z.I)
+ z.Q = intersection(L.ll, L.CM)
+ C.QI = circle(z.Q, z.I)
+ z.R, z.S = intersection(C.QI, L.CM)
+ L.BMC = bisector(z.M, z.B, z.C)
+ z.x = L.BMC.pb
+ L.CMA = bisector(z.M, z.C, z.A)
+ z.y = L.CMA.pb
+ L.pS = L.CM:ortho_from(z.S)
+ L.pR = L.CM:ortho_from(z.R)
+ z.J = intersection(L.pS, L.CMA)
+ z.K = intersection(L.pR, L.BMC)}
+\begin{tikzpicture}[scale = .75]
+ \tkzGetNodes
+ \tkzDrawPolygon(A,B,C)
+ \tkzDrawSegments(C,M)
+ \tkzDrawLines(J,K I,Q)
+ \tkzDrawCircles(O,A I,T Q,I J,S K,R)
+ \tkzDrawPoints(A,B,C,M,Q,I,R,S,J,K)
+ \tkzLabelPoints(A,B,C,M,Q,I,R,S,J,K)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(8, 0)
+ z.C = point(1, 6)
+ z.M = point(5, 0)
+ L.CM = line(z.C, z.M)
+ T.ABC = triangle(z.A, z.B, z.C)
+ C.circ = T.ABC:circum_circle()
+ z.O = C.circ.center
+ C.ins = T.ABC:in_circle()
+ z.I = C.ins.center
+ z.T = C.ins.through
+ L.ll = T.ABC.ab:ll_from(z.I)
+ z.Q = intersection(L.ll, L.CM)
+ C.QI = circle(z.Q, z.I)
+ z.R, z.S = intersection(C.QI, L.CM)
+ L.BMC = bisector(z.M, z.B, z.C)
+ z.x = L.BMC.pb
+ L.CMA = bisector(z.M, z.C, z.A)
+ z.y = L.CMA.pb
+ L.pS = L.CM:ortho_from(z.S)
+ L.pR = L.CM:ortho_from(z.R)
+ z.J = intersection(L.pS, L.CMA)
+ z.K = intersection(L.pR, L.BMC)}
+\begin{tikzpicture}[scale = .75]
+ \tkzGetNodes
+ \tkzDrawPolygon(A,B,C)
+ \tkzDrawSegments(C,M)
+ \tkzDrawLines(J,K I,Q)
+ \tkzDrawCircles(O,A I,T Q,I J,S K,R)
+ \tkzDrawPoints(A,B,C,M,Q,I,R,S,J,K)
+ \tkzLabelPoints(A,B,C,M,Q,I,R,S,J,K)
+\end{tikzpicture}
+\end{minipage}
+
+% subsection thebault_s_problemIII (end)
+
+\subsection{Thébault's problem III with a method} % (fold)
+\label{sub:_thebault_s_problem_iii_fold}
+
+The |c_c| or |thebault| method selects a vertex of a triangle to construct a circle tangent to the two adjacent sides and to a given circle passing through the opposite vertices.
+
+\begin{tkzexample}[latex = .5\textwidth]
+\directlua{
+ z.A = point(0, 0)
+ z.B = point(8, 0)
+ z.C = point(1, 6)
+ z.M = point(5, 0)
+ T.ABC = triangle(z.A, z.B, z.C)
+ C.circ = T.ABC:circum_circle()
+ z.O = C.circ.center
+ C.ins = T.ABC:in_circle()
+ z.I = C.ins.center
+ z.T = C.ins.through
+ T.MCA = triangle(z.M, z.C, z.A)
+ T.MBC = triangle(z.M, z.B, z.C)
+ z.J, z.S = T.MCA:thebault(z.M, C.circ):get()
+ z.K, z.R = T.MBC:thebault(z.M, C.circ):get()
+}
+\begin{center}
+  \begin{tikzpicture}[scale = .75]
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawSegments(C,M)
+  \tkzDrawLines(J,K)
+  \tkzDrawCircles(O,A J,S K,R)%  I,T Q,I
+  \tkzDrawPoints(A,B,C,M,I,R,S,J,K)
+  \tkzLabelPoints(A,B,M,I,R,S,J,K)
+  \tkzLabelPoints[above](C)
+  \end{tikzpicture}
+\end{center}
+
+\end{tkzexample}
+
+
+% subsection _thebault_s_problem_iii_fold (end)
+
+\subsection{Thebault's problem II} % (fold)
+\label{sub:thebault_s_problemII}
+
+Given a square, construct equilateral triangles on two adjacent edges, either both inside or both outside the square. Then the triangle formed by joining the vertex of the square distant from both triangles and the vertices of the triangles distant from the square is equilateral.[wikipedia]
+
+\vspace{1em}
+\begin{minipage}{0.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(8, 0)
+ L.AB = line(z.A, z.B)
+ S.ABCD = L.AB:square()
+ z.C = S.ABCD.pc
+ z.D = S.ABCD.pd
+ z.E = S.ABCD.ab:equilateral().pc
+ z.F = S.ABCD.bc:equilateral().pc}
+\begin{tikzpicture}[scale = .75]
+ \tkzGetNodes
+ \tkzDrawPolygon(A,B,C,D)
+ \tkzDrawPolygons[cyan](A,B,E B,C,F)
+ \tkzFillPolygon[fill=orange!20](D,E,F)
+ \tkzDrawPolygons[orange,thick](D,E,F)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(8, 0)
+ L.AB = line(z.A, z.B)
+ S.ABCD = L.AB:square()
+ z.C = S.ABCD.pc
+ z.D = S.ABCD.pd
+ z.E = S.ABCD.ab:equilateral().pc
+ z.F = S.ABCD.bc:equilateral().pc}
+\begin{tikzpicture}[scale = .75]
+\tkzGetNodes
+\tkzDrawPolygon(A,B,C,D)
+\tkzDrawPolygons[cyan](A,B,E B,C,F)
+\tkzFillPolygon[fill=orange!20](D,E,F)
+\tkzDrawPolygons[orange,thick](D,E,F)
+\end{tikzpicture}
+\end{minipage}
+
+
+% subsection thebault_s_problemII (end)
+
+\subsection{Varignon's Theorem} % (fold)
+\label{sub:varignon_s_theorem}
+In Euclidean geometry, Varignon's theorem holds that the midpoints of the sides of an arbitrary quadrilateral form a parallelogram, called the Varignon parallelogram. It is named after Pierre Varignon, whose proof was published posthumously in 1731. [Wikipedia]
+
+\vspace{1em}
+\begin{minipage}{0.55\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(0, 8)
+ z.C = point(5, 3)
+ z.D = point(-1, 6)
+ Q.ABCD = quadrilateral(z.A, z.B, z.C, z.D)
+ z.E, z.F,
+ z.G, z.H = tkz.midpoints(z.A, z.B, z.C, z.D)}
+\begin{tikzpicture}[scale = .75]
+ \tkzGetNodes
+ \tkzDrawPolygon(A,B,C,D)
+ \tkzDrawPolygon[red](E,F,G,H)
+ \tkzDrawPoints(A,B,C,D)
+ \tkzDrawPoints[red](E,F,G,H)
+ \tkzLabelPoints(A,C)
+ \tkzLabelPoints[above right](B,D)
+ \tkzLabelPoints[red](G,H)
+ \tkzLabelPoints[red,above right](E,F)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{0.45\textwidth}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(0, 8)
+ z.C = point(5, 3)
+ z.D = point(-1, 6)
+ Q.ABCD = quadrilateral(z.A, z.B, z.C, z.D)
+ z.E, z.F, z.G, z.H = tkz.midpoints(z.A, z.B, z.C, z.D)}
+\begin{center}
+  \begin{tikzpicture}[scale = .75]
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C,D)
+  \tkzDrawPolygon[red](E,F,G,H)
+  \tkzDrawPoints(A,B,C,D)
+  \tkzDrawPoints[red](E,F,G,H)
+  \tkzLabelPoints(A,C)
+  \tkzLabelPoints[above right](B,D)
+  \tkzLabelPoints[red](G,H)
+  \tkzLabelPoints[red,above right](E,F)
+  \end{tikzpicture}
+\end{center}
+
+\end{minipage}
+
+% subsection varignon_s_theorem (end)
+
+
+\subsection{Wittenbauer's Parallelogram} % (fold)
+\label{sub:wittenbauer_s_parallelogram}
+
+Divide the sides of a quadrilateral into three equal parts. The figure formed by connecting and extending adjacent points on either side of a polygon vertex is a parallelogram known as Wittenbauer's parallelogram.
+[\href{https://mathworld.wolfram.com/WittenbauersParallelogram.html}{Weisstein, Eric W. "Wittenbauer's Parallelogram." From MathWorld--A Wolfram Web Resource.}]
+
+\vspace{1em}
+
+\begin{minipage}{0.55\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(4, 0)
+ z.C = point(5, 3)
+ z.D = point(-1, 4)
+ Q.ABCD = quadrilateral(z.A, z.B, z.C, z.D)
+ z.P_1 = Q.ABCD.ab:point(1 / 3)
+ z.P_2 = Q.ABCD.ab:point(2 / 3)
+ z.P_3 = Q.ABCD.bc:point(1 / 3)
+ z.P_4 = Q.ABCD.bc:point(2 / 3)
+ z.P_5 = Q.ABCD.cd:point(1 / 3)
+ z.P_6 = Q.ABCD.cd:point(2 / 3)
+ z.P_7 = Q.ABCD.da:point(1 / 3)
+ z.P_8 = Q.ABCD.da:point(2 / 3)
+ L.P18 = line(z.P_1, z.P_8)
+ L.P23 = line(z.P_2, z.P_3)
+ L.P45 = line(z.P_4, z.P_5)
+ L.P67 = line(z.P_6, z.P_7)
+ z.K = intersection(L.P18, L.P23)
+ z.L = intersection(L.P23, L.P45)
+ z.M = intersection(L.P45, L.P67)
+ z.N = intersection(L.P67, L.P18)}
+\begin{tikzpicture}[scale = .75]
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C,D)
+  \tkzDrawPolygon[red](K,L,M,N)
+  \tkzDrawSegments(A,C B,D)
+  \tkzDrawPoints(A,B,C,D)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{0.45\textwidth}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(4, 0)
+ z.C = point(5, 3)
+ z.D = point(-1, 4)
+ Q.ABCD = quadrilateral(z.A, z.B, z.C, z.D)
+ z.P_1 = Q.ABCD.ab:point(1 / 3)
+ z.P_2 = Q.ABCD.ab:point(2 / 3)
+ z.P_3 = Q.ABCD.bc:point(1 / 3)
+ z.P_4 = Q.ABCD.bc:point(2 / 3)
+ z.P_5 = Q.ABCD.cd:point(1 / 3)
+ z.P_6 = Q.ABCD.cd:point(2 / 3)
+ z.P_7 = Q.ABCD.da:point(1 / 3)
+ z.P_8 = Q.ABCD.da:point(2 / 3)
+ L.P18 = line(z.P_1, z.P_8)
+ L.P23 = line(z.P_2, z.P_3)
+ L.P45 = line(z.P_4, z.P_5)
+ L.P67 = line(z.P_6, z.P_7)
+ z.K = intersection(L.P18, L.P23)
+ z.L = intersection(L.P23, L.P45)
+ z.M = intersection(L.P45, L.P67)
+ z.N = intersection(L.P67, L.P18)}
+
+\begin{center}
+  \begin{tikzpicture}[scale = .75]
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C,D)
+  \tkzDrawPolygon[red](K,L,M,N)
+  \tkzDrawSegments(A,C B,D)
+  \tkzDrawPoints(A,B,C,D)
+  \end{tikzpicture}
+\end{center}
+
+\end{minipage}
+% subsection wittenbauer_s_parallelogram (end)
+
+\subsection{Soddy circles of a triangle} % (fold)
+\label{sub:soddy_circles_of_a_triangle}
+
+In geometry, the Soddy circles of a triangle are two circles associated with any triangle in the plane.[wikipedia]
+
+ Given three noncollinear points, construct three tangent circles such that one is centered at each point and the circles are pairwise tangent to one another. Then there exist exactly two nonintersecting circles that are tangent to all three circles. These are called the inner and outer Soddy circles, and their centers are called the inner and outer Soddy centers, respectively.
+
+[\href{https://mathworld.wolfram.com/SoddyCircles.html}{ Weisstein, Eric W. "Soddy Circles." From MathWorld--A Wolfram Web Resource}]
+
+
+\subsubsection{Soddy circle without function} % (fold)
+\label{ssub:soddy}
+
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(5, 0)
+ z.C = point(0.5, 4)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.I = T.ABC.incenter
+ z.E, z.F, z.G = T.ABC:projection(z.I)
+ C.ins = circle(z.I, z.E)
+ T.orthic = T.ABC:orthic()
+ z.Ha, z.Hb, z.Hc = T.orthic:get()
+ C.CF = circle(z.C, z.F)
+ C.AG = circle(z.A, z.G)
+ C.BE = circle(z.B, z.E)
+ L.Ah = line(z.A, z.Ha)
+ L.Bh = line(z.B, z.Hb)
+ L.Ch = line(z.C, z.Hc)
+ z.X, z.Xp = intersection(L.Ah, C.AG)
+ z.Y, z.Yp = intersection(L.Bh, C.BE)
+ z.Z, z.Zp = intersection(L.Ch, C.CF)
+ L.XpE = line(z.Xp, z.E)
+ L.YpF = line(z.Yp, z.F)
+ L.ZpG = line(z.Zp, z.G)
+ z.S = intersection(L.XpE, L.YpF)
+ z.Xi = intersection(L.XpE, C.AG)
+ z.Yi = intersection(L.YpF, C.BE)
+ _, z.Zi = intersection(L.ZpG, C.CF)
+ z.S = triangle(z.Xi, z.Yi, z.Zi).circumcenter
+ C.soddy_int = circle(z.S, z.Xi)
+ C.soddy_ext = C.ins:inversion(C.soddy_int)
+ z.w = C.soddy_ext.center
+ z.s = C.soddy_ext.through
+ z.Xip, z.Yip, z.Zip = C.ins:inversion(z.Xi, z.Yi, z.Zi)}
+
+\begin{tikzpicture}
+ \tkzGetNodes
+ \tkzDrawPolygon(A,B,C)
+ \tkzDrawPoints(A,B,C,E,F,G,Ha,Hb,Hc,X,Y,Z,X',Y',Z',Xi,Yi,Zi,I)
+ \tkzDrawPoints(Xi',Yi',Zi',S)
+ \tkzLabelPoints(A,B,C,E,F,G,X,Y,Z,X',Y',Z')
+ \tkzDrawCircles(A,G B,E C,F I,E S,Xi w,s)
+ \tkzDrawLines(X',Ha Y',Hb Z',Hc)
+ \tkzDrawLines(X',E Y',F Z',G)
+\end{tikzpicture}
+\end{verbatim}
+
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(5, 0)
+ z.C = point(0.5, 4)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.I = T.ABC.incenter
+ z.E, z.F, z.G = T.ABC:projection(z.I)
+ C.ins = circle(z.I, z.E)
+ T.orthic = T.ABC:orthic()
+ z.Ha, z.Hb, z.Hc = T.orthic:get()
+ C.CF = circle(z.C, z.F)
+ C.AG = circle(z.A, z.G)
+ C.BE = circle(z.B, z.E)
+ L.Ah = line(z.A, z.Ha)
+ L.Bh = line(z.B, z.Hb)
+ L.Ch = line(z.C, z.Hc)
+ z.X, z.Xp = intersection(L.Ah, C.AG)
+ z.Y, z.Yp = intersection(L.Bh, C.BE)
+ z.Z, z.Zp = intersection(L.Ch, C.CF)
+ L.XpE = line(z.Xp, z.E)
+ L.YpF = line(z.Yp, z.F)
+ L.ZpG = line(z.Zp, z.G)
+ z.S = intersection(L.XpE, L.YpF)
+ z.Xi = intersection(L.XpE, C.AG)
+ z.Yi = intersection(L.YpF, C.BE)
+ _, z.Zi = intersection(L.ZpG, C.CF)
+ z.S = triangle(z.Xi, z.Yi, z.Zi).circumcenter
+ C.soddy_int = circle(z.S, z.Xi)
+ C.soddy_ext = C.ins:inversion(C.soddy_int)
+ z.w = C.soddy_ext.center
+ z.s = C.soddy_ext.through
+ z.Xip, z.Yip, z.Zip = C.ins:inversion(z.Xi, z.Yi, z.Zi)}
+
+\begin{center}
+  \begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawPoints(A,B,C,E,F,G,Ha,Hb,Hc,X,Y,Z,X',Y',Z',Xi,Yi,Zi,I)
+  \tkzDrawPoints(Xi',Yi',Zi',S)
+  \tkzLabelPoints(A,B,C,E,F,G,X,Y,Z,X',Y',Z')
+  \tkzDrawCircles(A,G B,E C,F I,E S,Xi w,s)
+  \tkzDrawLines(X',Ha Y',Hb Z',Hc)
+  \tkzDrawLines(X',E Y',F Z',G)
+  \end{tikzpicture}
+\end{center}
+
+% subsubsection soddy (end)
+
+\subsubsection{Soddy circle with function} % (fold)
+\label{ssub:soddy_circle_with_function}
+
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(5, 0)
+ z.C = point(4, 4)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.I = T.ABC.incenter
+ z.E, z.F, z.G = T.ABC:projection(z.I)
+ T.orthic = T.ABC:orthic()
+ z.Ha, z.Hb, z.Hc = T.orthic:get()
+ C.ins = circle(z.I, z.E)
+ z.s, z.xi, z.yi, z.zi = T.ABC:soddy_points()
+ C.soddy_int = T.ABC:soddy_circle()
+ C.soddy_ext = T.ABC:soddy_circle("outer")
+ % % C.soddy_ext = C.ins:inversion(C.soddy_int)
+ z.w = C.soddy_ext.center
+ z.t = C.soddy_ext.through
+ z.Xip, z.Yip, z.Zip = C.ins:inversion(z.xi, z.yi, z.zi)}
+\begin{tikzpicture}[scale=.6]
+\tkzGetNodes
+\tkzDrawPolygon(A,B,C)
+ \tkzDrawCircles(A,G B,E C,F I,E s,xi w,t)
+ \tkzDrawPoints(A,B,C,E,F,G,s,w)
+ \tkzDrawPoints(xi,yi,zi)
+ \tkzDrawPoints(Xi',Yi',Zi')
+ \tkzLabelPoints(A,B,G)
+ \tkzLabelPoints[above](C)
+ \tkzLabelPoints[right](E)
+ \tkzLabelPoints[left](F)
+\end{tikzpicture}
+
+
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(5, 0)
+ z.C = point(4, 4)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.I = T.ABC.incenter
+ z.E, z.F, z.G = T.ABC:projection(z.I)
+ T.orthic = T.ABC:orthic()
+ z.Ha, z.Hb, z.Hc = T.orthic:get()
+ C.ins = circle(z.I, z.E)
+ z.s, z.xi, z.yi, z.zi = T.ABC:soddy_points()
+ C.soddy_int = T.ABC:soddy_circle()
+ C.soddy_ext = T.ABC:soddy_circle("outer")
+ % % C.soddy_ext = C.ins:inversion(C.soddy_int)
+ z.w = C.soddy_ext.center
+ z.t = C.soddy_ext.through
+ z.Xip, z.Yip, z.Zip = C.ins:inversion(z.xi, z.yi, z.zi)}
+
+
+\begin{tikzpicture}[scale=.6]
+\tkzGetNodes
+\tkzDrawPolygon(A,B,C)
+ \tkzDrawCircles(A,G B,E C,F I,E s,xi w,t)
+ \tkzDrawPoints(A,B,C,E,F,G,s,w)
+ \tkzDrawPoints(xi,yi,zi)
+ \tkzDrawPoints(Xi',Yi',Zi')
+ \tkzLabelPoints(A,B,G)
+ \tkzLabelPoints[above](C)
+ \tkzLabelPoints[right](E)
+ \tkzLabelPoints[left](F)
+\end{tikzpicture}
+
+
+\begin{verbatim}
+\begin{tikzpicture}[scale=.6]
+\tkzGetNodes
+\tkzDrawPolygon(A,B,C)
+ \tkzDrawCircles(A,G B,E C,F I,E s,xi w,t)
+ \tkzDrawPoints(A,B,C,E,F,G,s,w)
+ \tkzDrawPoints(xi,yi,zi)
+ \tkzDrawPoints(Xi',Yi',Zi')
+ \tkzLabelPoints(A,B,G)
+ \tkzLabelPoints[above](C)
+ \tkzLabelPoints[right](E)
+ \tkzLabelPoints[left](F)
+\end{tikzpicture}
+\end{verbatim}
+% subsubsection soddy_circle_with_function (end)
+
+
+% subsection soddy_circles_of_a_triangle (end)
+
+\subsection{Six circles in a triangle} % (fold)
+\label{sub:six_circles_in_a_triangle}
+In geometry, the six circles theorem relates to a chain of six circles together with a triangle, such that each circle is tangent to two sides of the triangle and also to the preceding circle in the chain. The chain closes, in the sense that the sixth circle is always tangent to the first circle.[1][2] It is assumed in this construction that all circles lie within the triangle, and all points of tangency lie on the sides of the triangle. [Wikipedia]
+
+\vspace{1em}
+The file \code{search\_circle.lua} used in this example:
+
+\begin{mybox}
+\begin{verbatim}
+ local r = ...
+
+ function newcircle(T, C)
+ 	local NT, L, NC, c, t
+ 	NT = T.incenter:homothety((1 + C.radius / T.inradius), T)
+ 	L = line(NT.pb, NT.pa)
+ 	_, NC = L:c_ll_p(NT.pc, C.center)
+ 	return NC.center, T.bc:projection(NC.center)
+ end
+
+ z.B = point(8, 0)
+ z.C = point(2, 6)
+ T.ABC = triangle(z.A, z.B, z.C)
+ L.bA = T.ABC:bisector()
+ z.c1 = L.bA:report(r)
+ z.t1 = T.ABC.ab:projection(z.c1)
+ C.last = circle(z.c1, z.t1)
+
+ local vertices = { "A", "B", "C" }
+ for i = 2, 6 do
+	T.used = triangle(
+		z[vertices[math.fmod(i - 2, 3) + 1]],
+		z[vertices[math.fmod(i - 1, 3) + 1]],
+		z[vertices[math.fmod(i, 3) + 1]]
+	)
+	z["c" .. i], z["t" .. i] = newcircle(T.used, C.last)
+	C.last = circle(z["c" .. i], z["t" .. i])
+end
+\end{verbatim}
+\end{mybox}
+
+
+\vspace{1em}
+
+
+
+\begin{tkzexample}[vbox]
+  \directlua{
+   init_elements()
+   z.A = point(0, 0)
+   z.B = point(8, 0)
+   z.C = point(2, 6)
+   loadfile("search_circle.lua")(1.4)}
+  \begin{tikzpicture}
+  \tkzGetNodes
+  \tkzFillPolygon[lightgray!30](A,B,C)
+  \foreach \n/\c in {1/red,2/orange,3/yellow,
+      4/green,5/blue,6/violet}
+    {\tkzFillCircle[\c!30,opacity=.4](c\n,t\n)
+    \tkzDrawCircle[thick,\c](c\n,t\n) }
+  \tkzDrawPolygon[thick](A,B,C)
+  \tkzDrawPoints(A,B,C)
+  \end{tikzpicture}
+\end{tkzexample}
+
+
+
+\vspace{12pt}
+When the first circle is the incircle then you get only 4 circles.
+
+
+\begin{mybox}
+  \begin{verbatim}
+  T.ABC  = triangle(z.A,z.B,z.C)
+  R = T.ABC.inradius/math.sin((T.ABC.alpha)/2)
+    loadfile ("search_circle.lua")(R)
+  \end{verbatim}
+\end{mybox}
+
+
+\begin{tkzexample}[vbox]
+  \directlua{
+   init_elements()
+   z.A = point(0, 0)
+   z.B = point(8, 0)
+   z.C = point(2, 6)
+   T.ABC = triangle(z.A, z.B, z.C)
+   R = T.ABC.inradius/math.sin((T.ABC.alpha)/2)
+   loadfile ("search_circle.lua")(R)}
+
+  \begin{tikzpicture}[scale = .75]
+  \tkzGetNodes
+  \tkzFillPolygon[lightgray!30](A,B,C)
+  \foreach \n/\c in {1/red,2/orange,3/yellow,4/green,5/blue,6/violet}
+    {\tkzFillCircle[\c!30,opacity=.4](c\n,t\n)
+    \tkzDrawCircle[thick,\c](c\n,t\n) }
+  \tkzDrawPolygon[thick](A,B,C)
+  \tkzDrawPoints(A,B,C)
+  \end{tikzpicture}
+\end{tkzexample}
+
+
+
+
+% subsection six_circles_in_a_triangle (end)
+% section some_theorems (end)

@@ -1,0 +1,13 @@
+local xB = 8
+z.A = point(0, 0)
+z.B = point(xB, 0)
+L.AB = line(z.A, z.B)
+S.ABCD = L.AB:square()
+_, _, z.C, z.D = S.ABCD:get()
+z.F = S.ABCD.ac:projection(z.B)
+L.BF = line(z.B, z.F)
+T.ABC = triangle(z.A, z.B, z.C)
+L.bi = T.ABC:bisector(2)
+z.c = L.bi.pb
+L.Cc = line(z.C, z.c)
+z.I = intersection(L.Cc, L.BF)

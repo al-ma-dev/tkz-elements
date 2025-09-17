@@ -1,0 +1,259 @@
+\newpage
+
+\section{Writing Convention, best practices and common mistakes} % (fold)
+\label{sec:writing_convention}
+\subsection{Assigning a Name to an Object} % (fold)
+\label{sub:assigning_a_name_to_an_object}
+
+\textbf{Note:} Certain variables such as \tkzname{z}, \tkzname{L}, \tkzname{T}, etc. are reserved for storing geometric objects.
+Reassigning one of them (e.g., \tkzname{L = 4}) will overwrite its content and disrupt the system.
+
+Points are a special case: they must be stored in the table \tkzname{z}.
+For all other geometric objects, it is strongly recommended to follow the predefined variable names.
+Avoid mixing naming conventions or inventing your own identifiers, as this may lead to unpredictable behavior.
+
+\vspace{1em}
+\tkzRHand{\textcolor{red}{Warning}}: Do not reuse names such as \texttt{point}, \texttt{line}, \texttt{circle}, \texttt{path}, \texttt{triangle}, etc., as variable names.
+These identifiers are reserved internally by \tkzNamePack{tkz-elements} to represent object constructors.
+
+\vspace{1em}
+Below is the list of reserved classes and the default variable names associated with them:
+\label{list of reserved classes}
+
+\vspace{1em}
+\textcolor{red}{\directlua{
+local variables = { "C", "CO", "L", "M", "O", "P", "PA", "z", "Q", "R", "RP", "S", "T", "V"}
+local modules = { "circle",  "conic",  "line", "matrix", "occs", "parallelogram", "path",  "point", "quadrilateral", "rectangle", "regular\\_polygon", "square",  "triangle", "vector"}
+  for i = 1, utils.table_getn(modules) do
+    local class = modules[i]
+    local var   = variables[i]
+    tex.sprint( class.. "  -->  ".. var.."\\\\")
+  end
+} }
+
+\subsection{Best practices} % (fold)
+\label{sub:best_practices}
+
+It is preferable to use methods—or better yet, object attributes—rather than standalone functions.
+
+For example, to determine the midpoint of a segment $AB$, iit was previously possible to write: |z.m = midpoint (z.A,z.B)|.  This is now considered incorrect: you must use |z.m = tkz.midpoint (z.A,z.B)|.
+
+However, the recommended approach is to define the segment first with: |L.AB = line(z.A, z.B)|, and then use the attribute: |z.m = line(z.A, z.B).mid|. If you don't reuse the line, a one-liner like |z.m = line(z.A, z.B).mid| is acceptable.
+
+\vspace{12pt}
+Similarly, it may have been tempting to write |L.bi = bisector(z.A, z.B, z.C)| to obtain the angle bisector at vertex $A$. As in the previous example, this is no longer valid. You must now use |L.bi = tkz.bisector(z.A, z.B, z.C)|, as all standalone functions have been grouped under the |tkz| module.
+
+A better practice is to define the triangle $ABC$ using:  |T.ABC = triangle(z.A, z.B, z.C)| and then access the bisector via: |L.bi = T.ABC:bisector(z.A)| or directly: |L.bi = triangle(z.A, z.B, z.C):bisector(z.A)|.
+
+% subsection best_practices (end)
+
+\subsection{Common mistakes and best practices}
+
+\vspace{1em}
+\tkzRHand{\textcolor{red}{Second Warning}}: Let's examine the consequences of incorrect assignments. The following example is very simple: we define two points, the line passing through them, and a line orthogonal to the first at one of the points. To define these objects, we use two tables (or classes): \tkzname{z} and \tkzname{L}.
+
+Here is the correct code:
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  z.A = point(1, 2)
+  z.B = point(3, -1)
+  L.AB = line(z.A, z.B)
+  -- blunders
+  L.ortho = L.AB:ortho_from(z.B)
+  z.C = L.ortho.pb
+}
+\begin{tikzpicture}[scale = .75]
+  \tkzGetNodes
+  \tkzDrawLines(A,B B,C)
+  \tkzDrawPoints(A,B)
+\end{tikzpicture}
+\end{tkzexample}
+
+\begin{itemize}
+  \item \textbf{First blunder:} \tkzname{z = nil} or \tkzname{z = 4}. You've reassigned the \tkzname{z} variable. It no longer refers to a table, but to a number. Its type has changed, and the system can no longer access the points.
+  \item \tkzname{z.A = 4} is equally problematic: you’ve overwritten point $A$. If your intention is to remove point $A$, then use \tkzname{z.A = nil} instead.
+  \item \tkzname{L = 4}. This might seem convenient to store a length, but doing so will erase the entire table of lines.
+  \item \tkzname{L.ortho = ortho}. A more subtle mistake: if \tkzname{ortho} is not defined, you lose your line. If it is defined but of the wrong type, an error will occur.
+  \item For objects other than points, incorrect assignments at the end of the process may not affect the figure. It is possible to clean up tables before plotting. However, the \tkzname{z} table must not be altered. Only points not used for plotting should be deleted.
+\end{itemize}
+
+These precautions help ensure consistency in the system and prevent unpredictable behavior.
+
+\vspace{1em}
+We’ll now explain how to assign variable names for each type of object.
+
+\subsection{Assigning a Name to a Point} % (fold)
+\label{sub:assigning_a_name_to_a_point}
+
+At present, points must be stored in the table \tkzname{z} if you intend to use them later in \tkzNamePack{\TIKZ} or \tkzNamePack{tkz-euclide}.
+
+In \tkzNamePack{tkz-elements}, points must follow the \tkzname{z.name} convention, where name is the label of the corresponding node.
+
+Special attention is needed for certain naming cases:
+
+
+\begin{enumerate}
+
+\item \emph{Primes (or double prime) can be problematic.}\\
+
+If a point’s name ends in |p| (like Bp),  then when passing into \tkzNamePack{tkz-euclide}, this is interpreted during transfer to \tkzNamePack{tkz-euclide} via \tkzMacro{tkz-elements}{tkzGetNodes}; \index{prime} as a prime, and |p| will be converted into |'|, giving B' in the \tkzNamePack{\TIKZ} output.
+
+   \item  \emph{For clarity or complex names, you may use intermediate variables.}\\
+
+ For example, if you want to define a point named \tkzname{euler}, you could write:
+
+ \begin{mybox}
+ |local euler = point(...)| or |z.euler = point(...)|
+  and at the end |z.E = euler| or |z.E = z.euler|
+ \end{mybox}
+
+  In this case, the point will be labeled E in the drawing, but internally it remains clear in code.
+  Alternatively, you can keep the name euler in Lua and alias it for display with:
+
+\begin{mybox}
+|pgfnodealias{E}{euler}| in \TIKZ{}.
+\end{mybox}
+
+\end{enumerate}
+
+
+Examples of valid naming:
+\begin{mybox}
+\begin{itemize}
+   \item |z.A = point(1,2)|
+   \item |z.Bp = point(3,4)|  --> this gives |B'| in the \tkzEnv{tikz}{tikzpicture}
+   \item |z.H_a = T.ABC:altitude ()| --> this gives |H_a| in the \tkzEnv{tikz}{tikzpicture} code and $H_a$ in math display.
+
+   \item |z.euler = T.ABC.eulercenter|
+\end{itemize}
+\end{mybox}
+
+In \tkzname{Lua}, |z.A| is a "sugar syntax" for |z["A"]| and |z.A = nil| deletes point $A$.
+
+% subsection assigning_a_name_to_a_point (end)
+
+\subsection{Assigning a Name to Other Objects} % (fold)
+\label{sub:assigning_a_name_to_other_objects}
+For all geometric objects other than points, you are free to choose names. However, adopting consistent conventions greatly improves code readability and maintainability. To be more precise, each Lua code block is usually preceded by the call to the function \tkzFct{package}{init\_elements()}, whose role is to clear and reset the various tables (such as \tkzname{L}, \tkzname{C}, etc.).
+If you choose to use custom variable names or structures, you are free to do so — but in that case, you are responsible for managing and cleaning your variables and tables manually to avoid conflicts or unintended behavior.
+
+In this documentation, the following naming strategy is used:
+
+
+Objects are stored in dedicated tables, each associated with a specific class.
+These tables are represented by variables such as:
+\begin{itemize}
+
+\item \tkzname{L} for lines and segments
+\item \tkzname{C} for circles
+\item \tkzname{T} for triangles
+\item  \tkzname{CO} for conics (including ellipses, hyperbolas, and parabolas)
+
+\item  etc. See the list of reserved words [\ref{list of reserved classes}]
+\end{itemize}
+
+Here are some examples of naming conventions used:
+
+\begin{itemize}
+  \item Lines (L):\\
+  The name reflects the two points defining the line.
+
+   Example: |L.AB = line(z.A, z.B)| -- line through A and B
+
+\item Circle (C)\\
+You can name a circle based on its defining points or its purpose.
+Examples:
+\begin{itemize}
+ \item C.AB       --> Circle centered at A, passing through B
+ \item C.euler    --> Euler circle
+ \item C.external --> External circle
+\end{itemize}
+
+\item Triangles (T)\\
+Use vertex labels, or descriptive names when appropriate. Examples:
+
+\begin{itemize}
+  \item T.ABC         --> Triangle with vertices A, B, C
+  \item T.feuerbach   --> Feuerbach triangle
+
+\end{itemize}
+
+
+
+\item Conics (CO)\\
+The table CO can store various conics; use meaningful keys to indicate type and role.
+
+
+\end{itemize}
+
+Note: \emph{While you may choose other variable names or formats, following these conventions ensures that your code remains clear and easy to follow, especially when working with more complex figures.}
+
+% subsection assigning_a_name_to_other_objects(end)
+
+\subsection{Writing conventions for attributes, methods.} % (fold)
+\label{sub:writing_conventions_for_attributes_methods_and_functions}
+
+You must follow standard Lua conventions when accessing attributes or invoking methods:
+
+\begin{itemize}
+  \item \textbf{Attributes} are accessed using the dot notation: \verb|object.attribute|.
+    \begin{itemize}
+      \item For example, to access the coordinates of point \verb|A|, use \verb|z.A.re| for the abscissa and \verb|z.A.im| for the ordinate.
+      \item To get the type of the object, write \verb|z.A.type|.
+      \item To retrieve the south pole of the circle \verb|C.OA|, write \verb|C.OA.south|.
+    \end{itemize}
+
+  \item \textbf{Methods} are invoked using the colon notation: \verb|object:method()|.
+    \begin{itemize}
+      \item For example, to compute the incircle of triangle \verb|ABC|, use: \verb|C.incircle = T.ABC:in_circle()|.
+      \item If a method requires a parameter, include it in parentheses. For instance, to compute the distance from point \verb|C| to the line \verb|(AB)|: \verb|d = L.AB:distance(z.C)|.
+    \end{itemize}
+
+  \item \textbf{Discarding results}: If a function returns multiple values and you only need one, use \verb|_| to ignore the rest.
+    \begin{itemize}
+      \item For example, to retrieve only the second point of intersection between a line and a circle: \verb|_, z.J = intersection(L.AB, C.OC)|.
+    \end{itemize}
+\end{itemize}
+
+% subsection assigning_a_name_to_an_object (end)
+
+
+\subsection{Miscellaneous} % (fold)
+\label{sub:miscellanous}
+\begin{itemize}
+  \item \textbf{Units and coordinates:} As in \tkzNamePack{tkz-euclide}, the default unit is the centimeter. All points are placed in an orthonormal Cartesian coordinate system.
+
+  \item \textbf{Numerical variables:} Real numbers follow the standard Lua conventions for notation.
+
+  \item \textbf{Complex numbers:} Similar to real numbers, but you must define them using the point constructor. For example:
+  \begin{verbatim}
+  za = point(1, 2)
+  \end{verbatim}
+  This corresponds mathematically to \(1 + 2i\). You can print the complex number using:
+  \begin{verbatim}
+  tex.print(tostring(za))
+  \end{verbatim}
+
+  \item \textbf{Boolean values:}
+  \begin{itemize}
+    \item In Lua: \verb|bool = true| or \verb|bool = false|
+    \item You can use the following \tkzname{Lua} code:
+    \begin{verbatim}
+    if bool == true then ... else ... end
+    \end{verbatim}
+    \item In LaTeX, after loading the \tkzNamePack{ifthen} package, you can write:
+    \begin{verbatim}
+    \ifthenelse{\equal{\tkzUseLua{bool}}{true}}{<true code>}{<false code>}
+    \end{verbatim}
+  \end{itemize}
+
+  \item \textbf{Strings:}
+  \begin{itemize}
+    \item Example in Lua: \verb|st = "Euler's formula"|
+    \item In LaTeX: \verb|\tkzUseLua{st}| will display \texttt{Euler's formula}
+  \end{itemize}
+\end{itemize}
+
+% subsection miscellanous (end)
+% section writing_convention (end)
+\endinput

@@ -1,0 +1,62 @@
+\newpage
+\section{Metapost} % (fold)
+\label{sec:metapost}
+
+This is for guidance only. As I don't know \tkzNamePack{metapost}, I've simply developed the minimum to show how to proceed. The only way I've found to transfer points is via an external file. The macro \tkzMacro{tkz-elements}{tkzGetNodesMP} does the job. Here's its code.
+
+\paragraph{Remark.}
+This approach is minimal and experimental. The MetaPost integration shown here is primarily intended to demonstrate that point data from Lua can be reused in other graphical systems. While MetaPost is not officially supported by \tkzNamePack{tkz-elements}, this example illustrates how external file-based communication can serve as a general method for transferring geometric information.
+
+\begin{tkzexample}[code only]
+\def\tkzGetNodesMP#1{\directlua{
+  local out = assert(io.open("#1.mp", "w"))
+  local names = {}
+  for K, _ in pairs(z) do
+    table.insert(names, tostring(K))
+  end
+  table.sort(names)
+  out:write("pair ", table.concat(names, ", "), ";\string\n")
+  for _, name in ipairs(names) do
+    local V = z[name]
+    if V then
+      out:write(name, " := (", V.re, "cm,", V.im, "cm);\string\n")
+    end
+  end
+  out:close()
+}}
+\end{tkzexample}
+
+\begin{minipage}{.5\textwidth}
+\directlua{
+  z.A = point(0, 1)
+  z.B = point(2, 0)
+}
+\tkzGetNodesMP{myfic}
+
+\begin{mplibcode}
+  input myfic.mp ;
+   pickup pencircle scaled 1mm;
+  draw A; draw B;
+   pickup defaultpen;
+  draw A--B;
+\end{mplibcode}
+\end{minipage}
+\hspace{4cm}
+\begin{minipage}{.5\textwidth}
+  \begin{tkzexample}[code only]
+\directlua{
+  z.A = point(0, 1)
+  z.B = point(2, 0)
+}
+\tkzGetNodesMP{myfic}
+
+\begin{mplibcode}
+  input myfic.mp ;
+   pickup pencircle scaled 1mm;
+  draw A; draw B;
+   pickup defaultpen;
+  draw A--B;
+\end{mplibcode}
+  \end{tkzexample}
+\end{minipage}
+% section metapost (end)

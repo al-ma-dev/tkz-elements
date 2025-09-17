@@ -1,0 +1,286 @@
+% !TEX TS-program = lualatex
+% encoding : utf8 
+% Documentation of tkz-elements v4.20c
+% Copyright 2025  Alain Matthes
+% This work may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License, either version 1.3
+% of this license or (at your option) any later version.
+% The latest version of this license is in
+% http://www.latex-project.org/lppl.txt
+% and version 1.3 or later is part of all distributions of LaTeX
+% version 2005/12/01 or later.
+% This work has the LPPL maintenance status “maintained”.
+% The Current Maintainer of this work is Alain Matthes.
+\PassOptionsToPackage{unicode}{hyperref}
+
+\documentclass[DIV         = 14,
+               fontsize    = 10,
+               index       = totoc,
+               twoside,
+               cadre,
+               headings    = small
+               ]{tkz-doc}
+\gdef\tkznameofpack{tkz-elements}
+\gdef\tkzversionofpack{4.20c}
+\gdef\tkzdateofpack{\today}
+\gdef\tkznameofdoc{tkz-elements.pdf}
+\gdef\tkzversionofdoc{4.20c}
+\gdef\tkzdateofdoc{\today}
+\gdef\tkzauthorofpack{Alain Matthes}
+\gdef\tkzadressofauthor{}
+\gdef\tkznamecollection{AlterMundus}
+\gdef\tkzurlauthor{http://altermundus.fr}
+\gdef\tkzengine{lualatex}
+\gdef\tkzurlauthorcom{http://altermundus.fr}
+\nameoffile{\tkznameofpack}
+
+% -- Packages ---------------------------------------------------  
+
+\usepackage[dvipsnames,svgnames]{xcolor}
+% my packages
+\usepackage{tkz-base}
+\usetikzlibrary{mindmap}
+\usetikzlibrary{shapes.multipart}
+\usepackage[mini]{tkz-euclide}
+\usepackage{tkz-elements}
+\usepackage{tkzexample}
+\usepackage{pgfornament}
+\makeatletter
+    \renewcommand*\mdf@PackageWarning[1]{}
+     \renewcommand*\mdf@PackageInfo[1]{}
+\makeatother
+% for metapost
+\usepackage{luamplib}
+\everymplib{input mpcolornames; beginfig(1);}
+\everyendmplib{endfig;}
+% for index
+\usepackage{scrindex}
+\makeindex
+\usepackage[colorlinks,pdfencoding=auto, psdextra]{hyperref}
+\hypersetup{
+      linkcolor=Gray,
+      citecolor=Green,
+      filecolor=Mulberry,
+      urlcolor=orange,
+      menucolor=Gray,
+      runcolor=Mulberry,
+      linkbordercolor=Gray,
+      citebordercolor=Green,
+      filebordercolor=Mulberry,
+      urlbordercolor=NavyBlue,
+      menubordercolor=Gray,
+      runbordercolor=Mulberry,
+      pdfsubject={Euclidean Geometry},
+      pdfauthor={\tkzauthorofpack},
+      pdftitle={\tkznameofpack},
+      pdfcreator={\tkzengine}
+}
+% fonts
+%<---------------------------------------------------------------------------> 
+\usepackage{fontspec}
+\setmainfont{Linux Libertine O}
+\usepackage{unicode-math} 
+\usepackage{concmath-otf}
+\let\rmfamily\ttfamily
+% end fonts
+%<---------------------------------------------------------------------------> 
+% load other packages
+\usepackage{pifont}                
+\newcommand{\cmark}{\colorbox{green}{\textcolor{white}{\ding{51}}}} 
+\newcommand{\xmark}{\colorbox{red}{\textcolor{white}{\ding{55}}}}    
+\usepackage{multicol}
+\usepackage[english]{babel}
+\usepackage[normalem]{ulem}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{cellspace}
+\usepackage{shortvrb} 
+\usepackage{fancyvrb} 
+\usepackage{bookmark} 
+\usepackage{enumitem} 
+\usepackage{moreenum}
+\usepackage[most]{tcolorbox}
+\newtcolorbox{mybox}{
+  enhanced,
+  boxrule=0pt,frame hidden,
+  borderline west={3pt}{0pt}{cyan!75!black},
+  colback=lightgray!10!white,
+  sharp corners
+}
+% end load packages
+%<---------------------------------------------------------------------------> 
+% Indexation style
+\makeatletter
+\renewenvironment{theindex}
+   {\section*{\indexname}\begin{multicols}{2}%
+    \@mkboth{\MakeUppercase\indexname}%
+  {\MakeUppercase\indexname}%
+    \thispagestyle{plain}\parindent\z@
+    \parskip\z@ \@plus .3\p@\relax
+    \columnseprule \z@
+    \columnsep 35\p@
+    \let\item\@idxitem}
+   {\end{multicols}}
+\makeatother
+% end indexation style
+%<---------------------------------------------------------------------------> 
+% Indexation
+\newcommand{\tkzAttr}[2]{\textbf{\texttt{#2}}\index{#1_3@\texttt{#1: Attributes}!\texttt{#2}}}
+\newcommand{\tkzVar}[2]{\textbf{\texttt{#2}}\index{#1_3@\texttt{#1: Reserved variable}!\texttt{#2}}}
+\newcommand{\tkzMeth}[2]{\textbf{\texttt{#2}}\index{#1_3@\texttt{#1: Methods}!\texttt{#2}}}
+\newcommand{\tkzMeta}[2]{\textbf{\texttt{#2}}\index{#1_3@\texttt{#1: Metamethods}!\texttt{#2}}}
+\newcommand{\tkzFct}[2]{\textbf{\texttt{#2}}\index{#1_3@\texttt{#1: Functions}!\texttt{#2}}}
+\newcommand{\tkzMod}[1]{\textbf{\texttt{#1}}\index{Modules!#1@\texttt{#1}}}
+\newcommand{\tkzClass}[1]{\textbf{\texttt{#1}}\index{Classes!#1@\texttt{#1}}}
+\newcommand{\tkzNameObj}[1]{\textbf{\texttt{#1}}\index{Objects!#1@\texttt{#1}}}
+\newcommand{\tkzMacro}[2]{\textbf{\texttt{#2}}\index{#1_3@\texttt{#1: Macro}!\texttt{#2}}}
+\newcommand{\tkzEngine}[1]{\textbf{\texttt{#1}}\index{Engine !#1@\texttt{#1}}}
+\newcommand{\tkzPopt}[2]{\texttt{#2}\index{#1_3@\texttt{#1: options}!\texttt{#2}}}
+\newcommand{\tkzEnv}[2]{\textbf{\texttt{#2}}\index{#1_3@\texttt{#1: Environments}!\texttt{#2}}}
+\newcommand{\tkzConst}[1]{\textbf{\texttt{#1}}\index{Constants!#1@\texttt{#1}}}
+\newcommand{\tkzSysVar}[1]{\textbf{\texttt{#1}}\index{Variables system!#1@\texttt{#1}}}
+% Keyword for function options or parameters
+\newcommand{\tkzKey}[1]{\texttt{#1}}
+
+% Optional argument notation, e.g., (pt)
+\newcommand{\tkzOptArg}[1]{\ensuremath{(#1)}}
+% Keyword used as an optional key in a function call (e.g., known, near)
+%\newcommand{\tkzKey}[1]{\texttt{#1}\index{#1@\texttt{#1}}}
+
+% end indexation
+%<---------------------------------------------------------------------------> 
+% decoration
+\newcommand{\tkzRBomb}{\textcolor{red}{\ding{43}\ }}
+\newcommand{\lefthand}{\ding{43}}
+\newcommand{\tkzimpbf}[1]{\texttt{tkzPopt#1}}
+\newcommand{\tkzRHand}{\textcolor{red}{\lefthand}}
+\newcommand{\smallbf}[1]{\textbf{\small #1}}
+\newcommand{\parallelsum}{\mathbin{\!/\mkern-5mu/\!}}
+\newcommand\LUALATEX{Lua\kern-.01em\LaTeX}%
+% end decoration
+%<---------------------------------------------------------------------------> 
+% settings styles
+\tkzSetUpColors[background=white,text=darkgray]  
+\tkzSetUpPoint[size=2,color=teal,fill=teal!10]
+\tkzSetUpLine[ultra thin,color=teal]
+\tkzSetUpCompass[color=orange,ultra thin,/tkzcompass/delta=10] 
+\tikzset{label style/.append style={below,color=teal,font=\scriptsize}}
+\tikzset{new/.style={color=orange,ultra thin}} 
+\tikzset{step 1/.style={color=cyan,ultra thin}} 
+\tikzset{step 2/.style={color=purple,ultra thin}} 
+\def\tkzar{\hspace{1em}-->\hspace{1em}}
+% end settings styles
+%<---------------------------------------------------------------------------> 
+% misc
+\makeatletter\let\percentchar\@percentchar\makeatother
+\def\luaveclen#1#2{%
+\directlua{tex.print(string.format(
+'\percentchar.5f',math.sqrt((#1)*(#1)+(#2)*(#2))))
+}}
+\let\pmpn\pgfmathprintnumber
+\let\code\tkzname
+% end misc
+%<---------------------------------------------------------------------------> 
+% Generate a new TOC
+\DeclareNewTOC[%
+   type=overview,
+   listname={Overview}]{stoc}
+
+\NewCommandCopy{\AddSectionTocEntry}{\addsectiontocentry}
+\renewcommand{\addsectiontocentry}[2]{
+   \AddSectionTocEntry{#1}{#2}
+   \addxcontentsline{stoc}{section}[{#1}]{#2}
+ }
+ \BeforeStartingTOC[stoc]{
+   \DeclareTOCStyleEntry[beforeskip=0pt]{section}{section}
+ }
+% end new toc
+
+\hbadness=10000
+%<---------------------------------------------------------------------------> 
+\AtBeginDocument{\MakeShortVerb{\|}}
+
+\begin{document} 
+
+\parindent=0pt
+\tkzTitleFrame{tkz-elements \tkzversionofpack\\Euclidean Geometry}
+\clearpage
+
+
+\defoffile{
+This document gathers notes on \tkzNamePack{\tkznameofpack}, an initial version of a \tkzname{Lua} library designed to handle all necessary computations for constructing objects in Euclidean geometry. The document must be compiled with lua\LATEX.\\ 
+
+With \tkzNamePack{tkz-elements}, all definitions and calculations are carried out exclusively in Lua, following an object-oriented programming model. Core geometric entities such as points, lines, triangles, and conics are implemented as object classes.\\
+Once the computations are complete, graphical rendering is typically handled using \tkzNamePack{tkz-euclide}, although you may also use \TIKZ{} directly if desired.\\
+
+I discovered Lua and object-oriented programming while developing this package, so it’s possible that some parts could be improved. If you'd like to contribute or offer suggestions, feel free to contact me by email.
+}
+
+\presentation
+
+\vspace*{4em}
+
+\lefthand\ Acknowledgements : I received much valuable advices, remarks, corrections  from \\ \tkzimp{Nicolas Kisselhoff}, \tkzimp{David Carlisle}, \tkzimp{Roberto Giacomelli} and \tkzimp{Qrrbrbirlbel}.\\
+Special thanks to \tkzimp{Wolfgang Büchel} for his invaluable contribution in correcting the examples.
+
+\vspace*{1em}
+\lefthand\ I would also like to extend my gratitude to \tkzimp{Eric Weisstein}, creator of 
+\href{http://mathworld.wolfram.com/about/author.html}{MathWorld}.
+
+\vspace*{1em}
+\lefthand\ You can find some examples on my site and a french documentation:
+\href{http://altermundus.fr}{altermundus.fr}.
+
+\vfill
+Please report typos or any other comments to this documentation to: \href{mailto:al.ma@mac.com}{\textcolor{blue}{Alain Matthes}}.
+
+This file can be redistributed and/or modified under the terms of the \LaTeX{} 
+Project Public License Distributed from \href{http://www.ctan.org/}{CTAN}\  archives.
+
+
+\clearpage
+\listofoverviews
+
+\clearpage
+\tableofcontents
+
+\clearpage
+\newpage
+\input{TKZdoc-elements-beginning.tex}
+\input{TKZdoc-elements-structure.tex}
+\input{TKZdoc-elements-why.tex}
+\input{TKZdoc-elements-presentation.tex}
+\input{TKZdoc-elements-convention.tex}
+\input{TKZdoc-elements-organization.tex}
+\input{TKZdoc-elements-coordinates.tex}
+\input{TKZdoc-elements-classes.tex}
+\input{TKZdoc-elements-classes-point.tex}
+\input{TKZdoc-elements-classes-line.tex}
+\input{TKZdoc-elements-classes-circle.tex}
+\input{TKZdoc-elements-classes-occs.tex}
+\input{TKZdoc-elements-classes-conic.tex}
+\input{TKZdoc-elements-classes-triangle.tex}
+\input{TKZdoc-elements-classes-quadrilateral.tex}
+\input{TKZdoc-elements-classes-square.tex}
+\input{TKZdoc-elements-classes-rectangle.tex}
+\input{TKZdoc-elements-classes-parallelogram.tex}
+\input{TKZdoc-elements-classes-regular.tex}
+\input{TKZdoc-elements-classes-vectors.tex}
+\input{TKZdoc-elements-classes-matrices.tex}
+\input{TKZdoc-elements-classes-path.tex}
+\input{TKZdoc-elements-intersection.tex}
+\input{TKZdoc-elements-macros.tex}
+\input{TKZdoc-elements-constants.tex}
+\input{TKZdoc-elements-tkz.tex}
+\input{TKZdoc-elements-utils.tex}
+\input{TKZdoc-elements-maths.tex}
+\input{TKZdoc-elements-lua.tex}
+\input{TKZdoc-elements-indepthstudy.tex}
+\input{TKZdoc-elements-transfers.tex}
+\input{TKZdoc-elements-theorems.tex}
+\input{TKZdoc-elements-examples.tex}
+\input{TKZdoc-elements-metapost.tex}
+\clearpage\newpage
+\small\printindex
+
+\end{document}

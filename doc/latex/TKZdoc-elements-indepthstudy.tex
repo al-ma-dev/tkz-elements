@@ -1,0 +1,998 @@
+\newpage
+
+\section{In-depth study} % (fold)
+\label{sec:in_depth_study}
+
+\subsection{The tables} % (fold)
+\label{sub:the_tables}
+
+In Lua, the main data structure is the \emph{table}. It functions both as an array and as a dictionary, allowing you to store sequences of values, associate keys with values, and even represent complex objects. Tables are the foundation for representing geometric structures such as points, lines, and triangles in \tkzNamePack{tkz-elements}.
+
+
+\subsubsection{General Use of Tables} % (fold)
+\label{ssub:general_tables}
+Tables are the only data structure "container" integrated in Lua. 
+ They are associative arrays  which associates a key (reference or index) with a value in the form of a field (set) of key/value pairs. Moreover, tables have no fixed size and can grow based on our need dynamically.
+
+Tables are created using curly braces:
+
+\begin{mybox}
+\begin{verbatim}
+  T = {} % T is an empty table.
+\end{verbatim}
+\end{mybox}
+
+In the next example, \code{coords} is a table containing four points written as coordinate strings. Lua indexes tables starting at 1.
+
+\begin{tkzexample}[latex=0.35\textwidth]
+\directlua{
+ local coords = { "(0,0)", "(1,0)", "(1,1)", "(0,1)" }
+ for i, pt in ipairs(coords) do
+    tex.print(i .. ": " .. pt)
+    tex.print([[\\]])
+ end}
+\end{tkzexample}
+
+You can define a table with unordered indices as follows:
+
+\begin{mybox}
+\begin{verbatim}
+coords = {[1] = "(0,0)", [3] = "(1,1)", [2] = "(1,0)"}
+\end{verbatim}
+\end{mybox}
+
+Accessing an indexed element is straightforward:
+
+\begin{verbatim}
+   tex.print(coords[3]) --> (1,1)
+\end{verbatim}
+
+You can also append new elements:
+
+\begin{verbatim}
+coords[4] = "(0,1)"
+\end{verbatim}
+
+To iterate over a table with numeric indices in order, use \code{ipairs}:
+
+\begin{mybox}
+\begin{verbatim}
+for i, v in ipairs(coords) do
+print(i, v)
+end
+\end{verbatim}
+\end{mybox}
+
+This will print:
+
+\begin{verbatim}
+1 (0,0)
+2 (1,0)
+3 (1,1)
+4 (0,1)
+\end{verbatim}
+
+
+\paragraph{Key–Value Tables.}
+Tables may also use string keys to associate names to values. This is especially useful in geometry for storing attributes like color or label:
+
+\begin{mybox}
+\begin{verbatim}
+properties = {
+A = "blue",
+B = "green",
+C = "red"
+}
+properties.D = "black"
+\end{verbatim}
+\end{mybox}
+
+To iterate over all key–value pairs (order not guaranteed), use \code{pairs}:
+
+\begin{mybox}
+\begin{verbatim}
+for k, v in pairs(properties) do
+print(k, v)
+end
+\end{verbatim}
+\end{mybox}
+
+\paragraph{Deleting an entry.}
+To remove an entry, assign \code{nil} to the corresponding key:
+
+\begin{verbatim}
+properties.B = nil
+\end{verbatim}
+
+\subsubsection{Variable Number of Arguments} % (fold)
+\label{ssub:varargs_table}
+
+Tables can also be used to store a variable number of function arguments:
+
+\begin{mybox}
+\begin{verbatim}
+function ReturnTable(...)
+return table.pack(...)
+end
+\end{verbatim}
+\end{mybox}
+
+\begin{mybox}
+\begin{verbatim}
+function ParamToTable(...)
+local mytab = ReturnTable(...)
+for i = 1, mytab.n do
+print(mytab[i])
+end
+end
+
+ParamToTable("A", "B", "C")
+\end{verbatim}
+\end{mybox}
+
+This technique is useful for collecting points, coordinates, or any variable-length data.
+
+\paragraph{Accessing with Sugar Syntax.}
+In tables with string keys, there are two common syntaxes:
+
+\begin{itemize}
+\item \code{properties["A"]} — always valid;
+\item \code{properties.A} — shorter, but only works with string keys that are valid Lua identifiers (not numbers).
+\end{itemize}
+
+% subsubsection general_tables (end)
+
+\subsubsection{Table \code{z}} % (fold)
+\label{ssub:table_z}
+
+The most important table in \tkzNamePack{tkz-elements} is \code{z}, used to store geometric points. It is declared as:
+
+\begin{verbatim}
+z = {}
+\end{verbatim}
+
+Each point is then stored with a named key:
+
+\begin{mybox}
+\begin{verbatim}
+z.M = point(3, 2)
+\end{verbatim}
+\end{mybox}
+
+The object \code{z.M} holds real and imaginary parts, accessible as:
+
+\begin{verbatim}
+z.M.re --> 3
+z.M.im --> 2
+\end{verbatim}
+
+If you print it:
+
+\begin{verbatim}
+tex.print(tostring(z.M))
+\end{verbatim}
+
+You get the complex representation \code{3+2i}.
+
+Moreover, points in the \code{z} table are not just data—they are objects with methods. You can perform geometric operations directly:
+
+\begin{verbatim}
+z.N = z.M:rotation(math.pi / 2)
+\end{verbatim}
+
+This makes the \code{z} table central to object creation and manipulation in \tkzNamePack{tkz-elements}.
+% subsubsection table_z (end)
+
+\subsection{Transfers} % (fold)
+\label{sub:transfers}
+
+We've seen (sous-section \ref{ssub:points_transfer}) that the macro \tkzMacro{tkz-elements}{tkzGetNodes} transfers point coordinates to \TIKZ. Let's take a closer look at this macro:
+
+\vspace*{1em}
+
+\begin{mybox}
+\begin{verbatim}
+\def\tkzGetNodes{\directlua{%
+  for K,V in pairs(z) do
+     local n,sd,ft
+     n = string.len(K)
+     if n > 1 then
+     _,_,ft, sd = string.find(K, "(.+)(.)" )  
+    if sd == "p" then   K=ft.."'" end
+    _,_,xft, xsd = string.find(ft, "(.+)(.)" )
+    if xsd == "p" then  K=xft.."'".."'" end
+      end    
+ tex.sprint("\\coordinate ("..K..") at ("..V.re..","..V.im..") ; \string\r")
+end}
+}  
+\end{verbatim}
+\end{mybox}
+
+It consists mainly of a loop. The variables used are K (for keys) and V (for Values). To take pairs (key/value) from the \tkzname{z} table, use the \tkzname{pairs} function. K becomes the name of a node whose coordinates are \tkzname{V.re} and \tkzname{V.im}. Meanwhile, we search for keys with more than one symbol ending in \tkzname{p}, in order to associate them with the symbol "'" valid in \TIKZ{}.
+
+
+% subsection transfers (end)
+
+\subsection{Complex numbers library and point} % (fold)
+\label{sub:complex_numbers}
+
+Unless you want to create your own functions, you won't need to know and use complex numbers. However, in some cases it may be useful to implement some of their properties.
+
+
+|z.A = point(1, 2)| and \ |z.B = point(1, -1)| define two affixes which are $z_A = 1+2i$ and $z_B = 1-i$. Note the difference in notations |z.A| and $z_A$ for two distinct entities: a Lua object and an affix. 
+
+\vspace{1em}
+If you want to use only complex numbers then you must choose the following syntax :|za =point (1,2)|.
+The only difference between |z.A = point : new (1, 2)| and |za = point (1, 2)| is that the object referenced by A is stored in table |z| and not za.
+
+ The notation may come as a surprise, as I used the term "point". The aim here was not to create a complete library on complex numbers, but to be able to use their main properties in relation to points. I didn't want to have two different levels, and since a unique connection can be established between the points of the plane and the complexes, I decided not to mention the complex numbers! But they are there.
+
+
+\begin{center}
+  \bgroup
+  \catcode`_=12
+  \small
+  \begin{minipage}{\textwidth}
+  \captionof{table}{Point or complex metamethods.}\label{complex:meta}
+  \begin{tabular}{lll}
+    \toprule
+    \textbf{Metamethods} & \textbf{Application}& \textbf{Result} \\
+    \midrule
+  \tkzMeta{point}{add(z1,z2)}   & |z.a + z.b| & affix \\
+  \tkzMeta{point}{sub(z1,z2)}   & |z.a - z.b| & affix\\
+  \tkzMeta{point}{unm(z)}       & |- z.a| & affix\\
+  \tkzMeta{point}{mul(z1,z2)}   & |z.a * z.b|  &  affix\\
+  \tkzMeta{point}{concat(z1,z2)}& |z.a .. z.b| & dot product  = real number \footnote{If $O$ is the origin of the complex plan, then we get the dot product of the vectors $\overrightarrow{Oa}$ and $\overrightarrow{Ob}$} \\
+  \tkzMeta{point}{pow(z1,z2)}  & |z.a ^ z.b| & determinant = real number\\
+  \tkzMeta{point}{div(z1,z2)}  & |z.a / z.b|   &   affix     \\
+  \tkzMeta{point}{tostring(z)} & tex.print(tostring(z)) & displays the affix   \\
+  \tkzMeta{point}{tonumber(z)}   & tonumber(z) & affix or nil\\
+  \tkzMeta{point}{eq(z1,z2)}    &  eq (z.a,z.b) & boolean\\
+  \bottomrule
+  \end{tabular}
+  \end{minipage}
+  \egroup
+\end{center}
+
+
+\begin{center}
+  \bgroup
+  \catcode`_=12
+  \small
+  \begin{minipage}{\textwidth}
+  \captionof{table}{Point (complex) class methods.}\label{complex:met}
+  \begin{tabular}{lll}
+    \toprule
+  \textbf{Methods} & \textbf{Application} &\textbf{Result} \\
+  \midrule
+  \tkzMeth{point}{conj(z)}  & |z.a : conj()|   & affix (conjugate) \\
+  \tkzMeth{point}{mod(z)}   & |z.a : mod()|    & real number = modulus  |z.a|\\
+  \tkzMeth{point}{abs (z)}  & |z.a : abs()|    & real number = modulus \\
+  \tkzMeth{point}{norm (z)} & |z.a : norm()|   & norm  (real number  ) \\
+  \tkzMeth{point}{arg (z)} & |z.a : arg()|    & real number = argument of z.a (in rad)\\
+  \tkzMeth{point}{get(z)}   & |z.a : get()|    & re and im (two real numbers  )  \\
+  \tkzMeth{point}{sqrt(z)} & |z.a : sqrt()|   & affix  \\
+  \bottomrule
+  \end{tabular}
+  \end{minipage}
+  \egroup
+\end{center}
+
+
+\vspace{1em}
+The class is provided with two specific metamethods.
+
+\begin{itemize}
+   \item Since concatenation makes little sense here, the operation associated with |..| is the scalar or dot product. If |z1 = a+ib| and |z2 = c+id| then
+
+   |z1..z2 = (a+ib) .. (c+id) = (a+ib) (c-id) = ac+bd + i(bc-ad) |
+
+   There's also a mathematical function, |dot_product|, which takes three arguments. See example \ref{sub:dot_or_scalar_product}
+
+
+   \item With the same idea, the operation associated with \tkzname{\^{}} is the determinant i.e.
+
+   |z1 ^ z2 = (a+ib) ^ (c+id) = ad - bc  From  (a-ib) (c+id) = ac+bd + i(ad - bc)| we take the imaginary part.
+
+\end{itemize}
+
+\subsubsection{Example of complex use} % (fold)
+\label{ssub:example_of_complex_use}
+Let |za = math.cos(a) + i math.sin(a)| . 
+This is obtained from the library by writing 
+
+\begin{mybox}
+   |za = point(math.cos(a),math.sin(a))|.
+\end{mybox}
+
+Then |z.B = z.A * za| describes a rotation of point A by an angle |a|.
+
+\begin{minipage}{.45\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.O = point(0, 0)
+ z.A = point(1, 2)
+ a = math.pi / 6
+ za = point(math.cos(a), math.sin(a))
+ z.B = z.A * za}
+\begin{tikzpicture}
+ \tkzGetNodes
+ \tkzDrawPoints(O,A,B)
+ \tkzDrawArc[->,delta=0](O,A)(B)
+ \tkzDrawSegments[dashed](O,A O,B)
+ \tkzLabelAngle(A,O,B){$\pi/6$}
+\end{tikzpicture}
+  \end{verbatim}
+\end{minipage}
+\begin{minipage}{.55\textwidth}
+\directlua{
+ init_elements()
+ z.O = point(0, 0)
+ z.A = point(1, 2)
+ a = math.pi / 6
+ za = point(math.cos(a), math.sin(a))
+ z.B = z.A * za}
+\begin{center}
+  \begin{tikzpicture}[scale=2]
+  \tkzGetNodes
+  \tkzDrawPoints(O,A,B)
+  \tkzDrawArc[->,delta=0,thick](O,A)(B)
+  \tkzDrawSegments[dashed](O,A O,B)
+  \tkzLabelAngle(A,O,B){$\pi/6$}
+  \end{tikzpicture}
+\end{center}
+
+\end{minipage}
+% subsubsection example_of_complex_use (end)
+
+\subsubsection{Point operations (complex)} % (fold)
+\label{ssub:point_operations_complex}
+
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.o = point(0, 0)
+ z.a = point(1, -1)
+ z.b = point(2, 1)
+ z.bp = -z.b
+ z.c = z.a + z.b
+ z.d = z.a - z.b
+ z.e = z.a * z.b
+ z.f = z.a / z.b
+ z.ap = point.conj(z.a)
+ z.g = z.b * point(math.cos(math.pi / 2), 
+     math.sin(math.pi / 2))}
+ 
+\begin{tikzpicture}
+ \tkzGetNodes
+ \tkzInit[xmin=-2,xmax=3,ymin=-2,ymax=3]
+ \tkzGrid
+ \tkzDrawSegments(o,a o,b o,c o,e o,b')
+ \tkzDrawSegments(o,f o,g)
+ \tkzDrawSegments[red](a,c b,c b',d a,d)
+ \tkzDrawPoints(a,...,g,o,a',b')
+ \tkzLabelPoints(o,a,b,c,d,e,f,g,a',b')
+\end{tikzpicture}
+\end{verbatim}
+   \end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ z.o = point(0, 0)
+ z.a = point(1, -1)
+ z.b = point(2, 1)
+ z.bp = -z.b
+ z.c = z.a + z.b
+ z.d = z.a - z.b
+ z.e = z.a * z.b
+ z.f = z.a / z.b
+ z.ap = point.conj(z.a)
+ z.g = z.b * point(math.cos(math.pi / 2), math.sin(math.pi / 2))}
+     
+\begin{center}
+  \begin{tikzpicture}
+           \tkzGetNodes
+           \tkzInit[xmin=-2,xmax=3,ymin=-2,ymax=3]
+            \tkzGrid
+           \tkzDrawSegments(o,a o,b o,c o,e o,b' o,f o,g)
+           \tkzDrawSegments[red](a,c b,c b',d a,d)
+           \tkzDrawPoints(a,...,g,o,a',b')
+           \tkzLabelPoints(o,a,b,c,d,e,f,g,a',b')
+  \end{tikzpicture}
+\end{center}
+
+\end{minipage}
+% subsubsection point_operations_complex (end)
+% subsection complex_numbers (end)
+
+
+\subsection{Barycenter} % (fold)
+\label{sub:barycenter}
+
+\begin{minipage}{.8\textwidth}
+   Here's the definition of the barycenter (Note\footnote{\code{barycenter\_} is an internal function, the public form is \code{barycenter}}), which is used some forty times in the package.
+|table.pack| builds a table from a list. \\
+|tp.n| gives the number of pairs. \\
+|tp[i][1]| is an affix and |tp[i][2]| the associated weight (real value). See the example [\ref{ssub:using_the_barycentre}]
+   
+         
+\begin{verbatim}
+   function barycenter_ (...)
+   local tp = table.pack(...)
+   local i
+   local sum = 0
+   local weight=0
+   for i=1, tp.n do
+      sum = sum + tp[i][1] * tp[i][2]
+      weight = weight + tp[i][2]
+   end
+   return sum / weight
+   end
+\end{verbatim}
+\end{minipage}
+
+\vspace{1em}   
+\subsubsection{Using the barycentre} % (fold)
+\label{ssub:using_the_barycentre}
+
+Better |T.ABC = triangle(z.A, z.B, z.C)|
+and |z.G = T.ABC:barycenter()|
+
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(1, 0)
+ z.B = point(5, -1)
+ z.C = point(2, 5)
+ z.G = tkz.barycenter({ z.A, 3 }, { z.B, 1 }, 
+    { z.C, 1 })}
+    
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawPolygon(A,B,C)
+\tkzDrawPoints(A,B,C,G)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}\directlua{
+ init_elements()
+ z.A = point(1, 0)
+ z.B = point(5, -1)
+ z.C = point(2, 5)
+ z.G = tkz.barycenter({ z.A, 3 }, { z.B, 1 }, { z.C, 1 })}
+  
+\begin{center}
+  \begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawPoints(A,B,C,G)
+  \end{tikzpicture}
+\end{center}
+
+\end{minipage}
+% subsubsection using_the_barycentre (end)
+
+\subsubsection{Incenter of a triangle} % (fold)
+\label{ssub:incenter_of_a_triangle}
+The calculation of the weights ka, kb and kc is precise, and the result obtained with the barycenter is excellent. Note the presence of the underscore \_ for certain functions. These functions are internal (developer). Each external (user) function is associated with its internal counterpart.
+
+Here's how to determine the center of the inscribed circle of a triangle:
+\begin{mybox}
+\begin{verbatim}
+function in_center_(a, b, c)
+	local ka = point.abs(b - c)
+	local kc = point.abs(b - a)
+	local kb = point.abs(c - a)
+	return barycenter_({ a, ka }, { b, kb }, { c, kc })
+end \end{verbatim}
+\end{mybox}
+
+% subsubsection incenter_of_a_triangle (end)  
+% subsection barycenter (end)
+
+\subsection{Loop and table notation} % (fold)
+\label{sub:loop_and_table_notation}
+The problem encountered in this example stems from the notation of the point names. Since it's not possible to write in simplified form, we have to resort to table[key] notation.
+
+\directlua{
+ init_elements()
+ local r = 3
+ z.O = point(0, 0)
+ max = 100
+ for i = 1, max do
+ 	z["A_" .. i] = point:polar(r, 2 * i * math.pi / max)
+ end
+ a = math.deg(tkz.get_angle(z.O, z.A_1, z.A_2))}
+
+\begin{center}
+  \begin{tikzpicture}[scale =.8]
+  \pgfkeys{/pgf/number format/.cd,use comma}
+  \let\pmpn\pgfmathprintnumber
+  \tkzGetNodes
+  \tkzDrawPolygon[cyan](A_1,A_...,A_\tkzUseLua{max})
+  \tkzDrawCircle[red](O,A_1)
+  \tkzDrawPoints[color=black](A_1,A_...,A_\tkzUseLua{max},O)
+  \tkzDrawSegments(O,A_1 O,A_2)
+  \tkzMarkAngle[size=2](A_1,O,A_2)
+  \tkzLabelAngle[pos=3.4](A_1,O,A_2){$\pmpn{\tkzUseLua{a}}^\circ$}
+  \end{tikzpicture}
+\end{center}
+
+\begin{verbatim}
+\directlua{
+ init_elements()
+ local r = 3
+ z.O = point(0, 0)
+ max = 100
+ for i = 1, max do
+ 	z["A_" .. i] = point:polar(r, 2 * i * math.pi / max)
+ end
+ a = math.deg(tkz.get_angle(z.O, z.A_1, z.A_2))}
+\end{verbatim}
+
+
+\begin{verbatim}
+  \begin{tikzpicture}
+  \pgfkeys{/pgf/number format/.cd,use comma}
+  \let\pmpn\pgfmathprintnumber
+  \tkzGetNodes
+  \tkzDrawPolygon[cyan](A_1,A_...,A_\tkzUseLua{max})
+  \tkzDrawCircle[red](O,A_1)
+  \tkzDrawPoints[color=black](A_1,A_...,A_\tkzUseLua{max},O)
+  \tkzDrawSegments(O,A_1 O,A_2)
+  \tkzMarkAngle[size=2](A_1,O,A_2)
+  \tkzLabelAngle[pos=3.4](A_1,O,A_2){$\pmpn{\tkzUseLua{a}}^\circ$}
+  \end{tikzpicture}
+\end{verbatim}
+
+
+
+% subsection loop_and_table_notation (end)
+
+\subsection{Use of tables} % (fold)
+\label{sub:use_of_tables}
+
+
+
+\subsubsection{Plotting a Curve} % (fold)
+\label{ssub:plotting_a_curve}
+
+This example demonstrates how to plot the graph of a function using Lua code in \tkzNamePack{tkz-elements}. The function chosen is:
+
+\[
+f(x) = x\cdot e^{-x^2} + 1
+\]
+
+The list of points computed from this function will be stored in a \tkzNameObj{path} object named \tkzname{PA.curve}.
+
+\paragraph{Function definition.}
+In the \LaTeX{} part of the code, we define the mathematical expression using:
+
+\begin{center}
+\verb|\def\tkzfct{x*exp(-x^2)+1}|
+\end{center}
+
+This expression will later be passed to Lua for numerical evaluation.
+
+\paragraph{Generating the path.}
+The macro \tkzname{tkzGetPath} takes five arguments:
+\begin{itemize}
+  \item the expression of the function (as a string),
+  \item the starting value of $x$,
+  \item the ending value of $x$,
+  \item the number of subdivisions,
+  \item the name of the resulting \code{path} object.
+\end{itemize}
+
+The macro internally evaluates the function for each value of $x$ in the interval, and stores the corresponding points in a \code{path} object.
+
+\paragraph{Percent character.}
+In LuaTeX, the percent symbol \code{\%} is treated as a comment initiator within Lua code. To avoid syntax errors when formatting a string that contains a percent character (used in \code{string.format}), we define a control sequence \tkzMacro{latex}{percentchar} to refer to \verb|\@percentchar|. This ensures compatibility when embedding Lua code via \tkzMacro{lualatex}{directlua}.
+
+\paragraph{Evaluating single values.}
+To retrieve the value of the function at a given point, the macro \tkzname{tkzval} can be used. It evaluates the Lua function with the input value and returns the result, which can then be used as a coordinate or label in the diagram.
+
+\paragraph{Complete Example.}
+The following example shows how to compute and draw the curve using the methods described above.
+
+\def\tkzfct{x*exp(-x^2)+1}
+
+\def\tkzval#1{%
+  \directlua{%
+    local expr = [[\tkzfct]]
+    local f = load(("return function (x)
+                      return (\percentchar s) 
+                    end"):format(expr), nil, 't', math)()
+    tex.print(f(#1))
+  }
+}
+
+\def\tkzGetPath(#1,#2,#3,#4,#5){%
+  \directlua{
+    local min, max, nb = #2, #3, #4
+    local expr = [[#1]]
+    PA.#5 = path()
+    local f = load(("return function (x)
+                      return (\percentchar s) 
+                    end"):format(expr), nil, 't', math)()
+    for t = min, max, (max - min) / nb do
+      local y = f(t)
+      local pt = point(t, y)
+      if y == math.huge or y == -math.huge then 
+        tex.print("problem") 
+      end
+      PA.#5:add_point(pt)
+    end
+  }
+}
+\begin{center}
+\begin{tikzpicture}
+  \tkzInit[xmin=-3,xmax=3,ymin=-2,ymax=2]
+  \tkzDrawX \tkzDrawY
+  \tkzGetPath(\tkzfct,-3,2,100,curve)
+  \tkzDrawCoordinates[smooth,cyan](PA.curve)
+  \tkzGetNodes
+  \tkzDrawPoint(-3,\tkzval{-3})
+  \tkzDrawPoint(1,\tkzval{1})
+  \tkzDrawPoint(2,\tkzval{2})
+\end{tikzpicture}
+\end{center}
+
+\paragraph{Code definitions.}
+Below are the definitions of the macros used in this example:
+
+\begin{verbatim}
+\makeatletter\let\percentchar\@percentchar\makeatother
+
+\def\tkzfct{x*exp(-x^2)+1}
+
+\def\tkzval#1{%
+  \directlua{%
+    local expr = [[\tkzfct]]
+    local f = load(("return function (x)
+                      return (\percentchar s) 
+                    end"):format(expr), nil, 't', math)()
+    tex.print(f(#1))
+  }
+}
+
+\def\tkzGetPath(#1,#2,#3,#4,#5){%
+  \directlua{
+    local min, max, nb = #2, #3, #4
+    local expr = [[#1]]
+    PA.#5 = path()
+    local f = load(("return function (x)
+                      return (\percentchar s) 
+                    end"):format(expr), nil, 't', math)()
+    for t = min, max, (max - min) / nb do
+      local y = f(t)
+      local pt = point(t, y)
+      if y == math.huge or y == -math.huge then 
+        tex.print("problem") 
+      end
+      PA.#5:add_point(pt)
+    end
+  }
+}
+\end{verbatim}
+
+% subsubsection plotting_a_curve (end)
+% ssubsection use_of_tables (end)
+
+
+\subsection{Determinant and Dot Product} % (fold)
+\label{sub:determinant_et_produit_scalaire}
+
+\subsubsection{Determinant} % (fold)
+\label{ssub:determinant}
+
+The operator |^| is used to compute the determinant associated with two vectors represented by complex numbers.
+
+The \tkzMeth{line}{in\_out} method relies on this operation and essentially replicates the behavior of \tkzFct{tkz}{tkz.is\_linear}.
+
+The determinant of two vectors in the complex plane is computed as the imaginary part of the product between the conjugate of the first vector and the second vector:
+
+\begin{verbatim}
+-- Determinant operator '^': computes ad - bc
+function point.__pow(z1, z2)
+  local z = point.conj(z1) * z2  % (a - ib)(c + id) = ac + bd + i(ad - bc)
+  return z.im
+end
+\end{verbatim}
+
+% subsubsection determinant (end)
+
+\subsubsection{Application: \code{in\_out} Method for a Line} % (fold)
+\label{ssub:in_out_for_a_line}
+
+The method \tkzMeth{line}{in\_out} is used to check if a point lies on a line defined by two points. This can also be applied to other geometric objects, such as:
+
+\begin{itemize}
+  \item lines and segments,
+  \item circles and disks,
+  \item triangles,
+  \item conics (parabolas, ellipses, hyperbolas).
+\end{itemize}
+
+In practice, three points \( A \), \( B \), and \( M \) are collinear if the vectors \( \\overrightarrow{AM} \) and \( \\overrightarrow{BM} \) are collinear, which is equivalent to their determinant being zero. Since floating-point operations may introduce small errors, the result is compared to the threshold \code{tkz\_epsilon} (default \( 10^{-10} \)):
+
+\begin{mybox}
+\begin{verbatim}
+function line:in_out(pt)
+  return math.abs((pt - self.pa) ^ (pt - self.pb)) <= tkz.epsilon
+end
+\end{verbatim}
+\end{mybox}
+
+The following example shows how this method can be used in Lua and visualized in TikZ:
+
+\vspace{1em}
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(1, 2)
+  z.X = point(2, 4)
+  z.Y = point(2, 4.1)
+  L.AB = line(z.A, z.B)
+  if L.AB:in_out(z.X) then
+    inline = true
+    k = (z.X - z.A) / (z.B - z.A)
+  else
+    inline = false
+  end
+  inline_bis = L.AB:in_out(z.Y)
+}
+
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(1, 2)
+  z.X = point(2, 4)
+  z.Y = point(2, 4.1)
+  L.AB = line(z.A, z.B)
+  if L.AB:in_out(z.X) then
+    inline = true
+    k = (z.X - z.A) / (z.B - z.A)
+  else
+    inline = false
+  end
+  inline_bis = L.AB:in_out(z.Y)
+}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\begin{center}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawPoints(A,B,X,Y)
+  \tkzLabelPoints(A,B,X)
+  \tkzLabelPoints[left](Y)
+  \ifthenelse{\equal{\tkzUseLua{inline}}{true}}{
+    \tkzDrawSegment[red](A,B)
+    \tkzLabelSegment(A,B){AX/AB = $\tkzUseLua{k}$}
+  }{
+    \tkzDrawSegment[blue](A,B)
+  }
+  \ifthenelse{\equal{\tkzUseLua{inline_bis}}{false}}{
+    \tkzDrawSegment[green](B,Y)
+  }{}
+\end{tikzpicture}
+\end{center}
+\end{minipage}
+
+% subsubsection in_out_for_a_line (end)
+
+\subsubsection{Dot Product} % (fold)
+\label{ssub:scalar_product}
+
+The dot product between two complex numbers is computed using the operator \code{..}. It corresponds to the real part of the product of the first vector and the conjugate of the second:
+
+\begin{verbatim}
+% Dot product operator '..': returns ac + bd
+function point.__concat(z1, z2)
+  local z = z1 * point.conj(z2) % (a+ib)(c-id) = ac+bd + i(bc-ad)
+  return z.re
+end
+\end{verbatim}
+
+% subsubsection scalar_product (end)
+
+\subsubsection{Dot Product: Orthogonality Test} % (fold)
+\label{ssub:scalar_product_orthogonality_test}
+
+The following function \tkzMeth{math}{isortho} checks whether two vectors are orthogonal using the dot product:
+
+\begin{verbatim}
+function isortho(z1, z2, z3)
+  local epsilon = 1e-8
+  local dp = (z2 - z1) .. (z3 - z1)
+  return math.abs(dp) < epsilon
+end
+\end{verbatim}
+
+This function returns \code{true} if the vectors \( \\overrightarrow{z_1z_2} \) and \( \\overrightarrow{z_1z_3} \) are orthogonal.
+
+% subsubsection scalar_product_orthogonality_test (end)
+
+\subsubsection{Dot Product: Projection onto a Line} % (fold)
+\label{ssub:scalar_product_projection}
+
+Projecting a point onto a line is a fundamental operation in geometry. The projection function is defined as follows:
+
+\begin{verbatim}
+function projection_(pa, pb, pt)
+  if aligned(pa, pb, pt) then
+    return pt
+  else
+    local v = pb - pa
+    local z = ((pt - pa) .. v) / (v .. v)  % .. is the dot product
+    return pa + z * v
+  end
+end
+\end{verbatim}
+
+The function \tkzMeth{math}{aligned} is currently used to check if the point is already on the line. Internally, it avoids using the determinant. This function will eventually be replaced or unified with \tkzFct{tkz}{tkz.is\_linear}.
+
+% subsubsection scalar_product_projection (end)
+% subsection determinant_et_produit_scalaire (end)
+
+\subsection{Point Method} % (fold)
+\label{sub:point_method}
+
+The \tkzMeth{object}{point} method is a generic method available for several geometric objects, including:
+
+\begin{itemize}
+  \item \tkzNameObj{line},
+  \item \tkzNameObj{circle},
+  \item \tkzNameObj{conic} (parabola, hyperbola, ellipse),
+  \item \tkzNameObj{triangle}.
+\end{itemize}
+
+This method returns a point located on the object at a relative position given by a parameter \( t \in [0,1] \). The value \( t = 0 \) corresponds to the start of the object (e.g., the first point or vertex), while \( t = 1 \) corresponds to its end (or to a full revolution for a circle or conic). Intermediate values of \( t \) return proportionally interpolated or parametrically calculated points on the object.
+
+\paragraph{Example.}
+The following code illustrates how to use the \code{point} method with a line, a circle, and a triangle. In each case, we evaluate the midpoint of the object (\( t = 0.5 \)).
+
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(4, 2)
+  z.C = point(1, 3)
+
+  L.AB = line(z.A, z.B)
+  C.AB = circle(z.A, z.B)
+  T.ABC = triangle(z.A, z.B, z.C)
+
+  z.I = L.AB:point(0.5)
+  z.J = C.AB:point(0.5)
+  z.K = T.ABC:point(0.5)
+}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawLine(A,B)
+  \tkzDrawCircle(A,B)
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawPoints(A,B,C,I,J,K)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\hspace{\fill}
+\begin{minipage}{.5\textwidth}
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(4, 2)
+  z.C = point(1, 3)
+
+  L.AB = line(z.A, z.B)
+  C.AB = circle(z.A, z.B)
+  T.ABC = triangle(z.A, z.B, z.C)
+
+  z.I = L.AB:point(0.5)
+  z.J = C.AB:point(0.5)
+  z.K = T.ABC:point(0.5)
+}
+\begin{center}
+\begin{tikzpicture}[scale=0.75]
+  \tkzGetNodes
+  \tkzDrawLine(A,B)
+  \tkzDrawCircle(A,B)
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawPoints(A,B,C,I,J,K)
+\end{tikzpicture}
+\end{center}
+\end{minipage}
+
+\paragraph{Remarks.}
+\begin{itemize}
+  \item For a line segment, \code{object:point(0.5)} returns the midpoint.
+  \item For a circle, the parameter corresponds to the angle \( 2\pi t \) starting from the origin point.
+  \item For a conic, the method returns a point computed using the conic’s parametrization.
+  \item For a triangle, the parameter selects a point on the perimeter (following the order of the vertices).
+\end{itemize}
+
+% subsection point_method (end)
+\subsection{Behind the Objects} % (fold)
+\label{sub:behind_the_objects}
+
+Before introducing geometric objects, all computations were performed using functions whose arguments were explicit \tkzNameObj{points} (i.e., complex numbers).
+
+For example, the midpoint between two points \code{z.a} and \code{z.b} can be computed using the primary function:
+\begin{center}
+\code{z.m = midpoint\_(z.a, z.b)}
+\end{center}
+
+With objects, we instead define a \tkzNameObj{line} or \tkzNameObj{segment}, and access its precomputed midpoint attribute:
+
+\begin{center}
+\begin{minipage}{0.5\textwidth}
+\begin{mybox}
+\begin{verbatim}
+  L.ab = line(z.a, z.b)
+  z.m = L.ab.mid
+\end{verbatim}
+\end{mybox}
+\end{minipage}
+\end{center}
+
+\vspace{1em}
+The original point-based functions—referred to here as **primary functions**—are still available. They can be identified by a trailing underscore in their names (e.g., \code{midpoint\_}, \code{rotation\_}, \code{intersection\_lc\_}). In fact, almost all object methods internally rely on these primary functions.
+
+\paragraph{Examples.}
+
+\begin{itemize}
+  \item \textbf{Rotation around a point.}  
+  To rotate a point \code{pt} around a center \code{c} by an angle \code{a}, you can use the primary function:
+  \begin{center}
+  \code{z.Mp = rotation\_(z.A, math.pi/6, z.M)}
+  \end{center}
+
+  Its definition is straightforward:
+  
+  \begin{center}
+  \begin{minipage}{0.6\textwidth}
+  \begin{mybox}
+  \begin{verbatim}
+function rotation_ (c, a, pt)
+  local z = point(math.cos(a), math.sin(a))
+  return z * (pt - c) + c
+end
+  \end{verbatim}
+  \end{mybox}
+  \end{minipage}
+  \end{center}
+
+  When using objects, the same operation becomes:
+  \begin{center}
+  \code{z.Mp = z.A:rotation(math.pi/6, z.M)}
+  \end{center}
+
+  \item \textbf{Intersection of a line and a circle.}  
+  Using only points, the intersection of line $(A,B)$ and circle centered at $O$ passing through $T$ is computed as:
+  \begin{center}
+  \code{intersection\_lc\_(z.A, z.B, z.O, z.T)}
+  \end{center}
+
+  With objects, this becomes:
+  \begin{center}
+  \code{intersection(L.AB, C.OT)}
+  \end{center}
+\end{itemize}
+
+\vspace{1em}
+\paragraph{Summary.}
+
+The primary functions (whose names end with an underscore, such as \code{midpoint\_}, \code{rotation\_}, or \code{intersection\_lc\_}) are internal and are not part of the official API. They are not documented separately, as they serve only as internal building blocks for object methods. Users are encouraged to interact exclusively with object-oriented methods for clarity, stability, and forward compatibility.
+
+
+% subsection behind_the_objects (end)
+
+% section in_depth_study (end)
+\endinput

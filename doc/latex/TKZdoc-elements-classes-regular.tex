@@ -1,0 +1,181 @@
+\newpage
+\section{Class \tkzClass{regular polygon}} % (fold)
+
+The variable \tkzVar{regular\_polygon}{RP} holds a table used to store regular polygons. It is optional, and you are free to choose the variable name. However, using \code{RP} is a recommended convention for clarity and consistency. If you use a custom variable (e.g., REP), you must initialize it manually. The \tkzFct{tkz-elements}{init\_elements()} function reinitializes the \code{RP} table if used.
+
+\subsection{Creating a regular polygon} % (fold)
+\label{sub:creating_a_regular_polygon}
+
+The \tkzClass{regular\_polygon} class builds a regular polygon from its center, a first vertex, and the number of sides.
+
+\medskip
+The result is usually stored in \tkzVar{regular\_polygon}{P}, a variable used to group polygonal objects.
+
+
+
+\begin{mybox}
+\begin{verbatim}
+P.hex = regular_polygon:new(z.O, z.A, 6)
+\end{verbatim}
+\end{mybox}
+
+\paragraph{Short form.}
+Use the short form for brevity:
+
+\begin{mybox}
+\begin{verbatim}
+P.hex = regular_polygon(z.O, z.A, 6)
+\end{verbatim}
+\end{mybox}
+% subsection creating_a_regular_polygon (end)
+
+\subsection{Regular\_polygon attributes} % (fold)
+\label{sub:regular_polygon_attributes}
+
+\begin{mybox}
+Creation | RP.IA = regular_polygon(z.I,z.A,6)|
+\end{mybox}
+
+\begin{center}
+  \bgroup
+  \catcode`_=12
+  \small
+  \captionof{table}{Regular\_polygon attributes.}\label{regular:att}
+  \begin{tabular}{ll}
+  \toprule
+  \textbf{Attributes}      & \textbf{Application}  \\
+ \midrule
+  \tkzAttr{regular}{center}  & |z.I = RP.IA.center|  \\
+  \tkzAttr{regular}{vertices}   & array containing all vertex affixes  \\
+  \tkzAttr{regular}{through} & first vertex  \\
+  \tkzAttr{regular}{circle}  & defines the circle with center I passing through A \\
+  \tkzAttr{regular}{type}    & |RP.IA.type= 'regular\_polygon'|   \\
+  \tkzAttr{regular}{side}    & |s = RP.IA.side| ; s = length of side\\
+  \tkzAttr{regular}{circumradius}&  |S.AB.circumradius| ; radius of the circumscribed circle \\
+  \tkzAttr{regular}{inradius}&  |S.AB.inxradius| ; radius of the inscribed circle   \\
+  \tkzAttr{regular}{proj}    &  |RP.IA.proj| ; projection of the center on one side   \\
+  \tkzAttr{regular}{angle}   &  |RP.IA.angle| ; angle formed by the center and 2 consecutive vertices   \\
+  \bottomrule %
+  \end{tabular}
+  \egroup
+\end{center}
+
+
+\subsubsection{Pentagon} % (fold)
+\label{ssub:pentagon}
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+init_elements()
+z.O = point(0, 0)
+z.I = point(1, 3)
+z.A = point(2, 0)
+RP.five  = regular_polygon(z.I,z.A,5)
+RP.five : name ("P_")
+C.ins  = circle:radius(z.I, 
+             RP.five.inradius) 
+z.H = RP.five.proj
+}
+\begin{tikzpicture}[scale = .75]
+\def\nb{\tkzUseLua{RP.five.nb}}
+\tkzGetNodes
+\tkzDrawCircles(I,A I,H)
+\tkzDrawPolygon(P_1,P_...,P_\nb)
+\tkzDrawPoints[red](P_1,P_...,P_\nb,H,I)
+\tkzLabelPoints[red](I,A,H)
+\end{tikzpicture}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+   init_elements()
+   z.O = point(0, 0)
+   z.I = point(1, 3)
+   z.A = point(2, 0)
+   RP.five = regular_polygon(z.I,z.A,5)
+   RP.five : name ("P_")
+   C.ins  = circle:radius( z.I , RP.five.inradius ) 
+   z.H = RP.five.proj
+  }
+  
+\begin{center}
+  \begin{tikzpicture}[scale = .75]
+  \def\nb{\tkzUseLua{RP.five.nb}}
+  \tkzGetNodes
+  \tkzDrawCircles(I,A I,H)
+  \tkzDrawPolygon(P_1,P_...,P_\nb)
+  \tkzDrawPoints[red](P_1,P_...,P_\nb,H,I)
+  \tkzLabelPoints[red](I,A,H)
+  \end{tikzpicture}
+\end{center}
+
+
+\end{minipage}
+% subsubsection pentagon (end)
+% subsection regular_polygon_attributes (end)
+
+\subsection{Regular\_polygon methods} % (fold)
+\label{sub:regular_polygon_methods}
+
+\begin{center}
+  \bgroup
+  \catcode`_=12
+  \small
+  \captionof{table}{regular\_polygon methods.}\label{regular:met}
+  \begin{tabular}{ll}
+  \toprule
+  \textbf{Functions and Methods} & \textbf{Comments}    \\
+  \midrule  
+  \tkzFct{regular\_polygon}{new(O,A,n)} & [\ref{ssub:function_regular_new}] \\
+  \midrule 
+  \textbf{Circle} &\\
+  \midrule 
+  \tkzMeth{regular\_polygon}{incircle ()} & [\ref{ssub:method_regular_incirle}]\\
+  \midrule 
+  \textbf{Points} &\\
+  \midrule 
+  \tkzMeth{regular\_polygon}{name (string)} & [\ref{ssub:method_regular_name}] \\
+  \bottomrule %
+  \end{tabular}
+  \egroup
+\end{center}
+
+
+\subsubsection{Method \tkzMeth{regular}{new(pt, pt, n)}} % (fold)
+\label{ssub:function_regular_new}
+
+\begin{tkzexample}[latex=.5\textwidth]
+  \directlua{
+   z.A = point(0, -4)
+   z.O = point(0, 0)
+   RP.six = regular_polygon(z.O, z.A, 6)
+   RP.six:name("A_")
+   z.i, z.p = RP.six:incircle():get()}
+      
+  \begin{tikzpicture}[gridded,scale=.75]
+    \tkzGetNodes
+    \tkzDrawCircles[red](O,A)
+    \tkzDrawCircles[teal](i,p)
+    \tkzDrawPolygon(A_1,A_...,A_6)
+    \tkzDrawPoints[red](A_1,A_...,A_6)
+    \tkzLabelPoints[red](A_1,A_...,A_6)
+  \end{tikzpicture}
+\end{tkzexample}
+
+
+% subsubsection function_regular_new (end)
+
+\subsubsection{Method \tkzMeth{regular}{incirle()}} % (fold)
+\label{ssub:method_regular_incirle}
+
+See  previous example [\ref{ssub:function_regular_new}]
+% subsubsection method_regular_incirle (end)
+
+\subsubsection{Method \tkzMeth{regular}{name(s)}} % (fold)
+\label{ssub:method_regular_name}
+
+See   [\ref{ssub:function_regular_new}]
+% subsubsection method_regular_name (end)
+
+% subsection regular_polygon_methods (end)
+

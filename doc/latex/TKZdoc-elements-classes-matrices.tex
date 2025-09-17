@@ -1,0 +1,1180 @@
+\newpage\section{Class  \tkzClass{matrix}} % (fold)
+\label{sec:matrices}
+The variable \tkzVar{matrix}{M} holds a table used to store matrices. It is optional, and you are free to choose the variable name. However, using \code{M} is a recommended convention for clarity and consistency. If you use a custom variable (e.g., Matrices), you must initialize it manually.\\
+The \code{init\_elements()} function reinitializes the \code{M} table if used.
+
+\vspace{1em}
+
+The \code{matrix} class is currently experimental, and its attribute and method names have not yet been finalized, indicating that this class is still evolving. Certain connections have been made with other classes, such as the \code{point} class. Additionally, a new attribute, \code{mtx}, has been included, associating a column matrix with the point, where the elements correspond to the point's coordinates in the original base. Similarly, an attribute has been added to the \code{vector} class, where \code{mtx} represents a column matrix consisting of the two affixes that compose the vector.
+
+This \code{matrix} class has been created to avoid the need for an external library, and has been adapted to plane transformations. It allows you to use complex numbers.
+
+\lefthand\ To display matrices, you'll need to load the \tkzNamePack{amsmath} package.
+
+{\color{red}\lefthand\ } While some methods are valid for any matrix size, the majority are reserved for square matrices of order 2 and 3.
+
+
+\subsection{Matrix creation} % (fold)
+\label{sub:matrix_creation}
+
+The creation of a matrix is the result of numerous possibilities. Let's take a look at the different cases
+
+The first one is to use an array of arrays, that is, a table wherein each element is another table. For instance, you can create a matrix of zeros with dimensions N by M with the following code:
+
+
+\begin{itemize}
+
+\item  The first method is: [\ref{ssub:method_new}]. This function is the most important, as it's the one that creates an object. The other functions create specific objects and always use this function.
+
+The \tkzClass{matrix} class represents a $2\times2$ matrix defined by four values.
+
+\begin{mybox}
+\begin{verbatim}
+M = matrix:new(1, 0, 0, 1) -- identity matrix
+\end{verbatim}
+\end{mybox}
+
+\paragraph{Short form.}
+A more concise form is available:
+
+\begin{mybox}
+\begin{verbatim}
+M = matrix(1, 0, 0, 1)
+\end{verbatim}
+\end{mybox}
+
+
+\begin{mybox}
+   | M.new = matrix({ { a, b }, { c, d } }) | \\
+   a, b, c, et d being real or complex numbers.
+\end{mybox}
+
+\begin{minipage}{.3\textwidth}
+\directlua{
+  init_elements()
+  local a, b, c, d = 1, 2, 3, 4
+  M.new = matrix({ { a, b }, { c, d } })
+  tex.print('M = ') M.new:print()}
+\end{minipage}
+\begin{minipage}{.6\textwidth}
+\begin{tkzexample}[code only]
+\directlua{
+  init_elements()
+  local a, b, c, d = 1, 2, 3, 4
+  M.new = matrix({ { a, b }, { c, d } })
+  tex.print('M = ') M.new:print()}
+\end{tkzexample}
+\end{minipage}
+
+
+\item With the function \code{create}, you get a matrix whose coefficients are all zero, with a number of columns and rows of your choice. [\ref{ssub:function_matrix_create_n_m}]
+
+  \begin{mybox}
+  |M.cr = matrix:create(4,5)|
+  \end{mybox}
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+  M.cr = matrix:create(4, 5)
+  tex.print('M = ') M.cr:print()}
+\end{tkzexample}
+
+
+\item  The identity matrix of size
+{$\displaystyle n$} is the {$\displaystyle n\times n$} square matrix with ones on the main diagonal and zeros elsewhere. See  [\ref{ssub:method_identity}]
+
+\begin{mybox}
+|M.I = matrix:identity(3)|
+\end{mybox}
+
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+  M.I = matrix:identity(3)
+  tex.print('$I_3 = $') M.I:print()}
+\end{tkzexample}
+
+
+\item  It is also possible to obtain a square matrix with: [\ref{ssub:method_square}]
+  \begin{mybox}
+  |M.sq = matrix : square (2,a,b,c,d)|
+  \end{mybox}
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+   local a, b, c, d = 1, 2, 3, 4
+  M.sq = matrix:square(2, a, b, c, d)
+  tex.print('M = ') M.sq:print()}
+\end{tkzexample}
+
+
+\item  In the case of a column vector: [\ref{ssub:method_vector}]
+
+  \begin{mybox}
+  | M.V = matrix:vector(1, 2, 3)|
+  also possible |M.V = matrix:column_vector(1, 2, 3)|
+  \end{mybox}
+
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+  M.V = matrix:vector(1, 2, 3)
+  tex.print('V = ') M.V:print()}
+\end{tkzexample}
+
+
+\item  In the case of a row vector: [\ref{ssub:function_row_vector}]
+
+\begin{mybox}
+  | M.V = matrix:row_vector(1, 2, 3)|
+\end{mybox}
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+  M.V = matrix:row_vector(1, 2, 3)
+  tex.print('V = ') M.V:print()}
+\end{tkzexample}
+
+
+\item Matrix associated with a point
+
+  |M.p = matrix({ { p.re }, { p.im } })|
+
+\item Matrix associated with a vector
+
+It's a column matrix made up of the affixes of the two points defining the vector.
+
+| local M.v = matrix{ { za }, { zb } }|
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+z.A = point(1, 2)
+z.B = point(3, 4)
+V.u = vector(z.A, z.B)
+V.u.mtx:print()}
+\end{tkzexample}
+
+
+
+\item  Homogeneous transformation matrix [\ref{ssub:method_htm}]
+
+  The objective is to generate a matrix with homogeneous coordinates capable of transforming a coordinate system through rotation, translation, and scaling. To achieve this, it is necessary to define both the rotation angle, the coordinates of the new origin ans the scaling factors.
+
+\begin{tkzexample}[latex=.35\textwidth]
+\directlua{
+  init_elements()
+  M.h = matrix : htm (math.pi / 3, 1, 2, 2, 1)
+  tex.print('H = ') M.h:print()}
+\end{tkzexample}
+
+\end{itemize}
+% subsection matrix_creation (end)
+
+
+\subsection{Display a matrix: method \code{print}} % (fold)
+\label{sub:display_a_matrix_method_print}
+
+
+This method (See  \ref{ssub:method_print}) is necessary to control the results, so here are a few explanations on how to use it. It can be used on real or complex matrices, square or not. A few options allow you to format the results. You need to load the \tkzNamePack{amsmath} package to use the "print" method. Without this package, it is possible to display the contents of the matrix without formatting with |print_array (M)|
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+  M.new = matrix { { 1, -1}, { 2, 0 } }
+  M.new:print()}
+\end{tkzexample}
+
+% subsection display_a_matrix_method_print (end)
+
+\subsection{Attibutes of a matrix} % (fold)
+\label{sub:attibutes_of_a_matrix}
+
+\begin{center}
+  \bgroup
+  \catcode`_=12
+  \small
+  \captionof{table}{Matrix attributes.}\label{matrix:att}
+  \begin{tabular}{ll}
+  \toprule
+  \textbf{Attributes}     & \textbf{Reference} \\
+  \midrule
+  \tkzAttr{matrix}{set}     & [\ref{sub:attribute_set}]\\
+  \tkzAttr{matrix}{rows}    & [\ref{ssub:attributes_matrix_rows_and_cols}] \\
+  \tkzAttr{matrix}{cols}    & [\ref{ssub:attributes_matrix_rows_and_cols}] \\
+  \tkzAttr{matrix}{type}    &   \\
+  \tkzAttr{matrix}{det}     & [\ref{ssub:attributes_matrix_det}]\\
+  \bottomrule %
+  \end{tabular}
+  \egroup
+\end{center}
+
+
+\subsubsection{Attribute \tkzAttr{matrix}{type}} % (fold)
+\label{ssub:attribute_iattr_matrix_type}
+\begin{mybox}
+  |M.new = matrix{ { 1, 1}, { 0, 2} } |
+  |A = { { 1, 1 }, { 0, 2 } } |
+\end{mybox}
+
+\code{M} is a matrix (and therefore a table) whereas A is a table. Thus \code{M.type} gives \code{'matrix'} and \code{A.type = nil}. \code{type(A) or type(M) = table}.
+
+% subsubsection attribute_iattr_matrix_type (end)
+
+\subsubsection{Attribute \tkzAttr{matrix}{set}} % (fold)
+\label{sub:attribute_set}
+A simple array such as |{{1,2},{2,-1}}| is often considered a \code{matrix}. In \tkzNamePack{tkz-elements}, we'll consider |M.new| defined by
+
+|matrix({ { 1, 1 }, { 0, 2 } })|
+
+ as a matrix and |M.new.set| as an array (|M.new.set = { { 1, 1 }, {0, 2 } }|).
+
+You can access a particular element of the matrix, for example: |M.new.set[2][1]| gives \tkzUseLua{M.new.set[2][2]}.
+
+|\tkzUseLua{M.new.set[2][1]}| is the expression that displays $2$.
+
+% subsubsection attribute_set (end)
+
+\subsubsection{Attributes \tkzAttr{matrix}{rows} and \tkzAttr{matrix}{cols}} % (fold)
+\label{ssub:attributes_matrix_rows_and_cols}
+
+The number of rows is accessed with |M.n.rows| and the number of columns with |M.n.cols|, here's an example:
+
+\vspace{.5em}
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ M.n = matrix({ { 1, 2, 3 }, { 4, 5, 6 } })
+ M.n :print()
+ tex.print("Rows:  "..M.n.rows)
+ tex.print("Cols:  "..M.n.cols)}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ M.n = matrix({ { 1, 2, 3 }, { 4, 5, 6 } })
+ M.n:print()
+ tex.print("Rows:  "..M.n.rows)
+ tex.print("Cols:  "..M.n.cols)}
+\end{minipage}
+% subsubsection attributes_matrix_rows_and_col (end)
+
+\subsubsection{Attributes \tkzAttr{matrix}{det} } % (fold)
+\label{ssub:attributes_matrix_det}
+Give the determinant of the matrix if it is square, otherwise it is \code{nil}. The coefficients of the matrix can be complex numbers.
+
+\vspace{.5em}
+\begin{minipage}{.6\textwidth}
+\begin{verbatim}
+\directlua{
+  init_elements()
+  M.s = matrix:square(3, 1, 1, 0, 2, -1, -2, 1, -1, 2)
+  M.s:print()
+  tex.print ('\\\\')
+  tex.print ("Its determinant is:  " .. M.s.det)
+  }
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.4\textwidth}
+\directlua{
+ init_elements()
+ M.s = matrix:square(3, 1, 1, 0, 2, -1, -2, 1, -1, 2)
+ M.s:print()
+ tex.print('\\\\')
+ tex.print("Its determinant is:  "..M.s.det)
+ tex.print('\\\\')
+ local a = point(1, -2)
+ local b = point(0, 1)
+ local c = point(1, 1)
+ local d = point(1, -1)
+  M.A = matrix({ { a, b }, {c, d } })
+ tex.print ("Its determinant is:  "..tostring(M.A.det))}
+\end{minipage}
+
+% subsubsection attributes_iattr_matrix_det (end)
+
+% subsection attibutes_of_a_matrix (end)
+
+
+\subsection{Metamethods for the matrices} % (fold)
+\label{sub:metamethods_for_the_matrices}
+Conditions on matrices must be valid for certain operations to be possible.
+
+\begin{center}
+  \bgroup
+  \catcode`_=12
+  \small
+  \captionof{table}{Matrix metamethods.}\label{matrix:meta}
+  \begin{tabular}{ll}
+    \toprule
+    \textbf{Metamethods} & \textbf{Refrence} \\
+    \midrule
+    \tkzMeta{matrix}{add(M1,M2)} &  See  [\ref{ssub:addition_of_matrices}] \\
+    \tkzMeta{matrix}{sub(M1,M2)} &  See  [\ref{ssub:addition_of_matrices}]  \\
+    \tkzMeta{matrix}{unm(M}       & |- M|  \\
+    \tkzMeta{matrix}{mul(M1,M2)}     & [\ref{ssub:multiplication_of_matrices}]   \\
+    \tkzMeta{matrix}{pow(M,n)}       & [\ref{ssub:multiplication_of_matrices}]  \\
+    \tkzMeta{matrix}{tostring(M,n)} & displays the matrix   \\
+    \tkzMeta{matrix}{eq(M1,M2)}      &  true or false  \\
+  \bottomrule
+  \end{tabular}
+  \egroup
+\end{center}
+
+
+\subsubsection{Addition and subtraction of matrices} % (fold)
+\label{ssub:addition_of_matrices}
+To simplify the entries, I've used a few functions to simplify the displays.
+
+\vspace{.5em}
+\begin{minipage}{.6\textwidth}
+\begin{verbatim}
+\directlua{
+  init_elements()
+  M.A = matrix({ { 1, 2 }, { 2 , -1 } })
+  M.B = matrix({ { -1, 0}, { 1, 3 } })
+  S = M.A + M.B
+  D = M.A - M.B
+  dsp(M.A,'A')
+  nl() nl()
+  dsp(M.B,'B')
+  nl() nl()
+  dsp(M.S,'S') sym(" = ")
+  dsp(M.A) sym(' + ') dsp(M.B)
+  nl() nl()
+  dsp(M.D,'D') sym(" = ")
+  dsp(M.A) sym(' - ') dsp(M.B)
+}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.4\textwidth}
+\directlua{
+ init_elements()
+
+ local function dsp (M,name)
+  if name then
+     tex.print(name..' = ')print_matrix(M)
+  else
+     print_matrix(M)
+  end
+ end
+
+ local  function sym(s)
+   tex.print(' '..s..' ')
+ end
+
+ local function nl()
+   tex.print('\\\\')
+ end
+
+  M.A = matrix({ { 1, 2 }, { 2 , -1 } })
+  M.B = matrix({ { -1, 0}, { 1, 3 } })
+  M.S = M.A + M.B
+  M.D = M.A - M.B
+  dsp(M.A,'A')
+  nl() nl()
+  dsp(M.B,'B')
+  nl() nl()
+  dsp(M.S,'S') sym(" = ") dsp(M.A) sym(' + ') dsp(M.B)
+  nl() nl()
+  dsp(M.D,'D') sym(" = ") dsp(M.A) sym(' - ') dsp(M.B)}
+\end{minipage}
+% subsubsection addition_of_matrices (end)
+
+
+\subsubsection{Multiplication and power of matrices} % (fold)
+\label{ssub:multiplication_of_matrices}
+To simplify the entries, I've used a few functions. You can find their definitions in the sources section of this documentation. n integer > or < 0 or |'T'|
+
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+  init_elements()
+  M.A = matrix({ { 1, 2 }, { 2 ,-1 } })
+  M.B = matrix({ { -1, 0 }, { 1, 3 } })
+  M.P = M.A * M.B
+  M.I = M.A ^ -1
+  M.C = M.A ^ 3
+  M.K = 2 * M.A}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+
+ local function dsp (M,name)
+ if name then
+   tex.print(name..' = ')print_matrix(M)
+  else print_matrix(M) end
+  end
+
+ local  function sym (s)
+    tex.print(' '..s..' ')
+  end
+
+ local function  nl  ()
+    tex.print('\\\\')
+ end
+
+  M.A = matrix({ { 1, 2 }, { 2 ,-1 } })
+  M.B = matrix({ { -1, 0 }, { 1, 3 } })
+  M.P = M.A * M.B
+  M.I = M.A ^ -1
+  M.C = M.A ^ 3
+  M.K = 2 * M.A
+  dsp(M.P,'P') sym(" = ") dsp(M.A) sym(' * ') dsp(M.B)
+  nl() nl()
+  dsp(M.A ^ -1,'$A^{-1}$')
+  nl() nl()
+  dsp(M.K,'K')}
+\end{minipage}
+
+\subsubsection{Metamethod \code{eq}} % (fold)
+\label{ssub:metamthod_eq}
+Test whether two matrices are equal or identical.
+% subsubsection metamthod_eq (end)
+% subsubsection multiplication_of_matrices (end)
+% subsection metamethods_for_the_matrices (end)
+
+
+\subsection{Methods of the class matrix} % (fold)
+\label{sub:methods_of_the_class_matrix}
+
+\begin{center}
+  \bgroup
+  \catcode`_=12
+  \small
+  \captionof{table}{Matrix methods.}\label{matrix:met}
+  \begin{tabular}{lll}
+  \toprule
+  \textbf{Functions} & \textbf{Reference}   & \\
+  \midrule
+  \tkzFct{matrix}{new(...)} & See  [\ref{ssub:method_new}]\\
+  \tkzFct{matrix}{square()} & [\ref{ssub:method_square}]\\
+  \tkzFct{matrix}{vector()} & [\ref{ssub:method_vector}] \\
+  \tkzFct{matrix}{row\_vector()} & [\ref{ssub:function_row_vector}] \\
+  \tkzFct{matrix}{create()} & \\
+  \tkzFct{matrix}{identity()()} & [\ref{ssub:method_identity}] \\
+  \tkzFct{matrix}{htm()}    &  \\
+  \midrule
+  \textbf{Methods} & \textbf{Reference}   & \\
+  \midrule
+  \tkzMeth{matrix}{print(s,n)} &       \\
+  \tkzMeth{matrix}{htm\_apply(...)}&[\ref{ssub:method_code_htm__apply}]\\
+  \tkzMeth{matrix}{htm()}  & [  \ref{ssub:method_htm}] \\
+  \tkzMeth{matrix}{get\_htm\_point}& [\ref{ssub:method_get_htm_point}] \\
+  \tkzMeth{matrix}{get()}  & [\ref{ssub:get_an_element_of_a_matrix}] \\
+  \tkzMeth{matrix}{inverse()}       & [\ref{ssub:inverse_matrix}] \\
+  \tkzMeth{matrix}{adjugate()}      & [\ref{ssub:method_adjugate}] \\
+  \tkzMeth{matrix}{transpose()}     & [\ref{ssub:transpose_matrix}]\\
+  \tkzMeth{matrix}{is\_diagonal()}  & [\ref{ssub:method_is_diagonal}]\\
+  \tkzMeth{matrix}{is\_orthogonal()}&[\ref{ssub:method_is_orthogonal}]\\
+  \tkzMeth{matrix}{homogenization()}&[\ref{ssub:method_homogenization}]\\
+  \bottomrule
+  \end{tabular}
+  \egroup
+\end{center}
+
+
+\subsubsection{Method  \tkzMeth{matrix}{print}} % (fold)
+\label{ssub:method_print}
+
+With the \tkzNamePack{amsmath} package loaded, this method can be used. By default, the \tkzEnv{latex}{bmatrix} environment is selected, although you can choose from \tkzEnv{latex}{matrix}, \tkzEnv{latex}{pmatrix}, \tkzEnv{latex}{Bmatrix}, "vmatrix", "Vmatrix". Another option lets you set the number of digits after the decimal point. The "tkz\_dc" global variable is used to set the number of decimal places. Here's an example:
+
+\vspace{.5em}
+\begin{verbatim}
+\directlua{
+  init_elements()
+  M.n = matrix({ { math.sqrt(2), math.sqrt(3) }, { math.sqrt(4), math.sqrt(5) } })
+  M.n:print('pmatrix')}
+\end{verbatim}
+
+\directlua{
+  init_elements()
+  M.n = matrix({ { math.sqrt(2), math.sqrt(3) }, { math.sqrt(4), math.sqrt(5) } })
+  tkz_dc = 3
+  M.n:print('pmatrix')
+}
+
+
+\vspace{.5em}
+You can also display the matrix as a simple array using the |print_array (M)| function. see  the next example.
+
+In the case of a square matrix, it is possible to transmit a list of values whose first element is the order of the matrix.
+
+\vspace{.5em}
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+init_elements()
+ M.s = matrix:square(2, 1, 0, 0, 2)
+ M.s:print()}
+  \end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+  init_elements()
+  M.s = matrix:square(2,1,0,0,2)
+  M.s:print()}
+\end{minipage}
+% subsubsection method_print (end)
+
+
+\subsubsection{Function \tkzFct{matrix}{new}} % (fold)
+\label{ssub:method_new}
+
+This is the main method for creating a matrix. Here's an example of a 2x3 matrix with complex coefficients:
+
+\vspace{.5em}
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ a = point(1, 0)
+ b = point(1, 1)
+ c = point(-1, 1)
+ d = point(0, 1)
+ e = point(1, -1)
+ f = point(0, -1)
+ M.n = matrix({ { a, b, c }, { d, e, f } })
+ M.n:print()}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ a = point(1, 0)
+ b = point(1, 1)
+ c = point(-1, 1)
+ d = point(0, 1)
+ e = point(1, -1)
+ f = point(0, -1)
+ M.n = matrix({ { a, b, c }, { d, e, f } })
+ M.n:print()}
+\end{minipage}
+% subsubsection method_new (end)
+
+
+\subsubsection{Function \tkzFct{matrix}{vector}} % (fold)
+\label{ssub:method_vector}
+
+The special case of a column matrix, frequently used to represent a vector, can be treated as follows:
+
+\vspace{.5em}
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ M.v = matrix:vector(1, 2, 3)
+ M.v:print()}
+  \end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ M.v = matrix:vector(1, 2, 3)
+ M.v:print()}
+\end{minipage}
+% subsubsection method_vector (end)
+
+\subsubsection{Function \tkzFct{matrix}{row\_vector}} % (fold)
+\label{ssub:function_row_vector}
+
+\begin{mybox}
+\code{ M.rv = matrix:row\_vector (1, 2, 3)}
+
+m.rv = \directlua{matrix:row_vector (1, 2, 3):print()}
+\end{mybox}
+
+% subsubsection function_row_vector (end)
+
+\subsubsection{Method \tkzMeth{matrix}{create(n,m)}} % (fold)
+\label{ssub:function_matrix_create_n_m}
+
+\begin{mybox}
+\code{ M.c = matrix:create (2, 3)}
+
+M.c = \directlua{matrix:create (2, 3):print()}
+\end{mybox}
+
+% subsubsection function_matrix_create_n_m (end)
+
+\subsubsection{Method \tkzMeth{matrix}{square}(liste)} % (fold)
+\label{ssub:method_square}
+
+We have already seen this method in the presentation of matrices. We first need to give the order of the matrix, then the coefficients, row by row.
+
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ M.s = matrix:square(2, 2, 3, -5, 4)
+ M.s:print()}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ M.s = matrix:square(2, 2, 3, -5, 4)
+ M.s:print()}
+\end{minipage}
+
+% subsubsection method_square (end)
+
+\subsubsection{Method \tkzMeth{matrix}{identity}}% (fold)
+\label{ssub:method_identity}
+
+Creating the identity matrix order 3
+
+
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+  init_elements()
+  M.Id_3 = matrix:identity(3)
+  M.Id_3:print()}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+  init_elements()
+  M.Id_3 = matrix:identity(3)
+  M.Id_3:print()}
+\end{minipage}
+% subsubsection method_identity (end)
+
+\subsubsection{Method  \tkzMeth{matrix}{is\_orthogonal}} % (fold)
+\label{ssub:method_is_orthogonal}
+
+The method returns \code{true} if the matrix is orthogonal and \code{false} otherwise.
+
+\begin{verbatim}
+\directlua{
+ init_elements()
+ local cos = math.cos
+ local sin = math.sin
+ local pi = math.pi
+ M.A = matrix({ { cos(pi / 6), -sin(pi / 6) }, { sin(pi / 6), cos(pi / 6) } })
+ M.A:print()
+ bool = M.A:is_orthogonal()
+ tex.print("\\\\")
+ if bool then
+ 	tex.print("The matrix is orthogonal")
+ else
+ 	tex.print("The matrix is not orthogonal")
+ end
+ tex.print("\\\\")
+ tex.print("Test: $M.A^T = M.A^{-1} ?$")
+ print_matrix(transposeMatrix(M.A))
+ tex.print("=")
+ inv_matrix(M.A):print()}
+\end{verbatim}
+
+\directlua{
+ init_elements()
+ local cos = math.cos
+ local sin = math.sin
+ local pi = math.pi
+ M.A = matrix({ { cos(pi / 6), -sin(pi / 6) }, { sin(pi / 6), cos(pi / 6) } })
+ M.A:print()
+ bool = M.A:is_orthogonal()
+ tex.print("\\\\")
+ if bool then
+ 	tex.print("The matrix is orthogonal")
+ else
+ 	tex.print("The matrix is not orthogonal")
+ end
+ tex.print("\\\\")
+ tex.print("Test: $M.A^T = M.A^{-1} ?$")
+ print_matrix(transposeMatrix(M.A))
+ tex.print("=")
+ inv_matrix(M.A):print()}
+% subsubsection method_is_orthogonal (end)
+
+\subsubsection{Method \tkzMeth{matrix}{is\_diagonal}} % (fold)
+\label{ssub:method_is_diagonal}
+
+The method returns \code{true} if the matrix is diagonal and \code{false} otherwise.
+
+% subsubsection method_is_diagonal (end)
+
+
+
+\subsubsection{Function \tkzFct{matrix}{print\_array}} % (fold)
+\label{ssub:display_a_table_or_array_function_code_print_array}
+
+We'll need to display results, so let's look at the different ways of displaying them, and distinguish the differences between arrays and matrices.
+
+Below, $A$ is an array. It can be displayed as a simple array or as a matrix, but we can't use the attributes and |A :print()| is not possible because $A$ is not an object of the class \code{matrix}. If you want to display an array like a matrix you can use the function |print_matrix| (see  the next example).
+
+\vspace{.5em}
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ A = { { 1, 2 }, { 1, -1 } }
+ tex.print("A = ")
+ print_array(A)
+ tex.print(" or ")
+ print_matrix(A)
+ M.A = matrix({ { 1, 1 }, { 0, 2 } })
+ tex.print("\\\\")
+ tex.print("M = ")
+ M.A:print()}
+\end{verbatim}
+\end{minipage}
+ \begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ A = { { 1, 2 }, { 1, -1 } }
+ tex.print("A = ")
+ print_array(A)
+ tex.print(" or ")
+ print_matrix(A)
+ M.A = matrix({ { 1, 1 }, { 0, 2 } })
+ tex.print("\\\\")
+ tex.print("M = ")
+ M.A:print()}
+ \end{minipage}
+% subsubsection display_a_table_or_array_function_code_print_array (end)
+
+\subsubsection{Method  \tkzMeth{matrix}{get}} % (fold)
+\label{ssub:get_an_element_of_a_matrix}
+Get an element of a matrix.
+
+
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+  init_elements()
+  M.n = matrix{ { 1, 2 }, { 2, -1 } }
+  S = M.n:get(1, 1) + M.n:get(2, 2)
+  tex.print(S)}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+  init_elements()
+  M.n = matrix{ { 1, 2 }, { 2, -1 } }
+  S = M.n:get(1, 1) + M.n:get(2, 2)
+  tex.print(S)}
+\end{minipage}
+
+% subsubsection get_an_element_of_a_matrix (end)
+
+\subsubsection{Method  \tkzMeth{matrix}{inverse}} % (fold)
+\label{ssub:inverse_matrix}
+
+\begin{minipage}{.6\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ M.A = matrix({ { 1, 2 }, { 2, -1 } })
+ tex.print("Inverse of $A = $")
+ M.B = M.A:inverse()
+ M.B:print()}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.4\textwidth}
+\directlua{
+ init_elements()
+ M.A = matrix({ { 1, 2 }, { 2, -1 } })
+ tex.print("Inverse of $A = $")
+ M.B = M.A:inverse()
+ M.B:print()}
+\end{minipage}
+% subsubsection inverse_matrix (end)
+
+\subsubsection{Inverse matrix with power syntax} % (fold)
+\label{ssub:inverse_matrix_with_power_syntax}
+
+\begin{minipage}{.6\textwidth}
+\begin{verbatim}
+\directlua{
+  init_elements()
+  M.n = matrix({ { 1, 0, 1 }, { 1, 2, 1 }, { 0, -1, 2 } })
+  tex.print("$M = $")  print_matrix (M.n)
+  tex.print('\\\\')
+  tex.print("Inverse of $M = M^{-1}$")
+  tex.print('\\\\','=') print_matrix(M.n ^ -1)}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.4\textwidth}
+\directlua{
+  init_elements()
+  M.n = matrix({ { 1, 0, 1 }, { 1, 2, 1 }, { 0, -1, 2 } })
+  tex.print("$M = $")  print_matrix (M.n)
+  tex.print('\\\\')
+  tex.print("$M = M^{-1} = $")
+  print_matrix(M.n ^ -1)}
+\end{minipage}
+% subsubsection inverse_matrix_with_power_syntax (end)
+
+
+\subsubsection{Method  \tkzMeth{matrix}{transpose}} % (fold)
+\label{ssub:transpose_matrix}
+
+A transposed matrix can be accessed with |A: transpose ()| or with |A^{'T'}|.
+
+\vspace{.5em}
+\begin{minipage}{.6\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ M.A = matrix({ { 1, 2 }, { 2, -1 } })
+ M.AT = M.A:transpose()
+ tex.print("$A^{'T'} = $")
+ M.AT:print()}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.4\textwidth}
+\directlua{
+ init_elements()
+ M.A = matrix({ { 1, 2 }, { 2, -1 } })
+ M.AT = M.A:transpose()
+ tex.print("$A^{'T'} = $")
+ M.AT:print()}
+\end{minipage}
+
+\vspace{.5em}
+Remark: |(A ^'T')^'T' = A|
+
+% subsubsection transpose_matrix (end)
+% subsection methods_of_the_class_matrix (end)
+
+\subsubsection{Method \tkzMeth{matrix}{adjugate}} % (fold)
+\label{ssub:method_adjugate}
+
+\begin{minipage}{.6\textwidth}
+\begin{verbatim}
+\directlua{
+  init_elements()
+  M.N =  matrix({ {1, 0, 3}, {2, 1, 0},
+                  {-1, 2, 0} })
+  tex.print('N = ') print_matrix(M.N)
+  tex.print('\\\\')
+  M.N.a = M.N:adjugate()
+  M.N.i = M.N * M.N.a
+  tex.print('adj(M) = ') M.N.a:print()
+  tex.print('\\\\')
+  tex.print('N $\\times$ adj(N) = ')
+  print_matrix(M.N.i)
+  tex.print('\\\\')
+  tex.print('det(N) = ')
+  tex.print(M.N.det)}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.4\textwidth}
+\directlua{
+  init_elements()
+  M.N =  matrix({ {1, 0, 3}, {2, 1, 0}, {-1, 2, 0} })
+  tex.print('N = ') print_matrix(M.N)
+  tex.print('\\\\')
+  M.N.a = M.N:adjugate()
+  M.N.i = M.N * M.N.a
+  tex.print('adj(M) = ') M.N.a:print()
+  tex.print('\\\\')
+  tex.print('N $\\times$ adj(N) = ') print_matrix(M.N.i)
+  tex.print('\\\\')
+  tex.print('det(N) = ') tex.print(M.N.det)}
+\end{minipage}
+
+% subsubsection method_adjugate (end)
+
+\newpage
+
+\subsubsection{Method \tkzMeth{matrix}{diagonalize}} % (fold)
+\label{ssub:diagonalization}
+
+For the moment, this method only concerns matrices of order 2.
+
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ M.A = matrix({ { 5, -3 }, { 6, -4 } })
+ tex.print("A = ")
+ M.A:print()
+ M.D, M.P = M.A:diagonalize()
+ tex.print("D = ")
+ M.D:print()
+ tex.print("P = ")
+ M.P:print()
+ M.R = M.P ^ -1 * M.A * M.P
+ tex.print("\\\\")
+ tex.print("Test: $D = P^{-1}AP = $ ")
+ M.R:print()
+ tex.print("\\\\")
+ tex.print("Verification: $P^{-1}P = $ ")
+ M.T = M.P ^ -1 * M.P
+ M.T:print()}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ M.A = matrix({ { 5, -3 }, { 6, -4 } })
+ tex.print("A = ")
+ M.A:print()
+ M.D, M.P = M.A:diagonalize()
+ tex.print("D = ")
+ M.D:print()
+ tex.print("P = ")
+ M.P:print()
+ M.R = M.P ^ -1 * M.A * M.P
+ tex.print("\\\\")
+ tex.print("Test: $D = P^{-1}AP = $ ")
+ M.R:print()
+ tex.print("\\\\")
+ tex.print("Verification: $P^{-1}P = $ ")
+ M.T = M.P ^ -1 * M.P
+ M.T:print()}
+\end{minipage}
+% subsubsection diagonalization (end)
+
+\subsubsection{Method \tkzMeth{matrix}{homogenization}} % (fold)
+\label{ssub:method_homogenization}
+
+\code{Homogenization} of vector: the aim is to be able to use a homogeneous transformation matrix
+
+Let's take a point $A$ such that |z.A = point(2,-1)|. In order to apply a \code{htm}  matrix, we need to perform a few operations on this point. The first is to determine the vector (matrix) associated with the point. This is straightforward, since there's a point attribute called \code{mtx} which gives this vector:
+
+\begin{mybox}
+z.A = point(2,0)\\
+M.V = z.A.mtx:homogenization()
+\end{mybox}
+which gives:
+
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ pi = math.pi
+ M.h = matrix:htm(pi / 4, 3, 1)
+ z.A = point(2, 0)
+ M.V = z.A.mtx:homogenization()
+ z.A.mtx:print()
+ tex.print("then after homogenization: ")
+ M.V:print()}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ pi = math.pi
+ M.h = matrix:htm(pi / 4, 3, 1)
+ z.A = point(2, 0)
+ M.V = z.A.mtx:homogenization()
+ z.A.mtx:print()
+ tex.print("then after homogenization: ")
+ M.V:print()}
+\end{minipage}
+% subsubsection method_homogenization (end)
+
+
+\subsubsection{Method \tkzMeth{matrix}{htm}} % (fold)
+\label{ssub:method_htm}
+Homogeneous transformation matrix.
+
+There are several ways of using this transformation. First, we need to create a matrix that can associate a rotation with a translation.
+
+The main method is to create the matrix:
+
+\begin{mybox}
+  pi  = math.pi\\
+  M.h   = matrix:htm(pi / 4, 3, 1)
+\end{mybox}
+
+A 3x3 matrix is created which combines a $\pi/4$ rotation and a $\overrightarrow{t}=(3,1)$ translation.
+
+\directlua{
+init_elements()
+  pi  = math.pi
+  M.h   = matrix:htm(pi / 4, 3, 1)
+  M.h :print()
+}
+
+
+Now we can apply the matrix M. Let $A$ be the point defined here: \ref{ssub:method_homogenization}. By homogenization, we obtain the column matrix $V$.
+
+
+\begin{mybox}
+M.W = M.A * M.V
+\end{mybox}
+
+\directlua{
+init_elements()
+pi  = math.pi
+M.h   = matrix:htm(pi / 4 , 3 , 1)
+M.h :print()
+z.A = point(2,0)
+M.V = z.A.mtx:homogenization()
+M.V : print() tex.print('=')
+M.W = M.h * M.V
+M.W : print()
+}
+
+All that remains is to extract the coordinates of the new point.
+% subsubsection method_htm (end)
+
+\subsubsection{Method \tkzMeth{matrix}{get\_htm\_point}} % (fold)
+\label{ssub:method_get_htm_point}
+
+In the previous section, we obtained the $W$ matrix. Now we need to obtain the point it defines.
+
+The  method \code{get\_htm\_point}  extracts a point from a vector obtained after applying a \code{htm} matrix.
+
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+  init_elements()
+  pi  = math.pi
+  M.h   = matrix:htm(pi / 4 , 3 , 1)
+  z.A = point(2,0)
+  M.V = z.A.mtx:homogenization()
+  M.W = M.h * M.V
+  M.W:print()
+  z.P = get_htm_point(M.W)
+  tex.print("The affix of $P$ is: ")
+  tex.print(tkz.display(z.P))}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+  init_elements()
+  pi  = math.pi
+  M.h   = matrix:htm(pi / 4 , 3 , 1)
+  z.A = point(2,0)
+  M.V = z.A.mtx:homogenization()
+  M.W = M.h * M.V
+  M.W:print()
+  z.P = get_htm_point(M.W)
+  tex.print("The affix of $P$ is: ")
+  tex.print(tkz.display(z.P))}
+\end{minipage}
+% subsubsection method_get_htm_point (end)
+
+
+\subsubsection{Method \tkzMeth{matrix}{htm\_apply}} % (fold)
+\label{ssub:method_code_htm__apply}
+The above operations can be simplified by using the \code{htm\_apply} method directly at point $A$.
+
+\begin{mybox}
+|z.Ap = M: htm_apply (z.A)|\\
+% display (z.Ap)
+\end{mybox}
+
+Then the method \code{htm\_apply} transforms a point, a list of points or an object.
+
+\directlua{
+ init_elements()
+ pi = math.pi
+ M.h = matrix:htm(pi / 4, 3, 1)
+ z.O = point(0, 0)
+ z.I = point(1, 0)
+ z.J = point(0, 1)
+ z.A = point(2, 0)
+ z.B = point(1, 2)
+ L.AB = line(z.A, z.B)
+ z.Op, z.Ip, z.Jp = M.h:htm_apply(z.O, z.I, z.J)
+ L.ApBp = M.h:htm_apply(L.AB)
+ z.Ap = L.ApBp.pa
+ z.Bp = L.ApBp.pb
+ z.K = point(2, 2)
+ T.IJK = triangle(z.I, z.J, z.K)
+ Tp = M.h:htm_apply(T.IJK)
+ z.Kp = Tp.pc}
+
+\begin{minipage}{.6\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ pi = math.pi
+ M.h = matrix:htm(pi / 4, 3, 1)
+ z.O = point(0, 0)
+ z.I = point(1, 0)
+ z.J = point(0, 1)
+ z.A = point(2, 0)
+ z.B = point(1, 2)
+ L.AB = line(z.A, z.B)
+ z.Op, z.Ip, z.Jp = M.h:htm_apply(z.O, z.I, z.J)
+ L.ApBp = M.h:htm_apply(L.AB)
+ z.Ap = L.ApBp.pa
+ z.Bp = L.ApBp.pb
+ z.K = point(2, 2)
+ T.IJK = triangle(z.I, z.J, z.K)
+ Tp = M.h:htm_apply(T.IJK)
+ z.Kp = Tp.pc}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.4\textwidth}
+\begin{tikzpicture}[gridded]
+   \tkzGetNodes
+   \tkzDrawPoints(O,O',A,B,A',B',K,K')
+   \tkzLabelPoints(O,O',A,B,A',B',I,J,I',J',K,K')
+   \tkzDrawSegments[->](O,I O,J O',I' O',J')
+   \tkzDrawLines (A,B A',B')
+   \tkzDrawPolygons[red](I,J,K I',J',K')
+\end{tikzpicture}
+\end{minipage}
+
+\vspace{.5 em}
+
+New  cartesian coordinates system:
+
+\vspace{.5 em}
+\begin{minipage}{.5\textwidth}
+\begin{verbatim}
+\directlua{
+ init_elements()
+ pi = math.pi
+ tp = tex.print
+ nl = "\\\\"
+ a = point(1, 0)
+ b = point(0, 1)
+ M.R = matrix:htm(pi / 5, 2, 1)
+ M.R:print()
+ tp(nl)
+ M.v = matrix:vector(1, 2)
+ M.v:print()
+ M.v.h = M.v:homogenization()
+ M.v.h:print()
+ tp(nl)
+ M.V = M.R * M.v.h
+ M.V:print()
+ z.N = get_htm_point(M.V)
+tex.print(tkz.display(z.N))}
+\end{verbatim}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ pi = math.pi
+ tp = tex.print
+ nl = "\\\\"
+ a = point(1, 0)
+ b = point(0, 1)
+ M.R = matrix:htm(pi / 5, 2, 1)
+ M.R:print()
+ tp(nl)
+ M.v = matrix:vector(1, 2)
+ M.v:print()
+ M.v.h = M.v:homogenization()
+ M.v.h:print()
+ tp(nl)
+ M.V = M.R * M.v.h
+ M.V:print()
+ z.N = get_htm_point(M.V)
+ tex.print(tkz.display(z.N))}
+\end{minipage}
+
+% subsubsection method_code_htm__apply (end)
+
+
+% section matrices (end)

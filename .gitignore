@@ -1,0 +1,25 @@
+# artefacts LaTeX
+*.aux
+*.log
+*.toc
+*.out
+*.synctex.gz
+*.nav
+*.snm
+*.fls
+*.fdb_latexmk
+*.idx
+*.ilg
+*.ind
+*.bbl
+*.blg
+
+# builds locaux
+/build/
+doc/latex/build
+.DS_Store
+__MACOSX/
+
+# Editors / tools
+.nova/
+.git.bak-*/
