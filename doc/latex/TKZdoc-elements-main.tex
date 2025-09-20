@@ -1,5 +1,5 @@
 % !TEX TS-program = lualatex
-% encoding : utf8 
+% encoding : utf8
 % Documentation of tkz-elements v4.20c
 % Copyright 2025  Alain Matthes
 % This work may be distributed and/or modified under the
@@ -31,10 +31,9 @@
 \gdef\tkznamecollection{AlterMundus}
 \gdef\tkzurlauthor{http://altermundus.fr}
 \gdef\tkzengine{lualatex}
-\gdef\tkzurlauthorcom{http://altermundus.fr}
 \nameoffile{\tkznameofpack}
 
-% -- Packages ---------------------------------------------------  
+% -- Packages ---------------------------------------------------
 
 \usepackage[dvipsnames,svgnames]{xcolor}
 % my packages
@@ -76,28 +75,28 @@
       pdfcreator={\tkzengine}
 }
 % fonts
-%<---------------------------------------------------------------------------> 
+%<--------------------------------------------------------------------------->
 \usepackage{fontspec}
 \setmainfont{Linux Libertine O}
-\usepackage{unicode-math} 
+\usepackage{unicode-math}
 \usepackage{concmath-otf}
 \let\rmfamily\ttfamily
 % end fonts
-%<---------------------------------------------------------------------------> 
+%<--------------------------------------------------------------------------->
 % load other packages
-\usepackage{pifont}                
-\newcommand{\cmark}{\colorbox{green}{\textcolor{white}{\ding{51}}}} 
-\newcommand{\xmark}{\colorbox{red}{\textcolor{white}{\ding{55}}}}    
+\usepackage{pifont}
+\newcommand{\cmark}{\colorbox{green}{\textcolor{white}{\ding{51}}}}
+\newcommand{\xmark}{\colorbox{red}{\textcolor{white}{\ding{55}}}}
 \usepackage{multicol}
 \usepackage[english]{babel}
 \usepackage[normalem]{ulem}
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{cellspace}
-\usepackage{shortvrb} 
-\usepackage{fancyvrb} 
-\usepackage{bookmark} 
-\usepackage{enumitem} 
+\usepackage{shortvrb}
+\usepackage{fancyvrb}
+\usepackage{bookmark}
+\usepackage{enumitem}
 \usepackage{moreenum}
 \usepackage[most]{tcolorbox}
 \newtcolorbox{mybox}{
@@ -108,7 +107,7 @@
   sharp corners
 }
 % end load packages
-%<---------------------------------------------------------------------------> 
+%<--------------------------------------------------------------------------->
 % Indexation style
 \makeatletter
 \renewenvironment{theindex}
@@ -123,7 +122,7 @@
    {\end{multicols}}
 \makeatother
 % end indexation style
-%<---------------------------------------------------------------------------> 
+%<--------------------------------------------------------------------------->
 % Indexation
 \newcommand{\tkzAttr}[2]{\textbf{\texttt{#2}}\index{#1_3@\texttt{#1: Attributes}!\texttt{#2}}}
 \newcommand{\tkzVar}[2]{\textbf{\texttt{#2}}\index{#1_3@\texttt{#1: Reserved variable}!\texttt{#2}}}
@@ -148,7 +147,7 @@
 %\newcommand{\tkzKey}[1]{\texttt{#1}\index{#1@\texttt{#1}}}
 
 % end indexation
-%<---------------------------------------------------------------------------> 
+%<--------------------------------------------------------------------------->
 % decoration
 \newcommand{\tkzRBomb}{\textcolor{red}{\ding{43}\ }}
 \newcommand{\lefthand}{\ding{43}}
@@ -158,19 +157,19 @@
 \newcommand{\parallelsum}{\mathbin{\!/\mkern-5mu/\!}}
 \newcommand\LUALATEX{Lua\kern-.01em\LaTeX}%
 % end decoration
-%<---------------------------------------------------------------------------> 
+%<--------------------------------------------------------------------------->
 % settings styles
-\tkzSetUpColors[background=white,text=darkgray]  
+\tkzSetUpColors[background=white,text=darkgray]
 \tkzSetUpPoint[size=2,color=teal,fill=teal!10]
 \tkzSetUpLine[ultra thin,color=teal]
-\tkzSetUpCompass[color=orange,ultra thin,/tkzcompass/delta=10] 
+\tkzSetUpCompass[color=orange,ultra thin,/tkzcompass/delta=10]
 \tikzset{label style/.append style={below,color=teal,font=\scriptsize}}
-\tikzset{new/.style={color=orange,ultra thin}} 
-\tikzset{step 1/.style={color=cyan,ultra thin}} 
-\tikzset{step 2/.style={color=purple,ultra thin}} 
+\tikzset{new/.style={color=orange,ultra thin}}
+\tikzset{step 1/.style={color=cyan,ultra thin}}
+\tikzset{step 2/.style={color=purple,ultra thin}}
 \def\tkzar{\hspace{1em}-->\hspace{1em}}
 % end settings styles
-%<---------------------------------------------------------------------------> 
+%<--------------------------------------------------------------------------->
 % misc
 \makeatletter\let\percentchar\@percentchar\makeatother
 \def\luaveclen#1#2{%
@@ -180,7 +179,7 @@
 \let\pmpn\pgfmathprintnumber
 \let\code\tkzname
 % end misc
-%<---------------------------------------------------------------------------> 
+%<--------------------------------------------------------------------------->
 % Generate a new TOC
 \DeclareNewTOC[%
    type=overview,
@@ -197,10 +196,10 @@
 % end new toc
 
 \hbadness=10000
-%<---------------------------------------------------------------------------> 
+%<--------------------------------------------------------------------------->
 \AtBeginDocument{\MakeShortVerb{\|}}
 
-\begin{document} 
+\begin{document}
 
 \parindent=0pt
 \tkzTitleFrame{tkz-elements \tkzversionofpack\\Euclidean Geometry}
@@ -208,12 +207,12 @@
 
 
 \defoffile{
-This document gathers notes on \tkzNamePack{\tkznameofpack}, an initial version of a \tkzname{Lua} library designed to handle all necessary computations for constructing objects in Euclidean geometry. The document must be compiled with lua\LATEX.\\ 
+	This document gathers notes on \tkzNamePack{\tkznameofpack}, an initial version of a \tkzname{Lua} library designed to handle all necessary computations for constructing objects in Euclidean geometry. The document must be compiled with lua\LATEX.\\
 
-With \tkzNamePack{tkz-elements}, all definitions and calculations are carried out exclusively in Lua, following an object-oriented programming model. Core geometric entities such as points, lines, triangles, and conics are implemented as object classes.\\
-Once the computations are complete, graphical rendering is typically handled using \tkzNamePack{tkz-euclide}, although you may also use \TIKZ{} directly if desired.\\
+	With \tkzNamePack{tkz-elements}, all definitions and calculations are carried out exclusively in Lua, following an object-oriented programming model. Core geometric entities such as points, lines, triangles, and conics are implemented as object classes.\\
+	Once the computations are complete, graphical rendering is typically handled using \tkzNamePack{tkz-euclide}, although you may also use \TIKZ{} directly if desired.\\
 
-I discovered Lua and object-oriented programming while developing this package, so it’s possible that some parts could be improved. If you'd like to contribute or offer suggestions, feel free to contact me by email.
+	I discovered Lua and object-oriented programming while developing this package, so it’s possible that some parts could be improved. If you'd like to contribute or offer suggestions, feel free to contact me by email.
 }
 
 \presentation
@@ -224,7 +223,7 @@ I discovered Lua and object-oriented programming while developing this package, 
 Special thanks to \tkzimp{Wolfgang Büchel} for his invaluable contribution in correcting the examples.
 
 \vspace*{1em}
-\lefthand\ I would also like to extend my gratitude to \tkzimp{Eric Weisstein}, creator of 
+\lefthand\ I would also like to extend my gratitude to \tkzimp{Eric Weisstein}, creator of
 \href{http://mathworld.wolfram.com/about/author.html}{MathWorld}.
 
 \vspace*{1em}
@@ -234,7 +233,7 @@ Special thanks to \tkzimp{Wolfgang Büchel} for his invaluable contribution in c
 \vfill
 Please report typos or any other comments to this documentation to: \href{mailto:al.ma@mac.com}{\textcolor{blue}{Alain Matthes}}.
 
-This file can be redistributed and/or modified under the terms of the \LaTeX{} 
+This file can be redistributed and/or modified under the terms of the \LaTeX{}
 Project Public License Distributed from \href{http://www.ctan.org/}{CTAN}\  archives.
 
 
