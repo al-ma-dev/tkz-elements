@@ -1,0 +1,29 @@
+% !TEX TS-program = lualatex
+% Created by Alain Matthes on 2024-12-25.
+% Copyright (c) 2024 AlterMundus.
+\documentclass[margin = 12pt]{standalone}
+\usepackage[mini]{tkz-euclide}
+\usepackage{tkz-elements}
+\begin{document}
+
+\directlua{dofile("lua/" .. tex.jobname .. ".lua")}
+
+\begin{tikzpicture}[  scale = .6]
+	\tkzGetNodes
+	\tkzFillCircles[green!30](O,xa)
+	\tkzFillCircles[teal!30](Ja,Ea Jb,Eb Jc,Ec)
+	\tkzFillCircles[lightgray](S,a)
+	\tkzFillCircles[green!30](N,Ea)
+	\tkzDrawPoints(xa,xb,xc)
+	\tkzClipCircle(O,xa)
+	\tkzDrawLines[add=3 and 3](A,B A,C B,C)
+	\tkzDrawCircles(Ja,Ea Jb,Eb Jc,Ec S,a O,xa N,Ea)
+	\tkzDrawPoints(O,A,B,C,S,Ea,Eb,Ec,N)
+	\tkzDrawSegments[dashed](S,xa S,xb S,xc)
+	\tkzLabelPoints(O,N,A,B)
+	\tkzLabelPoints[right](S,C)
+\end{tikzpicture}
+
+\end{document}
+
+% The Feuerbach triangle is the triangle formed by the three points of tangency of the nine-point circle with the excircles

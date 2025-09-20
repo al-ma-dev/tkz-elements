@@ -1,0 +1,19 @@
+init_elements()
+z.A = point(0, 0)
+z.B = point(6, 0)
+z.C = point(0.8, 4)
+T.ABC = triangle(z.A, z.B, z.C)
+z.N = T.ABC.eulercenter
+z.S = T.ABC.spiekercenter
+T.feuerbach = T.ABC:feuerbach()
+z.Ea, z.Eb, z.Ec = T.feuerbach:get()
+T.excentral = T.ABC:excentral()
+z.Ja, z.Jb, z.Jc = T.excentral:get()
+C.JaEa = circle:new(z.Ja, z.Ea)
+-- C.ortho = circle:radius(z.S, math.sqrt(C.JaEa:power(z.S)))
+C.ortho = C.JaEa:orthogonal_from(z.S)
+z.a = C.ortho.through
+C.euler = T.ABC:euler_circle()
+C.apo = C.ortho:inversion(C.euler)
+z.O = C.apo.center
+z.xa, z.xb, z.xc = C.ortho:inversion(z.Ea, z.Eb, z.Ec)

@@ -1,0 +1,25 @@
+init_elements()
+z.A = point(0, 0)
+z.B = point(10, 0)
+L.AB = line(z.A, z.B)
+z.C = L.AB:gold_ratio()
+L.AC = line(z.A, z.C)
+L.CB = line(z.C, z.B)
+L.AB = line(z.A, z.B)
+z.O_0 = L.AB.mid
+z.O_1 = L.AC.mid
+z.O_2 = L.CB.mid
+C.AB = circle(z.O_0, z.B)
+C.AC = circle(z.O_1, z.C)
+C.CB = circle(z.O_2, z.B)
+z.P = C.CB.north
+z.Q = C.AC.north
+z.O = C.AB.south
+z.c = z.C:north(2)
+C.PC = circle(z.P, z.C)
+C.QA = circle(z.Q, z.A)
+z.P_0 = intersection(C.PC, C.AB)
+z.P_1 = intersection(C.PC, C.AC)
+_, z.P_2 = intersection(C.QA, C.CB)
+T = triangle(z.P_0, z.P_1, z.P_2)
+z.O_3 = T.circumcenter

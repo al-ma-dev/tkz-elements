@@ -1,0 +1,21 @@
+% !TEX TS-program = lualatex
+% Created by Alain Matthes on 2024-12-25.
+% Copyright (c) 2024 AlterMundus.
+\documentclass[margin = 12pt]{standalone}
+\usepackage[mini]{tkz-euclide}
+\usepackage{tkz-elements}
+\begin{document}
+
+\directlua{dofile("lua/" .. tex.jobname .. ".lua")}
+
+\begin{tikzpicture}[scale = .5]
+	\tkzGetNodes
+	\tkzDrawCircle[black,fill=yellow!20,opacity=.4](O_0,B)
+	\tkzDrawCircles[teal,fill=teal!40,opacity=.6](O_1,C O_2,B)
+	\tkzDrawCircle[purple,fill=purple!20,opacity=.4](O_3,P_0)
+	\tkzDrawArc[cyan,delta=10](Q,A)(P_0)
+	\tkzDrawArc[cyan,delta=10](P,P_0)(B)
+	\tkzDrawArc[cyan,delta=10](O,B)(A)
+	\tkzDrawPoints[size=1](A,B,C,O_0,O_1,O_2,P,Q,P_0,P_0,P_1,P_2,O)
+\end{tikzpicture}
+\end{document}

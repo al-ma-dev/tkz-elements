@@ -1,0 +1,27 @@
+% !TEX TS-program = lualatex
+% Created by Alain Matthes on 2024-12-25.
+% Copyright (c) 2024 AlterMundus.
+\documentclass[margin = 12pt]{standalone}
+\usepackage[mini]{tkz-euclide}
+\usepackage{tkz-elements}
+\begin{document}
+
+\directlua{dofile("lua/" .. tex.jobname .. ".lua")}
+
+\begin{tikzpicture}[scale = 2]
+	\tkzGetNodes
+	\tkzDrawPolygon(A,B,C)
+	\tkzDrawCoordinates[smooth,cyan](PA.curve)
+	\tkzDrawCircles[red](N,Ma O,A)
+	\tkzDrawSegments(A,X B,Y C,Z B,Hb C,Hc X,O Y,O Z,O)
+	\tkzDrawPolygon[red](U,V,W)
+	\tkzDrawLine[blue](I,J)
+	\tkzDrawPoints(I,J,U,V,W)
+	\tkzDrawPoints(A,B,C,N,G,H,O,X,Y,Z,Ma,Mb,Mc,Ha,Hb,Hc)
+	\tkzLabelPoints[blue,right](O,N,G,H,I,J)
+	\tkzLabelPoints[red](U,V,W)
+	\tkzLabelPoints(A,B,Z)
+	\tkzLabelPoints[above](C,X,Y)
+\end{tikzpicture}
+\end{document}
+
