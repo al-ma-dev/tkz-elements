@@ -1,5 +1,5 @@
 -- File: tkz_elements_utils.lua
--- Version: 4.20c   Date: 2025/09/17
+-- Version: 4.21c   Date: 2025/09/21
 -- Copyright (c) 2023–2025 Alain Matthes
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
