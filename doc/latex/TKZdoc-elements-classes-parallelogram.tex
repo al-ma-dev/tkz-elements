@@ -1,8 +1,9 @@
 \newpage
-\section{Class \tkzClass{parallelogram}} % (fold)
+\section{Class \tkzClass{parallelogram}}
 The variable \tkzVar{parallelogram}{P} holds a table used to store parallelograms. It is optional, and you are free to choose the variable name. However, using \code{P} is a recommended convention for clarity and consistency. If you use a custom variable (e.g., parall), you must initialize it manually. The \code{init\_elements()} function reinitializes the \code{P} table if used.
 
-\subsection{Creating a parallelogram} % (fold)
+
+\subsection{Creating a parallelogram}
 \label{sub:creating_a_parallelogram}
 
 The \tkzClass{parallelogram} class creates a parallelogram using three points. The fourth vertex is computed automatically.
@@ -24,13 +25,9 @@ You may also use the short form:
 P.ABCD = parallelogram(z.A, z.B, z.C)
 \end{verbatim}
 \end{mybox}
-% subsection creating_a_parallelogram (end)
 
+\subsection{Parallelogram attributes}
 
-\subsection{Parallelogram attributes} % (fold)
-\label{sub:parallelogram_attributes}
-
-% subsection square_attributes (end)
 Points are created in the direct direction. A test is performed to check whether the points form a parallelogram, otherwise compilation is blocked.
 
 \begin{mybox}
@@ -65,10 +62,9 @@ Creation | P.new = parallelogram(z.A,z.B,z.C,z.D)|
 
 
 
-\subsubsection{Example: attributes } % (fold)
-\label{ssub:example_attributes}
 
-% subsubsection example_attributes (end)
+\subsubsection{Example: attributes }
+\label{ssub:example_attributes}
 \begin{minipage}{.5\textwidth}
 \begin{verbatim}
 \directlua{
@@ -121,10 +117,9 @@ Creation | P.new = parallelogram(z.A,z.B,z.C,z.D)|
 
 \newpage
 
-\subsection{Parallelogram functions} % (fold)
-\label{sub:parallelogram_methods}
 
-% subsection parallelogram_methods (end)
+\subsection{Parallelogram functions}
+\label{sub:parallelogram_methods}
 \begin{center}
   \bgroup
   \catcode`_=12
@@ -133,7 +128,7 @@ Creation | P.new = parallelogram(z.A,z.B,z.C,z.D)|
   \begin{tabular}{ll}
   \toprule
   \textbf{Functions} & \textbf{Reference}    \\
-  \midrule   
+  \midrule
   \tkzMeth{parallelogram}{new (za, zb, zc, zd)} & \ref{ssub:example_attributes}\\
   \tkzMeth{parallelogram}{fourth (za,zb,zc)} & \ref{ssub:parallelogram_with_fourth_method} \\
   \bottomrule %
@@ -142,7 +137,8 @@ Creation | P.new = parallelogram(z.A,z.B,z.C,z.D)|
 \end{center}
 
 
-\subsubsection{Method \tkzMeth{parallelogram}{new(pt,pt,pt,pt)}} % (fold)
+
+\subsubsection{Method \tkzMeth{parallelogram}{new(pt,pt,pt,pt)}}
 \label{ssub:function_parallelogram_new}
 
 \begin{tkzexample}[latex=.5\textwidth]
@@ -166,9 +162,7 @@ Creation | P.new = parallelogram(z.A,z.B,z.C,z.D)|
 \end{tikzpicture}
 \end{tkzexample}
 
-% subsubsection function_parallelogram_new (end)
-
-\subsubsection{Method \tkzMeth{parallelogram}{fourth(pt,pt,pt)}} % (fold)
+\subsubsection{Method \tkzMeth{parallelogram}{fourth(pt,pt,pt)}}
 \label{ssub:parallelogram_with_fourth_method}
 completes a triangle by parallelogram (See  next example)
 
@@ -212,6 +206,4 @@ z.I = P.four.center}
   \end{tikzpicture}
 \end{center}
 \end{minipage}
-
-% subsubsection parallelogram_with_fourth_method (end)
-% subsubsection parallelogram_with_side_method (end)
+\endinput

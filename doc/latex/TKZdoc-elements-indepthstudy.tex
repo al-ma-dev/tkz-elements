@@ -1,17 +1,15 @@
 \newpage
 
-\section{In-depth study} % (fold)
+\section{In-depth study}
 \label{sec:in_depth_study}
 
-\subsection{The tables} % (fold)
-\label{sub:the_tables}
+\subsection{The tables}
 
 In Lua, the main data structure is the \emph{table}. It functions both as an array and as a dictionary, allowing you to store sequences of values, associate keys with values, and even represent complex objects. Tables are the foundation for representing geometric structures such as points, lines, and triangles in \tkzNamePack{tkz-elements}.
 
+\subsubsection{General Use of Tables}
 
-\subsubsection{General Use of Tables} % (fold)
-\label{ssub:general_tables}
-Tables are the only data structure "container" integrated in Lua. 
+Tables are the only data structure "container" integrated in Lua.
  They are associative arrays  which associates a key (reference or index) with a value in the form of a field (set) of key/value pairs. Moreover, tables have no fixed size and can grow based on our need dynamically.
 
 Tables are created using curly braces:
@@ -104,8 +102,8 @@ To remove an entry, assign \code{nil} to the corresponding key:
 properties.B = nil
 \end{verbatim}
 
-\subsubsection{Variable Number of Arguments} % (fold)
-\label{ssub:varargs_table}
+
+\subsubsection{Variable Number of Arguments}
 
 Tables can also be used to store a variable number of function arguments:
 
@@ -140,10 +138,7 @@ In tables with string keys, there are two common syntaxes:
 \item \code{properties.A} — shorter, but only works with string keys that are valid Lua identifiers (not numbers).
 \end{itemize}
 
-% subsubsection general_tables (end)
-
-\subsubsection{Table \code{z}} % (fold)
-\label{ssub:table_z}
+\subsubsection{Table \code{z}}
 
 The most important table in \tkzNamePack{tkz-elements} is \code{z}, used to store geometric points. It is declared as:
 
@@ -181,10 +176,8 @@ z.N = z.M:rotation(math.pi / 2)
 \end{verbatim}
 
 This makes the \code{z} table central to object creation and manipulation in \tkzNamePack{tkz-elements}.
-% subsubsection table_z (end)
 
-\subsection{Transfers} % (fold)
-\label{sub:transfers}
+\subsection{Transfers}
 
 We've seen (sous-section \ref{ssub:points_transfer}) that the macro \tkzMacro{tkz-elements}{tkzGetNodes} transfers point coordinates to \TIKZ. Let's take a closer look at this macro:
 
@@ -197,29 +190,26 @@ We've seen (sous-section \ref{ssub:points_transfer}) that the macro \tkzMacro{tk
      local n,sd,ft
      n = string.len(K)
      if n > 1 then
-     _,_,ft, sd = string.find(K, "(.+)(.)" )  
+     _,_,ft, sd = string.find(K, "(.+)(.)" )
     if sd == "p" then   K=ft.."'" end
     _,_,xft, xsd = string.find(ft, "(.+)(.)" )
     if xsd == "p" then  K=xft.."'".."'" end
-      end    
+      end
  tex.sprint("\\coordinate ("..K..") at ("..V.re..","..V.im..") ; \string\r")
 end}
-}  
+}
 \end{verbatim}
 \end{mybox}
 
 It consists mainly of a loop. The variables used are K (for keys) and V (for Values). To take pairs (key/value) from the \tkzname{z} table, use the \tkzname{pairs} function. K becomes the name of a node whose coordinates are \tkzname{V.re} and \tkzname{V.im}. Meanwhile, we search for keys with more than one symbol ending in \tkzname{p}, in order to associate them with the symbol "'" valid in \TIKZ{}.
 
-
-% subsection transfers (end)
-
-\subsection{Complex numbers library and point} % (fold)
+\subsection{Complex numbers library and point}
 \label{sub:complex_numbers}
 
 Unless you want to create your own functions, you won't need to know and use complex numbers. However, in some cases it may be useful to implement some of their properties.
 
 
-|z.A = point(1, 2)| and \ |z.B = point(1, -1)| define two affixes which are $z_A = 1+2i$ and $z_B = 1-i$. Note the difference in notations |z.A| and $z_A$ for two distinct entities: a Lua object and an affix. 
+|z.A = point(1, 2)| and \ |z.B = point(1, -1)| define two affixes which are $z_A = 1+2i$ and $z_B = 1-i$. Note the difference in notations |z.A| and $z_A$ for two distinct entities: a Lua object and an affix.
 
 \vspace{1em}
 If you want to use only complex numbers then you must choose the following syntax :|za =point (1,2)|.
@@ -233,7 +223,7 @@ The only difference between |z.A = point : new (1, 2)| and |za = point (1, 2)| i
   \catcode`_=12
   \small
   \begin{minipage}{\textwidth}
-  \captionof{table}{Point or complex metamethods.}\label{complex:meta}
+  \captionof{table}{Point or complex metamethods.}
   \begin{tabular}{lll}
     \toprule
     \textbf{Metamethods} & \textbf{Application}& \textbf{Result} \\
@@ -260,7 +250,7 @@ The only difference between |z.A = point : new (1, 2)| and |za = point (1, 2)| i
   \catcode`_=12
   \small
   \begin{minipage}{\textwidth}
-  \captionof{table}{Point (complex) class methods.}\label{complex:met}
+  \captionof{table}{Point (complex) class methods.}
   \begin{tabular}{lll}
     \toprule
   \textbf{Methods} & \textbf{Application} &\textbf{Result} \\
@@ -296,10 +286,11 @@ The class is provided with two specific metamethods.
 
 \end{itemize}
 
-\subsubsection{Example of complex use} % (fold)
-\label{ssub:example_of_complex_use}
-Let |za = math.cos(a) + i math.sin(a)| . 
-This is obtained from the library by writing 
+
+\subsubsection{Example of complex use}
+
+Let |za = math.cos(a) + i math.sin(a)| .
+This is obtained from the library by writing
 
 \begin{mybox}
    |za = point(math.cos(a),math.sin(a))|.
@@ -344,10 +335,8 @@ Then |z.B = z.A * za| describes a rotation of point A by an angle |a|.
 \end{center}
 
 \end{minipage}
-% subsubsection example_of_complex_use (end)
 
-\subsubsection{Point operations (complex)} % (fold)
-\label{ssub:point_operations_complex}
+\subsubsection{Point operations (complex)}
 
 \begin{minipage}{.5\textwidth}
 \begin{verbatim}
@@ -362,9 +351,9 @@ Then |z.B = z.A * za| describes a rotation of point A by an angle |a|.
  z.e = z.a * z.b
  z.f = z.a / z.b
  z.ap = point.conj(z.a)
- z.g = z.b * point(math.cos(math.pi / 2), 
+ z.g = z.b * point(math.cos(math.pi / 2),
      math.sin(math.pi / 2))}
- 
+
 \begin{tikzpicture}
  \tkzGetNodes
  \tkzInit[xmin=-2,xmax=3,ymin=-2,ymax=3]
@@ -390,7 +379,7 @@ Then |z.B = z.A * za| describes a rotation of point A by an angle |a|.
  z.f = z.a / z.b
  z.ap = point.conj(z.a)
  z.g = z.b * point(math.cos(math.pi / 2), math.sin(math.pi / 2))}
-     
+
 \begin{center}
   \begin{tikzpicture}
            \tkzGetNodes
@@ -404,20 +393,16 @@ Then |z.B = z.A * za| describes a rotation of point A by an angle |a|.
 \end{center}
 
 \end{minipage}
-% subsubsection point_operations_complex (end)
-% subsection complex_numbers (end)
 
-
-\subsection{Barycenter} % (fold)
-\label{sub:barycenter}
+\subsection{Barycenter}
 
 \begin{minipage}{.8\textwidth}
    Here's the definition of the barycenter (Note\footnote{\code{barycenter\_} is an internal function, the public form is \code{barycenter}}), which is used some forty times in the package.
 |table.pack| builds a table from a list. \\
 |tp.n| gives the number of pairs. \\
 |tp[i][1]| is an affix and |tp[i][2]| the associated weight (real value). See the example [\ref{ssub:using_the_barycentre}]
-   
-         
+
+
 \begin{verbatim}
    function barycenter_ (...)
    local tp = table.pack(...)
@@ -433,13 +418,15 @@ Then |z.B = z.A * za| describes a rotation of point A by an angle |a|.
 \end{verbatim}
 \end{minipage}
 
-\vspace{1em}   
-\subsubsection{Using the barycentre} % (fold)
+\vspace{1em}
+
+\subsubsection{Using the barycentre}
 \label{ssub:using_the_barycentre}
 
 Better |T.ABC = triangle(z.A, z.B, z.C)|
 and |z.G = T.ABC:barycenter()|
 
+\vspace{1em}
 \begin{minipage}{.5\textwidth}
 \begin{verbatim}
 \directlua{
@@ -447,9 +434,9 @@ and |z.G = T.ABC:barycenter()|
  z.A = point(1, 0)
  z.B = point(5, -1)
  z.C = point(2, 5)
- z.G = tkz.barycenter({ z.A, 3 }, { z.B, 1 }, 
-    { z.C, 1 })}
-    
+ z.G = tkz.barycenter({ z.A, 3 },
+   { z.B, 1 }, { z.C, 1 })}
+
 \begin{tikzpicture}
 \tkzGetNodes
 \tkzDrawPolygon(A,B,C)
@@ -463,7 +450,7 @@ and |z.G = T.ABC:barycenter()|
  z.B = point(5, -1)
  z.C = point(2, 5)
  z.G = tkz.barycenter({ z.A, 3 }, { z.B, 1 }, { z.C, 1 })}
-  
+
 \begin{center}
   \begin{tikzpicture}
   \tkzGetNodes
@@ -473,10 +460,9 @@ and |z.G = T.ABC:barycenter()|
 \end{center}
 
 \end{minipage}
-% subsubsection using_the_barycentre (end)
 
-\subsubsection{Incenter of a triangle} % (fold)
-\label{ssub:incenter_of_a_triangle}
+\subsubsection{Incenter of a triangle}
+
 The calculation of the weights ka, kb and kc is precise, and the result obtained with the barycenter is excellent. Note the presence of the underscore \_ for certain functions. These functions are internal (developer). Each external (user) function is associated with its internal counterpart.
 
 Here's how to determine the center of the inscribed circle of a triangle:
@@ -490,10 +476,7 @@ function in_center_(a, b, c)
 end \end{verbatim}
 \end{mybox}
 
-% subsubsection incenter_of_a_triangle (end)  
-% subsection barycenter (end)
-
-\subsection{Loop and table notation} % (fold)
+\subsection{Loop and table notation}
 \label{sub:loop_and_table_notation}
 The problem encountered in this example stems from the notation of the point names. Since it's not possible to write in simplified form, we have to resort to table[key] notation.
 
@@ -548,16 +531,13 @@ The problem encountered in this example stems from the notation of the point nam
   \end{tikzpicture}
 \end{verbatim}
 
-
-
-% subsection loop_and_table_notation (end)
-
-\subsection{Use of tables} % (fold)
+\subsection{Use of tables}
 \label{sub:use_of_tables}
 
 
 
-\subsubsection{Plotting a Curve} % (fold)
+
+\subsubsection{Plotting a Curve}
 \label{ssub:plotting_a_curve}
 
 This example demonstrates how to plot the graph of a function using Lua code in \tkzNamePack{tkz-elements}. The function chosen is:
@@ -604,7 +584,7 @@ The following example shows how to compute and draw the curve using the methods 
   \directlua{%
     local expr = [[\tkzfct]]
     local f = load(("return function (x)
-                      return (\percentchar s) 
+                      return (\percentchar s)
                     end"):format(expr), nil, 't', math)()
     tex.print(f(#1))
   }
@@ -616,13 +596,13 @@ The following example shows how to compute and draw the curve using the methods 
     local expr = [[#1]]
     PA.#5 = path()
     local f = load(("return function (x)
-                      return (\percentchar s) 
+                      return (\percentchar s)
                     end"):format(expr), nil, 't', math)()
     for t = min, max, (max - min) / nb do
       local y = f(t)
       local pt = point(t, y)
-      if y == math.huge or y == -math.huge then 
-        tex.print("problem") 
+      if y == math.huge or y == -math.huge then
+        tex.print("problem")
       end
       PA.#5:add_point(pt)
     end
@@ -653,7 +633,7 @@ Below are the definitions of the macros used in this example:
   \directlua{%
     local expr = [[\tkzfct]]
     local f = load(("return function (x)
-                      return (\percentchar s) 
+                      return (\percentchar s)
                     end"):format(expr), nil, 't', math)()
     tex.print(f(#1))
   }
@@ -665,28 +645,28 @@ Below are the definitions of the macros used in this example:
     local expr = [[#1]]
     PA.#5 = path()
     local f = load(("return function (x)
-                      return (\percentchar s) 
+                      return (\percentchar s)
                     end"):format(expr), nil, 't', math)()
     for t = min, max, (max - min) / nb do
       local y = f(t)
       local pt = point(t, y)
-      if y == math.huge or y == -math.huge then 
-        tex.print("problem") 
+      if y == math.huge or y == -math.huge then
+        tex.print("problem")
       end
       PA.#5:add_point(pt)
     end
   }
 }
 \end{verbatim}
-
-% subsubsection plotting_a_curve (end)
 % ssubsection use_of_tables (end)
 
 
-\subsection{Determinant and Dot Product} % (fold)
+
+\subsection{Determinant and Dot Product}
 \label{sub:determinant_et_produit_scalaire}
 
-\subsubsection{Determinant} % (fold)
+
+\subsubsection{Determinant}
 \label{ssub:determinant}
 
 The operator |^| is used to compute the determinant associated with two vectors represented by complex numbers.
@@ -703,9 +683,7 @@ function point.__pow(z1, z2)
 end
 \end{verbatim}
 
-% subsubsection determinant (end)
-
-\subsubsection{Application: \code{in\_out} Method for a Line} % (fold)
+\subsubsection{Application: \code{in\_out} Method for a Line}
 \label{ssub:in_out_for_a_line}
 
 The method \tkzMeth{line}{in\_out} is used to check if a point lies on a line defined by two points. This can also be applied to other geometric objects, such as:
@@ -785,9 +763,7 @@ The following example shows how this method can be used in Lua and visualized in
 \end{center}
 \end{minipage}
 
-% subsubsection in_out_for_a_line (end)
-
-\subsubsection{Dot Product} % (fold)
+\subsubsection{Dot Product}
 \label{ssub:scalar_product}
 
 The dot product between two complex numbers is computed using the operator \code{..}. It corresponds to the real part of the product of the first vector and the conjugate of the second:
@@ -800,9 +776,7 @@ function point.__concat(z1, z2)
 end
 \end{verbatim}
 
-% subsubsection scalar_product (end)
-
-\subsubsection{Dot Product: Orthogonality Test} % (fold)
+\subsubsection{Dot Product: Orthogonality Test}
 \label{ssub:scalar_product_orthogonality_test}
 
 The following function \tkzMeth{math}{isortho} checks whether two vectors are orthogonal using the dot product:
@@ -817,11 +791,7 @@ end
 
 This function returns \code{true} if the vectors \( \\overrightarrow{z_1z_2} \) and \( \\overrightarrow{z_1z_3} \) are orthogonal.
 
-% subsubsection scalar_product_orthogonality_test (end)
-
-\subsubsection{Dot Product: Projection onto a Line} % (fold)
-\label{ssub:scalar_product_projection}
-
+\subsubsection{Dot Product: Projection onto a Line}
 Projecting a point onto a line is a fundamental operation in geometry. The projection function is defined as follows:
 
 \begin{verbatim}
@@ -838,11 +808,7 @@ end
 
 The function \tkzMeth{math}{aligned} is currently used to check if the point is already on the line. Internally, it avoids using the determinant. This function will eventually be replaced or unified with \tkzFct{tkz}{tkz.is\_linear}.
 
-% subsubsection scalar_product_projection (end)
-% subsection determinant_et_produit_scalaire (end)
-
-\subsection{Point Method} % (fold)
-\label{sub:point_method}
+\subsection{Point Method}
 
 The \tkzMeth{object}{point} method is a generic method available for several geometric objects, including:
 
@@ -918,9 +884,7 @@ The following code illustrates how to use the \code{point} method with a line, a
   \item For a triangle, the parameter selects a point on the perimeter (following the order of the vertices).
 \end{itemize}
 
-% subsection point_method (end)
-\subsection{Behind the Objects} % (fold)
-\label{sub:behind_the_objects}
+\subsection{Behind the Objects}
 
 Before introducing geometric objects, all computations were performed using functions whose arguments were explicit \tkzNameObj{points} (i.e., complex numbers).
 
@@ -948,14 +912,14 @@ The original point-based functions—referred to here as **primary functions**�
 \paragraph{Examples.}
 
 \begin{itemize}
-  \item \textbf{Rotation around a point.}  
+  \item \textbf{Rotation around a point.}
   To rotate a point \code{pt} around a center \code{c} by an angle \code{a}, you can use the primary function:
   \begin{center}
   \code{z.Mp = rotation\_(z.A, math.pi/6, z.M)}
   \end{center}
 
   Its definition is straightforward:
-  
+
   \begin{center}
   \begin{minipage}{0.6\textwidth}
   \begin{mybox}
@@ -974,7 +938,7 @@ end
   \code{z.Mp = z.A:rotation(math.pi/6, z.M)}
   \end{center}
 
-  \item \textbf{Intersection of a line and a circle.}  
+  \item \textbf{Intersection of a line and a circle.}
   Using only points, the intersection of line $(A,B)$ and circle centered at $O$ passing through $T$ is computed as:
   \begin{center}
   \code{intersection\_lc\_(z.A, z.B, z.O, z.T)}
@@ -990,9 +954,4 @@ end
 \paragraph{Summary.}
 
 The primary functions (whose names end with an underscore, such as \code{midpoint\_}, \code{rotation\_}, or \code{intersection\_lc\_}) are internal and are not part of the official API. They are not documented separately, as they serve only as internal building blocks for object methods. Users are encouraged to interact exclusively with object-oriented methods for clarity, stability, and forward compatibility.
-
-
-% subsection behind_the_objects (end)
-
-% section in_depth_study (end)
 \endinput

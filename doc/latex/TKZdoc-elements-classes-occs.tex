@@ -1,10 +1,8 @@
 \newpage
-\section{Class \tkzClass{occs}} % (fold)
+\section{Class \tkzClass{occs}}
 \label{sec:orthonormal_cartesian_coordinate_system}
 
-\subsection{Description} % (fold)
-\label{sub:description_occs}
-
+\subsection{Description}
 The \texttt{occs} class models an \emph{orthonormal Cartesian coordinate system} (OCCS). Its primary use is to transition from the default coordinate system to one aligned with geometric features of the figure (e.g., a directrix, a major axis, or the vertex of a conic).
 
 All calculations in this package are performed in a fixed OCCS. For convenience and clarity, this class allows defining and transforming to a new OCCS using a direction (a line) and a new origin point.
@@ -13,10 +11,7 @@ All calculations in this package are performed in a fixed OCCS. For convenience 
 \noindent
 The typical use case is to simplify the coordinates of geometric objects such as conics, by aligning the axes with their natural directions.
 
-% sub : description (end)
-
-\subsection{Creating an OCCS} % (fold)
-\label{sub:creating_occs}
+\subsection{Creating an OCCS}
 
 An OCCS (orthonormal Cartesian coordinate system) is defined by:
 \begin{itemize}
@@ -31,7 +26,7 @@ The abscissa axis (the $x$-axis) is automatically computed to be orthogonal to t
 There are two equivalent ways to create an OCCS:
 
 \begin{mybox}
-  \code{O.S = occs(L.axis, z.S)} \hfill (short form, recommended)  
+  \code{O.S = occs(L.axis, z.S)} \hfill (short form, recommended)
   \\
   \code{O.S = occs:new(L.axis, z.S)} \hfill (explicit constructor)
 \end{mybox}
@@ -50,18 +45,12 @@ This object can then be used to:
 
 The new abscissa axis is automatically computed to ensure orthonormality.
 
-% subsection creating_occs (end)
+\subsection{Attributes of an occs}
 
-
-
-\subsection{Attributes of an occs} % (fold)
-\label{sub:attributes_of_an_occs}
-
-\begin{center}
   \bgroup
   \catcode`_=12
   \small
-  \captionof{table}{Attributes of an \texttt{occs} object.}\label{tab:occs_attributes}
+  \captionof{table}{Attributes of an \texttt{occs} object.}
   \begin{tabular}{ll}
     \toprule
     \textbf{Attribute} & \textbf{Description}  \\
@@ -75,10 +64,10 @@ The new abscissa axis is automatically computed to ensure orthonormality.
     \bottomrule
   \end{tabular}
   \egroup
-\end{center}
 
 
-\subsubsection{Example: attributes of \texttt{occs}} % (fold)
+
+\subsubsection{Example: attributes of \texttt{occs}}
 \label{ssub:example_attributes_of_occs}
 
 A few words about the arguments of a new OCCS. The most important is the line that defines the direction of the new ordinate axis. For a parabola, this direction should point from the directrix to the focus. For a hyperbola or an ellipse, it should go from the center to the principal focus. The orientation is determined by the order of the two points used to construct the line: it runs from the first to the second.
@@ -156,10 +145,7 @@ If this line is constructed as an orthogonal to another line (as in the example 
 \end{tikzpicture}
 \end{center}
 
-% subsection example_attributes_of_occs (end)
-
-\subsection{Methods of the class \texttt{occs}} % (fold)
-\label{sub:methods_of_the_class_occs}
+\subsection{Methods of the class \texttt{occs}}
 
 This class provides the following methods:
 
@@ -168,10 +154,7 @@ This class provides the following methods:
   \item \texttt{sys:coordinates(P)} — returns the coordinates of a point $P$ in the OCCS.
 \end{itemize}
 
-
-\subsection{Example: Using \texttt{occs} with a parabola} % (fold)
-\label{sub:example_occs_parabola}
-
+\subsection{Example: Using \texttt{occs} with a parabola}
 
 Let us consider a practical example. Suppose we want to compute the intersection points between a parabola and a line. The parabola is defined by its directrix and focus. In a coordinate system centered at the vertex $S$ of the parabola, with the $x$-axis parallel to the directrix and passing through $S$, the equation of the parabola becomes
 \[
@@ -315,8 +298,4 @@ If solutions exist, the result consists of two values $r_1$ and $r_2$, which are
  \tkzLabelSegment[below,sloped,pos=.7](A,B){Directrix}
 \end{tikzpicture}
 \end{center}
-
-% subsection example_occs_parabola (end)
-% subsection methods_of_the_class_occs (end)
-% section orthormal_cartesian_coordinate_system (end)
 \endinput

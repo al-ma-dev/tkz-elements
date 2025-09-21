@@ -1,12 +1,8 @@
 \newpage
+\section{LuaLaTeX for Beginners: An Introduction to Lua Scripting}
 
+\subsection{Introduction to Lua with LaTeX}
 
-\section{LuaLaTeX for Beginners: An Introduction to Lua Scripting} % (fold)
-\label{sec:lua_with_lualatex}
-
-
-\subsection{Introduction to Lua with LaTeX} % (fold)
-\label{sub:introduction_to_lua_with_latex}
 \tkzEngine{\LUALATEX} is a variant of LaTeX that integrates Lua as a scripting language. This enables :
 
 \begin{itemize}
@@ -14,10 +10,9 @@
   \item Manipulate text and data.
   \item Generate dynamic content in a document.
 \end{itemize}
-% subsection introduction_to_lua_with_latex (end)
 
-\subsection{Using Lua in a LaTeX document} % (fold)
-\label{sub:using_lua_in_a_latex_document}
+\subsection{Using Lua in a LaTeX document}
+
 In \tkzNamePack{tkz-elements}, I only use two ways of integrating code into \tkzname{Lua}, which are as follows:
 
 \begin{itemize}
@@ -40,9 +35,9 @@ In \tkzNamePack{tkz-elements}, I only use two ways of integrating code into \tkz
 
 Examples are provided in this documentation, which you can see :
 
- [\ref{sec:work_organization}] |\directlua{dofile("sangaku.lua")}|
+ [\ref{sec:work_organization}] |\directlua{dofile("lua/sangaku.lua")}|
 
-  or [\ref{sub:six_circles_in_a_triangle}] |\directlua{loadfile ("search\_circle.lua")(1.4)|
+  or [\ref{sub:six_circles_in_a_triangle}] |\directlua{loadfile ("lua/search\_circle.lua")(1.4)|
 
 \end{itemize}
 
@@ -52,11 +47,7 @@ With \tkzEnv{luacode}{luacode} environment, you need to use two hyphens.
 
 The next subsection describes some of the differences between \TeX{} and LuaTeX{} for special characters and catcodes.
 
-%subsection using_lua_in_a_latex_document (end)
-
-
-\subsection{Interaction between Lua and LaTeX} % (fold)
-\label{sub:interaction_between_lua_and_latex}
+\subsection{Interaction between Lua and LaTeX}
 
 \tkzEngine{\LUALATEX} allows you to interact with LaTeX, in particular via :
 
@@ -73,8 +64,7 @@ The next subsection describes some of the differences between \TeX{} and LuaTeX{
 \end{mybox}
 
 
-\subsection{The variables} % (fold)
-\label{sub:the_variables}
+\subsection{The variables}
 
 \begin{mybox}
   In Lua, a variable is a named label that stores a value. Its type is determined dynamically by the value assigned to it, and its scope (global or local) influences where it can be used in your program.
@@ -82,8 +72,9 @@ The next subsection describes some of the differences between \TeX{} and LuaTeX{
 
 Let's analyze what we've just written. Four points are important: "named label", "type of value", "dynamically" and "scope".
 
-\subsubsection{Named label} % (fold)
-\label{ssub:named_label}
+
+\subsubsection{Named label}
+
 The name you assign to a variable must follow certain rules:
 
 \begin{itemize}
@@ -93,9 +84,7 @@ The name you assign to a variable must follow certain rules:
   \item Some Lua keywords (such as if, then, function, local, etc.) are reserved and cannot be used as variable names.
 \end{itemize}
 
-% subsubsection named_label (end)
-
-\subsubsection{Data types} % (fold)
+\subsubsection{Data types}
 \label{ssub:types}
  What types of values can be assigned to a variable? Here's a list of the simplest:
 
@@ -107,21 +96,16 @@ The name you assign to a variable must follow certain rules:
     \item \textbf{table} : associative data structures(key-value) and arrays.
     \item \textbf{function} : anonymous or named functions.
 \end{itemize}
-% subsubsection types (end)
 
-\subsubsection{Dynamically} % (fold)
-\label{ssub:dynamically}
+\subsubsection{Dynamically}
+
 The type is defined by the assigned value. So when \code{|x = 5|} then the type of \code{x} is \code{number}, but if \code{|x = true|} then its type changes to \code{boolean}.
 
 \tkzRBomb This warning was issued earlier concerning classes and variables reserved by the \tkzNamePack{tkz-elements}. For example, you cannot use : \code{circle} with $circle = ...$ which would result in losing the use of the class \tkzClass{circle}. Similarly, $C= 1$ would result in the loss of the contents of the table \tkzVar{circle}{C}.
 
-% subsubsection dynamically (end)
+\subsubsection{Scope and block}
 
-\subsubsection{Scope and block} % (fold)
-
-\label{ssub:scope}
-
-   \begin{enumerate}
+\begin{enumerate}
 
   \item  \code{\textbf{Block}}\\
 In Lua, a block is a sequence of statements that are treated as a single unit. Blocks in Lua are delimited by specific keywords. They are crucial for structuring code, defining the scope of local variables, and controlling the flow of execution.
@@ -156,23 +140,17 @@ end
  tex.print(x) % Error! x is out of scope here}
 \end{verbatim}
 \end{mybox}
-
 \end{enumerate}
 
-% subsubsection scope (end)
+\subsection{The values}
 
-% subsection the_variables (end)
-
-\subsection{The values} % (fold)
-\label{sub:the_values}
 Let's see what you need to know about the main values.
 
 %   \begin{enumerate}[label=(\greek*)]
- \subsubsection{\code{nil}} % (fold)
- \label{ssub:_code_nil}
+
+\subsubsection{\code{nil}}
 
 
-%  \item \code{nil}\\
   \begin{itemize}
 
     \item   \code{nil} is the most basic and its own data type. \code{nil} is used to indicate that a variable has not yet been assigned a value, or that a value has been explicitly suppressed.
@@ -194,10 +172,7 @@ Assigning \code{nil} to a key removes that entry from the table. It's possible t
 
   \end{itemize}
 
- % subsubsection _code_nil (end)
-
-\subsubsection{Booleans} % (fold)
-\label{ssub:booleans}
+\subsubsection{Booleans}
 
 \begin{itemize}
   \item In Lua, there are only two boolean values: \code{true} and \code{false}.
@@ -216,13 +191,10 @@ Assigning \code{nil} to a key removes that entry from the table. It's possible t
   end
 \end{verbatim}
 \end{mybox}
-
-
 \end{itemize}
 
-% subsubsection booleans (end)
-\subsubsection{Number} % (fold)
-\label{ssub:number}
+\subsubsection{Number}
+
 
 \begin{itemize}
   \item Single Numeric Type.  Lua has only one numeric type for representing real (double-precision floating-point) numbers. This means that all numbers, whether they look like integers or have decimal points, are treated the same.
@@ -237,15 +209,13 @@ You can use functions defined in the math library.
 Remark: in some cases, operations like \code{addition} or \code{concatenation} transform the type of one of the operands to obtain a result, but there are many special cases.
 
 \end{itemize}
-% subsubsection number (end)
 
-\subsubsection{Strings} % (fold)
-\label{ssub:strings}
+\subsubsection{Strings}
 
 \begin{enumerate}[label=(\alph*)]
   \item Construction
 
- You can define string literals in Lua using single quotes ('...'), double quotes ("..."), or double square brackets ([[...]]), but there are differences between these methods. There are no major problems if the strings don't contain any special characters. 
+ You can define string literals in Lua using single quotes ('...'), double quotes ("..."), or double square brackets ([[...]]), but there are differences between these methods. There are no major problems if the strings don't contain any special characters.
 
 
 A first small problem arises if we want to include a single quote or a double quote into the string. The simplest method is to define the string with the double square brackets. You can include a single quote inside a string defined with double quote or vice versa.
@@ -290,8 +260,6 @@ And if you like a bit of a challenge, it's still possible to include a double qu
 \item \code{string.format(formatstring, ...)}, etc.
 \end{itemize}
 
-
-
 \item Special or magic characters in the library \code{String}\\
 
 \begin{center}
@@ -311,7 +279,6 @@ And if you like a bit of a challenge, it's still possible to include a double qu
   \bottomrule
   \end{tabular}
 \end{center}
-
 
 \item Character Classes (after \texttt{\%})
 
@@ -334,8 +301,6 @@ And if you like a bit of a challenge, it's still possible to include a double qu
   \bottomrule
   \end{tabular}
 \end{center}
-
-
 
 \item Notes
 \begin{itemize}
@@ -387,10 +352,8 @@ You can easily format mathematical expressions like powers and equations:
 
 \item If s = "example" then |tex.print(s:len())| gives $7$.
 \end{enumerate}
-% subsubsection strings (end)
 
-\subsubsection{The Tables} % (fold)
-\label{ssub:the_tables}
+\subsubsection{The Tables}
 
 \begin{itemize}
 
@@ -450,11 +413,8 @@ There are in built functions for table manipulation and they are listed in the f
 \item Accessing elements: You can access table elements using square brackets [] with the corresponding key. If the key is a valid string identifier, you can also use dot notation (.).
 \item Deleting elements: To remove an element from a table, simply assign the value nil to its key.
 \end{itemize}
-% subsubsection the_tables (end)
 
-
-\subsubsection{Functions} % (fold)
-\label{ssub:functions}
+\subsubsection{Functions}
 
 In Lua, functions possess first-class status, which means they can be assigned to variables, provided as arguments to other functions, and used as return values from functions.
 
@@ -469,14 +429,12 @@ In Lua, functions possess first-class status, which means they can be assigned t
     tex.print(cubic(5))}
 \end{tkzexample}
 
-
-
-  \item Parameters and Return Values\\
+\item Parameters and Return Values\\
 
 Functions can take any number of parameters and return multiple values. Let's look at an example that illustrates this case and shows some of the difficulties associated with Lua's special characters.
 
-This involves dividing with whole numbers. The simplest solution 
-is to create this function in an external file: “divide.lua”.
+This involves dividing with whole numbers. The simplest solution
+is to create this function in an external file: “lua/divide.lua”.
 
 \begin{mybox}
 \begin{verbatim}
@@ -489,13 +447,13 @@ is to create this function in an external file: “divide.lua”.
      local remainder = dividend % divisor
      return quotient, remainder
    end
- end 
+ end
 \end{verbatim}
 \end{mybox}
 
 \begin{verbatim}
 \directlua{
- dofile("divide.lua")
+ dofile("lua/divide.lua")
 local pc = string.char(37)
 local num1 = 17
 local num2 = 5
@@ -507,7 +465,7 @@ tex.sprint(string.format("The remainder is: "..pc.."d\\par", r))
 \end{verbatim}
 
 \directlua{
- dofile("divide.lua")
+ dofile("lua/divide.lua")
 local pc = string.char(37)
 local num1 = 17
 local num2 = 5
@@ -517,7 +475,7 @@ tex.sprint(string.format("The quotient of ".. pc.. "d divided by".. pc.."
 tex.sprint(string.format("The remainder is: "..pc.."d\\par", r))
 }
 
-Let's examine the version of the function if it is defined in the macro \tkzMacro{lualatex}{directlua}. 
+Let's examine the version of the function if it is defined in the macro \tkzMacro{lualatex}{directlua}.
 
 The problem is the use of l'operator \% (Modulus Operator and remainder of after an integer division). The same problem occurs when using the string.format function and the \%d or \%i: placeholder for an integer.
 
@@ -543,7 +501,7 @@ The code becomes :
      local remainder = dividend \pc divisor
      return quotient, remainder
    end
- end 
+ end
 
 local num1 = 17
 local num2 = 5
@@ -554,11 +512,11 @@ tex.sprint(string.format([[The quotient of \pc i divided by
 tex.sprint(string.format([[The remainder is: \pc i]], r))}
 \end{verbatim}
 
-  \item Variadic Functions\\
+\item Variadic Functions\\
 
 Use ... to handle a variable number of arguments:
 
-First example: 
+First example:
 
 It's the easiest way to avoid problems linked to the \#.
 
@@ -575,19 +533,19 @@ It's the easiest way to avoid problems linked to the \#.
       return total
     end
 
-    tex.print(sum_all(1, 2, 3, 4)) 
+    tex.print(sum_all(1, 2, 3, 4))
     }
   \end{tkzexample}
 
 
-\item   Second example: 
+\item   Second example:
 
 Here, I'm using a new function from the \tkzFct{utils}{table\_getn} package, which replaces an old Lua function \tkzFct{lua}{table.getn}, which was used to obtain the size of the table.
 
   \begin{tkzexample}[latex=.2\textwidth]
     \directlua{
     local function sum_all(...)
-      local arg = {...}  
+      local arg = {...}
       local total = 0
       for i = 1, utils.table_getn(arg) do
         total = total + arg[i]
@@ -599,7 +557,7 @@ Here, I'm using a new function from the \tkzFct{utils}{table\_getn} package, whi
   \end{tkzexample}
 
 
-\item   Third example: 
+\item   Third example:
 
 It's always possible to use \#, with a little effort (texhnic).
 
@@ -608,7 +566,7 @@ It's always possible to use \#, with a little effort (texhnic).
  \catcode`\#=12
  \directlua{
  local function sum_all(...)
-   local arg = {...}  
+   local arg = {...}
    local total = 0
    for i = 1, #arg do
      total = total + arg[i]
@@ -627,11 +585,11 @@ It's always possible to use \#, with a little effort (texhnic).
 Lua supports recursive functions:
 
 \begin{tkzexample}[latex=.4\textwidth]
-  \directlua{dofile("fact.lua")}
+  \directlua{dofile("lua/fact.lua")}
   \newcommand*{\luafact}[1]{\directlua{
     tex.write(fact(\the\numexpr(#1)\relax))}%
   }
-  $8! = \luafact{8}$ 
+  $8! = \luafact{8}$
 \end{tkzexample}
 
 
@@ -641,13 +599,13 @@ Lua supports recursive functions:
 When defining functions for tables (objects), you can use the colon syntax (:) to automatically pass the object itself as the first argument, usually called self.
 
 Here's an example:
- 
+
 
 \begin{tkzexample}[latex = .2\textwidth]
   \directlua{
    z.A = point(0, 0)
    z.B = point(5, 0)
-   L.AB = line(z.A, z.B) 
+   L.AB = line(z.A, z.B)
    T.ABC = L.AB:half()
    _,_,z.C = T.ABC:get()
    tex.print(tostring(z.C))}
@@ -662,12 +620,9 @@ Without the colon syntax, you would need to pass the object explicitly as the fi
 
 \code{half} and \code{get} are methods defined for object tables. When called with the colon syntax, they automatically receive the instance (self) they operate on.
 \end{enumerate}
-% subsubsection functions (end) Functions
 
+\subsection{Control structures}
 
-%
-\subsection{Control structures} % (fold)
-\label{sub:control_structures}
 
 Control structures let your program make decisions and repeat actions. Lua has a small set of easy-to-use control structures to help you write flexible and powerful code.
 
@@ -833,14 +788,14 @@ Here's an example with the following constraints:
     for i = 1, utils.table_getn(t) do
       local value = t[i]
       if value \pc 2 == 0 then
-        return value  
+        return value
       elseif value == -1 then
-        break  
+        break
       end
     end
-    return nil 
+    return nil
   end
-  
+
   local numbers = {1, 3, 5, -1, 4, 6}
   tex.print(tostring(find_first_even(numbers))) }
 \end{tkzexample}
@@ -849,10 +804,7 @@ Here's an example with the following constraints:
 
 \end{enumerate}
 
- % subsection control_structures (end)
-
-
-\subsection{Lua Sugar Syntax} % (fold)
+\subsection{Lua Sugar Syntax}
 \label{sub:lua_sugar_syntax}
 The "sugar syntax" in Lua refers to syntactic elements that make the language more concise and readable changing its fundamental meaning. Here are the main forms of sugar syntax in Lua:
 
@@ -895,8 +847,7 @@ The "sugar syntax" in Lua refers to syntactic elements that make the language mo
  This is a way to create a local scope block — useful for limiting variable visibility.
 \end{enumerate}
 
-% subsection lua_sugar_syntax (end)
-\subsection{Example: Calculating the sum of 1 to 10} % (fold)
+\subsection{Example: Calculating the sum of 1 to 10}
 \label{sub:calculating_the_sum}
 
 Lua is useful for advanced calculations that LaTeX alone cannot handle efficiently.
@@ -911,8 +862,8 @@ Lua is useful for advanced calculations that LaTeX alone cannot handle efficient
   tex.print("Somme de 1 à 10 : " .. somme)}
 \end{tkzexample}
 %
-\subsubsection{Example: Fibonacci} % (fold)
-\label{ssub:fibonacci}
+
+\subsubsection{Example: Fibonacci}
 
  \vspace{1em}
   Calcul du terme de rang $10$
@@ -934,13 +885,4 @@ Lua is useful for advanced calculations that LaTeX alone cannot handle efficient
     \(u_{10}=\directlua{tex.print(
     fibonacci(10))}\)
 \end{tkzexample}
-%
-%     % paragraph fibonacci (end)
-% % subsection advanced_calculations (end)
-%
-%
-%
-% % subsection the_values (end)
-% % subsection the_basics_of_the_lua_language (end)
-%
-%
+\endinput

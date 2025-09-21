@@ -1,9 +1,7 @@
 \newpage
 
-\section{Writing Convention, best practices and common mistakes} % (fold)
-\label{sec:writing_convention}
-\subsection{Assigning a Name to an Object} % (fold)
-\label{sub:assigning_a_name_to_an_object}
+\section{Writing Convention, best practices and common mistakes}
+\subsection{Assigning a Name to an Object}
 
 \textbf{Note:} Certain variables such as \tkzname{z}, \tkzname{L}, \tkzname{T}, etc. are reserved for storing geometric objects.
 Reassigning one of them (e.g., \tkzname{L = 4}) will overwrite its content and disrupt the system.
@@ -31,21 +29,34 @@ local modules = { "circle",  "conic",  "line", "matrix", "occs", "parallelogram"
   end
 } }
 
-\subsection{Best practices} % (fold)
-\label{sub:best_practices}
+\subsection{Best practices}
 
 It is preferable to use methods—or better yet, object attributes—rather than standalone functions.
 
-For example, to determine the midpoint of a segment $AB$, iit was previously possible to write: |z.m = midpoint (z.A,z.B)|.  This is now considered incorrect: you must use |z.m = tkz.midpoint (z.A,z.B)|.
+For example, to determine the midpoint of a segment $AB$, iit was previously possible to write:
 
-However, the recommended approach is to define the segment first with: |L.AB = line(z.A, z.B)|, and then use the attribute: |z.m = line(z.A, z.B).mid|. If you don't reuse the line, a one-liner like |z.m = line(z.A, z.B).mid| is acceptable.
+|z.m = midpoint (z.A,z.B)|.  This is now considered incorrect: you must use
+
+|z.m = tkz.midpoint (z.A,z.B)|.
+
+However, the recommended approach is to define the segment first with:
+
+|L.AB = line(z.A, z.B)|, and then use the attribute:
+
+|z.m = line(z.A, z.B).mid|. If you don't reuse the line, a one-liner like |z.m = line(z.A, z.B).mid| is acceptable.
 
 \vspace{12pt}
-Similarly, it may have been tempting to write |L.bi = bisector(z.A, z.B, z.C)| to obtain the angle bisector at vertex $A$. As in the previous example, this is no longer valid. You must now use |L.bi = tkz.bisector(z.A, z.B, z.C)|, as all standalone functions have been grouped under the |tkz| module.
+Similarly, it may have been tempting to write |L.bi = bisector(z.A, z.B, z.C)| to obtain the angle bisector at vertex $A$. As in the previous example, this is no longer valid. You must now use:
 
-A better practice is to define the triangle $ABC$ using:  |T.ABC = triangle(z.A, z.B, z.C)| and then access the bisector via: |L.bi = T.ABC:bisector(z.A)| or directly: |L.bi = triangle(z.A, z.B, z.C):bisector(z.A)|.
+|L.bi = tkz.bisector(z.A, z.B, z.C)|, as all standalone functions have been grouped under the |tkz| module.
 
-% subsection best_practices (end)
+A better practice is to define the triangle $ABC$ using:
+
+|T.ABC = triangle(z.A, z.B, z.C)| and then access the bisector via:
+
+|L.bi = T.ABC:bisector(z.A)| or directly:
+
+|L.bi = triangle(z.A, z.B, z.C):bisector(z.A)|.
 
 \subsection{Common mistakes and best practices}
 
@@ -82,9 +93,7 @@ These precautions help ensure consistency in the system and prevent unpredictabl
 \vspace{1em}
 We’ll now explain how to assign variable names for each type of object.
 
-\subsection{Assigning a Name to a Point} % (fold)
-\label{sub:assigning_a_name_to_a_point}
-
+\subsection{Assigning a Name to a Point}
 At present, points must be stored in the table \tkzname{z} if you intend to use them later in \tkzNamePack{\TIKZ} or \tkzNamePack{tkz-euclide}.
 
 In \tkzNamePack{tkz-elements}, points must follow the \tkzname{z.name} convention, where name is the label of the corresponding node.
@@ -113,9 +122,7 @@ If a point’s name ends in |p| (like Bp),  then when passing into \tkzNamePack{
 \begin{mybox}
 |pgfnodealias{E}{euler}| in \TIKZ{}.
 \end{mybox}
-
 \end{enumerate}
-
 
 Examples of valid naming:
 \begin{mybox}
@@ -130,10 +137,7 @@ Examples of valid naming:
 
 In \tkzname{Lua}, |z.A| is a "sugar syntax" for |z["A"]| and |z.A = nil| deletes point $A$.
 
-% subsection assigning_a_name_to_a_point (end)
-
-\subsection{Assigning a Name to Other Objects} % (fold)
-\label{sub:assigning_a_name_to_other_objects}
+\subsection{Assigning a Name to Other Objects}
 For all geometric objects other than points, you are free to choose names. However, adopting consistent conventions greatly improves code readability and maintainability. To be more precise, each Lua code block is usually preceded by the call to the function \tkzFct{package}{init\_elements()}, whose role is to clear and reset the various tables (such as \tkzname{L}, \tkzname{C}, etc.).
 If you choose to use custom variable names or structures, you are free to do so — but in that case, you are responsible for managing and cleaning your variables and tables manually to avoid conflicts or unintended behavior.
 
@@ -188,9 +192,7 @@ The table CO can store various conics; use meaningful keys to indicate type and 
 
 Note: \emph{While you may choose other variable names or formats, following these conventions ensures that your code remains clear and easy to follow, especially when working with more complex figures.}
 
-% subsection assigning_a_name_to_other_objects(end)
-
-\subsection{Writing conventions for attributes, methods.} % (fold)
+\subsection{Writing conventions for attributes, methods.}
 \label{sub:writing_conventions_for_attributes_methods_and_functions}
 
 You must follow standard Lua conventions when accessing attributes or invoking methods:
@@ -215,10 +217,7 @@ You must follow standard Lua conventions when accessing attributes or invoking m
     \end{itemize}
 \end{itemize}
 
-% subsection assigning_a_name_to_an_object (end)
-
-
-\subsection{Miscellaneous} % (fold)
+\subsection{Miscellaneous}
 \label{sub:miscellanous}
 \begin{itemize}
   \item \textbf{Units and coordinates:} As in \tkzNamePack{tkz-euclide}, the default unit is the centimeter. All points are placed in an orthonormal Cartesian coordinate system.
@@ -253,7 +252,4 @@ You must follow standard Lua conventions when accessing attributes or invoking m
     \item In LaTeX: \verb|\tkzUseLua{st}| will display \texttt{Euler's formula}
   \end{itemize}
 \end{itemize}
-
-% subsection miscellanous (end)
-% section writing_convention (end)
 \endinput

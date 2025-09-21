@@ -1,7 +1,7 @@
 \newpage
 
-\section{Class \tkzClass{point}} % (fold)
-\label{sec:class_point}
+\section{Class \tkzClass{point}}
+
 The variable \tkzVar{point}{z} holds a table used to store points. It is \textbf{mandatory} and is automatically initialized by the package (e.g.,\tkzname{ z = \{\}}).
 
 
@@ -27,7 +27,8 @@ The \code{point} object possesses several attributes:
 \end{itemize}
 
 
-\subsection{Creating a Point} % (fold)
+
+\subsection{Creating a Point}
 \label{sub:creating_a_point}
 
 Points are created by providing their coordinates in the current orthonormal Cartesian coordinate system (OCCS). The recommended form is:
@@ -52,9 +53,6 @@ Alternatively, the more explicit syntax is also available:
 
 \noindent
 Both forms are equivalent. The shorter syntax is available since version 4 and preferred for readability and consistency.
-
-% subsection creating_a_point (end)
-
 \def\size{42mm}
 \begin{tikzpicture}[remember picture]
 \node[ draw, fill=red!10] (tbl) {%
@@ -62,7 +60,7 @@ Both forms are equivalent. The shorter syntax is available since version 4 and p
 \begin{minipage}{\size}
 
    \hspace{\fill} \texttt{Arguments}\hspace{\fill}
-       
+
        \tikz\node[minimum width=\size,font=\small,
     draw, fill=cyan!10,
     rectangle split, rectangle split parts=6
@@ -74,9 +72,9 @@ Both forms are equivalent. The shorter syntax is available since version 4 and p
     \nodepart{five}\texttt{modulus (cm)}
     \nodepart{six}\texttt{mtx (matrix)}
   };
-  
+
     \hspace{\fill}  \texttt{Methods}\hspace{\fill}
-    
+
     \tikz\node[minimum width=\size,font=\small,
     draw, fill=orange!20,sharp corners,
     rectangle split, rectangle split parts=4
@@ -95,7 +93,7 @@ Both forms are equivalent. The shorter syntax is available since version 4 and p
  \centering
 \begin{minipage}{\size}
    \hspace{\fill}    \texttt{Arguments}\hspace{\fill}
-       
+
         \tikz\node[minimum width=\size,font=\small,
     draw, fill=cyan!10,
     rectangle split, rectangle split parts=6
@@ -107,9 +105,9 @@ Both forms are equivalent. The shorter syntax is available since version 4 and p
      \nodepart{five}\texttt{modulus = $\sqrt{5}$}
       \nodepart{six}\texttt{mtx = \{\{1\},\{2\}\}}
   };
-  
+
     \hspace{\fill}  \texttt{Methods}\hspace{\fill}
-    
+
         \tikz\node[minimum width=\size,font=\small,
     draw, fill=orange!20,sharp corners,
     rectangle split, rectangle split parts=4
@@ -129,7 +127,8 @@ Both forms are equivalent. The shorter syntax is available since version 4 and p
 \draw [thick,->](tc.east) -- (to.west);
 \end{tikzpicture}
 
-\subsection{Attributes of a point} % (fold)
+
+\subsection{Attributes of a point}
 \label{sub:attributes_of_a_point}
 % Method \tkzMeth{point}{new}
 
@@ -139,29 +138,29 @@ Both forms are equivalent. The shorter syntax is available since version 4 and p
 \end{mybox}
  The point $A$ has coordinates $x=1$ and $y=2$. If you use the notation |z.A|, then $A$ will be  referenced as a node in \TIKZ\ or in \tkzNamePack{tkz-euclide}.
 
-This is the creation of a fixed point with coordinates $1$ and $2$ and which is named $A$. The notation \tkzname{z.A} indicates that the coordinates will be stored in a table assigned to the variable  \tkzVar{point}{z} (reference to the notation of the affixes of the complex numbers) that $A$ is the name of the point and the key allowing access to the values. 
+This is the creation of a fixed point with coordinates $1$ and $2$ and which is named $A$. The notation \tkzname{z.A} indicates that the coordinates will be stored in a table assigned to the variable  \tkzVar{point}{z} (reference to the notation of the affixes of the complex numbers) that $A$ is the name of the point and the key allowing access to the values.
 
-\begin{center}
-  \bgroup
+
+\bgroup
   \small
   \catcode`_=12
-  \captionof{table}{Point attributes.}\label{point:att}  
+  \captionof{table}{Point attributes.}
   \begin{tabular}{lll}
   \toprule
   \textbf{Attributes}      & \textbf{Description}&   \textbf{Example / Reference} \\
   \midrule
-  \tkzAttr{point}{type}     &  Object type name, always \texttt{"point"}   & \\    
+  \tkzAttr{point}{type}     &  Object type name, always \texttt{"point"}   & \\
   \tkzAttr{point}{re}       &  Real part (i.e., $x$-coordinate)      & [\ref{ssub:methods}] \\
-  \tkzAttr{point}{im}       &  Imaginary part (i.e., $y$-coordinate)    & [\ref{ssub:methods}]  \\ 
+  \tkzAttr{point}{im}       &  Imaginary part (i.e., $y$-coordinate)    & [\ref{ssub:methods}]  \\
   \tkzAttr{point}{argument} &   Argument of the affix (angle in radians) & $\approx$ \code{0.785398...} \quad  [\ref{ssub:example_point_attributes}] \\
   \tkzAttr{point}{modulus}  & Modulus of the affix (distance to origin)  &  $\sqrt{5} \approx$ \code{2.2360...} \quad [\ref{ssub:example_point_attributes}] \\
   \tkzAttr{point}{mtx}  & Matrix representation as column vector   & \code{z.A.mtx = {{1},{2}}} \quad  [\ref{ssub:example_point_attributes}] \\
   \bottomrule
   \end{tabular}
-  \egroup
-\end{center}
+\egroup
 
-\subsubsection{Example: point attributes} % (fold)
+
+\subsubsection{Example: point attributes}
 \label{ssub:example_point_attributes}
 
 \directlua{
@@ -239,7 +238,8 @@ Attributes of \texttt{z.M}
 
  \MakeShortVerb{\|}
 
-\subsubsection{Attribute \tkzAttr{point}{mtx}} % (fold)
+
+\subsubsection{Attribute \tkzAttr{point}{mtx}}
 \label{ssub:attribute_iattr_point_mtx}
 
 This attribute allows the point to be used in conjunction with matrices.
@@ -259,12 +259,8 @@ This attribute allows the point to be used in conjunction with matrices.
   z.A.mtx:print()}
 \end{center}
 \end{minipage}
-% subsubsection attribute_iattr_point_mtx (end)
-% subsubsection example_point_attributes (end)
-% subsection attributes_of_a_point (end)
 
-
-\subsubsection{Argand diagram} % (fold)
+\subsubsection{Argand diagram}
 \label{ssub:argand_diagram}
 \normalsize
 \begin{minipage}{\textwidth}
@@ -311,10 +307,7 @@ This attribute allows the point to be used in conjunction with matrices.
 \end{center}
 \end{minipage}
 
-% subsubsection argand_diagram (end)
-
-\subsection{Methods of the class point} % (fold)
-\label{sub:methods_of_the_class_point}
+\subsection{Methods of the class point}
 
 The methods listed in the following table are standard and commonly used throughout the examples at the end of this documentation. Each of these methods returns a \tkzNameObj{point} object.
 
@@ -324,11 +317,11 @@ For more advanced operations using complex numbers and operator overloading, see
 
 
 \vspace{1em}
-\begin{center}
+
 \bgroup
 \catcode`_=12
 \small
-\captionof{table}{Functions and Methods of the \code{class} point.}\label{point:met}
+\captionof{table}{Functions and Methods of the \code{class} point.}
 \begin{tabular}{lll}
 \toprule
 
@@ -371,10 +364,9 @@ For more advanced operations using complex numbers and operator overloading, see
 \bottomrule %
 \end{tabular}
 \egroup
-\end{center}
 
 
-\subsubsection{Method \tkzMeth{point}{new(r, r)}} % (fold)
+\subsubsection{Method \tkzMeth{point}{new(r, r)}}
 \label{ssub:method_point_new}
 
 This method creates a point in the plane using Cartesian coordinates. The shorter syntax \tkzMeth{point}{(r, r)} is available since version 4 and preferred for readability and consistency.
@@ -401,12 +393,11 @@ The resulting object is of type \tkzNameObj{point}, and can be used in further g
 \begin{tikzpicture}[gridded]
   \tkzGetNodes
   \tkzDrawPoints(A,B)
-  \tkzLabelPoints(A,B) 
+  \tkzLabelPoints(A,B)
 \end{tikzpicture}
 \end{tkzexample}
-% subsubsection method_point_new (end)
 
-\subsubsection{Method \tkzMeth{point}{get()}} % (fold)
+\subsubsection{Method \tkzMeth{point}{get()}}
 \label{ssub:method_point_get}
 
 The \code{get} method is used to retrieve the Cartesian coordinates of a point.
@@ -429,9 +420,9 @@ Let $I$ be the intersection point of two lines. You can obtain its coordinates i
 This method improves code readability and makes it easier to pass coordinates to functions that expect numerical values.
 
 \vspace{1em}
-  
+
 \begin{minipage}{.5\textwidth-1cm}
-\directlua{ 
+\directlua{
  init_elements()
  z.A, z.B = point(0, 0), point(5, -1)
  z.C, z.D = point(1, -4), point(4, 2)
@@ -443,7 +434,7 @@ This method improves code readability and makes it easier to pass coordinates to
 \end{minipage}
 \begin{minipage}{.5\textwidth}
 \begin{tkzexample}[code only]
-\directlua{ 
+\directlua{
  init_elements()
  z.A, z.B = point(0, 0), point(5, -1)
  z.C, z.D = point(1, -4), point(4, 2)
@@ -454,9 +445,8 @@ This method improves code readability and makes it easier to pass coordinates to
  tex.print("$x_I = $"..x.." ".."$y_I = $"..y)}
 \end{tkzexample}
 \end{minipage}
-% subsubsection method_point_get (end)
 
-\subsubsection{Method \tkzMeth{point}{polar(r, an)}} % (fold)
+\subsubsection{Method \tkzMeth{point}{polar(r, an)}}
 \label{ssub:method_point_polar}
 
 This method creates a point in the plane using polar coordinates.
@@ -477,11 +467,11 @@ Internally, the point is represented as a complex number: \code{r * exp(i * an)}
 \textbf{Note:} The default unit is the centimeter, consistent with the conventions of \tkzNamePack{tkz-euclide}. All coordinates are interpreted in an orthonormal Cartesian coordinate system.
 
 \vspace{1em}
- 
+
 \begin{mybox}
 \begin{verbatim}
   z.B = point:polar(2, math.pi / 4)
-  better 
+  better
   z.B = point(polar(2, math.pi / 4))
 \end{verbatim}
 \end{mybox}
@@ -505,10 +495,8 @@ Internally, the point is represented as a complex number: \code{r * exp(i * an)}
 \end{center}
 
 \end{tkzexample}
-% subsubsection method_point_polar (end)
 
-
-\subsubsection{Method \tkzMeth{point}{polar\_deg(d,an)}} % (fold)
+\subsubsection{Method \tkzMeth{point}{polar\_deg(d,an)}}
 \label{ssub:method_point_polar_deg}
 
 
@@ -529,9 +517,7 @@ Internally, the point is represented as a complex number: \code{r * exp(i * an)}
 \end{center}
 \end{tkzexample}
 
-% subsubsection method_point_polar_deg(end)
-
-\subsubsection{Method \tkzMeth{point}{north(d)}} % (fold)
+\subsubsection{Method \tkzMeth{point}{north(d)}}
 \label{ssub:example_method_point_north_d}
 
 This method creates a new point located at a vertical distance from the given point, along the line passing through it and directed upward (toward the north).
@@ -564,10 +550,8 @@ The optional argument \code{d} represents the vertical distance. If omitted, a d
 \end{tikzpicture}
 \end{center}
 \end{tkzexample}
-% subsubsection example_method_point_north_d (end)
 
-
-\subsubsection{Method \tkzMeth{point}{normalize()}} % (fold)
+\subsubsection{Method \tkzMeth{point}{normalize()}}
 \label{ssub:method_normalize}
 
 This method returns a new point located on the segment from the origin to the current point, at a distance of $1$ from the origin. It is typically used to extract the direction of a vector and normalize its length to one.
@@ -618,9 +602,7 @@ The second approach requires prior creation of the line object \code{L.BC}.
 \end{tikzpicture}
 \end{tkzexample}
 
-% subsubsection method_normalize (end)
-
-\subsubsection{Method \tkzMeth{point}{orthogonal(d)}} % (fold)
+\subsubsection{Method \tkzMeth{point}{orthogonal(d)}}
 \label{ssub:orthogonal_method}
 
 Let $O$ be the origin of the plane, and let $A$ be a point distinct from $O$. This method constructs a new point $B$ such that the vectors $\overrightarrow{OB}$ and $\overrightarrow{OA}$ are orthogonal:
@@ -657,10 +639,7 @@ This method is useful for constructing perpendicular vectors or generating point
 \end{center}
 \end{tkzexample}
 
-
-% subsubsection orthogonal_method(end)
-
-\subsubsection{Method \tkzMeth{point}{at(pt)}} % (fold)
+\subsubsection{Method \tkzMeth{point}{at(pt)}}
 \label{ssub:_point_at_method}
 
 This method complements the \code{orthogonal} method. Instead of constructing a point $B$ such that $\overrightarrow{OB} \perp \overrightarrow{OA}$ (with $O$ as the origin), it constructs a point $B$ such that:
@@ -698,9 +677,7 @@ This method is useful when working with local orthogonal directions, such as whe
  \end{center}
 \end{tkzexample}
 
-% subsubsection _point_at_method (end)
-
-\subsubsection{Method \tkzMeth{point}{rotation(obj)}} — First example % (fold)
+\subsubsection{Method \tkzMeth{point}{rotation(obj)}} — First example
 \label{ssub:example_rotation_of_points}
 
 This method performs a rotation of one or more points around the current point, which serves as the center of rotation.
@@ -742,9 +719,8 @@ In the following example, a list of points is rotated about a given center.
 \end{tikzpicture}
 \end{center}
 \end{tkzexample}
-% subsubsection example_rotation_of_points (end)
 
-\subsubsection{Method \tkzMeth{point}{rotation(an, obj)}} — Second example % (fold)
+\subsubsection{Method \tkzMeth{point}{rotation(an, obj)}} — Second example
 \label{ssub:object_rotation}
 
 This method rotates a geometric object by a given angle around a specified point.
@@ -798,9 +774,7 @@ The method returns a new object of the same type, rotated accordingly.
 \end{center}
 \end{tkzexample}
 
-% subsubsection object_rotation (end)
-
-\subsubsection{Method \tkzMeth{point}{symmetry(obj)}} % (fold)
+\subsubsection{Method \tkzMeth{point}{symmetry(obj)}}
 \label{ssub:object_symmetry}
 
 This method performs a central symmetry (point reflection) of a geometric object with respect to the given point.
@@ -837,9 +811,8 @@ The following example shows how to apply central symmetry to an object (e.g., a 
   \end{tikzpicture}
 \end{center}
 \end{tkzexample}
-% subsubsection object_symmetry (end)
 
-\subsubsection{Method \tkzMeth{point}{homothety(k, obj)}} % (fold)
+\subsubsection{Method \tkzMeth{point}{homothety(k, obj)}}
 \label{ssub:method_point_homothety_k_obj}
 
 This method performs a homothety (dilation or contraction) of a geometric object with respect to the current point, which serves as the center of the transformation.
@@ -906,9 +879,9 @@ Example:
   z.a = z.A + z.B
   z.m = z.A * z.B
   tkz_dc = 0}
-The respective affixes of points $A$ and $B$ being 
+The respective affixes of points $A$ and $B$ being
    \tkzUseLua{z.A:print()} and \tkzUseLua{z.B:print()},
-  their sum is \tkzUseLua{z.a:print()} and 
+  their sum is \tkzUseLua{z.a:print()} and
   their product \tkzUseLua{z.m:print()}.
 \end{verbatim}
 
@@ -921,17 +894,8 @@ z.m = z.A * z.B
 tkz_dc = 0
 }
 
-The respective affixes of points $A$ and $B$ being 
+The respective affixes of points $A$ and $B$ being
    \tkzUseLua{z.A:print()} and \tkzUseLua{z.B:print()},
-  their sum is \tkzUseLua{z.a:print()} and 
+  their sum is \tkzUseLua{z.a:print()} and
   their product \tkzUseLua{z.m:print()}.
-
-
-% subsubsection _point_print (end)
-
-
-% subsubsection method_point_homothety_k_obj (end)
-% subsection methods_of_the_class_point (end)
-
-% section class_point (end)
 \endinput

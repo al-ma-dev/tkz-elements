@@ -1,17 +1,15 @@
 \newpage
-\section{Class \tkzClass{regular polygon}} % (fold)
+\section{Class \tkzClass{regular polygon}}
 
 The variable \tkzVar{regular\_polygon}{RP} holds a table used to store regular polygons. It is optional, and you are free to choose the variable name. However, using \code{RP} is a recommended convention for clarity and consistency. If you use a custom variable (e.g., REP), you must initialize it manually. The \tkzFct{tkz-elements}{init\_elements()} function reinitializes the \code{RP} table if used.
 
-\subsection{Creating a regular polygon} % (fold)
-\label{sub:creating_a_regular_polygon}
+
+\subsection{Creating a regular polygon}
 
 The \tkzClass{regular\_polygon} class builds a regular polygon from its center, a first vertex, and the number of sides.
 
 \medskip
 The result is usually stored in \tkzVar{regular\_polygon}{P}, a variable used to group polygonal objects.
-
-
 
 \begin{mybox}
 \begin{verbatim}
@@ -27,9 +25,8 @@ Use the short form for brevity:
 P.hex = regular_polygon(z.O, z.A, 6)
 \end{verbatim}
 \end{mybox}
-% subsection creating_a_regular_polygon (end)
 
-\subsection{Regular\_polygon attributes} % (fold)
+\subsection{Regular\_polygon attributes}
 \label{sub:regular_polygon_attributes}
 
 \begin{mybox}
@@ -61,7 +58,8 @@ Creation | RP.IA = regular_polygon(z.I,z.A,6)|
 \end{center}
 
 
-\subsubsection{Pentagon} % (fold)
+
+\subsubsection{Pentagon}
 \label{ssub:pentagon}
 \begin{minipage}{.5\textwidth}
 \begin{verbatim}
@@ -72,8 +70,8 @@ z.I = point(1, 3)
 z.A = point(2, 0)
 RP.five  = regular_polygon(z.I,z.A,5)
 RP.five : name ("P_")
-C.ins  = circle:radius(z.I, 
-             RP.five.inradius) 
+C.ins  = circle:radius(z.I,
+             RP.five.inradius)
 z.H = RP.five.proj
 }
 \begin{tikzpicture}[scale = .75]
@@ -94,10 +92,10 @@ z.H = RP.five.proj
    z.A = point(2, 0)
    RP.five = regular_polygon(z.I,z.A,5)
    RP.five : name ("P_")
-   C.ins  = circle:radius( z.I , RP.five.inradius ) 
+   C.ins  = circle:radius( z.I , RP.five.inradius )
    z.H = RP.five.proj
   }
-  
+
 \begin{center}
   \begin{tikzpicture}[scale = .75]
   \def\nb{\tkzUseLua{RP.five.nb}}
@@ -111,10 +109,8 @@ z.H = RP.five.proj
 
 
 \end{minipage}
-% subsubsection pentagon (end)
-% subsection regular_polygon_attributes (end)
 
-\subsection{Regular\_polygon methods} % (fold)
+\subsection{Regular\_polygon methods}
 \label{sub:regular_polygon_methods}
 
 \begin{center}
@@ -125,15 +121,15 @@ z.H = RP.five.proj
   \begin{tabular}{ll}
   \toprule
   \textbf{Functions and Methods} & \textbf{Comments}    \\
-  \midrule  
+  \midrule
   \tkzFct{regular\_polygon}{new(O,A,n)} & [\ref{ssub:function_regular_new}] \\
-  \midrule 
+  \midrule
   \textbf{Circle} &\\
-  \midrule 
+  \midrule
   \tkzMeth{regular\_polygon}{incircle ()} & [\ref{ssub:method_regular_incirle}]\\
-  \midrule 
+  \midrule
   \textbf{Points} &\\
-  \midrule 
+  \midrule
   \tkzMeth{regular\_polygon}{name (string)} & [\ref{ssub:method_regular_name}] \\
   \bottomrule %
   \end{tabular}
@@ -141,7 +137,8 @@ z.H = RP.five.proj
 \end{center}
 
 
-\subsubsection{Method \tkzMeth{regular}{new(pt, pt, n)}} % (fold)
+
+\subsubsection{Method \tkzMeth{regular}{new(pt, pt, n)}}
 \label{ssub:function_regular_new}
 
 \begin{tkzexample}[latex=.5\textwidth]
@@ -151,7 +148,7 @@ z.H = RP.five.proj
    RP.six = regular_polygon(z.O, z.A, 6)
    RP.six:name("A_")
    z.i, z.p = RP.six:incircle():get()}
-      
+
   \begin{tikzpicture}[gridded,scale=.75]
     \tkzGetNodes
     \tkzDrawCircles[red](O,A)
@@ -162,20 +159,13 @@ z.H = RP.five.proj
   \end{tikzpicture}
 \end{tkzexample}
 
-
-% subsubsection function_regular_new (end)
-
-\subsubsection{Method \tkzMeth{regular}{incirle()}} % (fold)
+\subsubsection{Method \tkzMeth{regular}{incirle()}}
 \label{ssub:method_regular_incirle}
 
 See  previous example [\ref{ssub:function_regular_new}]
-% subsubsection method_regular_incirle (end)
 
-\subsubsection{Method \tkzMeth{regular}{name(s)}} % (fold)
+\subsubsection{Method \tkzMeth{regular}{name(s)}}
 \label{ssub:method_regular_name}
 
 See   [\ref{ssub:function_regular_new}]
-% subsubsection method_regular_name (end)
-
-% subsection regular_polygon_methods (end)
-
+\endinput

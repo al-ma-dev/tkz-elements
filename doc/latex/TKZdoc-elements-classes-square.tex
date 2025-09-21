@@ -1,8 +1,9 @@
 \newpage
-\section{Class \tkzClass{square}} % (fold)
+\section{Class \tkzClass{square}}
 The variable \tkzVar{square}{S} holds a table used to store squares. It is optional, and you are free to choose the variable name. However, using \code{S} is a recommended convention for clarity and consistency. If you use a custom variable (e.g., Squares), you must initialize it manually. The \code{init\_elements()} function reinitializes the \code{S} table if used.
 
-\subsection{Creating a square} % (fold)
+
+\subsection{Creating a square}
 \label{sub:creating_a_square}
 
 The \tkzClass{square} class constructs a square from two adjacent vertices. The order of the points defines the orientation.
@@ -25,12 +26,9 @@ The short form \code{square(z.A, z.B)} is equivalent:
 S.ABCD = square(z.A, z.B)
 \end{verbatim}
 \end{mybox}
-% subsection creating_a_square (end)
 
-\subsection{Square attributes} % (fold)
+\subsection{Square attributes}
 \label{sub:square_attributes}
-
-% subsection square_attributes (end)
 Points are created in the direct direction. A test is performed to check whether the points form a square. Otherwise, compilation is blocked."
 \begin{mybox}
 Creation | S.AB = square(z.A,z.B,z.C,z.D)|
@@ -68,7 +66,8 @@ Creation | S.AB = square(z.A,z.B,z.C,z.D)|
 
 
 
-\subsubsection{Example: square attributes } % (fold)
+
+\subsubsection{Example: square attributes }
 \label{ssub:example_square_attributes}
 
 \begin{minipage}{.5\textwidth}
@@ -129,7 +128,8 @@ Creation | S.AB = square(z.A,z.B,z.C,z.D)|
 
 \newpage
 
-\subsection{Square Methods} % (fold)
+
+\subsection{Square Methods}
 \label{sub:square_methods}
 
 \begin{center}
@@ -140,9 +140,12 @@ Creation | S.AB = square(z.A,z.B,z.C,z.D)|
   \begin{tabular}{lll}
   \toprule
   \textbf{Methods} & \textbf{Reference}&    \\
-  \midrule  
+  \midrule
+
+  \tkzMeth{square}{new(za,zb,zc,zd)} &Note\footnote{square(pt,pt,pt,pt) (short form, recommended)};[\ref{ssub:method_square_rotation}]\\
+
   \tkzMeth{square}{rotation (zi,za)} &[\ref{ssub:method_square_rotation}]\\
-   
+
   \tkzMeth{square}{side (za,zb,"swap")} & \ref{ssub:square_with_side_method} \\
   \bottomrule %
   \end{tabular}
@@ -150,7 +153,8 @@ Creation | S.AB = square(z.A,z.B,z.C,z.D)|
 \end{center}
 
 
-\subsubsection{Method \tkzFct{square}{rotation(pt,pt)}} % (fold)
+
+\subsubsection{Method \tkzFct{square}{rotation(pt,pt)}}
 \label{ssub:method_square_rotation}
 $I$ square center; $A$ first vertex
 
@@ -175,9 +179,7 @@ $I$ square center; $A$ first vertex
 \end{tikzpicture}
 \end{tkzexample}
 
-% subsubsection method_square_rotation(end)
-
-\subsubsection{Method \tkzFct{square}{side (za,zb)}} % (fold)
+\subsubsection{Method \tkzFct{square}{side (za,zb)}}
 \label{ssub:square_with_side_method}
 With the option \code{"swap"} then the square is defined in counterclockwise. The result can also be obtained from a line  [\ref{ssub:method_line_square}].
 
@@ -224,8 +226,4 @@ With the option \code{"swap"} then the square is defined in counterclockwise. Th
 \end{center}
 
 \end{minipage}
-% subsubsection square_with_side_method (end)
-
-% subsubsection example_square_attributes (end)
-
-% subsection square_methods (end)
+\endinput

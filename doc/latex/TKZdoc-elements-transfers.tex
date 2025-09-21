@@ -1,21 +1,19 @@
 \newpage
-\section{Transfers} % (fold)
-\label{sec:transfers}
-\subsection{From Lua to tkz-euclide or TikZ} % (fold)
-\label{sub:from_lua_to_tkz_euclide_or_tikz}
+\section{Transfers}
+
+\subsection{From Lua to tkz-euclide or TikZ}
 
 This section explains how to transfer values from Lua to TeX/TikZ, including points, booleans, numeric values, and functional data. Some examples are advanced and can be explored in a second reading.
 
-\subsubsection{Points transfer} % (fold)
+
+\subsubsection{Points transfer}
 \label{ssub:points_transfer}
 
 The necessary definitions and calculations are performed with the primitive \tkzMacro{lualatex}{directlua}\footnote{Or inside the \tkzEnv{tkz-elements}{tkzelements} environment}. Then, we execute the macro \tkzcname{tkzGetNodes}, which transforms the affixes of the table |z| into TikZ nodes. The drawing can then be done with plain \TIKZ{} or \tkzNamePack{tkz-euclide}.
 
 If you wish to use another package for plotting, you must define a custom macro similar to \tkzMacro{tkz-elements}{tkzGetNodes} that interprets the contents of the |z| table. You don't need to understand the following code to use the package. You only need to know that if |z.A| is defined, then the macro below will create a node named |A|.
 
-
 \vspace*{1em}
-
 \begin{mybox}
 \begin{verbatim}
 \def\tkzGetNodes{\directlua{
@@ -23,11 +21,11 @@ If you wish to use another package for plotting, you must define a custom macro 
       local n,sd,ft
       n = string.len(K)
       if n >1 then
-      _,_,ft, sd = string.find( K , "(.+)(.)" )  
-     if sd == "p" then   K=ft.."'" end 
-     _,_,xft, xsd = string.find( ft , "(.+)(.)" ) 
-     if xsd == "p" then  K=xft.."'".."'" end 
-       end    
+      _,_,ft, sd = string.find( K , "(.+)(.)" )
+     if sd == "p" then   K=ft.."'" end
+     _,_,xft, xsd = string.find( ft , "(.+)(.)" )
+     if xsd == "p" then  K=xft.."'".."'" end
+       end
   tex.print("\\coordinate ("..K..") at ("..V.re..","..V.im..") ;\\\\")
 end}
 }
@@ -62,17 +60,13 @@ Point names may include the underscore  |_| and the macro \tkzMacro{tkz-elements
   \end{center}
 \end{tkzexample}
 
-% subsubsection points_transfer (end)
-% subsection from_lua_to_tkz_euclide_or_tikz (end)
-
-\subsubsection{Other transfers} % (fold)
-\label{ssub:other_transfers}
+\subsubsection{Other transfers}
 
 It is also useful to transfer numerical values (such as lengths or angles) and booleans. For this, we provide the macro \tkzMacro{tkz-elements}{tkzUseLua(...)}:
 
 \begin{mybox}
   \begin{verbatim}
-  \def\tkzUseLua#1{\directlua{tex.print(tostring(#1))}} 
+  \def\tkzUseLua#1{\directlua{tex.print(tostring(#1))}}
 \end{verbatim}
 \end{mybox}
 
@@ -88,7 +82,7 @@ This macro prints the value of a Lua variable or expression directly into the Te
  L.ab = line(z.a,z.b)
  L.cd = line(z.c,z.d)
  det = (z.b-z.a)^(z.d-z.c)
- if det == 0 then bool = true 
+ if det == 0 then bool = true
    else bool = false
  end
  x = intersection (L.ab,L.cd)}
@@ -143,8 +137,7 @@ The intersection of the two lines lies at
 \end{center}
   \end{minipage}
 
-% subsubsection other_transfers (end)
-\subsubsection{Example 1} % (fold)
+\subsubsection{Example 1}
 \label{ssub:example_1}
 
 This example shows how to transfer a Lua-defined function and generate a path of coordinates to be used in a TikZ plot. The main tools involved are Lua's   function \tkzFct{lua}{load}  and the   \tkzNameObj{path} class. See [\ref{ssub:plotting_a_curve}]
@@ -209,12 +202,13 @@ tex.print(list(f,#2,#3,#4))}
   \end{tikzpicture}
 \end{center}
 
-% subsubsection example_1 (end)
+\subsubsection{Example 2}
 
-\subsubsection{Example 2} % (fold)
-\label{ssub:example_2}
-
-This example demonstrates how to pass a value (the number of sides) from \TeX{} to Lua using the   \tkzMacro{lualatex}{directlua} primitive. This enables the dynamic creation of regular polygons. This example is based on a answer from egreg [\href{https://tex.stackexchange.com/questions/729009/how-can-these-regular-polygons-be-arranged-within-a-page/731503#731503}{egreg--tex.stackexchange.com}]
+This example demonstrates how to pass a value (the number of sides) from \TeX{} to Lua using the   \tkzMacro{lualatex}{directlua} primitive. This enables the dynamic creation of regular polygons. This example is based on a answer from egreg.
+\begin{flushright}
+\small
+ \href{https://tex.stackexchange.com/questions/729009/how-can-these-regular-polygons-be-arranged-within-a-page/731503#731503}{egreg--tex.stackexchange.com}
+\end{flushright}
 
 \begin{verbatim}
 \directlua{
@@ -270,10 +264,7 @@ This example demonstrates how to pass a value (the number of sides) from \TeX{} 
   }\ifnum\i=4 \\[2ex]\fi
 }
 
-% subsubsection example_2 (end)
-
-\subsubsection{Example 3} % (fold)
-\label{ssub:example_3}
+\subsubsection{Example 3}
 
 This time, the transfer will be carried out using an external file. The following example is based on this one, but using a table.
 
@@ -338,12 +329,9 @@ This time, the transfer will be carried out using an external file. The followin
      \draw[domain=-1:3] plot[smooth] file {tmp.table};
   \end{tikzpicture}
 \end{center}
-
 \end{minipage}
-% subsubsection example_3 (end)
 
-\subsubsection{Example 4} % (fold)
-\label{ssub:example_4}
+\subsubsection{Example 4}
 
 The result is identical to the previous one.
 \begin{verbatim}
@@ -370,10 +358,8 @@ end
    \draw[domain=-2:3,smooth] plot coordinates {\directlua{tex.print(f(-2,3,100))}};
 \end{tikzpicture}
 \end{verbatim}
-% subsubsection example_4 (end)
 
-\subsubsection{Example 5} % (fold)
-\label{ssub:example_5}
+\subsubsection{Example 5}
 
 \begin{verbatim}
 \makeatletter\let\percentchar\@percentchar\makeatother
@@ -445,13 +431,6 @@ tex.print(string.format("\percentchar.2f",f(x)))}
 }
 \fvalues(x^2-3*x+1,-2,.25,8)
 
-\subsubsection{Summary} % (fold)
-\label{ssub:transfer_summary}
-
+\subsubsection{Summary}
 The transfer of data between Lua and TeX is a key feature of \tkzNamePack{tkz-elements}, enabling high-precision numerical computations and dynamic figure generation. Whether for plotting curves, testing geometric properties, or generating tables, these tools offer flexibility and power that extend beyond traditional TeX capabilities.
-
-
-% subsubsection example_5 (end)
-% section transfers (end)
-
 \endinput

@@ -1,6 +1,5 @@
 \newpage
- \section{Various functions} % (fold)
- \label{sec:math_functions}
+ \section{Various functions}
 
 In addition to object-oriented constructions, the package provides a collection of auxiliary functions. These functions are not strictly required but serve to simplify many geometric operations and shorten code. Their use depends on the context, but in the spirit of the package, it's preferable to use objects.
 
@@ -29,7 +28,7 @@ The table below summarizes the available functions:
 
 \begin{center}
   \bgroup
-  \catcode`_=12 
+  \catcode`_=12
   \small
   \captionof{table}{Functions.}\label{misc}
   \begin{tabular}{ll}
@@ -38,14 +37,14 @@ The table below summarizes the available functions:
   \midrule
   \tkzFct{tkz}{tkz.length(z1, z2) }   &  [\ref{sub:length_of_a_segment}; \ref{sub:report_de_distance}]  \\
   \tkzFct{tkz}{tkz.midpoint(z1, z2)} &  [\ref{sub:midpoint_and_midpoints}; \ref{ssub:euler_ellipse}] \\
- 
+
   \tkzFct{tkz}{tkz.midpoints(z1, z2, ..., zn)} & [\ref{sub:midpoint_and_midpoints}; \ref{sub:varignon_s_theorem}]\\
-  
+
   \tkzFct{tkz}{tkz.is\_linear(z1, z2, z3) }   & [\ref{sub:alignment_or_orthogonality}]  \\
   \tkzFct{tkz}{tkz.is\_ortho(z1, z2, z3)} &  [\ref{sub:alignment_or_orthogonality}]\\
 
   \tkzFct{tkz}{tkz.bisector(z1, z2, z3)} &  [\ref{sub:bisector}; \ref{sub:bisector_and_altitude}; \ref{sub:tkz.get_angle}] \\
- 
+
   \tkzFct{tkz}{tkz.bisector\_ext(z1, z2, z3)} &  [\ref{sub:bisector_and_altitude}] \\
 
   \tkzFct{tkz}{tkz.altitude(z1, z2, z3)} & [\ref{sub:bisector_and_altitude}] \\
@@ -58,11 +57,11 @@ The table below summarizes the available functions:
   \tkzFct{tkz}{angle\_between\_vectors(a,b,c,d)}   & [\ref{ssub:angle_between_vectors}] \\
 
   \tkzFct{tkz}{tkz.barycenter (\{z1,n1\},\{z2,n2\}, ...)} & [\ref{sub:misc_barycenter}]  \\
-  
+
   \tkzFct{tkz}{tkz.dot\_product(z1, z2, z3)} & [\ref{sub:dot_or_scalar_product}] \\
-  
+
   % \tkzFct{tkz}{solve\_quadratic(a, b, c) }   & [\ref{ssub:function_solve_quadratic}; \ref{ssub:function_solve_quadratic}] \\
- 
+
 
   \bottomrule
   \end{tabular}
@@ -70,7 +69,7 @@ The table below summarizes the available functions:
 \end{center}
 
 
-\subsection{Length of a segment} % (fold)
+\subsection{Length of a segment}
 \label{sub:length_of_a_segment}
 
 The function \tkzFct{misc}{tkz.length(z1, z2)} returns the Euclidean distance between two points. It is equivalent to:
@@ -96,10 +95,7 @@ l = L.AB.length
 \paragraph{Recommendation.}
 Use \code{tkz.length(z1, z2)} for simple distance computations, especially within calculations or conditions. If you're building a full construction and need more geometric attributes, prefer defining the segment explicitly as a line object.
 
-% subsection length_of_a_segment (end)
-
-
-\subsection{Midpoint and midpoints} % (fold)
+\subsection{Midpoint and midpoints}
 \label{sub:midpoint_and_midpoints}
 
 As with \tkzFct{misc}{length}, the function \tkzFct{misc}{midpoint(z1, z2)} provides a shortcut for computing the midpoint of a segment:
@@ -159,9 +155,7 @@ This avoids the need to extract the triangle’s vertices manually, but |T.abc:m
 \paragraph{Recommendation.}
 Use \tkzFct{tkz}{midpoint} or \tkzFct{tkz}{midpoints} for quick calculations when no object is needed. Prefer object methods like \tkzMeth{triangle}{medial()} when working within a structured construction.
 
-% subsection midpoint_and_midpoints (end)
-
-\subsection{Bisectors} % (fold)
+\subsection{Bisectors}
 \label{sub:bisector}
 
 The functions \tkzFct{tkz}{tkz.bisector(z1, z2, z3)} and \tkzFct{tkz}{tkz.bisector\_ext(z1, z2, z3)} define internal and external angle bisectors, respectively, for a given vertex.
@@ -190,9 +184,7 @@ This defines the external bisector at vertex \code{z.A}. It is orthogonal to the
 \paragraph{Recommendation.}
 Use these functions when you need the bisector explicitly as a \tkzClass{line} object (e.g., for intersection or drawing). If you are working within a triangle object, some methods may also provide access to bisectors directly.
 
-% subsection bisector (end)
-
-\subsection{Barycenter} % (fold)
+\subsection{Barycenter}
 \label{sub:misc_barycenter}
 
 The function \tkzFct{tkz}{tkz.barycenter} computes the barycenter (or center of mass) of any number of weighted points. It is a general-purpose function that works independently of geometric objects.
@@ -244,16 +236,15 @@ G = \frac{2A + 3B + C + 4D}{10}
 \paragraph{Note.}
 The result is returned as a \tkzClass{point} object and can be used in any subsequent construction.
 
-% subsection barycenter (end)
-
-
-\subsection{Normalized angles: Slope of lines} % (fold)
+\subsection{Normalized angles: Slope of lines}
 \label{sub:normalized_angles}
 
 To compute the orientation of a line segment in the plane, we use the function \tkzFct{point}{arg(z)} which returns the angle (in radians) between the positive horizontal axis and the vector represented by the complex number \code{z}. This value may be negative or greater than $2\pi$ depending on the direction of the vector.
 
 \medskip
-To ensure consistency, especially when comparing angles or sorting them, the function \tkzFct{tkz}{tkz.angle\_normalize(an)} maps any angle to the interval $[0, 2\pi]$.
+To ensure consistency, especially when comparing angles or sorting them, the function
+
+\tkzFct{tkz}{tkz.angle\_normalize(an)} maps any angle to the interval $[0, 2\pi]$.
 
 \paragraph{Example.}
 The following example computes and displays the slope (angle) of three vectors \code{(ab)}, \code{(ac)}, and \code{(ad)}. It shows both the raw angle and the normalized version.
@@ -316,9 +307,7 @@ tex.print('slope normalized of (ad) : '..tostring(tkz.angle_normalize(angle))..'
 \paragraph{Note.}
 This technique is essential when working with angular comparisons, sorting directions (e.g., in convex hull algorithms), or standardizing outputs for further geometric processing.
 
-% subsection normalized_angles (end)
-
-\subsection{Function \tkzFct{tkz}{tkz.get\_angle}} % (fold)
+\subsection{Function \tkzFct{tkz}{tkz.get\_angle}}
 \label{sub:tkz.get_angle}
 
 The function \tkzFct{tkz}{tkz.get\_angle(z1, z2, z3)} returns the oriented angle (in radians) between the vectors $\overrightarrow{z_1 z_2}$ and $\overrightarrow{z_1 z_3}$. The result is normalized to lie in the interval $[0, 2\pi]$.
@@ -381,9 +370,7 @@ The following code computes both angles $ \widehat{CAB}$ and $ \widehat{CAB}$ us
 \paragraph{Note.}
 The result is a real number in radians between $0$ and $2\pi$. It does not depend on triangle orientation and can be rounded or converted to degrees using auxiliary functions.
 
-% subsection tkz.get_angle (end)
-
-\subsection{Function \tkzFct{tkz}{tkz.dot\_product(z1, z2, z3)}} % (fold)
+\subsection{Function \tkzFct{tkz}{tkz.dot\_product(z1, z2, z3)}}
 \label{sub:dot_or_scalar_product}
 
 The function  computes the dot (scalar) product of the vectors $\overrightarrow{z_1z_3}$ and $\overrightarrow{z_1z_2}$:
@@ -391,7 +378,7 @@ The function  computes the dot (scalar) product of the vectors $\overrightarrow{
 (z_3 - z_1) \cdot (z_2 - z_1)
 \]
 
-\paragraph{Note} This is equivalent to \code{(z2 - z1)..(z3 - z1)} See also [\ref{ssub:attributes_vector_z}]% (fold)
+\paragraph{Note} This is equivalent to \code{(z2 - z1)..(z3 - z1)} See also [\ref{ssub:attributes_vector_z}]
 \label{par:note_dot}
 
 % paragraph note (end)
@@ -457,15 +444,14 @@ In the example below, the triangle $ABC$ is constructed along with its triangle 
 \paragraph{Interpretation.}
 In this example, the dot product of vectors $\overrightarrow{AC}$ and $\overrightarrow{AB}$ is \tkzUseLua{x}. Since the result is zero, the vectors are orthogonal.
 
-% subsection dot_or_scalar_product (end)
 %
 
-\subsection{Alignment and orthogonality tests} % (fold)
+\subsection{Alignment and orthogonality tests}
 \label{sub:alignment_or_orthogonality}
 
 The functions \tkzFct{tkz}{tkz.is\_linear} and \tkzFct{tkz}{tkz.is\_ortho} are used to test the geometric relationships between three points, namely alignment and orthogonality.
 
-\paragraph{\tkzFct{tkz}{tkz.is\_linear(z1, z2, z3)}}  
+\paragraph{\tkzFct{tkz}{tkz.is\_linear(z1, z2, z3)}}
 This function returns \code{true} if the three points are aligned — that is, if the vectors $\\overrightarrow{z_1z_2}$ and $\\overrightarrow{z_1z_3}$ are colinear. Geometrically, this means the three points lie on the same straight line:
 \[
 (z_2 - z_1) \parallel (z_3 - z_1)
@@ -491,7 +477,7 @@ end
 \end{verbatim}
 \end{mybox}
 
-\paragraph{\tkzFct{tkz}{tkz.is\_ortho(z1, z2, z3)}}  
+\paragraph{\tkzFct{tkz}{tkz.is\_ortho(z1, z2, z3)}}
 This function returns \code{true} if the vectors $\overrightarrow{z_1z_2}$ and $\overrightarrow{z_1z_3}$ are orthogonal — that is, the scalar product between them is zero:
 \[
 (z_2 - z_1) \cdot (z_3 - z_1) = 0
@@ -520,10 +506,7 @@ end
 \paragraph{Use case.}
 These functions are particularly useful in decision structures or automated constructions (e.g., checking if a triangle is right-angled or degenerate). They return boolean values and do not create any geometric object.
 
-% subsection alignment_or_orthogonality (end)
-
-
-\subsection{Bisector and altitude} % (fold)
+\subsection{Bisector and altitude}
 \label{sub:bisector_and_altitude}
 
 The functions \tkzFct{misc}{bisector}, \tkzFct{misc}{bisector\_ext}, and \tkzFct{misc}{altitude} return \tkzClass{line} objects corresponding to classical triangle constructions. They are useful when you don't need to create a full \tkzClass{triangle} object and simply want the desired line or foot point directly.
@@ -591,10 +574,7 @@ The functions \tkzFct{misc}{bisector}, \tkzFct{misc}{bisector\_ext}, and \tkzFct
 \paragraph{Note.}
 These functions return full \tkzClass{line} objects, allowing access to their points and directions. This makes them ideal for flexible constructions where you do not need a structured \code{triangle} object.
 
-% subsection bisector_and_altitude (end)
-
-
-\subsection{Function \tkzFct{tkz}{tkz.is\_linear}}% (fold)
+\subsection{Function \tkzFct{tkz}{tkz.is\_linear}}
 \label{sub:function_islinear}
 
 The function \tkzFct{tkz}{tkz.is\_linear(z1, z2, z3)}  checks whether three points are colinear. It returns \code{true} if the vectors $\overrightarrow{z_1z_2}$ and $\overrightarrow{z_1z_3}$ are parallel — i.e., if the points lie on the same line:
@@ -649,10 +629,7 @@ The following code tests whether the points $A$, $B$ and $C$ are aligned. If so,
 \paragraph{Note.}
 The function does not create any geometric object. It is intended for use in conditionals or assertions to verify configurations before constructing further elements.
 
-% subsection function_islinear (end)
-
-
-\subsubsection{Function \tkzFct{tkz}{tkz.round(num, idp)}} % (fold)
+\subsubsection{Function \tkzFct{tkz}{tkz.round(num, idp)}}
 \label{ssub:function_tkz_round}
 
 This function performs rounding of a real number to a specified number of decimal places and returns the result as a numerical value.
@@ -685,10 +662,7 @@ tkz.round(-2.71828, 3) --> -2.718
 
  \tkzFct{utils}{format\_number(x, decimals)} – Converts rounded number to string
 
-
-% subsubsection function_tkz_round (end)
-
-\subsubsection{Function \tkzFct{tkz}{angle\_between\_vectors(a, b, c, d)}} % (fold)
+\subsubsection{Function \tkzFct{tkz}{angle\_between\_vectors(a, b, c, d)}}
 \label{ssub:angle_between_vectors}
 
 This function computes the signed angle between two vectors in the complex plane.
@@ -715,7 +689,7 @@ This function is especially useful for computing turning angles or verifying geo
   z.B = point:new (5, 0)
   z.C = point:new (1, 4)
   T.ABC = triangle:new(z.A, z.B, z.C)
-  } 
+  }
   \begin{center}
     \begin{tikzpicture}
     \tkzGetNodes
@@ -733,21 +707,4 @@ This function is especially useful for computing turning angles or verifying geo
     \end{tikzpicture}
   \end{center}
 \end{tkzexample}
-
-
-% subsubsection angle_between_vectors (end)
-
-
-% section math_functions (end)
-
 \endinput
-
-
-
-
-
-
-
-
-
-

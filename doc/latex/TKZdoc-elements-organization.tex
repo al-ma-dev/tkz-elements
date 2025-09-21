@@ -1,4 +1,4 @@
-\section{Work organization} % (fold)
+\section{Work organization}
 \label{sec:work_organization}
 
 
@@ -37,14 +37,14 @@ For simplicity, this documentation uses embedded Lua code in most cases. However
 \begin{verbatim}
 % !TEX TS-program = lualatex
 % Created by Alain Matthes on 2024-01-09.
-\documentclass[margin = 12pt]{standalone} 
+\documentclass[margin = 12pt]{standalone}
 \usepackage[mini]{tkz-euclide}
 \usepackage{tkz-elements,ifthen}
 
-\begin{document}  
+\begin{document}
 \directlua{
  init_elements() % Clear tables
- dofile ("sangaku.lua") % Load the lua code 
+ dofile ("lua/sangaku.lua") % Load the lua code
 }
 \begin{tikzpicture}[ scale = .75]
  \tkzGetNodes
@@ -59,7 +59,7 @@ For simplicity, this documentation uses embedded Lua code in most cases. However
 \begin{minipage}{.45\textwidth}
 \directlua{
  init_elements()
- dofile ("sangaku.lua")
+ dofile ("lua/sangaku.lua")
 }
 
 \begin{center}
@@ -96,8 +96,8 @@ And here is the code for the \tkzname{Lua} part: the file |ex_sangaku.lua|
 \end{mybox}
 \end{minipage}
 
-\subsection{Scaling Policy Update} % (fold)
-\label{sub:scale_problem}
+
+\subsection{Scaling Policy Update}
 
 In previous versions, it was recommended to apply scaling within the Lua part of the code. However, this guidance has now changed.
 
@@ -110,6 +110,4 @@ These challenges prompted a review of several functions, during which some bugs 
 \textbf{\textcolor{red}{New Recommendation:}} From now on, scaling should be applied exclusively in the \TIKZ{} part. The \tkzname{Lua} code should operate in an unscaled, consistent coordinate system to ensure the reliability of all geometric computations.
 
 The following documentation uses only scaling in the \tkzEnv{tikz}{tikzpicture} environment.
-
-% subsection scale_problem (end)
-% section work_organization (end)
+\endinput

@@ -1,11 +1,10 @@
 \newpage
-\section{Class \tkzClass{circle}} % (fold)
-\label{sec:class_circle}
+\section{Class \tkzClass{circle}}
 
 The \tkzVar{circle}{C} variable is a table reserved for storing circle objects. Although its use is optional and any valid variable name may be used (e.g., \code{Circles}), it is strongly recommended to adopt the standard name \tkzVar{circle}{C} to ensure consistency and readability. If a custom variable is used, it must be initialized manually. The \tkzFct{tkz-elements}{init\_elements()} function will reset the \tkzVar{circle}{C} table if it has already been defined.
 
 
-\subsubsection{Creating a Circle} % (fold)
+\subsubsection{Creating a Circle}
 \label{ssub:creating_a_circle}
 A circle is defined by two points:
 \begin{itemize}
@@ -20,23 +19,21 @@ To create a circle, use the following syntax:
 \end{mybox}
 \noindent
 The newly created circle object stores various geometric attributes such as its radius, diameter, and notable points on the circumference (e.g., north, east, south, and west poles).
-% subsubsection creating_a_circle (end)
 
-\subsection{Attributes of a circle} % (fold)
-\label{sub:attributes_of_a_circle}
+\subsection{Attributes of a circle}
 
 A circle object stores various geometric attributes that can be accessed for further computation or drawing. These attributes are automatically computed at creation.
 
 \vspace{1em}
-\begin{center}
-  \bgroup
+
+\bgroup
   \small
-  \captionof{table}{Circle attributes.}\label{circle:att}
+  \captionof{table}{Circle attributes.}
   \begin{tabular}{ll}
   \toprule
   \textbf{Attributes}         & \textbf{Meaning / Reference}                \\
   \midrule
-  \tkzAttr{circle}{type}      &  Type of circle, always "circle"   \\   
+  \tkzAttr{circle}{type}      &  Type of circle, always "circle"   \\
   \tkzAttr{circle}{center}    &  Center of the circle                       \\
   \tkzAttr{circle}{through}   &  Point through which the circle passes     \\
   \tkzAttr{circle}{radius}    &  [\ref{ssub:example_circle_attributes}]     \\
@@ -50,11 +47,11 @@ A circle object stores various geometric attributes that can be accessed for fur
   \tkzAttr{circle}{area}      &  [\ref{ssub:attributes_perimeter_and_area}] \\
   \bottomrule %
   \end{tabular}
-  \egroup
-\end{center}
+\egroup
 
 
-\subsubsection{Example: circle attributes} % (fold)
+
+\subsubsection{Example: circle attributes}
 \label{ssub:example_circle_attributes}
 
 Several attributes of the \tkzNameObj{circle} class are illustrated in the following example.
@@ -100,14 +97,13 @@ In addition, the line passing through the center and that point is also created 
 \end{center}
 \end{tkzexample}
 
-% subsubsection example_circle_attributes (end)
 
-\subsubsection{Attributes perimeter and area} % (fold)
+\subsubsection{Attributes perimeter and area}
 \label{ssub:attributes_perimeter_and_area}
 
  \pgfkeys{/pgf/number format/.cd,std,precision=4}
  \let\pmpn\pgfmathprintnumber
- 
+
 \begin{mybox}
 \begin{verbatim}
   \directlua{
@@ -116,9 +112,9 @@ In addition, the line passing through the center and that point is also created 
   C.AB = circle(z.A, z.B)
   p = C.AB.perimeter
   a = C.AB.area}
-  
-Let be two points $A$ and $B$. The circle of center $A$ passing 
-through $B$ has perimeter \pmpn{\tkzUseLua{p}} $cm$ 
+
+Let be two points $A$ and $B$. The circle of center $A$ passing
+through $B$ has perimeter \pmpn{\tkzUseLua{p}} $cm$
 and area \pmpn{\tkzUseLua{a} }$cm^2$.
 \end{verbatim}
 \end{mybox}
@@ -130,92 +126,85 @@ C.AB =  circle(z.A, z.B)
 p = C.AB.perimeter
 a = C.AB.area}
 
-Let be two points $A$ and $B$. 
+Let be two points $A$ and $B$.
 The circle of center $A$ passing through $B$ has perimeter \pmpn{\tkzUseLua{p}} $cm$ and area \pmpn{\tkzUseLua{a} }$cm^2$.
 
-% subsubsection attributes_perimeter_and_area(end)
-% subsection attributes_of_a_circle (end)
 
 \newpage
-\subsection{Methods of the class circle} % (fold)
-\label{sub:methods_of_the_class_circle}
-
+\subsection{Methods of the class circle}
 The circle class offers a wide range of methods, which can be grouped according to the type of value they return: numbers, booleans, strings, points, lines, or circles. These methods allow for computations such as checking inclusion, finding tangents, computing inversions, and more.
 
 \vspace{1em}
-\begin{center}
-  \bgroup
+
+\bgroup
   \small
-  \captionof{table}{Circle methods.}\label{circle:met}
+  \captionof{table}{Circle methods.}
   \begin{tabular}{ll}
   \toprule
   \textbf{Methods} & \textbf{Reference}   \\
-  \midrule  
+  \midrule
   \textbf{Creation} &    \\
-  \midrule  
-  \tkzFct{circle}{new(O,A)} & Note\footnote{circle(pt, pt) (short form, recommended)}; [\ref{ssub:method_circle_new}]\\
+  \midrule
+  \tkzFct{circle}{new(O,A)} & Note\footnote{circle(pt, pt) (short form, recommended)}; [\ref{ssub:method_circle_new}; \ref{ssub:creating_a_circle}]\\
   \tkzFct{circle}{radius(O,r)} & Deprecated; See  [\ref{ssub:method_circle_radius}]\\
   \tkzFct{circle}{diameter(A,B)} & Deprecated; See  [\ref{ssub:method_circle_diameter}]  \\
-  \midrule 
+  \midrule
    \textbf{Reals} &\\
-  \midrule 
+  \midrule
 
-  \tkzMeth{circle}{power(pt)}     & \ref{sub:apollonius_circle_v1_with_inversion} ] \\
-  \midrule 
+  \tkzMeth{circle}{power(pt)}& \ref{sub:apollonius_circle_v1_with_inversion}; \ref{ssub:power} ] \\
+  \midrule
    \textbf{Strings} &\\
    \midrule
 
    \tkzMeth{circle}{circles\_position(C1)}  & [\ref{ssub:circles_position}] \\
    \midrule
    \textbf{Booleans} &\\
-  \midrule 
+  \midrule
 
   \tkzMeth{circle}{in\_out(pt)}  & [\ref{ssub:in_out_for_circle_and_disk}]  \\
   \tkzMeth{circle}{in\_out\_disk(pt)}  & [\ref{ssub:in_out_for_circle_and_disk}]  \\
   \tkzMeth{circle}{is\_tangent(L)} & [\ref{ssub:method_circle_is__tangent}]  \\
 
   \textbf{Points} &\\
-  \midrule 
+  \midrule
   \tkzMeth{circle}{antipode(pt)} &     [\ref{ssub:method_circle_antipode}]   \\
   \tkzMeth{circle}{midarc(pt,pt)} &  [\ref{ssub:method_circle_midarc}]\\
   \tkzMeth{circle}{point(r)} & [\ref{ssub:method_circle_point}]\\
-  \tkzMeth{circle}{random\_pt(<'inside'>)}  &\\
-  \tkzMeth{circle}{inversion(obj)} & [\ref{ssub:inversion}]\\
+  \tkzMeth{circle}{random\_pt(<'inside'>)}  & [\ref{ssub:method_imeth_circle_random_inside}]\\
+  \tkzMeth{circle}{inversion(obj)} & [\ref{ssub:inversion}; \ref{par:inversion_circle}; \ref{par:inversion_line}]\\
   \tkzMeth{circle}{internal\_similitude(C)}  &  [\ref{ssub:method_circle_internal__similitude}]\\
-  \tkzMeth{circle}{external\_similitude(C)} &  [\ref{ssub:method_circle_external__similitude}] \\ 
+  \tkzMeth{circle}{external\_similitude(C)} &  [\ref{ssub:method_circle_external__similitude}] \\
   \tkzMeth{circle}{radical\_center(C1<,C2>)} & [\ref{ssub:radical_center} ]  \\
-  \midrule 
+  \midrule
    \textbf{Lines}  & \\
-  \midrule 
-  \tkzMeth{circle}{radical\_axis(C)} &   [ \ref{ssub:method_circle_radical__axis_c} ; \ref{sub:d_alembert_2} ]  \\
+  \midrule
+  \tkzMeth{circle}{radical\_axis(C)} &   [ \ref{ssub:method_circle_radical__axis_c} ; \ref{sub:d_alembert_2}; \ref{par:radical_axis_v1}; \ref{par:radical_axis_v2}; \ref{par:radical_axis_v3}; \ref{par:radical_axis_v4} ]  \\
   \tkzMeth{circle}{tangent\_at(pt)} &  [\ref{ssub:method_circle_tangent__at_pt}] \\
   \tkzMeth{circle}{tangent\_from(pt)}&  [\ref{ssub:method_circle_tangent__from_pt}] \\
   \tkzMeth{circle}{common\_tangent(C)}&  [\ref{ssub:common_tangent} ; \ref{sub:common_tangent_orthogonality}] \\
   \tkzMeth{circle}{polar()} & [\ref{ssub:method_circle_polar_pt}] \\
-  \midrule 
+  \midrule
    \textbf{Circles}&\\
-  \midrule 
+  \midrule
   \tkzMeth{circle}{orthogonal\_from(pt)}   & [\ref{ssub:method_circle_orthogonal_from_pt} ;\ref{sub:altshiller} ; \ref{sub:pencil_v1}]  \\
   \tkzMeth{circle}{orthogonal\_through(pta,ptb)}&  [\ref{ssub:method_circle_orthogonal_through}]\\
-  \tkzMeth{circle}{midcircle(C)}  & [\ref{ssub:midcircle}] \\
+  \tkzMeth{circle}{midcircle(C)}  & [\ref{ssub:midcircle}; \ref{midcircle_diameter}] \\
   \tkzMeth{circle}{radical\_circle(C1<,C2>)} &  [\ref{ssub:radical_circle}] \\
   \tkzMeth{circle}{c\_c\_pp(pt,pt)} & [\ref{ssub:method_c__c__pp}] \\
   \tkzMeth{circle}{c\_cc\_p(C,pt)} &[\ref{ssub:method_c_cc_p}]  \\
   \tkzMeth{circle}{c\_lc\_p(L,pt,<'inside'>)} & [\ref{ssub:method_c_lc_p}]  \\
  \textbf{Path} & \textbf{Reference}     \\
    \tkzMeth{circle}{path(pt,pt,nb)} &[\ref{ssub:circle_path}]  \\
-   \bottomrule 
+   \bottomrule
   \end{tabular}
-  \egroup
-\end{center}
+\egroup
 
-% subsection methods_circle (end)
-
-\begin{center}
-  \bgroup
-  \catcode`_=12 
+ \bgroup
+  \catcode`_=12
   \small
-  \captionof{table}{Auxiliary functions for circle construction.}\label{circle:func}
+  \captionof{table}{Auxiliary functions for circle construction.}
+
   \begin{tabular}{ll}
   \toprule
   \textbf{Functions} & \textbf{Reference}     \\
@@ -225,11 +214,10 @@ The circle class offers a wide range of methods, which can be grouped according 
 
   \tkzFct{circle}{diameter(pt,pt,<'swap'> or <angle>)}&  See [\ref{ssub:function_code_through_and_code_diameter}] \\
 
- 
+
   \bottomrule
   \end{tabular}
-  \egroup
-\end{center}
+\egroup
 
 
 
@@ -237,7 +225,7 @@ Each method can be called using the dot syntax, such as \code{C.OA:antipode(z.P)
 
 
 
-\subsubsection{Method \tkzMeth{circle}{new}(pt, pt)} % (fold)
+\subsubsection{Method \tkzMeth{circle}{new}(pt, pt)}
 \label{ssub:method_circle_new}
 
 This method creates a new circle object defined by two points:
@@ -284,9 +272,9 @@ These attributes are computed automatically and accessible via dot notation (e.g
 \end{tikzpicture}
   \end{center}
 \end{tkzexample}
-% subsubsection method_circle_new (end)
 
-\subsubsection{Functions \tkzFct{circle}{through} and \tkzFct{circle}{diameter}} % (fold)
+
+\subsubsection{Functions \tkzFct{circle}{through} and \tkzFct{circle}{diameter}}
 \label{ssub:function_code_through_and_code_diameter}
 
 These two utility functions assist in defining circles based on minimal data. They do not return a circle object themselves but instead return a pair of points: the \emph{center} and a \emph{point through which the circle passes}. These can be directly passed to \code{circle(...)}, as shown below.
@@ -300,7 +288,7 @@ C.OT = circle(diameter(z.A, z.B, "swap"))            -- through = A
 \end{verbatim}
 \end{mybox}
 
-\paragraph{1. Function \code{through(center, radius, <angle>])}}  
+\paragraph{1. Function \code{through(center, radius, <angle>])}}
 Constructs a circle based on:
 \begin{itemize}
   \item a center point,
@@ -309,8 +297,8 @@ Constructs a circle based on:
 \end{itemize}
 If the angle is omitted, the point lies on the positive \(x\)-axis from the center (i.e., angle = 0).
 
-\paragraph{2. Function \code{diameter(A, B, <'swap'> or <angle>)}} 
- 
+\paragraph{2. Function \code{diameter(A, B, <'swap'> or <angle>)}}
+
 Constructs a circle using two diametrically opposed points. The function returns:
 
 \begin{itemize}
@@ -328,7 +316,7 @@ By default, the second argument (\code{B}) is returned as the \code{through} poi
   z.B = point(2, 1)
   C.T = circle(through(z.A, math.sqrt(5), math.pi / 2))
   C.a = circle(diameter(z.A, z.B))
-  z.T = C.T.through 
+  z.T = C.T.through
   C.b = circle(diameter(z.A, z.T, "swap"))
   z.w = C.a.center
   z.t = C.a.through
@@ -341,16 +329,15 @@ By default, the second argument (\code{B}) is returned as the \code{through} poi
  \tkzLabelPoints[right](A,B,T)
 \end{tikzpicture}
 \end{tkzexample}
-% subsubsection function_code_through_and_code_diameter (end)
 
-\subsubsection{Method \tkzMeth{circle}{radius(pt,r)}} % (fold)
+\subsubsection{Method \tkzMeth{circle}{radius(pt,r)}}
 \label{ssub:method_circle_radius}
 
 (Deprecated see above [\ref{ssub:function_code_through_and_code_diameter}])
 
 This method has been retained for backward compatibility but is no longer recommended. It has been replaced by a more flexible and construction-oriented approach.
 
-We define a circle with its centre and radius. 
+We define a circle with its centre and radius.
 
 \vspace{1em}
 \begin{tkzexample}[latex=.5\textwidth]
@@ -369,16 +356,15 @@ We define a circle with its centre and radius.
 \end{tikzpicture}
 \end{center}
 \end{tkzexample}
-% subsubsection method_circle_radius (end)
 
-\subsubsection{Method \tkzMeth{circle}{diameter(pt,pt)}} % (fold)
+\subsubsection{Method \tkzMeth{circle}{diameter(pt,pt)}}
 \label{ssub:method_circle_diameter}
 
 (Deprecated see above [\ref{ssub:function_code_through_and_code_diameter}])
 
 This method has been retained for backward compatibility but is no longer recommended. It has been replaced by a more flexible and construction-oriented approach.
 
-A circle is defined by two points at the ends of one of its diameters. 
+A circle is defined by two points at the ends of one of its diameters.
 
 \vspace{1em}
 \begin{tkzexample}[latex=.5\textwidth]
@@ -398,11 +384,10 @@ A circle is defined by two points at the ends of one of its diameters.
 \end{tikzpicture}
 \end{center}
 \end{tkzexample}
-% subsubsection method_circle_diameter (end)
 
-\subsection{The result is a boolean} % (fold)
+\subsection{The result is a boolean}
 
-\subsubsection{Method \tkzMeth{circle}{is\_tangent(L)}} % (fold)
+\subsubsection{Method \tkzMeth{circle}{is\_tangent(L)}}
 \label{ssub:method_circle_is__tangent}
 
 This method checks whether a given line is tangent to the circle. It returns a boolean value: \code{true} if the line is tangent, and \code{false} otherwise.
@@ -418,15 +403,15 @@ Example:
 \begin{tkzexample}[latex=.5\textwidth]
 \directlua{
   z.A = point(0, 0)
-  z.B = point(0, 2)   
+  z.B = point(0, 2)
   C.AB = circle(z.A, z.B)
   z.C = point(2, -2)
   z.D = point(2, 3)
   L.CD = line(z.C, z.D)
   if C.AB:is_tangent(L.CD) then
-    tex.print("L.CD tangent to C.AB") 
-  else 
-    tex.print("L.CD no tangent to C.AB") 
+    tex.print("L.CD tangent to C.AB")
+  else
+    tex.print("L.CD no tangent to C.AB")
   end}
 \begin{tikzpicture}
   \tkzGetNodes
@@ -438,11 +423,9 @@ Example:
 \end{tikzpicture}
 \end{tkzexample}
 
-% subsubsection method_circle_is__tangent (end)
-
- \subsubsection{Method \tkzMeth{circle}{power(pt)}} % (fold)
+ \subsubsection{Method \tkzMeth{circle}{power(pt)}}
  \label{ssub:power}
- 
+
  The \code{power} method computes the \emph{power of a point} with respect to the given circle. It is defined as:
 
  \[
@@ -463,7 +446,7 @@ Example:
  \medskip
  \noindent
  Here is an example using a function to print this information:
- 
+
  \vspace{1em}
 \begin{minipage}{.65\textwidth}
 \begin{verbatim}
@@ -475,11 +458,11 @@ Example:
  z.B = point(2, -1)
  C.OR = circle(z.O, z.R)
   function position(pt)
- if C.OR:power(pt) > 0 
+ if C.OR:power(pt) > 0
  then
-   return tex.print("out") 
-  else 
-   return tex.print("in") 
+   return tex.print("out")
+  else
+   return tex.print("in")
  end
   end}
 \begin{tikzpicture}
@@ -500,11 +483,11 @@ Example:
  z.B = point(2, -1)
  C.OR = circle(z.O, z.R)
   function position(pt)
- if C.OR:power(pt)>0 
+ if C.OR:power(pt)>0
  then
- return tex.print("out") 
-  else 
- return tex.print("in") 
+ return tex.print("out")
+  else
+ return tex.print("in")
   end
   end}
 \begin{center}
@@ -517,9 +500,8 @@ Example:
 \end{tikzpicture}
 \end{center}
 \end{minipage}
- % subsubsection power (end)
 
-\subsubsection{Method \tkzMeth{circle}{in\_out} for circle and disk} % (fold)
+\subsubsection{Method \tkzMeth{circle}{in\_out} for circle and disk}
 \label{ssub:in_out_for_circle_and_disk}
 
 
@@ -567,7 +549,7 @@ Given a point and a circle \code{C}, the result is a string among the following 
   \tkzLabelPoints(O,M,N,P)
      \ifthenelse{\equal{\tkzUseLua{#1}}{true}}{
      \tkzLabelPoint[below=#4pt,font=\scriptsize](#2){on  the #3}}{%
-     \tkzLabelPoint[below=#4pt,font=\scriptsize](#2){out  the #3}}}    
+     \tkzLabelPoint[below=#4pt,font=\scriptsize](#2){out  the #3}}}
   \begin{tikzpicture}
   \tkzGetNodes
   \tkzDrawSegments[dashed](O,M O,N O,P)
@@ -601,7 +583,7 @@ BDp = C.OA:in_out_disk(z.P)}
    \ifthenelse{\equal{\tkzUseLua{#1}}{true}}{
    \tkzLabelPoint[below=#4pt,font=\scriptsize](#2){on  the #3}}{%
    \tkzLabelPoint[below=#4pt,font=\scriptsize](#2){out  the #3}}
-}    
+}
 \begin{center}
   \begin{tikzpicture}
   \tkzGetNodes
@@ -616,13 +598,11 @@ BDp = C.OA:in_out_disk(z.P)}
   \tkzPosPoint{BDp}{P}{disk}{14}
   \end{tikzpicture}
 \end{center}
-% subsubsection in_out_for_circle_and_disk(end)
 
-% subsection the_result_is_a_boolean (end)
 
-\subsection{The result is a real} % (fold)
+\subsection{The result is a real}
 
-\subsubsection{Method \tkzMeth{circle}{power(pt)}} % (fold)
+\subsubsection{Method \tkzMeth{circle}{power(pt)}}
 \label{ssub:method_circle_power_pt}
 
 The \emph{power of a point} $A$ with respect to a circle of radius~$r$ and center~$O$ is a classical notion in Euclidean geometry.
@@ -712,17 +692,13 @@ This value can be used for algebraic computations or to test point inclusion via
      C.OR:power(z.A)} =AT^2=AP * AQ$}
     \end{tikzpicture}
   \end{center}
-
 \end{minipage}
 
-% subsubsection method_circle_power_pt(end)
 
-% subsection the_result_is_a_real (end)
-
-\subsection{The result is a string} % (fold)
+\subsection{The result is a string}
 \label{sub:the_result_is_a_string}
 
-\subsubsection{Method \tkzMeth{circle}{circles\_position}} % (fold)
+\subsubsection{Method \tkzMeth{circle}{circles\_position}}
 \label{ssub:circles_position}
 
 This function returns a string indicating the position of the circle in relation to another. Useful for creating a function. Cases are:
@@ -746,9 +722,9 @@ init_elements()
    C.Aa = circle(z.A, z.a)
    C.Bb = circle(z.B, z.b)
    position = C.Aa:circles_position(C.Bb)
-   if position == "inside tangent" 
-   then color = "orange" 
-   else color = "blue" end}      
+   if position == "inside tangent"
+   then color = "orange"
+   else color = "blue" end}
 \begin{tikzpicture}
   \tkzGetNodes
   \tkzDrawCircle(A,a)
@@ -778,9 +754,7 @@ if position == "inside tangent" then color = "orange" else color = "blue" end}
 \end{center}
 
 \end{minipage}
-% subsubsection circles__position (end)
 
-% subsection the_result_ia_string (end)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -788,9 +762,9 @@ if position == "inside tangent" then color = "orange" else color = "blue" end}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{The result is a point} % (fold)
+\subsection{The result is a point}
 
-\subsubsection{Method \tkzMeth{circle}{antipode}} % (fold)
+\subsubsection{Method \tkzMeth{circle}{antipode}}
 \label{ssub:method_circle_antipode}
 This method is used to define a point that is diametrically opposed to a point on a given circle.
 
@@ -811,9 +785,8 @@ This method is used to define a point that is diametrically opposed to a point o
 \end{tikzpicture}
 \end{center}
 \end{tkzexample}
-% subsubsection method_circle_antipode (end)
 
-\subsubsection{Method \tkzMeth{circle}{midarc}} % (fold)
+\subsubsection{Method \tkzMeth{circle}{midarc}}
 \label{ssub:method_circle_midarc}
 
 The classical definition, as found in \href{https://mathworld.wolfram.com/Mid-ArcPoints.html}{MathWorld}, is the following:
@@ -849,9 +822,8 @@ This method is applicable to any pair of points on a circle, not just those asso
 \end{tikzpicture}
   \end{center}
 \end{tkzexample}
-% subsubsection method_circle_midarc (end)
 
-\subsubsection{Method \tkzMeth{circle}{point(r)}} % (fold)
+\subsubsection{Method \tkzMeth{circle}{point(r)}}
 \label{ssub:method_circle_point}
 
 Let $C$ be a circle with centre $O$ and passing through $A$ such that |z.A = C.through|. This method defines a point $M$ on the circle from A such that the ratio of the length of $\widearc{AM}$ to the circumference of the circle is equal to $r$.
@@ -880,9 +852,7 @@ If $r=.5$ the defined point is diametrically opposed to $A$, the angle $\widehat
 \end{center}
 \end{tkzexample}
 
-% subsubsection method_circle_point (end)
-
-\subsubsection{Method \tkzMeth{circle}{random(<'inside'>)}} % (fold)
+\subsubsection{Method \tkzMeth{circle}{random(<'inside'>)}}
 \label{ssub:method_imeth_circle_random_inside}
 Produces a point on the circle or inside the disc with the 'inside' option.
 
@@ -896,7 +866,7 @@ Produces a point on the circle or inside the disc with the 'inside' option.
   z.N = C.OA:random('inside')}
 \begin{center}
 \begin{tikzpicture}
-   \tkzGetNodes   
+   \tkzGetNodes
    \tkzDrawCircle(O,A)
    \tkzDrawPoints(O,A,M,N)
    \tkzLabelPoints(O,A,M,N)
@@ -915,9 +885,7 @@ Produces a point on the circle or inside the disc with the 'inside' option.
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_imeth_circle_random_inside (end)
-
-\subsubsection{Method \tkzMeth{circle}{internal\_similitude(C)}} % (fold)
+\subsubsection{Method \tkzMeth{circle}{internal\_similitude(C)}}
 \label{ssub:method_circle_internal__similitude}
 
 This method computes the \textbf{internal center of similitude} of two given circles.
@@ -940,8 +908,8 @@ This method returns the internal homothetic center — the point from which the 
 \medskip
 \noindent
 \emph{Note:} Degenerate cases (e.g., equal centers, equal or zero radii) are handled separately.
-
 \begin{flushright}
+\small
 \href{https://en.wikipedia.org/wiki/Homothetic_center}{\textit{(See also: Wikipedia — Homothetic center)}}
 \end{flushright}
 
@@ -971,9 +939,7 @@ This method returns the internal homothetic center — the point from which the 
  \end{center}
 \end{tkzexample}
 
-% subsubsection method_circle_internal__similitude (end)
-
-\subsubsection{Method \tkzMeth{circle}{external\_similitude(C)}} % (fold)
+\subsubsection{Method \tkzMeth{circle}{external\_similitude(C)}}
 \label{ssub:method_circle_external__similitude}
 
 
@@ -1020,9 +986,7 @@ This construction is essential in many geometric transformations (e.g., inversio
 \end{center}
 \end{tkzexample}
 
-% subsubsection method_circle_external__similitude (end)
-
-\subsubsection{Method \tkzMeth{circle}{radical\_center(C1, C2)}} % (fold)
+\subsubsection{Method \tkzMeth{circle}{radical\_center(C1, C2)}}
 \label{ssub:radical_center}
 
 In classical geometry, the \textbf{radical center} (also called the \emph{power center}) of three circles is the unique point of concurrency of their pairwise radical axes.
@@ -1082,9 +1046,6 @@ See the following example for the construction of point $H$ as such an intersect
   \end{tikzpicture}
 \end{center}
 \end{tkzexample}
-% subsubsection radical_center (end)
-
-% subsection the_result_is_a_point (end)
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1093,9 +1054,9 @@ See the following example for the construction of point $H$ as such an intersect
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{The result is a line} % (fold)
+\subsection{The result is a line}
 
-\subsubsection{Method \tkzMeth{circle}{tangent\_at(pt)}} % (fold)
+\subsubsection{Method \tkzMeth{circle}{tangent\_at(pt)}}
 \label{ssub:method_circle_tangent__at_pt}
 
 This method constructs the tangent to a circle at a given point on its circumference.
@@ -1119,7 +1080,7 @@ This method is useful for highlighting tangency in diagrams, constructing tangen
 \directlua{
  init_elements()
  z.A = point(0,0)
- z.B = point(1,2)   
+ z.B = point(1,2)
  C.AB = circle(z.A, z.B)
  L.T = C.AB:tangent_at(z.B)
  z.Tx, z.Ty = L.T:get()}
@@ -1139,16 +1100,14 @@ This method is useful for highlighting tangency in diagrams, constructing tangen
 \directlua{
  init_elements()
  z.A = point(0,0)
- z.B = point(1,2)   
+ z.B = point(1,2)
  C.AB = circle(z.A, z.B)
  L.T = C.AB:tangent_at(z.B)
  z.Tx, z.Ty = L.T:get()}
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_circle_tangent__at_pt (end)
-
-\subsubsection{Method \tkzMeth{circle}{tangent\_from(pt)}} % (fold)
+\subsubsection{Method \tkzMeth{circle}{tangent\_from(pt)}}
 \label{ssub:method_circle_tangent__from_pt}
 
 This method computes the two tangents from a point external to a given circle.
@@ -1172,7 +1131,7 @@ This construction is useful in many classical geometric configurations (radical 
 \directlua{
  init_elements()
  z.A = point(0,0)
- z.B = point(1,2)   
+ z.B = point(1,2)
  C.AB = circle(z.A, z.B)
  z.C = point(3,-2)
  L.T1,L.T2 = C.AB:tangent_from(z.C)
@@ -1197,7 +1156,7 @@ This construction is useful in many classical geometric configurations (radical 
 \directlua{
  init_elements()
  z.A = point(0,0)
- z.B = point(1,2)   
+ z.B = point(1,2)
  C.AB = circle(z.A, z.B)
  z.C = point(3,-2)
  L.T1,L.T2 = C.AB:tangent_from(z.C)
@@ -1206,10 +1165,7 @@ This construction is useful in many classical geometric configurations (radical 
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_circle_tangent__from_pt (end)
-
-
-\subsubsection{Method \tkzMeth{circle}{commun\_tangent(C)}} % (fold)
+\subsubsection{Method \tkzMeth{circle}{commun\_tangent(C)}}
 \label{ssub:common_tangent}
 
 This method constructs a \textbf{common tangent} to two given circles.
@@ -1242,11 +1198,11 @@ L.TTp = C.AC:common_tangent(C.BC)
 z.T, z.Tp = L.TTp:get()
 z.M = C.AC:point(0.45)
 L.MC =line(z.M, z.C)
-z.Mp = intersection(L.MC, C.BC) 
+z.Mp = intersection(L.MC, C.BC)
 L.mm = L.TTp:ll_from(z.C)
 _, z.M = intersection(L.mm, C.AC)
 z.Mp = intersection(L.mm, C.BC)
-_, z.D = intersection(C.AC,C.BC)}   
+_, z.D = intersection(C.AC,C.BC)}
 \begin{center}
   \begin{tikzpicture}[scale =.75]
   \tkzGetNodes
@@ -1275,17 +1231,15 @@ L.TTp = C.AC:common_tangent(C.BC)
 z.T, z.Tp = L.TTp:get()
 z.M = C.AC:point(0.45)
 L.MC =line(z.M, z.C)
-z.Mp = intersection(L.MC, C.BC) 
+z.Mp = intersection(L.MC, C.BC)
 L.mm = L.TTp:ll_from(z.C)
 _, z.M = intersection(L.mm, C.AC)
 z.Mp = intersection(L.mm, C.BC)
-_, z.D = intersection(C.AC,C.BC)} 
+_, z.D = intersection(C.AC,C.BC)}
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection common_tangent (end)
-
-\subsubsection{Method \tkzMeth{circle}{polar(pt)}} % (fold)
+\subsubsection{Method \tkzMeth{circle}{polar(pt)}}
 \label{ssub:method_circle_polar_pt}
 
 In projective geometry, the notions of \emph{pole} and \emph{polar} see  a duality between points and lines with respect to a conic section.
@@ -1333,7 +1287,7 @@ This method currently only supports the case where a \emph{point} is provided as
  z.c = C.o:inversion(z.cp)}
 \begin{center}
 \begin{tikzpicture}
-  \tkzGetNodes    
+  \tkzGetNodes
   \tkzDrawCircles[red,thick](o,t)
   \tkzDrawCircles(w,H)
   \tkzDrawLines[red](P,u P,v)
@@ -1353,15 +1307,13 @@ This method currently only supports the case where a \emph{point} is provided as
 \end{center}
 \end{tkzexample}
 
-% subsubsection method_circle_polar_pt(end)
-
-\subsubsection{Method \tkzMeth{circle}{radical\_axis}(C)} % (fold)
+\subsubsection{Method \tkzMeth{circle}{radical\_axis}(C)}
 \label{ssub:method_circle_radical__axis_c}
 
 The radical line, also called the radical axis, is the locus of points of equal circle power with respect to two nonconcentric circles. By the chordal theorem, it is perpendicular to the line of centers (Dörrie 1965).
-
 \begin{flushright}
- [\href{https://mathworld.wolfram.com/RadicalLine.html}{Weisstein, Eric W. "Radical Line." From MathWorld--A Wolfram Web Resource.} ]
+\small
+ \href{https://mathworld.wolfram.com/RadicalLine.html}{Weisstein, Eric W. "Radical Line." From MathWorld--A Wolfram Web Resource.}
 \end{flushright}
 
 \vspace{1em}
@@ -1412,7 +1364,7 @@ Radical axis v1
  L.XY = line(z.X, z.Y)
  C.XB = circle(z.X, z.B)
  C.YAp = circle(z.Y, z.Ap)
- z.E, 
+ z.E,
  z.F = C.XB:radical_axis(C.YAp):get()
  z.A = C.XB:point(0.4)
  T.ABAp = triangle(z.A, z.B, z.Ap)
@@ -1594,10 +1546,6 @@ Radical axis v4
 
 % paragraph radical_axis_v4 (end)
 
-% subsubsection method_circle_radical__axis_c (end)
-
-% subsection the_result_is_a_line (end)
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1606,12 +1554,12 @@ Radical axis v4
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\subsection{The result is a circle} % (fold)
+\subsection{The result is a circle}
 
-\subsubsection{Method \tkzMeth{circle}{orthogonal\_from(pt)}} % (fold)
+\subsubsection{Method \tkzMeth{circle}{orthogonal\_from(pt)}}
 \label{ssub:method_circle_orthogonal_from_pt}
 
-In geometry, two circles are said to be \emph{orthogonal} if their tangent lines at each point of intersection meet at a right angle.  
+In geometry, two circles are said to be \emph{orthogonal} if their tangent lines at each point of intersection meet at a right angle.
 (See also: \href{https://en.wikipedia.org/wiki/Orthogonal_circles}{Wikipedia — Orthogonal circles}).
 
 \medskip
@@ -1634,7 +1582,7 @@ The result is a circle that intersects the original one at right angles. The con
  z.C_2 = point(8,0)
  z.A = point(5,0)
  C.C1A = circle(z.C_1, z.A)
- z.S, 
+ z.S,
  z.T = C.C1A:orthogonal_from(z.C_2):get()}
 \begin{center}
   \begin{tikzpicture}[scale = .35]
@@ -1665,14 +1613,12 @@ The result is a circle that intersects the original one at right angles. The con
  z.C_2 = point(8,0)
  z.A = point(5,0)
  C = circle(z.C_1, z.A)
- z.S, 
+ z.S,
  z.T = C:orthogonal_from(z.C_2):get()}
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_circle_orthogonal__from_pt (end)
-
-\subsubsection{Method \tkzMeth{circle}{orthogonal\_through(pt,pt)}} % (fold)
+\subsubsection{Method \tkzMeth{circle}{orthogonal\_through(pt,pt)}}
 \label{ssub:method_circle_orthogonal_through}
 
 This method constructs a circle that is orthogonal to a given circle and passes through two specified points.
@@ -1736,9 +1682,7 @@ In all other situations, there is a unique solution.
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_circle_orthogonal__through (end)
-
-\subsubsection{Method \tkzMeth{circle}{radical\_circle(C,C)}} % (fold)
+\subsubsection{Method \tkzMeth{circle}{radical\_circle(C,C)}}
 \label{ssub:radical_circle}
 
 \textbf{Radical circle of three given circles.}
@@ -1758,8 +1702,8 @@ An important geometric property is that a circle centered at the radical center 
 \medskip
 \noindent
 This construction plays a key role in advanced configurations such as coaxal systems, power of a point geometry, and triangle centers.
-
 \begin{flushright}
+\small
 \href{https://mathworld.wolfram.com/RadicalCircle.html}{\textit{(Reference: Weisstein, Eric W. "Radical Circle." MathWorld)}}
 \end{flushright}
 
@@ -1768,13 +1712,13 @@ This construction plays a key role in advanced configurations such as coaxal sys
 
 
 \begin{minipage}[t]{.5\textwidth}\vspace{0pt}%
-\begin{verbatim} 
+\begin{verbatim}
 \directlua{
  init_elements()
  z.A = point(0,0)
  z.B = point(6,0)
  z.C = point(0.8,4)
- T.ABC = triangle(z.A, z.B, z.C) 
+ T.ABC = triangle(z.A, z.B, z.C)
  C.exa = T.ABC:ex_circle()
  z.I_a, z.Xa = C.exa:get()
  C.exb = T.ABC:ex_circle(1)
@@ -1799,7 +1743,7 @@ This construction plays a key role in advanced configurations such as coaxal sys
  z.A = point(0,0)
  z.B = point(6,0)
  z.C = point(0.8,4)
- T.ABC = triangle(z.A, z.B, z.C) 
+ T.ABC = triangle(z.A, z.B, z.C)
  C.exa = T.ABC:ex_circle()
  z.I_a, z.Xa = C.exa:get()
  C.exb = T.ABC:ex_circle(1)
@@ -1820,9 +1764,7 @@ This construction plays a key role in advanced configurations such as coaxal sys
   \end{tikzpicture}
 \end{center}
 
-% subsubsection radical_circle (end)
-
-\subsubsection{Method \tkzMeth{circle}{c\_c\_pp}} % (fold)
+\subsubsection{Method \tkzMeth{circle}{c\_c\_pp}}
 \label{ssub:method_c__c__pp}
 
 \textbf{Circle tangent to a given circle and passing through two points.}
@@ -1836,8 +1778,8 @@ The name \code{c\_c\_pp} stands for:
 \end{center}
 
 \noindent
-This method computes one or two solution circles that satisfy these conditions. 
-However, a solution exists only if both points are on the same side of the given circle (i.e., both inside or both outside). 
+This method computes one or two solution circles that satisfy these conditions.
+However, a solution exists only if both points are on the same side of the given circle (i.e., both inside or both outside).
 
 \medskip
 \noindent
@@ -1852,7 +1794,7 @@ If one point lies inside and the other outside the given circle, then \textbf{no
  z.A = point(5,4)
  z.B = point(3,0)
  z.O = point(0,0)
- z.C = point(1,0) 
+ z.C = point(1,0)
  L.AB = line(z.A, z.B)
  C.OC = circle(z.O, z.C)
  C1,C2 = C.OC:c_c_pp(z.A, z.B)
@@ -1880,7 +1822,7 @@ If one point lies inside and the other outside the given circle, then \textbf{no
  z.A = point(5,4)
  z.B = point(3,0)
  z.O = point(0,0)
- z.C = point(1,0) 
+ z.C = point(1,0)
  L.AB = line(z.A, z.B)
  C.OC = circle(z.O, z.C)
  C1,C2 = C.OC:c_c_pp(z.A, z.B)
@@ -1897,7 +1839,7 @@ If one point lies inside and the other outside the given circle, then \textbf{no
  z.A = point(3,0)
  z.B = point(0,-3)
  z.O = point(0,0)
- z.C = point(1,0) 
+ z.C = point(1,0)
  L.AB = line(z.A, z.B)
  C.OC = circle(z.O, z.C)
  C1,C2 = C.OC:c_c_pp(z.A, z.B)
@@ -1925,7 +1867,7 @@ If one point lies inside and the other outside the given circle, then \textbf{no
  z.A = point(3,0)
  z.B = point(0,-3)
  z.O = point(0,0)
- z.C = point(1,0) 
+ z.C = point(1,0)
  L.AB = line(z.A, z.B)
  C.OC = circle(z.O, z.C)
  C1,C2 = C.OC:c_c_pp(z.A, z.B)
@@ -1946,7 +1888,7 @@ Special case: the two points are equidistant from the center of the circle
  z.A = point(2,3)
  z.B = point(2,-3)
  z.O = point(0,0)
- z.C = point(1,0) 
+ z.C = point(1,0)
  L.AB = line(z.A, z.B)
  C.OC = circle(z.O, z.C)
  C1,C2 = C.OC:c_c_pp(z.A, z.B)
@@ -1970,7 +1912,7 @@ Special case: the two points are equidistant from the center of the circle
  z.A = point(2,3)
  z.B = point(2,-3)
  z.O = point(0,0)
- z.C = point(1,0) 
+ z.C = point(1,0)
  L.AB = line(z.A, z.B)
  C.OC = circle(z.O, z.C)
  C1,C2 = C.OC:c_c_pp(z.A, z.B)
@@ -1989,7 +1931,7 @@ The line $(AB)$ is tangent to the circle. Only one circle answers the question.
  z.A = point(1,5)
  z.B = point(1,-3)
  z.O = point(0,0)
- z.C = point(1,0) 
+ z.C = point(1,0)
  L.AB = line(z.A, z.B)
  C.OC = circle(z.O, z.C)
  C1,C2 = C.OC:c_c_pp(z.A, z.B)
@@ -2013,7 +1955,7 @@ The line $(AB)$ is tangent to the circle. Only one circle answers the question.
  z.A = point(1,5)
  z.B = point(1,-3)
  z.O = point(0,0)
- z.C = point(1,0) 
+ z.C = point(1,0)
  L.AB = line(z.A, z.B)
  C.OC = circle(z.O, z.C)
  C1,C2 = C.OC:c_c_pp(z.A, z.B)
@@ -2033,7 +1975,7 @@ Another special case occurs when the straight line $(AB)$ is tangent to the init
  z.A = point(1,3)
  z.B = point(1,-3)
  z.O = point(0,0)
- z.C = point(1,0) 
+ z.C = point(1,0)
  L.AB = line(z.A, z.B)
  C.OC = circle(z.O, z.C)
  C.one,C.two = C.OC:c_c_pp(z.A, z.B)
@@ -2057,7 +1999,7 @@ Another special case occurs when the straight line $(AB)$ is tangent to the init
  z.A = point(1,3)
  z.B = point(1,-3)
  z.O = point(0,0)
- z.C = point(1,0) 
+ z.C = point(1,0)
  L.AB = line(z.A, z.B)
  C.OC = circle(z.O, z.C)
  C.one,C.two = C.OC:c_c_pp(z.A, z.B)
@@ -2068,10 +2010,7 @@ Another special case occurs when the straight line $(AB)$ is tangent to the init
 \end{tkzexample}
 \end{minipage}
 
-
-% subsubsection method_c__c__pp(end)
-
-\subsubsection{Method \tkzMeth{circle}{c\_cc\_p}} % (fold)
+\subsubsection{Method \tkzMeth{circle}{c\_cc\_p}}
 \label{ssub:method_c_cc_p}
 \textbf{Circle tangent to two given circles and passing through a point.}
 
@@ -2120,11 +2059,11 @@ This general setup gives rise to an elegant and classical special case: the \tex
   z.P = point(3, 6)
   C.A = circle(z.A, z.TA)
   C.B = circle(z.B, z.TB)
-  C.one,C.two= C.A:c_cc_p(C.B, z.P) 
+  C.one,C.two= C.A:c_cc_p(C.B, z.P)
   z.O1 = C.one.center
   z.T1 = C.one.through
   z.O2 = C.two.center
-  z.T2 = C.two.through}   
+  z.T2 = C.two.through}
 \begin{tikzpicture}[scale =.75]
  \tkzGetNodes
  \tkzDrawCircles[thick](A,TA B,TB)
@@ -2146,14 +2085,13 @@ This general setup gives rise to an elegant and classical special case: the \tex
   z.P = point(3, 6)
   C.A = circle(z.A, z.TA)
   C.B = circle(z.B, z.TB)
-  C.one,C.two = C.A:c_cc_p(C.B, z.P) 
+  C.one,C.two = C.A:c_cc_p(C.B, z.P)
   z.O1 = C.one.center
   z.T1 = C.one.through
   z.O2 = C.two.center
-  z.T2 = C.two.through}    
+  z.T2 = C.two.through}
 \end{tkzexample}
 \end{minipage}
-
 
 \vspace{1em}
 The first special case involves two given tangent circles. The point $P$ is not the point of tangency of the Pappus circle.
@@ -2174,7 +2112,7 @@ The first special case involves two given tangent circles. The point $P$ is not 
   z.O1 = C.one.center
   z.T1 = C.one.through
   z.O2 = C.two.center
-  z.T2 = C.two.through}   
+  z.T2 = C.two.through}
 \begin{tikzpicture}
 \tkzGetNodes
 \tkzDrawCircles[thick](A,TA B,TB)
@@ -2200,16 +2138,14 @@ The first special case involves two given tangent circles. The point $P$ is not 
   z.O1 = C.one.center
   z.T1 = C.one.through
   z.O2 = C.two.center
-  z.T2 = C.two.through}  
+  z.T2 = C.two.through}
 \end{tkzexample}
 \end{minipage}
 
 \vspace{1em}
-
 Here's the Arbelos configuration
 
 \vspace{1em}
-
 \begin{minipage}{.5\textwidth}
 \directlua{
   init_elements()
@@ -2229,7 +2165,7 @@ Here's the Arbelos configuration
   z.O1 = C.one.center
   z.T1 = C.one.through
   z.O2 = C.two.center
-  z.T2 = C.two.through}   
+  z.T2 = C.two.through}
 \begin{tikzpicture}
 \tkzGetNodes
 \tkzDrawCircles[thick](A,TA B,TB)
@@ -2260,7 +2196,7 @@ Here's the Arbelos configuration
   z.O1 = C.one.center
   z.T1 = C.one.through
   z.O2 = C.two.center
-  z.T2 = C.two.through}   
+  z.T2 = C.two.through}
 \end{tkzexample}
 \end{minipage}
 
@@ -2268,7 +2204,6 @@ Here's the Arbelos configuration
 If the point $P$ is not the contact point of the Pappus circle, we return to the general case.
 
 \vspace{1em}
-
 \begin{minipage}{.5\textwidth}
 \directlua{
   init_elements()
@@ -2288,7 +2223,7 @@ If the point $P$ is not the contact point of the Pappus circle, we return to the
   z.O1 = C.one.center
   z.T1 = C.one.through
   z.O2 = C.two.center
-  z.T2 = C.two.through}    
+  z.T2 = C.two.through}
 \begin{tikzpicture}
 \tkzGetNodes
 \tkzDrawCircles[thick](A,TA B,TB)
@@ -2319,13 +2254,11 @@ If the point $P$ is not the contact point of the Pappus circle, we return to the
   z.O1 = C.one.center
   z.T1 = C.one.through
   z.O2 = C.two.center
-  z.T2 = C.two.through}   
+  z.T2 = C.two.through}
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_c_cc_p (end)
-
-\subsubsection{Method c\_lc\_p} % (fold)
+\subsubsection{Method c\_lc\_p}
 \label{ssub:method_c_lc_p}
 
 Circle tangent to a line and a circle passing through a given point.
@@ -2366,9 +2299,7 @@ There are 4 circles verifying the conditions. Two are tangent externally, and tw
 \end{tikzpicture}
 \end{tkzexample}
 
-% subsubsection method_c_lc_p(end)
-
-\subsubsection{Method \tkzMeth{circle}{midcircle}} % (fold)
+\subsubsection{Method \tkzMeth{circle}{midcircle}}
 \label{ssub:midcircle}
 
 \medskip
@@ -2748,8 +2679,6 @@ This circle performs an inversion that maps one circle onto the other and lies i
 
 \end{enumerate}
 
-% subsubsection midcircle (end)
-% subsection the_result_is_a_circle (end)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -2757,7 +2686,7 @@ This circle performs an inversion that maps one circle onto the other and lies i
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Transformations: the result is an object} % (fold)
+\subsection{Transformations: the result is an object}
 
 \subsubsection{Method \tkzMeth{circle}{inversion(obj)}:point, line and circle} %(fold)
 \label{ssub:inversion}
@@ -2782,7 +2711,7 @@ The result is a point.
 
 \begin{center}
 \begin{tikzpicture}[scale =.75]
-  \tkzGetNodes   
+  \tkzGetNodes
   \tkzDrawCircle(o,a)
   \tkzDrawSegments(o,a o,c)
   \tkzDrawPoints(a,o,c,d)
@@ -2793,7 +2722,7 @@ The result is a point.
 \end{center}
 \end{tkzexample}
 
-\paragraph{Inversion:line} % (fold)
+\paragraph{Inversion:line}
 \label{par:inversion_line}
 
 The result is either a straight line or a circle.
@@ -2812,7 +2741,7 @@ The result is either a straight line or a circle.
 
 \begin{center}
 \begin{tikzpicture}
-  \tkzGetNodes    
+  \tkzGetNodes
   \tkzDrawCircles(o,a)
   \tkzDrawCircles[new](O,H)
   \tkzDrawLines(c,d o,H)
@@ -2821,8 +2750,8 @@ The result is either a straight line or a circle.
 \end{tikzpicture}
 \end{center}
 \end{tkzexample}
- 
-\paragraph{Inversion:circle} % (fold)
+
+\paragraph{Inversion:circle}
  \label{par:inversion_circle}
 
 The result is either a straight line or a circle.
@@ -2837,7 +2766,7 @@ The result is either a straight line or a circle.
   C.ed = circle(z.e, z.d)
   C.co = circle(z.c, z.o)
   obj = C.oa:inversion(C.co)
-  if obj.type == "line" then 
+  if obj.type == "line" then
      z.p, z.q = obj:get()
   else
       z.f, z.b = obj:get()
@@ -2845,13 +2774,13 @@ The result is either a straight line or a circle.
   obj = C.oa:inversion(C.ed)
   if obj.type == "line" then
     z.p, z.q = obj:get()
-  else 
+  else
      z.f, z.b = obj:get()
   end
   color = "orange"}
 \begin{center}
 \begin{tikzpicture}[scale =.75]
-  \tkzGetNodes 
+  \tkzGetNodes
   \tkzDrawCircles[black](o,a)
   \tkzDrawCircles[teal](c,o e,d)
   \tkzDrawCircles[\tkzUseLua{color}](f,b)
@@ -2862,10 +2791,8 @@ The result is either a straight line or a circle.
 \end{center}
 \end{tkzexample}
 
-% subsubsection inversion (end)
-% subsection subsection_name (end)
 
-\subsubsection{\tkzMeth{circle}{path(p1, p2, N)}: Creating a path} % (fold)
+\subsubsection{\tkzMeth{circle}{path(p1, p2, N)}: Creating a path}
 \label{ssub:circle_path}
 
 The \tkzClass{circle} class includes a method \tkzMeth{circle}{path} to create a \tkzClass{path} object representing a circular arc between two points on the circle.
@@ -2891,8 +2818,8 @@ You can draw the resulting path in \TIKZ{} using:
 \end{verbatim}
 \end{mybox}
 
-\paragraph{Example} % (fold)
-\label{par:example}
+\paragraph{Example}\mbox{}\\
+
 
 \begin{tkzexample}[latex = .5\textwidth]
   \directlua{
@@ -2910,7 +2837,7 @@ You can draw the resulting path in \TIKZ{} using:
    PA.p2 = C.BC:path(z.C, z.D, 20)
    PA.p3 = C.CD:path(z.D, z.B, 20)
    PA.path = (-PA.p1) + PA.p2 + PA.p3
-  } 
+  }
   \begin{tikzpicture}[scale = .5]
   \tkzGetNodes
   \tkzDrawCircles(O,A S,O)
@@ -2924,11 +2851,4 @@ You can draw the resulting path in \TIKZ{} using:
   \tkzLabelPoints(A,B,C)
   \end{tikzpicture}
 \end{tkzexample}
-
-% paragraph example (end)
-% subsubsection circle_path (end)
-
-% subsection methods_of_the_class_circle (end)
-% section class_circle (end)
-
 \endinput

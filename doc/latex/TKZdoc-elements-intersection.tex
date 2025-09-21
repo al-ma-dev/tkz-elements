@@ -1,5 +1,5 @@
 \newpage
-\section{Intersections} % (fold)
+\section{Intersections}
 \label{sec:intersections}
 
 The \tkzFct{intersection} function is an essential geometric tool. It computes the intersection of two geometric objects, which may belong to the following classes:
@@ -27,8 +27,8 @@ In cases where two intersection points exist, and you either:
 \end{itemize}
 you can make use of optional keys described in the next section.
 
-\subsection{Optional arguments: \code{known} and \code{near}} % (fold)
-\label{sub:intersection_known_near}
+
+\subsection{Optional arguments: \code{known} and \code{near}}
 
 The function \tkzFct{intersection(X, Y, opts)} computes the intersection points between two geometric objects \code{X} and \code{Y} (such as circles, lines, or conics). In some cases, the order of the returned solutions can be important, especially when assigning names or selecting a specific point in a figure. To address this, the \code{opts} table can include optional keys:
 
@@ -58,10 +58,7 @@ If none of these options is specified, the intersection points are returned in t
 \noindent
 \textbf{Note:} These options are only meaningful when the intersection returns multiple points. In the case of a single intersection (e.g., a tangent), the result is unaffected.
 
-% subsection intersection_known_near (end)
-
-
-\subsection{Line-line} % (fold)
+\subsection{Line-line}
 \label{sub:line_line}
 
 The result is of the form: |point| or |false|.
@@ -118,11 +115,10 @@ end}
 \end{minipage}
 
 Other examples: \ref{sub:altshiller}, \ref{sub:lemoine}, \ref{sub:alternate}
-% subsection line_line (end)
-
 \newpage
-\subsection{Line-circle} % (fold)
-\label{sub:line_circle}
+
+\subsection{Line-circle}
+
 The result is of the form : |point,point| or |false,false|. If the line is tangent to the circle, then the two points are identical. You can ignore one of the points by using the underscore: |_, point| or |point, _|. When the intersection yields two solutions, the order of the points is determined by the argument of |(z.p - z.c)| with |c| center of the circle and |p| point of intersection. The first solution corresponds to the smallest argument (arguments are between 0 and $2\pi$).
 
 \begin{minipage}{0.6\textwidth}
@@ -174,11 +170,9 @@ The result is of the form : |point,point| or |false,false|. If the line is tange
 \end{minipage}
 
 Other examples: \ref{sub:altshiller}
-% subsection line_circle (end)
-
 \newpage
-\subsection{Circle-circle} % (fold)
-\label{sub:circle_circle}
+
+\subsection{Circle-circle}
 
 The result is of the form : |point,point| or |false,false|. If the circles are  tangent, then the two points are identical. You can ignore one of the points by using the underscore: |_ , point| or |point , _|. As for the intersection of a line and a circle, consider the argument of |z.p-z.c|  with |c| center of the first circle and |p| point of intersection. The first solution corresponds to the smallest argument (arguments are between 0 and $2\pi$).
 
@@ -225,10 +219,9 @@ The result is of the form : |point,point| or |false,false|. If the circles are  
 \end{minipage}
 
 Other examples: \ref{sub:altshiller}, \ref{sub:the_figure_pappus_circle}
-% subsection circle_circle (end)
-
 \newpage
-\subsection{Line-conic} % (fold)
+
+\subsection{Line-conic}
 \label{sub:line_conic}
 The following example is complex, but it shows the possibilities of Lua.
 The designation of intersection points is a little more complicated than the previous one, as the argument characterizing the major axis must be taken into account.  The principle is the same, but this argument must be subtracted. In concrete terms, you need to consider the slopes of the lines formed by the center of the ellipse and the points of intersection, and the slope of the major axis.
@@ -306,8 +299,7 @@ The designation of intersection points is a little more complicated than the pre
 \end{verbatim}
 
 
-\subsubsection{Intersection all subtypes of conics} % (fold)
-\label{ssub:intersection_all_subtypes_of_conics}
+\subsubsection{Intersection all subtypes of conics}
 
 \begin{verbatim}
 \directlua{
@@ -376,9 +368,8 @@ The designation of intersection points is a little more complicated than the pre
   \tkzDrawPoints[red](u_1,u_2,v_2,v_1,w_1,w_2)
   \end{tikzpicture}
 \end{center}
-% subsubsection intersection_all_subtypes_of_conics (end)
 
-\subsubsection{Intersection line-parabola, explained} % (fold)
+\subsubsection{Intersection line-parabola, explained}
 \label{ssub:intersection_line_parabola_explained}
 
 In this example, we're looking for a parabola inscribed in a triangle, i.e. tangent to the triangle's three sides.
@@ -423,7 +414,7 @@ The result is two abscissas that must be placed on the axis passing through $S$ 
 Finally, the abscissas of the intersection points must be placed, and then the intersections of the lines orthogonal to Euler's line passing through these abscissas with the line $(ab)$ must be determined.
 
 Note: This geometric method is more appropriate than determining the intersection points' coordinates using formulas. Indeed, those coordinates would be expressed in the new coordinate system, requiring an additional transformation to return to the original system.
-  
+
 \begin{verbatim}
 \directlua{
    init_elements()
@@ -432,12 +423,12 @@ Note: This geometric method is more appropriate than determining the intersectio
    z.C = point(2, 3)
    T.ABC  = triangle(z.A, z.B, z.C)
    L.euler = T.ABC:euler_line():swap_line()
-   z.F = T.ABC:kimberling(110) 
+   z.F = T.ABC:kimberling(110)
    z.H = T.ABC.orthocenter
    z.O = T.ABC.circumcenter
    z.Ω = point(0, 0)
    z.i = point(1, 0)
-   z.j = point(0, 1)         
+   z.j = point(0, 1)
    CO.PA  = conic(z.F, L.euler, 1)
    PA.curve = CO.PA:points(-3.5, 5.5, 50)
    local p = CO.PA.p
@@ -466,9 +457,9 @@ Note: This geometric method is more appropriate than determining the intersectio
   L1 = L.euler:ortho_from(z.x)
   L2 = L.euler:ortho_from(z.y)
   z.s_1 = intersection(L.ab, L1)
-  z.s_2 = intersection(L.ab, L2)}  
+  z.s_2 = intersection(L.ab, L2)}
   \begin{tikzpicture}
-  \tkzGetNodes 
+  \tkzGetNodes
    \tkzDrawCoordinates[smooth,purple,thick](PA.curve)
    \tkzDrawLines[add = .2 and 1](A,B A,C B,C K,F O,H)
    \tkzDrawPolygon[thick,cyan](A,B,C)
@@ -491,12 +482,12 @@ Note: This geometric method is more appropriate than determining the intersectio
    z.C = point(2, 3)
    T.ABC  = triangle(z.A, z.B, z.C)
    L.euler = T.ABC:euler_line():swap_line()
-   z.F = T.ABC:kimberling(110) 
+   z.F = T.ABC:kimberling(110)
    z.H = T.ABC.orthocenter
    z.O = T.ABC.circumcenter
    z.Ω = point(0, 0)
    z.i = point(1, 0)
-   z.j = point(0, 1)         
+   z.j = point(0, 1)
    CO.PA  = conic(z.F, L.euler, 1)
    PA.curve = CO.PA:points(-3.5, 5.5, 50)
    local p = CO.PA.p
@@ -525,11 +516,11 @@ Note: This geometric method is more appropriate than determining the intersectio
   L1 = L.euler:ortho_from(z.x)
   L2 = L.euler:ortho_from(z.y)
   z.s_1 = intersection(L.ab, L1)
-  z.s_2 = intersection(L.ab, L2)} 
+  z.s_2 = intersection(L.ab, L2)}
 
 \begin{center}
 \begin{tikzpicture}
-  \tkzGetNodes 
+  \tkzGetNodes
   \tkzDrawCoordinates[smooth,purple,thick](PA.curve)
   \tkzDrawLines[add = .2 and 1](A,B A,C B,C K,F O,H)
   \tkzDrawPolygon[thick,cyan](A,B,C)
@@ -544,8 +535,4 @@ Note: This geometric method is more appropriate than determining the intersectio
   \tkzLabelPoints[left](H,K)
 \end{tikzpicture}
 \end{center}
-
-
-% subsubsection intersection_line_parabola_explained (end)
-% subsection line_conic (end)
-% section intersections (end)
+\endinput

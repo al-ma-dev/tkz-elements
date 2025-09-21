@@ -1,6 +1,6 @@
 \newpage
 \section{Class \tkzClass{triangle}} %(fold)
-\label{sec:class_triangle}
+
 
 The variable \tkzVar{triangle}{T} holds a table used to store triangle objects. Its use is optional: you are free to choose another variable name, but using  \tkzVar{triangle}{T} is the recommended convention for clarity and consistency across examples and documentation.
 
@@ -14,7 +14,7 @@ Each triangle object is created using the \tkzMeth{triangle}{new} method, which 
 
 \vspace{1em}
 
-\subsection{Creating a triangle} % (fold)
+\subsection{Creating a triangle}
 \label{sub:creating_a_triangle}
 
 The \tkzClass{triangle} class is used to define triangles from three points. It automatically computes a wide range of geometric attributes associated with the triangle.
@@ -33,10 +33,8 @@ The short form \code{triangle(z.A, z.B, z.C)} is equivalent and more commonly us
 T.ABC = triangle(z.A, z.B, z.C)
 \end{verbatim}
 \end{mybox}
-% subsection creating_a_triangle (end)
 
 \subsection{Attributes of a Triangle} %(fold)
-\label{sub:attributes_of_a_triangle}
 
 The triangle object is created using the method \tkzMeth{triangle}{new}, for example:
 
@@ -83,8 +81,7 @@ The triangle object is created using the method \tkzMeth{triangle}{new}, for exa
 These attributes define the essential geometric properties of the triangle and are used in numerous derived methods and constructions.
 
 
-\begin{center}
-  \bgroup
+\bgroup
   \small
   \captionof{table}{Triangle attributes.}\label{triangle:att}
   \begin{tabular}{ll}
@@ -117,10 +114,10 @@ These attributes define the essential geometric properties of the triangle and a
   \bottomrule %
   \end{tabular}
   \egroup
-\end{center}
 
 
-\subsubsection{Triangle attributes: definition points} % (fold)
+
+\subsubsection{Triangle attributes: definition points}
 \label{ssub:triangle_attributes_points}
 
 Consider a triangle $ABC$. We want to construct a new triangle whose vertices are the reflections of $A$, $B$, and $C$ with respect to the midpoints of their opposite sides.
@@ -144,7 +141,6 @@ Alternatively, from the last, the method \code{get()} retrieves all three vertic
 For a practical illustration of this method, see  the associated \code{tikzpicture} example in the documentation.
 
 \vspace{1em}
-
 
 % see help.lua for a dev code
 \begin{minipage}{.5\textwidth-2cm}
@@ -183,9 +179,8 @@ For a practical illustration of this method, see  the associated \code{tikzpictu
   z.Cp = z.mc:symmetry(z.C)}
 \end{tkzexample}
 \end{minipage}
-% subsubsection triangle_attributes_points (end)
 
-\subsubsection{Triangle attributes: characteristic points} % (fold)
+\subsubsection{Triangle attributes: characteristic points}
 \label{ssub:triangle_attributes_characteristic_points}
 The \code{tikzpicture} environment can be viewed in the documentation.
 
@@ -228,7 +223,6 @@ init_elements()
  z.S = T.ABC.spiekercenter}
 \end{tkzexample}
 \end{minipage}
-% subsubsection triangle_attributes_characteristic_points (end)
 
 \subsubsection{Triangle attributes: angles} %(fold)
 \label{ssub:triangle_attributes_angles}
@@ -253,9 +247,8 @@ init_elements()
 \end{center}
 The sum of the angles is: \tkzUseLua{math.deg(S)}
 \end{tkzexample}
-% subsubsection triangle_attributes_angles(end)
 
-\subsubsection{Triangle attributes: lengths} % (fold)
+\subsubsection{Triangle attributes: lengths}
 \label{ssub:triangle_attributes_lengths}
 
 You can access different lengths, in particular side lengths with:
@@ -271,9 +264,8 @@ You can access different lengths, in particular side lengths with:
   A = T.ABC.area
 \end{tkzexample}
 \end{mybox}
-% subsection triangle_attributes_lengths (end)
 
-\subsubsection{Triangle attributes: straight lines} % (fold)
+\subsubsection{Triangle attributes: straight lines}
 \label{ssub:triangle_attributes_straight_lines}
 
 Several attributes associated with triangle sides and lines simplify code writing and improve readability.
@@ -321,23 +313,19 @@ This approach saves time and space in scripts involving medians, altitudes, bise
   \tkzDrawPoints(A,B,C,Q)
   \end{tikzpicture}
 \end{tkzexample}
-% subsubsection triangle_attributes_straight_lines (end)
-% subsubsection attributes_of_a_triangle(end)
 
 \subsection{Methods of the class triangle} %(fold)
-\label{sub:methods_of_the_class_triangle}
 
-\begin{center}
-  \bgroup
+\bgroup
   \catcode`_=12
   \small
   \begin{minipage}{\textwidth}
-  \captionof{table}{triangle methods.}\label{triangle:met}
+  \captionof{table}{triangle methods.}
   \begin{tabular}{ll}
   \toprule
   \textbf{Methods} & \textbf{Reference}      \\
   \midrule
-  \tkzMeth{triangle}{new}(a, b ,c) & Note\footnote{triangle(pt, pt, pt) (short form, recommended)}; [\ref{ssub:method_triangle_new_pt_pt_pt}]  \\
+  \tkzMeth{triangle}{new}(a, b ,c) & Note\footnote{triangle(pt, pt, pt) (short form, recommended)}; [\ref{sub:creating_a_triangle}; \ref{ssub:method_triangle_new_pt_pt_pt}]  \\
   \midrule
   \textbf{Booleans}&\\
   \midrule
@@ -354,10 +342,20 @@ This approach saves time and space in scripts involving medians, altitudes, bise
   \tkzMeth{triangle}{area()} & better T.ABC.area\\
 
   \tkzMeth{triangle}{barycentric\_coordinates(pt)}& [\ref{ssub:_triangle_barycentric__coordinates_pt}]\\
+
+  \tkzMeth{triangle}{trilinear\_coordinates(pt)} & [\ref{ssub:triangle_trilinear_coordinates_pt}]\\
+
+  \tkzMeth{triangle}{get\_angle(arg)} & [\ref{ssub:method_triangle_get_angle}] \\
    \midrule
 
    \textbf{Points} &\\
   \midrule
+  \tkzMeth{triangle}{get(arg)} & [\ref{ssub:method_triangle_get}]\\
+
+ \tkzMeth{triangle}{point(r)} & [\ref{ssub:method_triangle_point_r}]\\
+
+\tkzMeth{triangle}{random(<'inside'>)} & [\ref{ssub:method_triangle_random_inside}]\\
+
   \tkzMeth{triangle}{barycentric(ka,kb,kc)} & Note \footnote{The function \code{barycenter} is used to obtain the barycentre for any number of points }\\
 
   \tkzMeth{triangle}{base(u,v)} & [\ref{ssub:method_triangle_base}] \\
@@ -370,7 +368,7 @@ This approach saves time and space in scripts involving medians, altitudes, bise
 
   \tkzMeth{triangle}{lemoine\_point()}  &  [\ref{ssub:method_triangle_symmedial}] \\
 
-  \tkzMeth{triangle}{bevan\_point()}  &  [\ref{ssub:methods_triangle_bevan_circle}]\\
+  \tkzMeth{triangle}{bevan\_point()}  &  [\ref{ssub:method_imeth_triangle_bevan_point}; \ref{ssub:methods_triangle_bevan_circle}]\\
 
   \tkzMeth{triangle}{mittenpunkt\_point()} &  [\ref{ssub:method_triangle_mittenpunkt}]\\
 
@@ -380,7 +378,7 @@ This approach saves time and space in scripts involving medians, altitudes, bise
 
   \tkzMeth{triangle}{feuerbach\_point()} & [\ref{ssub:method_point_feuerbach}]\\
 
-  \tkzMeth{triangle}{spieker\_center()} & [\ref{sub:apollonius_circle_v1_with_inversion}]\\
+  \tkzMeth{triangle}{spieker\_center()} & [\ref{ssub:method_triangle_spieker_center}; \ref{sub:apollonius_circle_v1_with_inversion}]\\
 
   \tkzMeth{triangle}{projection(p)}  & [\ref{sub:euler_relation}; \ref{ssub:method_triangle_projection_pt}]\\
 
@@ -397,11 +395,50 @@ This approach saves time and space in scripts involving medians, altitudes, bise
   \tkzMeth{triangle}{isogonal(p)}  & See   [\ref{ssub:method_triangle_isogonal}]\\
 
   \tkzMeth{triangle}{macbeath\_point()(p)}  & See   [\ref{ssub:method_triangle_macbeath_point}]\\
-   \tkzMeth{triangle}{poncelet\_point(p)}  & See   [\ref{ssub:method_triangle_poncelet_point}]\\
-     \tkzMeth{triangle}{orthopole(L)}  & See   [\ref{ssub:method_triangle_orthopole}]\\
-    \midrule
 
-   \textbf{Lines} &\\
+  \tkzMeth{triangle}{poncelet\_point(p)}  & See   [\ref{ssub:method_triangle_poncelet_point}]\\
+
+  \tkzMeth{triangle}{orthopole(L)}  & See   [\ref{ssub:method_triangle_orthopole}]\\
+
+  \tkzMeth{triangle}{first\_fermat\_point()}  &
+    See [\ref{ssub:method_triangle_first_fermat_point}] \\
+
+  \tkzMeth{triangle}{second\_fermat\_point()}  &
+  See [\ref{ssub:method_triangle_second__fermat__point}] \\
+
+  \tkzMeth{triangle}{lamoen\_points()}  &
+See [\ref{ssub:method_triangle_lamoen_points}]\\
+
+  \tkzMeth{triangle}{soddy\_center()}  &
+See [\ref{ssub:method_triangle_soddy_center}] \\
+
+  \tkzMeth{triangle}{conway\_points()}  &
+See [\ref{ssub:method_triangle_conway_points}] \\
+
+  \tkzMeth{triangle}{kenmotu\_point()}  &
+See [\ref{ssub:_triangle_kenmotu__point}] \\
+
+  \tkzMeth{triangle}{orthic\_axis\_points()}  &
+See [ \ref{ssub:method_triangle_orthic}; \ref{ssub:method_triangle_orthic_axis_points}] \\
+
+  \bottomrule
+  \end{tabular}
+  \end{minipage}
+  \egroup
+
+
+
+  \bgroup
+  \catcode`_=12
+  \small
+  \begin{minipage}{\textwidth}
+  \captionof{table}{triangle methods.}
+  \begin{tabular}{ll}
+  \toprule
+  \textbf{Methods} & \textbf{Reference}      \\
+  \midrule
+
+\textbf{Lines} &\\
   \midrule
 
   \tkzMeth{triangle}{altitude(arg) } & Note
@@ -414,10 +451,12 @@ This approach saves time and space in scripts involving medians, altitudes, bise
 \tkzMeth{triangle}{mediator(arg)} & [\ref{ssub:triangle_mediator}]\\
 
 
-  \tkzMeth{triangle}{symmedian\_line(arg)} & [\ref{ssub:method_triangle_symmedial} ; \ref{ssub:method_line_isosceles}]\\
+  \tkzMeth{triangle}{symmedian\_line(arg)} & [\ref{ssub:method_imeth_triangle_symmedian__line}
+; \ref{ssub:method_triangle_symmedial} ; \ref{ssub:method_line_isosceles}]\\
 
   \tkzMeth{triangle}{euler\_line() } &Note
-  \footnote{N center of nine points circle, G centroid, H orthocenter , O circum center } ; [\ref{sub:hexagram}]\\
+  \footnote{N center of nine points circle, G centroid, H orthocenter , O circum center } ; [\ref{ssub:euler_line}
+; \ref{sub:hexagram}]\\
 
   \tkzMeth{triangle}{antiparallel(pt,n)} & [\ref{antiparallel};\ref{sub:antiparallel_through_lemoine_point}]\\
 
@@ -434,21 +473,20 @@ This approach saves time and space in scripts involving medians, altitudes, bise
 
   \tkzMeth{triangle}{fermat\_axis()}  & \\
 
+  \tkzMeth{triangle}{orthic\_axis()}  & See [\ref{ssub:method_triangle_orthic_axis}]\\
+
   \bottomrule
   \end{tabular}
   \end{minipage}
   \egroup
-\end{center}
+
 
 
 \newpage
-
-  \bgroup
-  \catcode`_=12
-  \small
-  \begin{minipage}{\textwidth}
-  %\caption{Methods of the class triangle(follow-up) }
- \begin{center}
+\bgroup
+\catcode`_=12
+\small
+\begin{minipage}{\textwidth}
     \begin{tabular}{ll}
   \toprule
   \textbf{Methods} & \textbf{Comments}     \\
@@ -465,18 +503,21 @@ This approach saves time and space in scripts involving medians, altitudes, bise
 
   \tkzMeth{triangle}{ex\_circle(n)}  & [\ref{ssub:method_triangle_ex__circle}]\\
 
-  \tkzMeth{triangle}{first\_lemoine\_circle()}    & [\ref{sub:first_and_second_lemoine_circles}
+  \tkzMeth{triangle}{first\_lemoine\_circle()}    & [\ref{ssub:method_triangle_first_lemoine_circle}
+; \ref{sub:first_and_second_lemoine_circles}
   ] \\
 
-  \tkzMeth{triangle}{second\_lemoine\_circle()}  &  \ref{sub:antiparallel_through_lemoine_point}] \\
+  \tkzMeth{triangle}{second\_lemoine\_circle()}  &  \ref{sub:first_and_second_lemoine_circles}
+; \ref{sub:antiparallel_through_lemoine_point}] \\
 
   \tkzMeth{triangle}{spieker\_circle()} &  [\ref{ssub:method_triangle_spieker__circle}]\\
 
   \tkzMeth{triangle}{bevan\_circle()}  & [\ref{ssub:methods_triangle_bevan_circle}]\\
 
-  \tkzMeth{triangle}{cevian\_circle()} &  [\ref{ssub:method_triangle_cevian}]\\
+  \tkzMeth{triangle}{cevian\_circle()} &  [\ref{ssub:_triangle_cevian__circle_pt}
+; \ref{ssub:method_triangle_cevian}]\\
 
-  \tkzMeth{triangle}{symmedial\_circle()}  & [\ref{ssub:method_triangle_symmedial}]\\
+  \tkzMeth{triangle}{symmedial\_circle()}  & [\ref{ssub:method_triangle_symmedial_circ}; \ref{ssub:method_triangle_symmedial}]\\
 
   \tkzMeth{triangle}{pedal\_circle()} &  [\ref{ssub:method_triangle_pedal}]\\
 
@@ -492,12 +533,19 @@ This approach saves time and space in scripts involving medians, altitudes, bise
 
   \tkzMeth{triangle}{thebault(pt)}  &  [\ref{ssub:method_triangle_c_c}]\\
 
-  \tkzMeth{triangle}{mixtilinear_incircle(arg)}  &  [\ref{ssub:method_triangle_mixti}]\\
+  \tkzMeth{triangle}{mixtilinear\_incircle(arg)}  &  [\ref{ssub:method_triangle_mixti}]\\
 
-  \tkzMeth{triangle}{three_tangent_circles} &  [\ref{ssub:method_triangle_three_tgt_c}]\\
+  \tkzMeth{triangle}{three\_tangent\_circles} &  [\ref{ssub:method_triangle_three_tgt_c}]\\
+
+  \tkzMeth{triangle}{adams\_circle()}  & [\ref{ssub:method_triangle_adams_circle}]\\
+
+  \tkzMeth{triangle}{lamoen\_circle()}  &
+  See [\ref{ssub:method_triangle_lamoen_points}] \\
+
+  \tkzMeth{triangle}{soddy\_circle()}  &
+  See [\ref{ssub:method_triangle_soddy_circle}] \\
 
   \midrule
-
 
   \textbf{Triangles} &\\
   \midrule
@@ -507,11 +555,11 @@ This approach saves time and space in scripts involving medians, altitudes, bise
 
   \tkzMeth{triangle}{incentral()}  &[\ref{ssub:method_incentral}] \\
 
-  \tkzMeth{triangle}{excentral()}  &[\ref{ssub:method_triangle_feuerbach} ]  \\
+  \tkzMeth{triangle}{excentral()}  &[\ref{ssub:method_triangle_excentral}; \ref{ssub:method_triangle_feuerbach} ]  \\
 
-  \tkzMeth{triangle}{extouch()}   &[\ref{sub:excircles} ] \\
+  \tkzMeth{triangle}{extouch()}   &[\ref{ssub:method_triangle_extouch}; \ref{sub:excircles} ] \\
 
-  \tkzMeth{triangle}{intouch() }   &[\ref{ssub:gergonne_point}]\\
+  \tkzMeth{triangle}{intouch() }   &[\ref{ssub:method_triangle_intouch}; \ref{ssub:gergonne_point}]\\
 
   \tkzMeth{triangle}{contact() } &  contact = intouch ; [
   \ref{ssub:gergonne_point}] \\
@@ -526,33 +574,40 @@ This approach saves time and space in scripts involving medians, altitudes, bise
 
   \tkzMeth{triangle}{symmedial()}  &[\ref{ssub:method_triangle_symmedial}] \\
 
-  \tkzMeth{triangle}{euler()} & [\ref{ssub:method_triangle_euler__points}] \\
+  \tkzMeth{triangle}{euler()} & [\ref{ssub:method_triangle_euler}; \ref{ssub:method_triangle_euler__points}] \\
 
   \tkzMeth{triangle}{lemoine()} &[\ref{ssub:method_triangle_lemoine}] \\
 
   \tkzMeth{triangle}{macbeath()}  & See   [\ref{ssub:method_triangle_macbeath}]\\
 
+  \tkzMeth{triangle}{circumcevian()}  & See   [  \ref{ssub:method_triangle_circumcevian}]\\
+
+
   \midrule
    \textbf{Conics} &\\
-    \tkzMeth{triangle}{kiepert\_parabola()} & [ \ref{ssub:method_triangle_kiepert_parabola}] \\
+    \tkzMeth{triangle}{kiepert\_parabola()} & [\ref{ssub:method_triangle_kiepert_parabola}] \\
 
-   \tkzMeth{triangle}{kiepert\_hyperbola()} & [ \ref{ssub:method_triangle_kiepert__hyperbola}] \\
+   \tkzMeth{triangle}{kiepert\_hyperbola()} & [\ref{ssub:method_triangle_kiepert__hyperbola}] \\
 
   \tkzMeth{triangle}{steiner\_inellipse()}& [ \ref{ssub:steiner_inellipse_and_circumellipse}] \\
 
   \tkzMeth{triangle}{steiner\_circumellipse()} & [ \ref{ssub:steiner_inellipse_and_circumellipse}] \\
 
-  \tkzMeth{triangle}{euler\_ellipse()}  & [(\ref{ssub:euler_ellipse}]\\
+  \tkzMeth{triangle}{euler\_ellipse()}  & [\ref{ssub:euler_ellipse}]\\
 
-  \tkzMeth{triangle}{lemoine\_ellipse()} & [(\ref{ssub:method_triangle_lemoine_inellipse}]\\
+  \tkzMeth{triangle}{lemoine\_ellipse()} & [\ref{ssub:method_triangle_lemoine_inellipse}]\\
 
-  \tkzMeth{triangle}{brocard\_inellipse()}  & [(\ref{ssub:method_triangle_brocard__inellipse}]\\
+  \tkzMeth{triangle}{brocard\_inellipse()}  & [\ref{ssub:method_triangle_brocard__inellipse}]\\
 
-  \tkzMeth{triangle}{macbeath\_inellipse()}  & [(\ref{ssub:method_triangle_macbeath__inellipse}]\\
+  \tkzMeth{triangle}{macbeath\_inellipse()}  & [\ref{ssub:method_triangle_macbeath__inellipse}]\\
 
-  \tkzMeth{triangle}{mandart\_ellipse()}  & [(\ref{ssub:method_triangle_mandart__inellipse}]\\
+  \tkzMeth{triangle}{mandart\_ellipse()}  & [\ref{ssub:method_triangle_mandart__inellipse}]\\
 
-  \tkzMeth{triangle}{orthic\_inellipse()}  & [(\ref{ssub:method_triangle_orthic__inellipse}]\\
+  \tkzMeth{triangle}{orthic\_inellipse()}  & [\ref{ssub:method_triangle_orthic__inellipse}]\\
+
+  \tkzMeth{triangle}{reflection()}  & [See \ref{ssub:method_triangle_reflection}; \ref{ssub:method_triangle_simson__line}; \ref{ssub:method_yiu_circles}]\\
+
+
   \midrule
 
   \textbf{Misc.} &\\
@@ -561,13 +616,12 @@ This approach saves time and space in scripts involving medians, altitudes, bise
 
   \bottomrule
   \end{tabular}
-  \end{center}
   \end{minipage}
   \egroup
 
 
 
-\subsubsection{Method \tkzMeth{triangle}{new(pt, pt, pt)}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{new(pt, pt, pt)}}
 \label{ssub:method_triangle_new_pt_pt_pt}
 
 This method creates a triangle object from three given points, which will serve as its vertices.
@@ -602,9 +656,8 @@ These are available as attributes, not as methods.
     T.ABC = triangle(z.A, z.B, z.c)
   \end{tkzexample}
 \end{mybox}
-% subsubsection method_triangle_new_pt_pt_pt (end)
 
-\subsubsection{Method \tkzMeth{triangle}{get(<i>)}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{get(<i>)}}
 \label{ssub:method_triangle_get}
 
 This method performs the inverse of triangle creation: it returns the points that define the triangle object.
@@ -676,12 +729,11 @@ This method belongs to a general mechanism shared by all geometric objects. Its 
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_triangle_get (end)
 %%%%%%%%%%%%%%% boolean %%%%%%%%%%%%
-\subsection{The result is a boolean} % (fold)
+\subsection{The result is a boolean}
 
 
-\subsubsection{Method \tkzMeth{triangle}{in\_out(pt)}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{in\_out(pt)}}
 \label{ssub:_triangle_in__out_pt}
 
 This method tests whether a given point lies \emph{inside} the triangle.
@@ -745,10 +797,7 @@ This function is useful for geometric conditions, filtering, or region-based con
 \end{tkzexample}
 \end{minipage}
 
-
-% subsubsection _triangle_in__out_pt (end)
-
-\subsubsection{Method \tkzMeth{triangle}{check\_equilateral()}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{check\_equilateral()}}
 \label{ssub:_triangle_check__equilateral}
 
 This method checks whether the triangle is equilateral, i.e., whether its three sides are of equal length within a numerical tolerance.
@@ -775,10 +824,7 @@ end
 
 \vspace{1em}
 
-
-% subsubsection _triangle_check__equilateral (end)
-
-\subsubsection{Method \tkzMeth{triangle}{check\_acutangle()}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{check\_acutangle()}}
 \label{ssub:_triangle_check__acutangle}
 
 Boolean. This method tests whether the triangle is \textbf{acutangle}, i.e., if all three of its interior angles are strictly less than $90^\circ$.
@@ -798,8 +844,7 @@ if T.ABC:check_acutangle() then
 end
 \end{verbatim}
 \end{mybox}
-% subsubsection _triangle_check__acutangle (end)
-% subsection the_result_is_a_boolean (end)
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -807,27 +852,9 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{The result is a real} % (fold)
+\subsection{The result is a real}
 
-\subsubsection{Method \tkzMeth{triangle}{area()}} % (fold)
-\label{ssub:method_triangle_area}
-
-This method returns the area of the triangle. However, it is preferable to access the area using the precomputed \code{area} attribute rather than calling the method.
-
-\medskip
-\noindent
-\textbf{Recommended usage:}
-\begin{mybox}
-\code{T.ABC.area} \quad instead of \quad \code{T.ABC:area()}
-\end{mybox}
-
-\noindent
-The attribute is computed once during triangle creation and reused, whereas the method recomputes the value each time it is called.
-
-
-% subsubsection method_triangle_area (end)
-
-\subsubsection{Method \tkzMeth{triangle}{barycentric\_coordinates(pt)}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{barycentric\_coordinates(pt)}}
 \label{ssub:_triangle_barycentric__coordinates_pt}
 
 This method returns the \textbf{normalized barycentric coordinates} of a point relative to the reference triangle.
@@ -880,9 +907,7 @@ If the point lies on a side or at a vertex, one or more coordinates will be zero
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection _triangle_barycentric__coordinates_pt (end)
-
-\subsubsection{Method \tkzMeth{triangle}{trilinear\_coordinates(pt)}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{trilinear\_coordinates(pt)}}
 \label{ssub:triangle_trilinear_coordinates_pt}
 
 This method returns the \textbf{trilinear coordinates} of a point relative to the reference triangle.
@@ -902,9 +927,7 @@ Unlike barycentric coordinates, trilinear coordinates are homogeneous, i.e., the
 P = x : y : z
 \]
 
-% subsubsection triangle_trilinear_coordinates_pt (end)
-
-\subsubsection{Method \tkzMeth{triangle}{get\_angle(n)}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{get\_angle(n)}}
 \label{ssub:method_triangle_get_angle}
 
 This method returns one of the three internal angles of the triangle, based on a cyclic permutation index \code{n}.
@@ -951,19 +974,15 @@ The triangle's vertices are assumed to be ordered in the direct (counter-clockwi
 \end{center}
 \end{tkzexample}
 
-% subsubsection method_triangle_get_angle (end)
-% subsection the_result_is_a_real (end)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 %%%%%%%%%%%%%% points %%%%%%%%%%%%%
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\subsection{The result is a point} % (fold)
+\subsection{The result is a point}
 
-\subsubsection{Method \tkzMeth{triangle}{point(r)}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{point(r)}}
 \label{ssub:method_triangle_point_r}
 
 This method is common to most classes. It places a point along the contour of the triangle, proportionally to its perimeter.
@@ -1003,9 +1022,7 @@ The parameter \code{r} must be a real number between \code{0} and \code{1}, repr
   \end{tikzpicture}
 \end{tkzexample}
 
-% subsubsection method_triangle_point_r (end)
-
-\subsubsection{Method \tkzMeth{triangle}{random(<'inside'>)}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{random(<'inside'>)}}
 \label{ssub:method_triangle_random_inside}
 
 This method determines either a random point on one of the sides, or an interior point using the optional \code{inside} argument.
@@ -1027,9 +1044,7 @@ This method determines either a random point on one of the sides, or an interior
 \end{tikzpicture}
 \end{tkzexample}
 
-% subsubsection method_triangle_random_inside (end)
-
-\subsubsection{Method \tkzMeth{triangle}{barycentric(ka, kb, kc)}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{barycentric(ka, kb, kc)}}
 \label{ssub:_triangle_barycentric_ka_kb_kc}
 
 This method, also available under the alias \code{barycenter}, returns the point with barycentric coordinates $(ka : kb : kc)$ with respect to the triangle.
@@ -1065,9 +1080,7 @@ This method is widely used internally, notably by the \code{kimberling()} method
 \end{tikzpicture}
 \end{tkzexample}
 
-% subsubsection _triangle_barycentric_ka_kb_kc (end)
-
-\subsubsection{Method \tkzMeth{triangle}{trilinear(x, y, z)}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{trilinear(x, y, z)}}
 \label{ssub:method_triangle_trilinear_x_y_z}
 
 This method determines a point $P$ given its trilinear coordinates relative to a reference triangle $ABC$.
@@ -1112,8 +1125,6 @@ Trilinear coordinates were introduced by Plücker in 1835 and remain a fundament
 \end{center}
 \end{tkzexample}
 
-% subsubsection method_triangle_trilinear_x_y_z (end)
-
 \subsubsection{Method \tkzMeth{triangle}{base}} %(fold)
 \label{ssub:method_triangle_base}
 
@@ -1141,8 +1152,6 @@ This yields a point located "beyond" $A$ in the direction formed by adding the t
 
 \vspace{1em}
 
-
-\vspace{1em}
 \begin{tkzexample}[latex=.5\textwidth]
 \directlua{
  init_elements()
@@ -1164,10 +1173,7 @@ This yields a point located "beyond" $A$ in the direction formed by adding the t
 \end{center}
 \end{tkzexample}
 
-% subsubsection method_triangle_base(end)
-
-
-\subsubsection{Method \tkzMeth{triangle}{kimberling(n)}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{kimberling(n)}}
 \label{ssub:method_triangle_kimberling_n}
 
 This method returns the triangle center corresponding to the Kimberling number~\code{n}.
@@ -1242,8 +1248,6 @@ Only a selection of centers is currently implemented in this method. The accessi
 \end{tikzpicture}
 \end{center}
 \end{tkzexample}
-% subsubsection method_triangle_kimberling_n (end)
-
 
 \subsubsection{Method \tkzMeth{triangle}{isogonal(pt)}} %(fold)
 \label{ssub:method_triangle_isogonal}
@@ -1324,9 +1328,7 @@ In the accompanying example, $x$ is the intersection of the tangent with side $A
 \end{center}
  \end{tkzexample}
 
-% subsubsection method_triangle_isogonal(end)
-
-\subsubsection{Method \tkzMeth{triangle}{bevan\_point()}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{bevan\_point()}}
 \label{ssub:method_imeth_triangle_bevan_point}
 The Bevan point of a triangle  is the circumcenter of the excentral triangle.
 
@@ -1351,14 +1353,11 @@ The Bevan point of a triangle  is the circumcenter of the excentral triangle.
   \end{tikzpicture}
 \end{tkzexample}
 
-% subsubsection method_imeth_triangle_bevan_point (end)
-\subsubsection{Method \tkzMeth{triangle}{excenter}(pt)} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{excenter}(pt)}
 \label{ssub:method_triangle_excenter_pt}
 Since the argument is one of the triangle's vertices, this method returns the center of the corresponding exinscribed circle.
 
-% subsubsection method_triangle_excenter_pt (end)
-
-\subsubsection{Method \tkzMeth{triangle}{projection}(pt)} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{projection}(pt)}
 \label{ssub:method_triangle_projection_pt}
 
 This method returns the three orthogonal projections of a point onto the sides of the triangle.
@@ -1423,14 +1422,9 @@ This method is useful, for example, in constructing the pedal triangle of a poin
     \end{center}
 \end{tkzexample}
 
-% subsubsection method_triangle_projection_pt (end)
-
-\subsubsection{Method \tkzMeth{triangle}{parallelogram()}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{parallelogram()}}
 \label{ssub:method_triangle_parallelogram}
 Complete a triangle as a parallelogram. If \code{z.D = T.ABC:parallelogram()} then  $ABCD$ is a parallelogram.
-
-% subsubsection method_triangle_parallelogram (end)
-
 
 \subsubsection{Method \tkzMeth{triangle}{mittenpunkt}} %(fold)
 \label{ssub:method_triangle_mittenpunkt}
@@ -1444,7 +1438,6 @@ The Mittenpunkt is defined as the \emph{symmedian point of the excentral triangl
 \medskip
 \noindent
 It is a notable triangle center, designated as $X_{(9)}$ in Kimberling’s classification.
-
 \begin{flushright}
 \small
 \href{https://mathworld.wolfram.com/Mittenpunkt.html}{Weisstein, Eric W. "Mittenpunkt." MathWorld.}
@@ -1504,8 +1497,6 @@ It is a notable triangle center, designated as $X_{(9)}$ in Kimberling’s class
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_triangle_mittenpunkt(end)
-
 \subsubsection{Method \tkzMeth{triangle}{gergonne\_point()}} %(fold)
 \label{ssub:gergonne_point}
 
@@ -1526,7 +1517,6 @@ In this example, the method is often combined with:
 \medskip
 \noindent
 These contact points are the feet of the perpendiculars from the incenter to each side, i.e., the tangency points of the incircle with the triangle’s sides.
-
 \begin{flushright}
 \small
 \href{https://mathworld.wolfram.com/GergonnePoint.html}{Weisstein, Eric W. "Gergonne Point." MathWorld.}
@@ -1570,8 +1560,6 @@ These contact points are the feet of the perpendiculars from the incenter to eac
   z.ta, z.tb, z.tc = T.abc:intouch():get()}
 \end{tkzexample}
 \end{minipage}
-
-% subsubsection gergonne_point(end)
 
 \subsubsection{Method \tkzMeth{triangle}{Nagel\_point}} %(fold)
 \label{ssub:method_triangle_nagel__point}
@@ -1626,8 +1614,6 @@ Let $E_a$ be the point at which the $J_a$-excircle meets the side $(BC)$ of a tr
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_triangle_nagel__point(end)
-
 \subsubsection{Method \tkzMeth{triangle}{feuerbach\_point()}} %(fold)
 \label{ssub:method_point_feuerbach}
 
@@ -1644,7 +1630,6 @@ In addition, the three \emph{excircles} of the triangle are each tangent to the 
 \medskip
 \noindent
 This construction reveals a remarkable configuration of internal and external circle tangency with the nine-point circle.
-
 \begin{flushright}
 \small
 \href{https://mathworld.wolfram.com/FeuerbachPoint.html}{Weisstein, Eric W. "Feuerbach Point." MathWorld.}
@@ -1699,9 +1684,7 @@ This construction reveals a remarkable configuration of internal and external ci
 \end{tkzexample}
 \end{minipage}
 
-%subsubsection method_point_feuerbach(end)
-
-\subsubsection{Method \tkzMeth{triangle}{symmedian\_point()}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{symmedian\_point()}}
 \label{ssub:method_triangle_lemoine_point}
 
 This method returns the \textbf{symmedian point} $K$ of the triangle, also known as the \emph{Lemoine point} (in English and French literature) or the \emph{Grebe point} (in German).
@@ -1718,7 +1701,6 @@ You can also use the aliases \code{lemoine\_point} or \code{grebe\_point} to cal
 \noindent
 A beautiful geometric property of the Lemoine point is the following:
 \textit{The antiparallels to the triangle’s sides passing through the symmedian point intersect the sides in six points that all lie on a same circle} — this is known as the \textbf{first Lemoine circle}.
-
 \begin{flushright}
 \small
 \href{https://mathworld.wolfram.com/SymmedianPoint.html}{Weisstein, Eric W. "Symmedian Point." MathWorld.}
@@ -1770,9 +1752,7 @@ A beautiful geometric property of the Lemoine point is the following:
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_triangle_lemoine_point (end)
-
-\subsubsection{Method \tkzMeth{triangle}{spieker\_center}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{spieker\_center}}
 \label{ssub:method_triangle_spieker_center}
 
 This method returns the \textbf{Spieker center} of the triangle, denoted $X_{(10)}$ in Kimberling’s classification.
@@ -1784,7 +1764,6 @@ The Spieker center $S_p$ is the \textbf{incenter of the medial triangle} of the 
 \medskip
 \noindent
 An important property is that the Spieker center is also the \textbf{center of the radical circle} of the triangle’s three \emph{excircles}. This makes it a key point in both classical triangle geometry and circle configurations.
-
 \begin{flushright}
 \small
 \href{https://mathworld.wolfram.com/SpiekerCircle.html}{Weisstein, Eric W. "Spieker Circle." MathWorld.}
@@ -1813,9 +1792,6 @@ An important property is that the Spieker center is also the \textbf{center of t
  \tkzLabelPoints[left](mb)
 \end{tikzpicture}
 \end{tkzexample}
-
-% subsubsection method_triangle_spieker_center (end)
-
 
 \subsubsection{Method \tkzMeth{triangle}{euler\_points}} %(fold)
 \label{ssub:method_triangle_euler__points}
@@ -1870,9 +1846,6 @@ The points $a$, $b$ and $c$ are the Euler points. They are the midpoints of the 
   z.Hc = T.orthic:get()}
 \end{tkzexample}
 \end{minipage}
-
-
-% subsubsection method_triangle_euler__points(end)
 
 \subsubsection{Method \tkzMeth{triangle}{nine\_points}} %(fold)
 \label{ssub:method_triangle_nine__points}
@@ -1951,9 +1924,7 @@ In the next example, we also compute the centroid (center of gravity) in two dif
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_triangle_nine__points(end)
-
-\subsubsection{Method \tkzMeth{triangle}{soddy\_center}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{soddy\_center}}
 \label{ssub:method_triangle_soddy_center}
 
 This method returns the \textbf{Soddy center} of the triangle.
@@ -2002,9 +1973,7 @@ See  section~\ref{ssub:method_triangle_euler_circle} for details about the assoc
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_triangle_soddy_center (end)
-
-\subsubsection{Method \tkzMeth{triangle}{conway\_points()}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{conway\_points()}}
 \label{ssub:method_triangle_conway_points}
 
 This method returns the six points defined in \textbf{Conway’s circle theorem}.
@@ -2024,7 +1993,6 @@ The six returned points can then be used to draw this Conway circle and to verif
 \medskip
 \noindent
 See  the corresponding figure in section~\ref{ssub:method_triangle_conway} for a complete illustration.
-
 \begin{flushright}
 \small
 \href{https://en.wikipedia.org/wiki/Conway_circle_theorem}{Wikipedia – Conway circle theorem}
@@ -2040,9 +2008,7 @@ See  the corresponding figure in section~\ref{ssub:method_triangle_conway} for a
 \end{tkzexample}
 \end{mybox}
 
-% subsubsection method_triangle_conway_points (end)
-
-\subsubsection{Method \tkzMeth{triangle}{first\_fermat\_point()}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{first\_fermat\_point()}}
 \label{ssub:method_triangle_first_fermat_point}
 In a given triangle $ABC$ with all angles less than  120 degrees (2pi/3), the first Fermat point  is the point  which minimizes the sum of distances from A, B, and C.
 
@@ -2070,15 +2036,12 @@ In a given triangle $ABC$ with all angles less than  120 degrees (2pi/3), the fi
 \end{tikzpicture}
 \end{tkzexample}
 
-% subsubsection method_triangle_first_fermat_point (end)
-
-\subsubsection{Method \tkzMeth{triangle}{second\_fermat\_point()}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{second\_fermat\_point()}}
 \label{ssub:method_triangle_second__fermat__point}
 See  [\ref{ssub:method_triangle_fermat__axis}]
 ]
-% subsubsection method_triangle_second__fermat__point (end)
 
-\subsubsection{Method \tkzMeth{triangle}{kenmotu\_point()}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{kenmotu\_point()}}
 \label{ssub:_triangle_kenmotu__point}
 
 This method returns the \textbf{Kenmotu point} of the triangle, also known as the \emph{congruent squares point}. It is listed as $X_{(371)}$ in Kimberling’s classification.
@@ -2094,22 +2057,20 @@ This triangle center is remarkable for its connection to equal-area geometric co
 \medskip
 \noindent
 See  the illustration in section~\ref{ssub:kenmotu_circle} for a visual representation of the configuration.
-
 \begin{flushright}
 \small
 \href{https://mathworld.wolfram.com/KenmotuPoint.html}{Weisstein, Eric W. "Kenmotu Point." MathWorld}
 \end{flushright}
 
-% subsubsection _triangle_kenmotu__point (end)
-
-\subsubsection{Method \tkzMeth{triangle}{adams\_points()}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{adams\_points()}}
 \label{ssub:method_triangle_adams_points}
 Given a triangle $ABC$, construct the \code{contact} triangle $T_AT_BT_C$. Now extend lines parallel to the sides of the contact triangle from the \code{Gergonne} point. These intersect the triangle $ABC$ in the six points $P, Q,  R, S, T$, and $U$. \code{C. Adams} proved in 1843 that these points are concyclic in a circle now known as the Adams' circle.
+\begin{flushright}
+\small
+\href{ https://mathworld.wolfram.com/AdamsCircle.html}{Weisstein, Eric W. "Adams' Circle." From MathWorld--A Wolfram Web Resource.}
+\end{flushright}
 
-[\href{ https://mathworld.wolfram.com/AdamsCircle.html}{Weisstein, Eric W. "Adams' Circle." From MathWorld--A Wolfram Web Resource.}]
-% subsubsection method_triangle_adams_points (end)
-
-\subsubsection{Method \tkzMeth{triangle}{macbeath\_point}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{macbeath\_point}}
 \label{ssub:method_triangle_macbeath_point}
 The MacBeath point is the center of the cercle kimberling(264).
 
@@ -2132,9 +2093,8 @@ z.Xc = T.ABC:macbeath():get()}
 \tkzLabelPoints[above](A)
 \end{tikzpicture}
 \end{tkzexample}
-% subsubsection method_triangle_macbeath_point (end)
 
-\subsubsection{Method \tkzMeth{triangle}{poncelet\_point}(p)} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{poncelet\_point}(p)}
 \label{ssub:method_triangle_poncelet_point}
 
 If the three vertices and the $p$ point do not form a orthocentric system et no three of them are collinear. The nine-point circles of the four triangles obtained with three of the four points have one thing in common, called \tkzname{Poncelet} point.
@@ -2164,13 +2124,10 @@ If the three vertices and the $p$ point do not form a orthocentric system et no 
 \end{center}
 \end{tkzexample}
 
-% subsubsection method_tkzmeth_triangle_poncelet__point_p (end)
-
-\subsubsection{Method \tkzMeth{triangle}{orthopole}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{orthopole}}
 \label{ssub:method_triangle_orthopole}
 
 For the definition and some properties, please refer to:
-
 \begin{flushright}
 \small
 \href{ https://mathworld.wolfram.com/Orthopole.html}{Weisstein, Eric W. "Orthopole." From MathWorld--A Wolfram Web Resource.}
@@ -2201,19 +2158,14 @@ See the following example for the link between orthopole and Simson line: [\ref{
  \end{tikzpicture}
 \end{center}
 \end{tkzexample}
-% subsubsection method_tkzmeth_triangle_orthopole (end)
 
-% subsection the_result_is_a_point (end)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 %%%%%%%%%%%  Lines %%%%%%%%%%%
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{The result is a line} % (fold)
-
-\subsubsection{Method \tkzMeth{triangle}{symmedian\_line(n)}} % (fold)
+\subsection{The result is a line}
+\subsubsection{Method \tkzMeth{triangle}{symmedian\_line(n)}}
 \label{ssub:method_imeth_triangle_symmedian__line}
 
 This method returns one of the \textbf{symmedians} of the triangle.
@@ -2238,7 +2190,6 @@ To obtain:
 \medskip
 \noindent
 In the following example, the point $L$ is the Lemoine point, and the triangle $L_aL_bL_c$ is the symmedial triangle.
-
 \begin{flushright}
 \small
 \href{https://mathworld.wolfram.com/SymmedianPoint.html}{Weisstein, Eric W. "Symmedian Point." MathWorld.}
@@ -2246,7 +2197,7 @@ In the following example, the point $L$ is the Lemoine point, and the triangle $
 
 \vspace{1em}
 
-\begin{minipage}{.5\textwidth}
+\begin{minipage}{.55\textwidth}
 \directlua{
    init_elements()
    z.A = point(0, 0)
@@ -2280,7 +2231,7 @@ In the following example, the point $L$ is the Lemoine point, and the triangle $
   \end{tikzpicture}
 \end{center}
 \end{minipage}
-\begin{minipage}{.5\textwidth}
+\begin{minipage}{.45\textwidth}
 \begin{tkzexample}[code only]
 \directlua{
  init_elements()
@@ -2301,8 +2252,6 @@ In the following example, the point $L$ is the Lemoine point, and the triangle $
  z.I = T.ABC.incenter}
 \end{tkzexample}
 \end{minipage}
-
-% subsubsection method_imeth_triangle_symmedian__line (end)
 
 \subsubsection{Method \tkzMeth{triangle}{altitude(arg)}} %(fold)
 \label{ssub:method_triangle_altitude}
@@ -2377,8 +2326,6 @@ This interface matches that of other methods such as \tkzMeth{triangle}{bisector
   z.c = T.ABC:orthic():get()}
 \end{tkzexample}
 \end{minipage}
-
-% subsubsection method_triangle_altitude(end)
 
 \subsubsection{Method \tkzMeth{triangle}{bisector(arg)}} %(fold)
 \label{ssub:method_triangle_bisector}
@@ -2457,9 +2404,7 @@ This behavior is consistent with other methods like \code{altitude}, \code{symme
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_triangle_bisector(end)
-
-\subsubsection{Method \tkzMeth{triangle}{bisector\_ext(arg)}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{bisector\_ext(arg)}}
 \label{ssub:method_triangle_bisector_ext}
 
 This method returns an \textbf{external angle bisector} of the triangle, from a specified vertex.
@@ -2468,10 +2413,7 @@ This method returns an \textbf{external angle bisector} of the triangle, from a 
 \noindent
 Its interface is identical to \tkzMeth{triangle}{bisector}, accepting either an index \code{n} or a vertex point (\code{z.A}, \code{z.B}, \code{z.C}). See Section~\ref{ssub:method_triangle_bisector} for usage details.
 
-% subsubsection method_triangle_bisector_ext (end)
-
-
-\subsubsection{Method \tkzMeth{triangle}{mediator(...)}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{mediator(...)}}
 \label{ssub:triangle_mediator}
 
 This method returns the perpendicular bisector of one side of a triangle.
@@ -2496,7 +2438,7 @@ L = triangle:mediator(pt) pt vertex of the triangle
 
 Returns a \tkzname{line} object representing the perpendicular bisector of the selected side.
 
-\paragraph{Examples.}
+\paragraph{Examples.}\mbox{}\\
 
 \begin{mybox}
 \begin{verbatim}
@@ -2508,7 +2450,7 @@ L3 = T:mediator(z.C)     -- bisector of AB (since C is opposite AB)
 \end{mybox}
 
 
-\begin{tkzexample}[latex=.5\textwidth]
+\begin{tkzexample}[latex=.55\textwidth]
 \directlua{
   z.A = point(0, 0)
   z.B = point(3, 2)
@@ -2519,15 +2461,13 @@ L3 = T:mediator(z.C)     -- bisector of AB (since C is opposite AB)
   L.MC  = T.ABC:mediator(z.C)
   z.ma1, z.ma2 = L.MA:get()
   z.mb1, z.mb2 = L.MB:get()
-  z.mc1, z.mc2 = L.MC:get()
-}
-
+  z.mc1, z.mc2 = L.MC:get()}
 \begin{center}
 \begin{tikzpicture}
   \tkzGetNodes
   \tkzDrawPolygon(A,B,C)
   \tkzDrawLines[red,
-  add = .5 and .5](ma1,ma2 mb1,mb2
+  add = .25 and .25](ma1,ma2 mb1,mb2
         mc1,mc2)
   \tkzDrawPoints(A,B,C,ma1,ma2)
 \end{tikzpicture}
@@ -2537,11 +2477,7 @@ L3 = T:mediator(z.C)     -- bisector of AB (since C is opposite AB)
 
 \paragraph{See also.} \tkzFct{line}{mediator}, \tkzFct{triangle}{altitude}, \tkzFct{triangle}{bisector}
 
-% subsubsection triangle_mediator (end)
-
-
-
-\subsubsection{Method \tkzMeth{triangle}{antiparallel(arg)}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{antiparallel(arg)}}
 \label{antiparallel}
 
 This method returns an \textbf{antiparallel line} associated with a triangle and one of its angles.
@@ -2618,9 +2554,7 @@ This method is used, for example, in the construction of the symmedian point (se
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection antiparallel (end)
-
-\subsubsection{Method  \tkzMeth{triangle}{orthic\_axis()} and \tkzMeth{triangle}{orthic\_axis\_points()}} % (fold)
+\subsubsection{Method  \tkzMeth{triangle}{orthic\_axis()} and \tkzMeth{triangle}{orthic\_axis\_points()}}
 \label{ssub:method_triangle_orthic_axis}
 \label{ssub:method_triangle_orthic_axis_points}
 
@@ -2686,8 +2620,6 @@ This remarkable line is a classical geometric construction, often overlooked des
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_triangle_orthic_axis_points (end)
-
 \subsubsection{Methods \tkzMeth{triangle}{euler\_line()} and \tkzMeth{triangle}{orthic\_axis()}} %(fold)
 \label{ssub:euler_line}
 
@@ -2706,7 +2638,6 @@ These two methods return two fundamental lines associated with triangle geometry
 
 \noindent
 This line is returned by the method \tkzMeth{triangle}{euler\_line()} as an object of type \code{line}.
-
 \begin{flushright}
 \small
 \href{https://mathworld.wolfram.com/EulerLine.html}{Weisstein, Eric W. "Euler Line." MathWorld}
@@ -2784,8 +2715,6 @@ This line is returned by the method \tkzMeth{triangle}{euler\_line()} as an obje
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection euler_line(end)
-
 \subsubsection{Method \tkzMeth{triangle}{steiner\_line(pt)}} %(fold)
 \label{ssub:method_triangle_steiner__line}
 
@@ -2844,8 +2773,6 @@ A necessary and sufficient condition for the points $H_A$, $H_B$, and $H_C$ to b
   \end{tikzpicture}
 \end{center}
 \end{tkzexample}
-% subsubsection method_triangle_steiner__line(end)
-
 
 \subsubsection{Method \tkzMeth{triangle}{lemoine\_axis()}} %(fold)
 \label{ssub:method_triangle_lemoine__line}
@@ -2920,8 +2847,6 @@ The method \tkzMeth{triangle}{lemoine\_axis()} returns the line as an object of 
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_triangle_lemoine__line(end)
-
 \subsubsection{Method \tkzMeth{triangle}{fermat\_axis}} %(fold)
 \label{ssub:method_triangle_fermat__axis}
 
@@ -2966,9 +2891,6 @@ The Fermat axis is the  line connecting the first and second Fermat points.
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_triangle_fermat__axis(end)
-
-
 \subsubsection{Method \tkzMeth{triangle}{brocard\_axis()}} %(fold)
 \label{ssub:method_triangle_brocard__axis}
 
@@ -2984,14 +2906,12 @@ This line has several remarkable properties:
 
 \noindent
 The method \tkzMeth{triangle}{brocard\_axis()} returns this line as an object of type \code{line}.
-
 \begin{flushright}
 \small
 \href{https://mathworld.wolfram.com/BrocardAxis.html}{Weisstein, Eric W. "Brocard Axis." MathWorld}
 \end{flushright}
 
 \vspace{1em}
-% subsubsection method_triangle_brocard__axis(end)
 
 \subsubsection{Method \tkzMeth{triangle}{simson\_line(pt)}} %(fold)
 \label{ssub:method_triangle_simson__line}
@@ -3005,15 +2925,12 @@ Let $P$, $Q$, and $R$ be the feet of the perpendiculars from $M$ to sides $BC$, 
 \medskip
 \noindent
 The method \tkzMeth{triangle}{simson\_line(pt)} returns this line (as a \code{line} object), assuming the point \code{pt} lies on the circumcircle of the triangle.
-
 \begin{flushright}
 \small
 \href{https://mathworld.wolfram.com/SimsonLine.html}{Jackson, Frank and Weisstein, Eric W. "Simson Line." MathWorld}
 \end{flushright}
 
 \vspace{1em}
-
-
 \begin{tkzexample}[vbox]
 \directlua{
  z.B = point(0, 0)
@@ -3049,19 +2966,13 @@ The method \tkzMeth{triangle}{simson\_line(pt)} returns this line (as a \code{li
   \end{tikzpicture}
 \end{center}
 \end{tkzexample}
-% subsubsection method_triangle_simson__line(end)
 
-% subsection the_result_is_a_line (end)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 %%%%%% Circles %%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\subsection{The result is a circle} % (fold)
-
-
+\subsection{The result is a circle}
 \subsubsection{Method \tkzMeth{triangle}{euler\_circle()}} %(fold)
 \label{ssub:method_triangle_euler_circle}
 
@@ -3086,13 +2997,10 @@ There are two ways to define this circle in the package:
   \item By computing its center using the attribute \code{T.eulercenter}, then using a midpoint to define the radius;
   \item Or directly, using the method \tkzMeth{triangle}{euler\_circle()}, which returns a \code{circle} object representing the nine-point circle.
 \end{itemize}
-
 \begin{flushright}
 \small
 \href{https://mathworld.wolfram.com/Nine-PointCircle.html}{Weisstein, Eric W. "Nine-Point Circle." MathWorld}
 \end{flushright}
-
-\vspace{1em}
 
 \vspace{1em}
 \begin{tkzexample}[latex=.5\textwidth]
@@ -3115,8 +3023,6 @@ There are two ways to define this circle in the package:
   \end{tikzpicture}
 \end{center}
 \end{tkzexample}
-% subsubsection method_triangle_euler_circle(end)
-
 
 \subsubsection{Method \tkzMeth{triangle}{circum\_circle()}} %(fold)
 \label{ssub:method_triangle_circum_circle}
@@ -3157,8 +3063,6 @@ init_elements()
 \end{tikzpicture}
 \end{center}
 \end{tkzexample}
-% subsubsection method_triangle_circum_circle(end)
-
 
 \subsubsection{Method \tkzMeth{triangle}{in\_circle()}} %(fold)
 \label{ssub:method_triangle_in_circle}
@@ -3180,7 +3084,6 @@ Geometrically, the contact triangle can also be seen as the \textbf{pedal triang
 \medskip
 \noindent
 The method \tkzMeth{triangle}{in\_circle()} returns a \code{circle} object representing the incircle.
-
 \begin{flushright}
 \small
 \href{https://mathworld.wolfram.com/Incircle.html}{Weisstein, Eric W. "Incircle." MathWorld}
@@ -3276,9 +3179,6 @@ init_elements()
 \end{tikzpicture}
 \end{verbatim}
 \end{minipage}
-% subsubsection method_triangle_in_circle(end)
-
-
 
 \subsubsection{Method \tkzMeth{triangle}{ex\_circle(arg)}} %(fold)
 \label{ssub:method_triangle_ex__circle}
@@ -3329,22 +3229,22 @@ z.Yj,
 z.Zj = T.ABC:projection(z.J)
 }
 \begin{center}
-  \begin{tikzpicture}[scale = .5]
-  \tkzGetNodes
-  \tkzDrawPolygon(A,B,C)
-  \tkzDrawArc(K,Xk)(Yk)
-  \tkzDrawArc(I,Yi)(Zi)
-  \tkzDrawArc(J,Zj)(Yj)
-  \tkzDrawSegments[blue](K,Xk K,Yk K,Zk C,Yk C,Xk I,Xi J,Yj)
-  \tkzDrawPoints(A,B,C,I,J,K,Xk,Yk,Zk,Xi,Yj)
-  \tkzLabelPoints(K,Xk,Yk)
-  \tkzLabelPoints[above](C,B,Zk,I,J)
-  \tkzLabelPoints[left](A)
-  \tkzMarkRightAngles[fill=gray!20,
-       opacity=.4](A,Zk,K A,Yk,K K,Xk,B)
-  \end{tikzpicture}
+\begin{tikzpicture}[scale=.5]
+    \tkzGetNodes
+    \tkzDrawPolygon[red](A,B,C)
+    \tkzDrawArc(K,Yk)(Zk)
+    \tkzDrawArc(I,Zi)(Xi)
+    \tkzDrawArc(J,Xj)(Yj)
+    \tkzDrawSegments[blue,dashed](I,Xi I,Yi I,Zi)
+    \tkzDrawSegments[blue,dashed](J,Xj J,Yj J,Zj)
+    \tkzDrawSegments[blue,dashed](K,Xk K,Yk K,Zk)
+    \tkzDrawPoints(A,B,C,I,J,K,Xk,Yk,Zk,Xi,Yj)
+    \tkzLabelPoints(K,Xk,Yk)
+    \tkzLabelPoints[above](C,B,Zk,Xi,Yi,Zi,Xj,Yj,Zj)
+    \tkzLabelPoints[left](A)
+    \tkzMarkRightAngles[fill=gray!20,opacity=.4](A,Zk,K A,Yk,K K,Xk,B)
+\end{tikzpicture}
 \end{center}
-
 \end{minipage}
 \begin{minipage}{.5\textwidth}
 \begin{tkzexample}[code only]
@@ -3369,10 +3269,6 @@ z.Zj = T.ABC:projection(z.J)}
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_triangle_ex__circle(end)
-
-
-
 \subsubsection{Method \tkzMeth{triangle}{spieker\_circle()}} %(fold)
 \label{ssub:method_triangle_spieker__circle}
 
@@ -3392,7 +3288,6 @@ To construct the Spieker circle:
 
 \noindent
 The method \tkzMeth{triangle}{spieker\_circle()} returns a \code{circle} object representing this circle.
-
 \begin{flushright}
 \small
 \href{https://mathworld.wolfram.com/SpiekerCircle.html}{Weisstein, Eric W. "Spieker Circle." MathWorld}
@@ -3448,9 +3343,7 @@ The method \tkzMeth{triangle}{spieker\_circle()} returns a \code{circle} object 
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_triangle_spieker__circle(end)
-
-\subsubsection{Method \tkzMeth{triangle}{cevian\_circle}(pt)} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{cevian\_circle}(pt)}
 \label{ssub:_triangle_cevian__circle_pt}
 
 See  [\ref{ssub:method_triangle_cevian}]
@@ -3480,10 +3373,7 @@ The method \tkzMeth{triangle}{cevian\_circle(pt)} returns the circle passing thr
 \end{tikzpicture}
 \end{tkzexample}
 
-% subsubsection _triangle_cevian__circle_pt (end)
-
-
-\subsubsection{Method \tkzMeth{triangle}{symmedial\_circle()}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{symmedial\_circle()}}
 \label{ssub:method_triangle_symmedial_circ}
 The symmedial circle is the circumcircle of the symmedial triangle.
 
@@ -3504,10 +3394,6 @@ The symmedial circle is the circumcircle of the symmedial triangle.
   \tkzLabelPoints(A,B,C,O,T)
 \end{tikzpicture}
 \end{tkzexample}
-
-
-% subsubsection method_triangle_symmedial (end)
-% subsubsection method_triangle_symmedial (end)
 
 
 \subsubsection{Methods \tkzMeth{triangle}{conway\_points()} and \tkzMeth{triangle}{conway\_circle()}} %(fold)
@@ -3543,8 +3429,6 @@ The method \code{conway\_points()} creates the six points as defined by Conway�
   \tkzMarkSegments[mark=|||](A,B t5,C t6,C)
 \end{tikzpicture}
 \end{tkzexample}
-% subsubsection methode_triangle_conway(end)
-
 
 \subsubsection{Methods \tkzMeth{triangle}{pedal()} and \tkzMeth{triangle}{pedal\_circle()}} %(fold)
 \label{ssub:method_triangle_pedal}
@@ -3595,11 +3479,7 @@ Given a point $P$, the pedal triangle of $P$ is the triangle whose polygon verti
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_triangle_pedal(end)
-
-
-
-\subsubsection{Method \tkzMeth{triangle}{first\_lemoine\_circle()}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{first\_lemoine\_circle()}}
 \label{ssub:method_triangle_first_lemoine_circle}
 
 This method constructs the \emph{first Lemoine circle} of a triangle.
@@ -3609,15 +3489,13 @@ Through the \code{symmedian point} $L$ (also called the \code{Lemoine point}) of
 The lines \( (P_AQ_A) \parallel (BC) \), \( (P_BQ_B) \parallel (AC) \), and \( (P_CQ_C) \parallel (AB) \) pass through the Lemoine point \( L \). These lines intersect the sides of the triangle in six points that lie on a common circle: the \emph{first Lemoine circle}.
 
 Each of these lines intersects the triangle’s sides in two points. The six points thus obtained lie on a same circle, known as the \emph{first Lemoine circle}. Its center is $L$, and it is a special case of a circle associated with symmedians.
-
 \begin{flushright}
+\small
 \href{https://mathworld.wolfram.com/FirstLemoineCircle.html}
 {\textit{Weisstein, Eric W. "First Lemoine Circle." From MathWorld—A Wolfram Web Resource.}}
 \end{flushright}
 
 \vspace{1em}
-
-
 \begin{minipage}{.5\textwidth}
 \directlua{
   z.A  = point(0, 0)
@@ -3659,25 +3537,18 @@ Each of these lines intersects the triangle’s sides in two points. The six poi
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_triangle_first_lemoine_circle (end)
-
-
-\subsubsection{Method \tkzMeth{triangle}{second\_lemoine\_circle()}} % (fold)
-\label{ssub:method_triangle_second_lemoine_circle}
+\subsubsection{Method \tkzMeth{triangle}{second\_lemoine\_circle()}}
 
 This method constructs the \emph{second Lemoine circle} of a triangle.
 
 Through the \code{symmedian point} \( L \) of triangle \( ABC \), draw lines parallel to the sides of the \emph{orthic triangle}. These lines intersect the sides of triangle \( ABC \) in six points. All six points lie on the same circle, called the \emph{second Lemoine circle}, whose center is also the point \( L \).
-
 \begin{flushright}
+\small
 \href{https://mathworld.wolfram.com/SecondLemoineCircle.html}
 {\textit{Weisstein, Eric W. "Second Lemoine Circle." From MathWorld—A Wolfram Web Resource.}}
 \end{flushright}
 
 \vspace{1em}
-
-
-
 \begin{minipage}{.35\textwidth}
 \directlua{
   init_elements()
@@ -3723,24 +3594,19 @@ Through the \code{symmedian point} \( L \) of triangle \( ABC \), draw lines par
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_triangle_second_lemoine_circle (end)
-
-
 \subsubsection{Method  \tkzMeth{triangle}{bevan\_circle()}  } %(fold)
 \label{ssub:methods_triangle_bevan_circle}
 
 This method constructs the \emph{Bevan circle}, also known as the \emph{excentral circle}.
 
 The Bevan circle is the \emph{circumcircle} of the excentral triangle of the reference triangle \( ABC \), i.e., the circle passing through the three \emph{excenters} of \( ABC \). Its center is known as the \emph{Bevan point}, which is therefore the \code{circumcenter} of the excentral triangle.
-
-
-
 \begin{flushright}
+\small
 \href{https://mathworld.wolfram.com/BevanCircle.html}
 {\textit{Weisstein, Eric W. "Bevan Circle." From MathWorld—A Wolfram Web Resource.}}
 \end{flushright}
-
 \begin{flushright}
+\small
 \href{https://mathworld.wolfram.com/BevanPoint.html}
 {\textit{Weisstein, Eric W. "Bevan Point." From MathWorld—A Wolfram Web Resource.}}
 \end{flushright}
@@ -3765,9 +3631,6 @@ The Bevan circle is the \emph{circumcircle} of the excentral triangle of the ref
       \tkzLabelPoints[above](C)
   \end{tikzpicture}
 \end{tkzexample}
-
-% subsubsection methods_triangle_bevan_circle (end)
-
 
 \subsubsection{Method \tkzMeth{triangle}{taylor\_circle()}} %(fold)
 \label{ssub:method_triangle_taylor__circle}
@@ -3828,10 +3691,7 @@ The six projections of the feet of the heights of a triangle onto the adjacent s
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_triangle_taylor__circle(end)
-
-
-\subsubsection{Method \tkzMeth{triangle}{adams\_circle()}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{adams\_circle()}}
 \label{ssub:method_triangle_adams_circle}
 See  [\ref{ssub:method_triangle_adams_points}] and [\ref{sub:adams_circle}]
 
@@ -3873,10 +3733,8 @@ See  [\ref{ssub:method_triangle_adams_points}] and [\ref{sub:adams_circle}]
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_triangle_adams_circle (end)
-
 % lamoen_points()
-\subsubsection{Method \tkzMeth{triangle}{lamoen\_points}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{lamoen\_circle}}
 \label{ssub:method_triangle_lamoen_points}
 
 This method returns the six \emph{Lamoen points} associated with a triangle.
@@ -3933,10 +3791,7 @@ The six circumcenters themselves are called the \emph{Lamoen points}. See  [\ref
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_triangle_lamoen_points (end)
-
-
-\subsubsection{Method \tkzMeth{triangle}{soddy\_circle()}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{soddy\_circle()}}
 \label{ssub:method_triangle_soddy_circle}
 
 \begin{minipage}{.5\textwidth}
@@ -3992,16 +3847,14 @@ The six circumcenters themselves are called the \emph{Lamoen points}. See  [\ref
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_triangle_soddy_circle (end)
-
-\subsubsection{Method \tkzMeth{triangle}{yiu\_circles()}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{yiu\_circles()}}
 \label{ssub:method_yiu_circles}
 
 The \emph{Yiu $A$-circle} of a reference triangle $ABC$ is the circle passing through vertex $A$ and the reflections of vertices $B$ and $C$ across the opposite sides $AC$ and $AB$, respectively.
 
 The \emph{Yiu $B$-} and \emph{$C$-circles} are defined analogously. These three circles intersect at a unique point — their common \emph{radical center}. However, they do not admit a common radical circle.
-
 \begin{flushright}
+\small
 \href{https://mathworld.wolfram.com/YiuCircles.html}
 {\textit{Weisstein, Eric W. "Yiu Circles." From MathWorld—A Wolfram Web Resource.}}
 \end{flushright}
@@ -4057,17 +3910,14 @@ The \emph{Yiu $B$-} and \emph{$C$-circles} are defined analogously. These three 
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_yiu_circles (end)
-
-
-\subsubsection{Method \tkzMeth{triangle}{kenmotu\_circle()}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{kenmotu\_circle()}}
 \label{ssub:kenmotu_circle}
 
 The \emph{Kenmotu circle} is the circle passing through the six contact points of the three congruent squares constructed on the sides of a triangle. These squares are used in the construction of the \emph{Kenmotu point}, also known as the \emph{congruent squares point} (see Kimberling center $X_{(371)}$).
 
 The Kenmotu circle contains all six points of tangency between the triangle sides and the inscribed squares.
-
 \begin{flushright}
+\small
 \href{https://mathworld.wolfram.com/KenmotuCircle.html}
 {\textit{Weisstein, Eric W. "Kenmotu Circle." From MathWorld—A Wolfram Web Resource.}}
 \end{flushright}
@@ -4107,10 +3957,7 @@ The Kenmotu circle contains all six points of tangency between the triangle side
 \end{center}
 \end{tkzexample}
 
-% subsubsection kenmotu_circle (end)
-
-
-\subsubsection{Method \tkzMeth{triangle}{c\_ll\_p}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{c\_ll\_p}}
 \label{ssub:method_triangle_c_ll_p}
 
 This method determines a circle tangent to two sides of a triangle and passing through a given point.
@@ -4167,9 +4014,7 @@ init_elements()
  \end{tkzexample}
  \end{minipage}
 
-% subsubsection method_triangle_c_ll_p (end)
-
-\subsubsection{Method \tkzMeth{triangle}{thebault} or \tkzMeth{triangle}{c\_c} } % (fold)
+\subsubsection{Method \tkzMeth{triangle}{thebault} or \tkzMeth{triangle}{c\_c} }
 \label{ssub:method_triangle_c_c}
 
 The |c_c| (or |thebault|) method constructs a circle tangent to two sides of a triangle at a chosen vertex, and tangent to a given circle passing through the two remaining vertices.
@@ -4184,18 +4029,21 @@ The |c_c| (or |thebault|) method constructs a circle tangent to two sides of a t
  L.med = T.ABC:mediator(z.A)
  z.Oa = L.med:point(1)
  C.main = circle(z.Oa, z.C)
- z.wa, z.Ea = T.ABC:thebault(z.A, C.main):get()
+ z.wa,
+ z.Ea = T.ABC:thebault(z.A, C.main):get()
  L.med = T.ABC:mediator(z.B)
  z.Ob = L.med:point(1)
  C.main = circle(z.Ob, z.C)
- z.wb, z.Eb = T.ABC:thebault(z.B, C.main):get()
+ z.wb,
+ z.Eb = T.ABC:thebault(z.B, C.main):get()
  L.med = T.ABC:mediator(z.C)
  z.Oc = L.med:point(1)
  C.main = circle(z.Oc, z.A)
- z.wc, z.Ec = T.ABC:thebault(z.C, C.main):get()
+ z.wc,
+ z.Ec = T.ABC:thebault(z.C, C.main):get()
  }
 
-\begin{tikzpicture}[scale = .75]
+\begin{tikzpicture}[scale = .7]
   \tkzGetNodes
   \tkzFillCircles[purple!20,opacity=.2](Oa,C)
   \tkzFillCircles[purple!40,opacity=.2](wa,Ea)
@@ -4203,24 +4051,28 @@ The |c_c| (or |thebault|) method constructs a circle tangent to two sides of a t
   \tkzFillCircles[green!40,opacity=.2](wb,Eb)
   \tkzFillCircles[orange!20,opacity=.2](Oc,A)
   \tkzFillCircles[orange!40,opacity=.2](wc,Ec)
-  \tkzDrawCircles(Oa,C wa,Ea Ob,C wb,Eb Oc,A wc,Ec)
+  \tkzDrawCircles(Oa,C Ob,C Oc,A)
+  \tkzDrawCircles(wa,Ea wb,Eb wc,Ec)
   \tkzDrawPolygon[color = purple](A,B,C)
   \tkzDrawPoints(A,B,C,wa,wb,wc)
   \tkzLabelPoints(A,B,C,wa,wb,wc)
 \end{tikzpicture}
 \end{tkzexample}
 
-% subsubsection method_tkzmeth_triangle_c__c (end)
 
 \subsubsection{Method \tkzMeth{triangle}{mixtilinear\_incircle(arg)}}
 \label{ssub:method_triangle_mixti}
 
-A circle that in internally tangent to two sides of a triangle and to the circumcircle is called a mixtilinear incircle. There are three mixtilinear incircles, one corresponding to each angle of the triangle. [\href{https://mathworld.wolfram.com/MixtilinearIncircles.html}{MathWorld — van Lamoen, Floor. "Mixtilinear Incircles.}]
+A circle that in internally tangent to two sides of a triangle and to the circumcircle is called a mixtilinear incircle. There are three mixtilinear incircles, one corresponding to each angle of the triangle.
+\begin{flushright}
+\small
+\href{https://mathworld.wolfram.com/MixtilinearIncircles.html}{MathWorld — van Lamoen, Floor. "Mixtilinear Incircles.}
+\end{flushright}
 
 The argument is either one of the vertices of the triangle or an integer between $0$
  and $2$.
 
-\begin{tkzexample}[latex=.5\textwidth]
+\begin{tkzexample}[latex=.52\textwidth]
 \directlua{
 z.A = point:new (0, 0)
 z.B = point:new (5, 0)
@@ -4239,32 +4091,34 @@ z.O = T.ABC.circumcenter}
 \end{tikzpicture}
 \end{tkzexample}
 
-% subsubsection method_triangle_mixti (end)
-
 \subsubsection{Method \tkzMeth{triangle}{three\_tangent\_circles}()}
 \label{ssub:method_triangle_three_tgt_c}
 
 Any three points can serve as the centers of three mutually tangent circles. If we connect the centers, we obtain a triangle. The angle bisectors of this triangle meet at a single point (the incenter). From this point, perpendiculars dropped to the three sides determine the points of tangency with an inscribed circle.
 This inscribed circle (the incircle) touches each side at exactly one point, and those points also serve as the common tangency points with the three outer circles. Each of these outer circles is defined by one vertex of the triangle (the center) and the tangency point opposite to it.
-The method triangle:three_tangent_circles() implements this construction:
+The method triangle:three\_tangent\_circles() implements this construction:
+
 it computes the incenter of the triangle,
 finds its perpendicular projections onto the three sides,
 and builds the three tangent circles, each one passing through a vertex and tangent to the incircle.
 
-\begin{tkzexample}[latex=.5\textwidth]
+\begin{tkzexample}[latex=.45\textwidth]
 \directlua{
-z.A = point:new (0, 0)
-z.B = point:new (5, 0)
-z.C = point:new (1, 4)
-T.ABC = triangle:new(z.A, z.B, z.C)
-C.A, C.B, C.C = T.ABC:three_tangent_circles()
-z.ta = C.A.through
-z.tb = C.B.through
-z.tc = C.C.through
-C.ins = T.ABC:in_circle()
-z.I, z.T = C.ins:get()
-}
-\begin{tikzpicture}
+  init_elements()
+  z.A = point:new (0, 0)
+  z.B = point:new (5, 0)
+  z.C = point:new (1, 4)
+  T.ABC = triangle:new(z.A, z.B, z.C)
+  C.A,
+  C.B,
+  C.C = T.ABC:three_tangent_circles()
+  z.ta = C.A.through
+  z.tb = C.B.through
+  z.tc = C.C.through
+  C.ins = T.ABC:in_circle()
+  z.I, z.T = C.ins:get()}
+\begin{center}
+\begin{tikzpicture}[scale=.6]
 \tkzGetNodes
 \tkzDrawCircles(A,ta B,tb C,tc I,T)
 \tkzDrawPolygon(A,B,C)
@@ -4272,29 +4126,22 @@ z.I, z.T = C.ins:get()
 \tkzLabelPoints(A,B)
 \tkzLabelPoints[above](C)
 \end{tikzpicture}
+\end{center}
 \end{tkzexample}
 
-% ubsubsection method_triangle_three_tgt_c (end)
-
-$  $
-
-% subsection the_result_is_a_circle (end)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%% Triangles %%%%%
+%%%%% Triangles %%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{The result is a triangle} % (fold)
-
+\subsection{The result is a triangle}
 \subsubsection{Method \tkzMeth{triangle}{medial()}} %(fold)
 \label{ssub:method_triangle_medial}
 
 The \emph{medial triangle} of a triangle $ABC$ is the triangle formed by connecting the midpoints $M_a$, $M_b$, and $M_c$ of the sides $BC$, $AC$, and $AB$ respectively. This triangle is similar to the reference triangle and shares the same centroid.
 
 The medial triangle is sometimes also called the \emph{auxiliary triangle} Dixon 1991. It appears frequently in classical geometry and serves as a useful tool for constructions involving symmetry, similarity, and triangle centers.
-
 \begin{flushright}
   \small
 \href{https://mathworld.wolfram.com/MedialTriangle.html}
@@ -4347,10 +4194,7 @@ The medial triangle is sometimes also called the \emph{auxiliary triangle} Dixon
 \end{tkzexample}
 \end{minipage}
 
-
-% subsubsection method_triangle_medial(end)
-
-\subsubsection{Method \tkzMeth{triangle}{orthic()}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{orthic()}}
 \label{ssub:method_triangle_orthic}
 
 Given a triangle $ABC$, the triangle $H_AH_BH_C$ formed by connecting the feet of the perpendiculars dropped from each vertex to the opposite side is called the \emph{orthic triangle}, or sometimes the \emph{altitude triangle}.
@@ -4384,20 +4228,14 @@ This method returns the triangle $H_AH_BH_C$ as a new triangle object.
 \end{tikzpicture}
 \end{tkzexample}
 
-
-
-% subsubsection method_triangle_orthic (end)
-
-\subsubsection{Method \tkzMeth{triangle}{incentral()}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{incentral()}}
 \label{ssub:method_incentral}
 
 The \emph{incentral triangle} $I_aI_bI_c$ is the Cevian triangle of the reference triangle $ABC$ with respect to its incenter $I$. That is, the vertices of the incentral triangle are the points where the internal angle bisectors of triangle $ABC$ intersect the opposite sides.
 
-This triangle is useful in many triangle center constructions, especially in connection with the incircle and the Gergonne point.
-
-\begin{flushright}
+This triangle is useful in many triangle center constructions, especially in connection with the incircle and the Gergonne point.\begin{flushright}
   \small
-[\href{https://mathworld.wolfram.com/IncentralTriangle.html}{Weisstein, Eric W. "Incentral Triangle." From MathWorld--A Wolfram Web Resource.}]
+\href{https://mathworld.wolfram.com/IncentralTriangle.html}{Weisstein, Eric W. "Incentral Triangle." From MathWorld--A Wolfram Web Resource.}
 \end{flushright}
 
 \vspace{1em}
@@ -4414,8 +4252,7 @@ This triangle is useful in many triangle center constructions, especially in con
  z.Ia, z.Ib,
  z.Ic = T.ABC:incentral():get()
  z.Ta, z.Tb,
- z.Tc = T.ABC:intouch():get()
-}
+ z.Tc = T.ABC:intouch():get()}
 \begin{center}
 \begin{tikzpicture}
    \tkzGetNodes
@@ -4446,18 +4283,16 @@ This triangle is useful in many triangle center constructions, especially in con
    z.Tc = T.ABC:intouch():get()}
 \end{tkzexample}
 \end{minipage}
-% subsubsection method_incentral(end)
 
-\subsubsection{Method \tkzMeth{triangle}{excentral()}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{excentral()}}
 \label{ssub:method_triangle_excentral}
 
 The \emph{excentral triangle}, also called the \emph{tritangent triangle}, of a reference triangle $ABC$ is the triangle $J_AJ_BJ_C$ whose vertices are the excenters of $ABC$. Each excenter is the intersection point of two external angle bisectors and one internal angle bisector of the triangle.
 
 The excentral triangle plays an important role in triangle geometry, particularly in constructions involving the excircles, the Bevan circle, and certain triangle centers.
-
 \begin{flushright}
-  \small
-[\href{https://mathworld.wolfram.com/ExcentralTriangle.html}{Weisstein, Eric W. "Excentral Triangle." From MathWorld--A Wolfram Web Resource.}]
+\small
+\href{https://mathworld.wolfram.com/ExcentralTriangle.html}{Weisstein, Eric W. "Excentral Triangle." From MathWorld--A Wolfram Web Resource.}
 \end{flushright}
 
 \vspace{1em}
@@ -4488,20 +4323,15 @@ The excentral triangle plays an important role in triangle geometry, particularl
 \end{tikzpicture}
 \end{tkzexample}
 
-
-% subsubsection method_triangle_excentral (end)
-
-
-\subsubsection{Method \tkzMeth{triangle}{intouch()}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{intouch()}}
 \label{ssub:method_triangle_intouch}
 
 The \emph{contact triangle} of a triangle $ABC$, also known as the \emph{intouch triangle}, is the triangle $t_at_bt_c$ formed by the points of tangency of the incircle of $ABC$ with its three sides. These points are where the incircle touches $BC$, $AC$, and $AB$ respectively.
 
 The intouch triangle is useful in studying properties related to the incircle and its associated centers such as the Gergonne point.
-
 \begin{flushright}
   \small
-[\href{https://mathworld.wolfram.com/ContactTriangle.html}{Weisstein, Eric W. "Contact Triangle." From MathWorld--A Wolfram Web Resource.}]
+\href{https://mathworld.wolfram.com/ContactTriangle.html}{Weisstein, Eric W. "Contact Triangle." From MathWorld--A Wolfram Web Resource.}
 \end{flushright}
 
 \vspace{1em}
@@ -4546,20 +4376,15 @@ The intouch triangle is useful in studying properties related to the incircle an
 \end{tkzexample}
 \end{minipage}
 
-
-
-% subsubsection method_triangle_intouch (end)
-
-\subsubsection{Method \tkzMeth{triangle}{extouch()}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{extouch()}}
 \label{ssub:method_triangle_extouch}
 
 The \emph{extouch triangle} of a triangle $ABC$ is the triangle formed by the points of tangency of the triangle with its three \emph{excircles}. Each excircle is tangent to one side of the triangle and the extensions of the other two. The points of tangency lie respectively on the sides $BC$, $AC$, and $AB$.
 
 The extouch triangle is the Cevian triangle of the \emph{Nagel point}, which is the point of concurrency of the segments joining the triangle's vertices to the points where the opposite excircles touch the triangle.
-
 \begin{flushright}
   \small
-[\href{https://mathworld.wolfram.com/ExtouchTriangle.html}{Weisstein, Eric W. "Extouch Triangle." From MathWorld--A Wolfram Web Resource.}]
+\href{https://mathworld.wolfram.com/ExtouchTriangle.html}{Weisstein, Eric W. "Extouch Triangle." From MathWorld--A Wolfram Web Resource.}
 \end{flushright}
 
 \vspace{1em}
@@ -4612,10 +4437,7 @@ The extouch triangle is the Cevian triangle of the \emph{Nagel point}, which is 
 \end{tkzexample}
 \end{minipage}
 
-
-% subsubsection method_triangle_extouch (end)
-
-\subsubsection{Method \tkzMeth{triangle}{feuerbach()}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{feuerbach()}}
 \label{ssub:method_triangle_feuerbach}
 
 The \emph{Feuerbach triangle} of a reference triangle $ABC$ is the triangle formed by the three points of tangency between the \emph{nine-point circle} and the three \emph{excircles} of $ABC$.
@@ -4623,10 +4445,9 @@ The \emph{Feuerbach triangle} of a reference triangle $ABC$ is the triangle form
 By \emph{Feuerbach’s theorem}, each excircle is tangent to the nine-point circle, and these three tangency points define the Feuerbach triangle.
 
 The circumcenter of the Feuerbach triangle coincides with the nine-point center of triangle $ABC$.
-
 \begin{flushright}
   \small
-[\href{https://mathworld.wolfram.com/FeuerbachTriangle.html}{Weisstein, Eric W. "Feuerbach Triangle." From MathWorld--A Wolfram Web Resource.}]
+\href{https://mathworld.wolfram.com/FeuerbachTriangle.html}{Weisstein, Eric W. "Feuerbach Triangle." From MathWorld--A Wolfram Web Resource.}
 \end{flushright}
 
 \vspace{1em}
@@ -4660,8 +4481,7 @@ The circumcenter of the Feuerbach triangle coincides with the nine-point center 
   \end{tikzpicture}
 \end{tkzexample}
 
-% subsubsection method_triangle_feurbach (end)
-\subsubsection{Method \tkzMeth{triangle}{cevian()}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{cevian()}}
 \label{ssub:method_triangle_cevian}
 
 A \emph{Cevian} is a line segment that joins a vertex of a triangle to a point on the opposite side (or its extension). The condition for three Cevians to concur is given by \emph{Ceva's Theorem}.
@@ -4669,10 +4489,9 @@ A \emph{Cevian} is a line segment that joins a vertex of a triangle to a point o
 Given a point $P$ in the interior of triangle $ABC$, the Cevians from each vertex through $P$ intersect the opposite sides at points $P_a$, $P_b$, and $P_c$. The triangle $P_aP_bP_c$ is called the \emph{Cevian triangle} of $ABC$ with respect to $P$.
 
 The circumcircle of the triangle $P_aP_bP_c$ is known as the \emph{Cevian circle}.
-
 \begin{flushright}
   \small
-[\href{https://mathworld.wolfram.com/CevianTriangle.html}{Weisstein, Eric W. "Cevian Triangle." From MathWorld--A Wolfram Web Resource.}]
+\href{https://mathworld.wolfram.com/CevianTriangle.html}{Weisstein, Eric W. "Cevian Triangle." From MathWorld--A Wolfram Web Resource.}
 \end{flushright}
 
 \vspace{1em}
@@ -4729,9 +4548,6 @@ init_elements()
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_triangle_cevian (end)
-
-
 \subsubsection{Method \tkzMeth{triangle}{symmedian()}} %(fold)
 \label{ssub:method_triangle_symmedial}
 
@@ -4740,10 +4556,9 @@ The lines $AL_a$,  $BL_b$, and $CL_c$ which are isogonal to the triangle medians
 The \code{symmedial} or \code{symmedian} triangle $L_aL_bL-c$  is the triangle whose vertices are the intersection points of the symmedians with the reference triangle $ABC$.
 
 The following example groups several concepts around the symmedian. As a reminder, a symmedian of a triangle is the reflection of the median with respect to the angle bisector.
-
 \begin{flushright}
   \small
-[\href{https://mathworld.wolfram.com/SymmedianPoint.html}{Weisstein, Eric W. "Symmedian Point." From MathWorld--A Wolfram Web Resource.}]
+\href{https://mathworld.wolfram.com/SymmedianPoint.html}{Weisstein, Eric W. "Symmedian Point." From MathWorld--A Wolfram Web Resource.}
 \end{flushright}
 
 \vspace{1em}
@@ -4787,18 +4602,13 @@ The following example groups several concepts around the symmedian. As a reminde
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_triangle_symmedial(end)
-
-
-
-\subsubsection{Method \tkzMeth{triangle}{euler()}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{euler()}}
 \label{ssub:method_triangle_euler}
 
 The \emph{Euler triangle} of a triangle $ABC$ is the triangle $E_AE_BE_C$ whose vertices are the midpoints of the segments joining the orthocenter $H$ to each of the respective vertices. These points, called the \emph{Euler points}, lie on the \code{nine-point} circle and are among the nine classical points of triangle geometry.
-
 \begin{flushright}
   \small
-[\href{https://mathworld.wolfram.com/EulerTriangle.html}{Weisstein, Eric W. "Euler Triangle." From MathWorld--A Wolfram Web Resource.}]
+\href{https://mathworld.wolfram.com/EulerTriangle.html}{Weisstein, Eric W. "Euler Triangle." From MathWorld--A Wolfram Web Resource.}
 \end{flushright}
 
 \vspace{1em}
@@ -4852,9 +4662,7 @@ The \emph{Euler triangle} of a triangle $ABC$ is the triangle $E_AE_BE_C$ whose 
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_triangle_euler (end)
-
-\subsubsection{Method \tkzMeth{triangle}{yiu()}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{yiu()}}
 \label{ssub:method_triangle_yiu}
 The Yiu triangle $O_AO_BO_C$ is the triangle formed by the centers of the Yiu circles. See  [\ref{ssub:method_yiu_circles}]
 
@@ -4880,9 +4688,7 @@ The Yiu triangle $O_AO_BO_C$ is the triangle formed by the centers of the Yiu ci
 \end{tikzpicture}
 \end{tkzexample}
 
-% subsubsection method_triangle_yiu (end)
-
-\subsubsection{Method \tkzMeth{triangle}{reflection()}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{reflection()}}
 \label{ssub:method_triangle_reflection}
 
 This method returns a triangle whose vertices are the reflections of the original triangle's vertices with respect to the opposite sides. That is, each vertex is reflected across the side opposite to it.
@@ -4905,9 +4711,8 @@ z.Cp = T.ABC:reflection():get()
 \tkzLabelPoints[above](A,B')
 \end{tikzpicture}
 \end{tkzexample}
-% subsubsection method_triangle_reflection (end)
 
-\subsubsection{Method \tkzMeth{triangle}{circumcevian(pt)}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{circumcevian(pt)}}
 \label{ssub:method_triangle_circumcevian}
 
 Given a triangle $ABC$ and a point $P$ not located at a vertex, the \emph{circumcevian triangle} is defined as follows: let $A'$ be the second point of intersection (other than $A$) between the line $(AP)$ and the circumcircle of $ABC$; define $B'$ and $C'$ analogously for lines $(BP)$ and $(CP)$. The triangle $A'B'C'$ is then called the \emph{circumcevian triangle} of $ABC$ with respect to point $P$.
@@ -4942,17 +4747,14 @@ Given a triangle $ABC$ and a point $P$ not located at a vertex, the \emph{circum
 
 \end{tkzexample}
 
-% subsubsection method_triangle_circumcevian (end)
-
 \subsubsection{Method \tkzMeth{triangle}{tangential()}} %(fold)
 \label{ssub:method_triangle_tangential}
 
 The tangential triangle is the triangle $TaTbTc$ formed by the lines tangent to the circumcircle of a given triangle DeltaABC at its vertices. It is therefore antipedal triangle of $ABC$ with respect to the circumcenter $O$. It is also anticevian triangle of $ABC$ with the symmedian point $K$ as the anticevian point(Kimberling 1998, p. 156). Furthermore, the symmedian point $K$ of $ABC$ is the Gergonne point of $TaTbTc$.
 
-The sides of an orthic triangle are parallel to the tangents to the circumcircle at the vertices(Johnson 1929, p. 172). This is equivalent to the statement that each line from a triangle's circumcenter to a vertex is always perpendicular to the corresponding side of the orthic triangle(Honsberger 1995, p. 22), and to the fact that the orthic and tangential triangles are homothetic.
-\begin{flushright}
+The sides of an orthic triangle are parallel to the tangents to the circumcircle at the vertices(Johnson 1929, p. 172). This is equivalent to the statement that each line from a triangle's circumcenter to a vertex is always perpendicular to the corresponding side of the orthic triangle(Honsberger 1995, p. 22), and to the fact that the orthic and tangential triangles are homothetic.\begin{flushright}
   \small
-[ \href{https://mathworld.wolfram.com/TangentialTriangle.html}{Weisstein, Eric W. "Tangential Triangle." From MathWorld--A Wolfram Web Resource.}]
+\href{https://mathworld.wolfram.com/TangentialTriangle.html}{Weisstein, Eric W. "Tangential Triangle." From MathWorld--A Wolfram Web Resource.}
 \end{flushright}
 
 \vspace{1em}
@@ -5013,15 +4815,12 @@ The sides of an orthic triangle are parallel to the tangents to the circumcircle
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_triangle_tangential(end)
-
 \subsubsection{Method \tkzMeth{triangle}{anti()}} %(fold)
 \label{ssub:method_triangle_anti}
 
-The \emph{anticomplementary triangle} of a reference triangle $ABC$ is the triangle $TaTbTc$ whose medial triangle is $ABC$. It is also known as the \emph{anticevian triangle} of the centroid $G$ (see Kimberling 1998, p.~156). This triangle is obtained by extending each side of the reference triangle beyond its vertices such that the new triangle is homothetic to the reference triangle with ratio $-2$ and center $G$.
-\begin{flushright}
+The \emph{anticomplementary triangle} of a reference triangle $ABC$ is the triangle $TaTbTc$ whose medial triangle is $ABC$. It is also known as the \emph{anticevian triangle} of the centroid $G$ (see Kimberling 1998, p.~156). This triangle is obtained by extending each side of the reference triangle beyond its vertices such that the new triangle is homothetic to the reference triangle with ratio $-2$ and center $G$.\begin{flushright}
   \small
-[\href{https://mathworld.wolfram.com/AnticomplementaryTriangle.html}{Weisstein, Eric W. "Anticomplementary Triangle." From MathWorld--A Wolfram Web Resource.}]
+\href{https://mathworld.wolfram.com/AnticomplementaryTriangle.html}{Weisstein, Eric W. "Anticomplementary Triangle." From MathWorld--A Wolfram Web Resource.}
 \end{flushright}
 
 \medskip
@@ -5036,10 +4835,9 @@ This triangle can be obtained using any of the following method names: \code{ant
 
 
 
-The anticomplementary triangle is the triangle $TaTbTc$ which has a given triangle $ABC$ as its medial triangle. It is therefore the anticevian triangle with respect to the triangle centroid G(Kimberling 1998, p. 156).
-\begin{flushright}
+The anticomplementary triangle is the triangle $TaTbTc$ which has a given triangle $ABC$ as its medial triangle. It is therefore the anticevian triangle with respect to the triangle centroid G(Kimberling 1998, p. 156).\begin{flushright}
   \small
- [\href{https://mathworld.wolfram.com/AnticomplementaryTriangle.html}{Weisstein, Eric W. "Anticomplementary Triangle." From MathWorld--A Wolfram Web Resource.}]
+ \href{https://mathworld.wolfram.com/AnticomplementaryTriangle.html}{Weisstein, Eric W. "Anticomplementary Triangle." From MathWorld--A Wolfram Web Resource.}
 \end{flushright}
 
 This method creates a new triangle whose sides are parallel to the sides of the original triangle and pass through its vertices.
@@ -5084,7 +4882,7 @@ You have several method names for obtaining this triangle: either  \code{anticom
 \end{tkzexample}
 \end{minipage}
 
-\subsubsection{Method \tkzMeth{triangle}{lemoine()}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{lemoine()}}
 \label{ssub:method_triangle_lemoine}
 
 The \emph{Lemoine triangle} of a reference triangle $ABC$ is the Cevian triangle associated with the Kimberling center $X_{(598)}$. Its vertices are the points of tangency between the \emph{Lemoine inellipse} and the sides of triangle $ABC$.
@@ -5116,9 +4914,7 @@ This triangle provides an elegant construction linked to the geometry of the Lem
   \end{tikzpicture}
 \end{tkzexample}
 
-% subsubsection method_triangle_lemoine (end)
-
-\subsubsection{Method \tkzMeth{triangle}{macbeath()}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{macbeath()}}
 \label{ssub:method_triangle_macbeath}
 The MacBeath triangle, is the triangle whose vertices are the contact points of the MacBeath inconic with the reference triangle. $MB$ is the MacBeath  point
 
@@ -5142,19 +4938,13 @@ z.Xc = T.ABC:macbeath():get()}
 \end{tikzpicture}
 \end{tkzexample}
 
-% subsubsection method_triangle_macbeath (end)
-
-
-% subsubsection method_triangle_anti(end)
-% subsection the_result_is_a_triangle (end)
 
 %%%%%%%%%%%%%%%%%%%
-
 %%%% Conic
-
 %%%%%%%%%%%%%%%%%%%%
-\subsection{The result is a conic} % (fold)
-\label{sub:the_result_is_a_conic}
+
+
+\subsection{The result is a conic}
 
 As the code is relatively large, I've avoided including the \tkzNamePack{tkz-euclide} part in most of the examples. You can find the complete code in the source of this document in the file \code{TKZdoc-elements-triangle.tex}.
 
@@ -5166,7 +4956,7 @@ The most important point is to trace the conics, which is done with the help of 
 \end{verbatim}
 \end{mybox}
 
-\subsubsection{Method \tkzMeth{triangle}{kiepert\_parabola}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{kiepert\_parabola}}
 \label{ssub:method_triangle_kiepert_parabola}
 
 Among all parabolas tangent to the sides of a triangle, the \emph{Kiepert parabola} is distinguished by its geometric properties. Its directrix coincides with the Euler line of the triangle, and it is also tangent to the \emph{Lemoine axis}.
@@ -5229,9 +5019,7 @@ This parabola encapsulates rich affine and projective structures and arises in v
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_triangle_kiepert_parabola (end)
-
-\subsubsection{Method \tkzMeth{triangle}{kiepert\_hyperbola()}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{kiepert\_hyperbola()}}
 \label{ssub:method_triangle_kiepert__hyperbola}
 
 The \emph{Kiepert hyperbola} is a remarkable triangle conic that arises from Lemoine’s problem and its extension involving isosceles triangles constructed externally on the sides of a given triangle.
@@ -5304,9 +5092,6 @@ This hyperbola possesses several notable geometric properties: it passes through
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_triangle_kiepert__hyperbola (end)
-
-
 \subsubsection{Method \tkzMeth{triangle}{euler\_ellipse()}} %(fold)
 \label{ssub:euler_ellipse}
 
@@ -5373,9 +5158,6 @@ An example combining both the Euler circle and the Euler ellipse is provided in 
 \end{tkzexample}
 \end{minipage}
 
-
-% subsubsection euler_ellipse(end)
-
 \subsubsection{Methods \tkzMeth{triangle}{steiner\_inellipse()} and \tkzMeth{triangle}{steiner\_circumellipse()}} %(fold)
 \label{ssub:steiner_inellipse_and_circumellipse}
 
@@ -5392,8 +5174,8 @@ The \emph{Steiner circumellipse}, or outer ellipse, is the unique ellipse circum
 \medskip
 \noindent
 These constructions are valid for acute triangles. The orthoptic circle, i.e., the locus of points from which chords of the ellipse are seen under right angles, is also shown in the associated example.
-
 \begin{flushright}
+\small
 \href{https://mathworld.wolfram.com/SteinerInellipse.html}{Weisstein, Eric W. \emph{“Steiner Inellipse”}},\\
 \href{https://mathworld.wolfram.com/SteinerCircumellipse.html}{Weisstein, Eric W. \emph{“Steiner Circumellipse”}}
 \end{flushright}
@@ -5465,9 +5247,7 @@ These constructions are valid for acute triangles. The orthoptic circle, i.e., t
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection steiner_inellipse_and_circumellipse(end)
-
-\subsubsection{Method \tkzMeth{triangle}{lemoine\_inellipse}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{lemoine\_inellipse}}
 \label{ssub:method_triangle_lemoine_inellipse}
 
 The \emph{Lemoine inellipse} is the unique inconic (an inscribed conic) of a triangle that has the centroid $G$ and the symmedian point $K$ as its foci.
@@ -5475,8 +5255,8 @@ The \emph{Lemoine inellipse} is the unique inconic (an inscribed conic) of a tri
 \medskip
 \noindent
 This ellipse is always an actual ellipse and reflects key symmetries of the triangle. It is intimately connected with the triangle’s geometry and often appears in advanced triangle center constructions.
-
 \begin{flushright}
+\small
 \href{https://mathworld.wolfram.com/LemoineEllipse.html}{Weisstein, Eric W. \emph{“Lemoine Ellipse.”} From MathWorld}
 \end{flushright}
 
@@ -5541,9 +5321,7 @@ This ellipse is always an actual ellipse and reflects key symmetries of the tria
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_triangle_lemoine_inellipse (end)
-
-\subsubsection{Method \tkzMeth{triangle}{brocard\_inellipse}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{brocard\_inellipse}}
 \label{ssub:method_triangle_brocard__inellipse}
 
 The \emph{Brocard inellipse} is the unique inconic of a triangle whose foci are the Brocard points and whose center is the Brocard midpoint.
@@ -5551,8 +5329,8 @@ The \emph{Brocard inellipse} is the unique inconic of a triangle whose foci are 
 \medskip
 \noindent
 This ellipse is tangent to the sides of the reference triangle, and the triangle formed by its points of tangency is the \emph{symmedial triangle} of the reference triangle.
-
 \begin{flushright}
+\small
 \href{https://mathworld.wolfram.com/BrocardEllipse.html}{Weisstein, Eric W. \emph{“Brocard Ellipse.”} From MathWorld}
 \end{flushright}
 
@@ -5619,10 +5397,7 @@ This ellipse is tangent to the sides of the reference triangle, and the triangle
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection method_triangle_brocard__inellipse (end)
-
-
-\subsubsection{Method \tkzMeth{triangle}{macbeath\_inellipse}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{macbeath\_inellipse}}
 \label{ssub:method_triangle_macbeath__inellipse}
 
 The \emph{MacBeath inconic} of a triangle is an ellipse tangent to the sides of the reference triangle.
@@ -5630,7 +5405,6 @@ The \emph{MacBeath inconic} of a triangle is an ellipse tangent to the sides of 
 \medskip
 \noindent
 Its foci are the circumcenter $O$ and the orthocenter $H$, which implies that its center is the nine-point center $N$. The triangle formed by the points of tangency of the MacBeath ellipse with the triangle's sides is called the \emph{MacBeath triangle}.
-
 \begin{flushright}
   \small
 \href{https://mathworld.wolfram.com/MacBeathInconic.html}{Weisstein, Eric W. \emph{“MacBeath Inconic.”} From MathWorld}
@@ -5660,9 +5434,7 @@ Its foci are the circumcenter $O$ and the orthocenter $H$, which implies that it
   \end{tikzpicture}
 \end{tkzexample}
 
-% subsubsection method_triangle_macbeath__inellipse (end)
-
-\subsubsection{Method \tkzMeth{triangle}{mandart\_inellipse}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{mandart\_inellipse}}
 \label{ssub:method_triangle_mandart__inellipse}
 
 The \emph{Mandart ellipse} is the inconic that touches the sides of the reference triangle at the vertices of the \emph{extouch triangle}, which is also its polar triangle.
@@ -5703,10 +5475,7 @@ Its center is the \emph{mittenpunkt} $M$ of the triangle.
   \end{tikzpicture}
 \end{tkzexample}
 
-
-% subsubsection method_triangle_mandart__inellipse (end)
-
-\subsubsection{Method \tkzMeth{triangle}{orthic\_inellipse}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{orthic\_inellipse}}
 \label{ssub:method_triangle_orthic__inellipse}
 
 The \emph{orthic inellipse} is an inconic defined for acute triangles. It is tangent to the sides of the triangle at the vertices of the \emph{orthic triangle}, which also serves as its polar triangle.
@@ -5742,18 +5511,15 @@ Its center is the \emph{symmedian point} $K$ of the reference triangle.
   \end{tikzpicture}
 \end{tkzexample}
 
-% subsubsection method_triangle_orthic__inellipse (end)
 
-% subsection the_result_is_a_conic (end)
 %%%%%%%%%%%%%%%%%%%
-
 %%% Misc.
-
 %%%%%%%%%%%%%%%%%%%%
-\subsection{The result is a square} % (fold)
 
 
-\subsubsection{Method \tkzMeth{triangle}{square\_inscribed(n)}} % (fold)
+\subsection{The result is a square}
+
+\subsubsection{Method \tkzMeth{triangle}{square\_inscribed(n)}}
 \label{ssub:method_triangle_square__inscribed}
 
 This method constructs a square inscribed in the triangle.
@@ -5793,16 +5559,11 @@ z.a1,z.a2,z.a3,z.a4 = S:get()}
 \end{tikzpicture}
 \end{tkzexample}
 
-% subsubsection method_triangle_square__inscribed (end)
-% subsection the_result_is_a_square (end)
 
-\subsubsection{Method \tkzMeth{triangle}{path()}} % (fold)
+\subsubsection{Method \tkzMeth{triangle}{path()}}
 \label{ssub:method_tkzmeth_triangle_path}
 
-This method builds a \tkzClass{path} object that follows the boundary of a triangle from point $p_1$ to point $p_2$
-
-​
- , walking in counterclockwise (direct) orientation along the triangle's perimeter.
+This method builds a \tkzClass{path} object that follows the boundary of a triangle from point $p_1$ to point $p_2$, walking in counterclockwise (direct) orientation along the triangle's perimeter.
 
 \paragraph{Syntax:}
 \begin{verbatim}
@@ -5838,9 +5599,4 @@ This function is useful for tracing polygonal arcs or combining triangle edges w
   \tkzLabelPoints(A,...,C)
 \end{tikzpicture}
 \end{center}
-
-% subsubsection method_tkzmeth_triangle_path (end)
-% subsection methods_of_the_class_triangle(end)
-% section class_triangle(end)
-
 \endinput

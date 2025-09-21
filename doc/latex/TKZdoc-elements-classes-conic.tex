@@ -1,13 +1,10 @@
 \newpage
 
-\section{Class \tkzClass{conic}} % (fold)
-\label{sec:class_iclass_conic}
-
+\section{Class \tkzClass{conic}}
 The variable \tkzVar{conic}{CO} holds a table used to store conics. It is optional, and you are free to choose the variable name. However, using \tkzVar{conic}{CO} is a recommended convention for clarity and consistency. If you use a custom variable (e.g., \code{Conics}), you must initialize it manually. The \code{init\_elements()} function reinitializes the \tkzVar{conic}{CO} table if used.
 
-\subsection{Preamble} % (fold)
-\label{sub:preamble}
 
+\subsection{Preamble}
 To illustrate some of the methods for working with conics, consider the construction of a parabola defined as the locus of all centers of circles tangent to a fixed circle and a line.
 
 In the example below, the table \code{points} contains the coordinates of these centers. Since \TIKZ{} only requires a list of coordinate pairs enclosed in parentheses, the table is converted accordingly.
@@ -85,9 +82,6 @@ PA.through = path()
   \tkzDrawCoordinates[smooth,red,ultra thick](PA.center)
 \end{tikzpicture}
 \end{verbatim}
-
-% subsection preamble (end)
-
 This class replaces the one dedicated to ellipses. From now on, you can work with parabolas, hyperbolas and ellipses. The circle is not part of this class.
 As you'll see from the examples, ellipses used to be built by \TIKZ{}, now conics are obtained by point-by-point construction. A cloud of points is sent to \TIKZ{}, which simply connects them.
 
@@ -99,7 +93,8 @@ As you'll see from the examples, ellipses used to be built by \TIKZ{}, now conic
 
 is used by the macro \tkzMacro{tkz-elements}{tkzDrawCoordinates}. One advantage of this method is that you can easily draw only part of a conic.
 
-\subsection{Creating a Conic} % (fold)
+
+\subsection{Creating a Conic}
 \label{sub:creating_a_conic}
 
 The \code{conic} class unifies the construction of all classical conic sections: ellipses, parabolas, and hyperbolas. It supersedes the previously available \code{ellipse} class, which is now deprecated.
@@ -145,8 +140,8 @@ Additional creation methods are also available:
 These alternative methods are described in the following sections.
 
 
-\subsection{Attributes of a conic} % (fold)
-\label{sub:attributes_of_a_conic}
+
+\subsection{Attributes of a conic}
 
 Parabolas, hyperbolas, and ellipses share many attributes, though some are specific to ellipses and hyperbolas. Originally, ellipses were defined using three points: the center, a vertex, and a co-vertex. From now on, conics are preferably defined by a focus, a directrix, and an eccentricity. The old method remains available, and some tools allow conversion between both definitions.
 
@@ -174,13 +169,10 @@ Depending on the value of $e$:
   \item If $e > 1$, it is a \emph{hyperbola}.
 \end{itemize}
 
-
-
-\begin{center}
-  \bgroup
+\bgroup
   \catcode`_=12
   \small
-  \captionof{table}{Conic attributes.}\label{conic:att}
+  \captionof{table}{Conic attributes.}
   \begin{tabular}{lll}
   \toprule
   \textbf{Attributes}   & \textbf{Definition} & \textbf{Reference} \\
@@ -206,12 +198,12 @@ Depending on the value of $e$:
   \bottomrule %
   \end{tabular}
   \egroup
-\end{center}
 
 
 
-\subsubsection{About attributes of conic} % (fold)
-\label{ssub:about_attributes_of_conic}
+
+
+\subsubsection{About attributes of conic}
 
 The figure below and the associated table show common attributes and differences according to exentricity values.
 
@@ -316,9 +308,7 @@ The figure below and the associated table show common attributes and differences
 \end{center}
 
 
-
-\subsubsection{Attributes of a parabola} % (fold)
-\label{ssub:attributes_of_parabola}
+\subsubsection{Attributes of a parabola}
 
 Let
 
@@ -378,10 +368,7 @@ z.S_2 = CO.PA.vertex}
  \tkzLabelSegment[left](K,S_2){$h/2$}
 \end{tikzpicture}
 
-% subsubsection attributes_of_parabola (end)
-
-\subsubsection{Attributes of a hyperbola} % (fold)
-\label{ssub:attributes_of_hyperbola}
+\subsubsection{Attributes of a hyperbola}
 
 Let
 
@@ -469,10 +456,7 @@ z.D = (z.S - z.C):orthogonal(CO.HY.b):at(z.S)}
 \end{tikzpicture}
 \end{center}
 
-% subsubsection attributes_of_hyperbola (end)
-
-\subsubsection{Attributes of an ellipse} % (fold)
-\label{ssub:attributes_of_ellipse}
+\subsubsection{Attributes of an ellipse}
 
 An ellipse shares many attributes with the hyperbola. It is created using the same method, for example:
 
@@ -565,16 +549,12 @@ As for all conics, the major axis is available via \code{CO.EL.major\_axis}, and
  \end{tikzpicture}
 \end{center}
 
-% subsubsection attributs_of_ellipse (end)
-
-% subsubsection about_attributes_of_conic (end)
-
-\subsection{Point-by-point conic construction} % (fold)
-\label{sub:point_by_point_conic_construction}
+\subsection{Point-by-point conic construction}
 
 Let’s take a closer look at the methods used to construct conics. The general approach is to generate a table of points ---with a nearly constant number--- to define the curve’s path. This table is then passed to \TIKZ{} to produce the plot.
 
-\subsubsection{Parabola construction} % (fold)
+
+\subsubsection{Parabola construction}
 \label{ssub:parabola_construction}
 
 The construction method is based on the following geometric property: if a point $M$ lies on a parabola, then the bisector of the segment joining the focus $F$ and the projection $H$ of $M$ onto the directrix is also the angle bisector of $\widehat{HFT}$ and corresponds to the tangent to the parabola at $M$.
@@ -658,7 +638,8 @@ The name \code{curve} is only a suggestion—you may use any name you like for t
 \end{minipage}
 
 
-\subsubsection{Hyperbola construction} % (fold)
+
+\subsubsection{Hyperbola construction}
 \label{ssub:hyperbola_construction}
 
 Constructing a hyperbola is slightly more involved.
@@ -757,10 +738,7 @@ init_elements()
   \end{tikzpicture}
   \end{verbatim}
 
-%subsubsection hyperbola_construction (end)
-
-\subsubsection{Ellipse construction} % (fold)
-\label{ssub:ellipse_construction}
+\subsubsection{Ellipse construction}
 
 The ellipse can be constructed point by point using an affinity. This transformation is applied to the principal circle, using the focal axis as the direction of the affinity and a ratio equal to $b/a$, where $a$ and $b$ are the semi-major and semi-minor axes of the ellipse.
 
@@ -862,14 +840,7 @@ The point $Q'$ lies on the ellipse. Repeating this construction for various poin
 \end{center}
 \end{minipage}
 
-% subsubsection ellipse_construction (end)
-% subsection point_by_point_conic_construction (end)
-
-
-
-
-\subsection{Methods of the class conic} % (fold)
-\label{sub:methods_of_the_class_conic}
+\subsection{Methods of the class conic}
 
 The methods previously designed for the (now obsolete) \code{ellipse} class have been generalized to the \code{conic} class.
 
@@ -883,7 +854,6 @@ The most natural creation method is now the one based on a focus, a directrix, a
 
  Depending on the latter, it is easy to distinguish between parabolas, hyperbolas, and ellipses. The bifocal definition of hyperbolas and ellipses is also available, as well as the one based on three points: the center, a vertex, and a covertex.
 
-\begin{center}
   \bgroup
   \catcode`_=12
   \small
@@ -901,14 +871,11 @@ The most natural creation method is now the one based on a focus, a directrix, a
    \tkzMeth{conic}{path(pt, pt, nb, swap)  } &  [\ref{ssub:conic_path}]   \\ \bottomrule
   \end{tabular}
   \egroup
-\end{center}
 
-
-\begin{center}
   \bgroup
   \catcode`_=12
   \small
-  \captionof{table}{Conic functions.}\label{conic:func}
+  \captionof{table}{Conic functions.}
   \begin{tabular}{ll}
   \toprule
   \textbf{Functions} & \textbf{Reference}     \\
@@ -926,10 +893,9 @@ The most natural creation method is now the one based on a focus, a directrix, a
   \bottomrule
   \end{tabular}
   \egroup
-\end{center}
 
 
-\subsubsection{Method \tkzMeth{conic}{points}} % (fold)
+\subsubsection{Method \tkzMeth{conic}{points}}
 \label{ssub:method_conic_points}
 
 This method generates a set of points lying on the conic. These points can then be used with \tkzNamePack{tkz-euclide}, which, via \TIKZ{}'s \code{draw[options] plot coordinates}, will render the curve.
@@ -956,8 +922,6 @@ Examples with the three types of conics
 
 
 \item With parabola\\
-\label{ssub:example_points_with_parabola}
-
 
 $t$ is the abscissa of a point on the parabola, in an orthonormal frame of reference with origin $K$ and based on the directrix line and focal axis (major\_axis).
 
@@ -1033,7 +997,6 @@ $t$ is the abscissa of a point on the parabola, in an orthonormal frame of refer
 
 
 \item  With  hyperbola
-\label{ssub:method_points_with_hyperbola}
 
 As with the parabola, the parameter \( t \) denotes the abscissa of a point on the hyperbola. The directrix is assumed to be the x-axis. To generate the second branch of the hyperbola, simply include the argument \code{"swap"}.
 
@@ -1085,11 +1048,7 @@ As with the parabola, the parameter \( t \) denotes the abscissa of a point on t
  \end{tikzpicture}
 \end{verbatim}
 
-
-
-
 \item  With  ellipse
-\label{ssub:method_points_with_ellipse}
 
 This case differs slightly: the parameter \( t \) is a real number between \( 0 \) and \( 1 \), representing a fraction of the angle \( \widehat{MCV} \) measured in radians, where \( C \) is the center of the ellipse, \( V \) a vertex, and \( M \) a point on the ellipse.
 Thus, \( t = 0 \) and \( t = 1 \) correspond to the same vertex, \( t = 0.5 \) gives the opposite vertex, and \( t = 0.25 \) corresponds to a covertex.
@@ -1150,22 +1109,16 @@ The next example shows how to draw only a portion of the ellipse.
   \tkzMarkAngles[mark=||,size=.5](V,C,M)
   \end{tikzpicture}
 \end{center}
-
-
 \end{enumerate}
 
-
-\subsubsection{Method \tkzMeth{conic}{point(r)}} % (fold)
-\label{ssub:method_imeth_conic_point}
+\subsubsection{Method \tkzMeth{conic}{point(r)}}
 
 This method defines a point on the conic. Unlike the \code{points} method, it takes only a single argument—the abscissa of the point.
 See also: Sections~\ref{ssub:method_conic_tangent_at}, \ref{ssub:parabola_construction}, and \ref{ssub:hyperbola_construction} for related uses.
 
 \vspace{1em}
 
-% subsubsection method_imeth_conic_point (end)
-
-\subsubsection{Method \tkzMeth{conic}{tangent\_at}} % (fold)
+\subsubsection{Method \tkzMeth{conic}{tangent\_at}}
 \label{ssub:method_conic_tangent_at}
 
 \directlua{
@@ -1242,11 +1195,7 @@ See also: Sections~\ref{ssub:method_conic_tangent_at}, \ref{ssub:parabola_constr
 \end{tikzpicture}
 \end{verbatim}
 
-
-
-% subsubsection method_conic_tangent_at (end)
-
-\subsubsection{Method \tkzMeth{conic}{tangent\_from}} % (fold)
+\subsubsection{Method \tkzMeth{conic}{tangent\_from}}
 \label{ssub:method_conic_tangent__from}
 
 This method computes the two tangents drawn from a given point to the conic.
@@ -1327,12 +1276,7 @@ z.K = CO.PA.K}
   \end{tikzpicture}
 \end{center}
 
-% subsubsection method_conic_tangent__from (end)
-% subsubsection method_points_with_ellipse (end)
-
-
-\subsubsection{Method \tkzMeth{conic}{point}} % (fold)
-\label{ssub:method_conic_point}
+\subsubsection{Method \tkzMeth{conic}{point}}
 
 This method is similar to the \code{point} method found in other classes, with specific differences depending on the conic type.
 The parameter \( t \) typically represents a fraction of a given distance and usually lies between \( 0 \) and \( 1 \). However, this interpretation does not apply to parabolas and hyperbolas: in these cases, \( t \) corresponds to the abscissa on the directrix of a point on the curve.
@@ -1428,9 +1372,8 @@ For instance, the segment \( HQ' = \frac{b}{a} HQ \), and the angle relation \( 
   \end{tikzpicture}
 \end{center}
 \end{minipage}
-% subsubsection method_conic_point (end)
 
-\subsubsection{Method \tkzMeth{conic}{in\_out}} % (fold)
+\subsubsection{Method \tkzMeth{conic}{in\_out}}
 \label{ssub:method_conic_in_out}
 
 This method checks the relative position of a point with respect to the conic.
@@ -1535,9 +1478,7 @@ This can be used, for example, to test inclusion within an ellipse or determine 
 \end{tikzpicture}
 \end{verbatim}
 
-% subsubsection method_conic_in_out (end)
-
-\subsubsection{Method \tkzMeth{conic}{orthoptic}} % (fold)
+\subsubsection{Method \tkzMeth{conic}{orthoptic}}
 \label{ssub:method_conic_orthoptic}
 
 In curve geometry, the orthoptic of a conic is the set of points from which two tangents to the curve intersect at a right angle.
@@ -1627,13 +1568,7 @@ For ellipses and hyperbolas, the orthoptic is a circle—but in the case of the 
 \end{center}
 \end{minipage}
 
-
-% subsubsection method_conic_orthoptic (end)
-
-% subsection methods_of_the_class_conic (end)
-
-\subsection{Intersection: Line and Conic} % (fold)
-\label{sub:intersection_line_conic}
+\subsection{Intersection: Line and Conic}
 
 Additional details can be found in Section~\ref{sec:intersections}, in particular Subsection~\ref{sub:line_conic}.
 
@@ -1712,15 +1647,12 @@ Currently, intersections are only supported between straight lines and conics.
   \end{center}
 \end{minipage}
 
-
-% subsection intersection_line_conic (end)
-
-\subsection{Useful Tools} % (fold)
-\label{sub:useful_tools}
+\subsection{Useful Tools}
 
 This section presents utility functions for retrieving key geometric elements of a conic: its focus, directrix, and eccentricity.
 
-\subsubsection{Function \tkzFct{math}{PA\_dir}} % (fold)
+
+\subsubsection{Function \tkzFct{math}{PA\_dir}}
 \label{ssub:pa_dir}
 
 This function computes the directrix of a parabola, given its focus and two points on the curve.
@@ -1775,9 +1707,8 @@ To obtain the second solution, simply reverse the order of the return values: re
 \end{tikzpicture}
   \end{center}
 \end{minipage}
-% subsubsection _igfct_math_pa__focus (end)
 
-\subsubsection{Function \tkzFct{math}{PA\_focus}} % (fold)
+\subsubsection{Function \tkzFct{math}{PA\_focus}}
 \label{ssub:_igfct_math_pa__focus}
 
 This function computes the focus of a parabola, given its directrix and two points on the curve.
@@ -1836,9 +1767,7 @@ curve = CO.PA:points(-5, 5, 50)}
 \end{center}
 \end{minipage}
 
-% subsubsection _igfct_math_pa__focus (end)
-
-\subsubsection{Function \tkzFct{math}{HY\_bifocal}} % (fold)
+\subsubsection{Function \tkzFct{math}{HY\_bifocal}}
 \label{ssub:_igfct_math_hy__bifocal}
 
 For the hyperbola, this is currently the only available tool, and it relies on the bifocal definition.
@@ -1897,10 +1826,7 @@ The method proceeds by applying standard formulas that characterize a hyperbola 
   \end{center}
 \end{minipage}
 
-
-% subsubsection _igfct_math_hy__bifocal (end)
-
-\subsubsection{Function \tkzFct{math}{EL\_bifocal}} % (fold)
+\subsubsection{Function \tkzFct{math}{EL\_bifocal}}
 \label{ssub:_igfct_math_el__bifocal}
 
 For the ellipse, two methods are available.
@@ -1963,10 +1889,7 @@ The main attributes of the ellipse are then computed using the standard bifocal 
     \end{tikzpicture}
   \end{center}
 
-
-% subsubsection _igfct_math_el__bifocal (end)
-
-\subsubsection{Function \tkzFct{math}{EL\_points(pt, pt, pt)}} % (fold)
+\subsubsection{Function \tkzFct{math}{EL\_points(pt, pt, pt)}}
 \label{ssub:_math_el__points}
 
 The second method corresponds to the classical approach based on the center, a vertex, and a covertex of the ellipse.
@@ -2053,9 +1976,7 @@ This approach replaces older constructions that manually derived parameters step
   \end{center}
 \end{minipage}
 
-% subsubsection _math_el__points (end)
-
-\subsubsection{Function \tkzFct{conic}{EL\_radii(pt, ra, rb, slope)}} % (fold)
+\subsubsection{Function \tkzFct{conic}{EL\_radii(pt, ra, rb, slope)}}
 \label{ssub:function_radii}
 
 This function defines an ellipse from its center (\code{pt}), its two radii (\( ra \) and \( rb \)), and the slope of its principal axis.
@@ -2102,9 +2023,7 @@ This approach is useful when the ellipse is defined by its geometric parameters 
 \end{center}
 \end{tkzexample}
 
-% subsubsection function_radii (end)
-
-\subsubsection{Function \tkzFct{matrix}{search\_ellipse(s1, s2, s3, s4, s5)}} % (fold)
+\subsubsection{Function \tkzFct{matrix}{search\_ellipse(s1, s2, s3, s4, s5)}}
 \label{ssub:search_ellipse}
 
 This function, which will eventually be renamed \code{five\_points}, is currently limited to ellipses.
@@ -2149,9 +2068,7 @@ The results are stored in a table, indexed by the point names. You can retrieve 
  tex.print('\\\\')  }
 \end{tkzexample}
 
-% subsubsection search_ellipse(end)
-
-\subsubsection{Function \tkzFct{conic}{ellipse\_axes\_angle(t)}} % (fold)
+\subsubsection{Function \tkzFct{conic}{ellipse\_axes\_angle(t)}}
 \label{ssub:function_ellipse_axes_angle}
 
 This function complements the previous one.
@@ -2205,9 +2122,7 @@ It will compute and return all the necessary parameters for further use.
  \end{tkzexample}
  \end{minipage}
 
-% subsubsection function_ellipse_axes_angle (end)
-
-\subsubsection{Function \tkzFct{conic}{test\_ellipse(pt, t)}} % (fold)
+\subsubsection{Function \tkzFct{conic}{test\_ellipse(pt, t)}}
 \label{ssub:function_test_ellipse}
 
 This function checks whether a given point \code{pt} lies on the ellipse whose general equation is defined by the coefficients stored in table \code{t}.
@@ -2262,9 +2177,7 @@ For example, the function can be used to test a point against the ellipse define
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection function_test_ellipse (end)
-
-\subsubsection{Function \tkzFct{conic}{search\_center\_ellipse(t)}} % (fold)
+\subsubsection{Function \tkzFct{conic}{search\_center\_ellipse(t)}}
 \label{ssub:function_search_center_ellipse}
 
 This function computes the center of an ellipse from its general equation.
@@ -2303,26 +2216,12 @@ The center is obtained by solving the system of equations corresponding to the p
 \end{tkzexample}
 \end{minipage}
 
-% subsubsection function_search_center_ellipse (end)
-
-\subsubsection{Creating a path} % (fold)
+\subsubsection{Creating a path}
 \label{ssub:conic_path}
 
 The \tkzClass{conic} class includes a method \tkzMeth{conic}{path} that creates a \tkzClass{path} object representing a segment of the conic between two given points (arc of conic).
 
-This method returns a path corresponding to a conic arc between two points
-z
-a
-z
-a
-​
-  and
-z
-b
-z
-b
-​
- on the curve. The number of interpolation points is controlled by \code{nb} (default: 20). The method supports ellipses, hyperbolas, and parabolas.
+This method returns a path corresponding to a conic arc between two points \tkzname{zA} and \tkzname{zB} on the curve. The number of interpolation points is controlled by \code{nb} (default: 20). The method supports ellipses, hyperbolas, and parabolas.
 
 \paragraph{Syntax:}
 \begin{verbatim}
@@ -2366,7 +2265,7 @@ The resulting arc can be drawn with:
 \end{verbatim}
 \end{mybox}
 
-\paragraph{Example with ellipse} \label{par:example_ellipse}
+\paragraph{Example with ellipse}
 The next example is a special case with an ellipse. If the conic is an ellipse, an optional fourth argument \code{mode} can be passed:\\
 
 "short" : trace the shortest arc,
@@ -2410,9 +2309,10 @@ The next example is a special case with an ellipse. If the conic is an ellipse, 
   \end{tikzpicture}
 \end{tkzexample}
 
-% (fold)
-\paragraph{Example with parabola} % (fold)
-\label{par:example_with_parabola} This example shows the case of a parabola. It would be the same for a hyperbola ( the "swap" option is not yet authorized).
+
+\paragraph{Example with parabola}
+
+This example shows the case of a parabola. It would be the same for a hyperbola ( the "swap" option is not yet authorized).
 
 \begin{tkzexample}[latex=.35\textwidth]
 \directlua{
@@ -2434,10 +2334,4 @@ The next example is a special case with an ellipse. If the conic is an ellipse, 
  \tkzDrawPoints(P,Q)
 \end{tikzpicture}
 \end{tkzexample}
-
-% paragraph example_with_parabola (end)
-% paragraph example (end)
-% subsubsection conic_path (end)
-
-% subsection useful_tools (end)
-% section class_iclass_conic (end)
+\endinput

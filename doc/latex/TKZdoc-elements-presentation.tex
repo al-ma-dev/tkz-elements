@@ -1,9 +1,6 @@
 \newpage
 \section{Presentation}
-
-\subsection{Geometric Construction Philosophy} % (fold)
-\label{sub:construction_philosophy}
-
+\subsection{Geometric Construction Philosophy}
 \tkzNamePack{tkz-elements} is built around the principles of classical Euclidean geometry, emphasizing constructions achievable with an unmarked straightedge and a compass. The library favors a declarative and geometric approach over algebraic or numeric definitions.
 
 This philosophy means that all geometric objects — points, lines, circles, triangles, and so on — are primarily defined by other points. Explicit numerical values such as coordinates, distances, or angles are deliberately avoided unless they are essential to the construction. This is in line with a traditional ruler-and-compass mindset, where geometric reasoning emerges from visual configurations and not from numbers.
@@ -23,26 +20,23 @@ While \tkzNamePack{tkz-elements} promotes a high-level, point-based approach to 
 This separation of concerns allows users to focus entirely on geometric constructions while benefiting from Lua’s computational precision and performance. In the next section, we will explain how Lua integrates with \LaTeX\ in the context of this package — not as a programming layer, but as an invisible partner enabling advanced constructions.
 
 
-\subsection{With Lua} % (fold)
-\label{sub:with_lua}
-
-
+\subsection{With Lua}
 The primary purpose of \tkzNamePack{tkz-elements} is to perform geometric computations and define points using \tkzname{Lua}. You can think of it as a computational kernel that can be used by either \tkzNamePack{tkz-euclide} or directly with \tkzNamePack{\TIKZ}.
 
 \tkzname{Lua} code can be executed in two ways: directly, using the \tkzMacro{lualatex}{directlua} primitive, or within a \tkzEnv{tkz-elements}{tkzelements} environment based on the \tkzNamePack{luacode} package (which must be loaded separately).
 When using \tkzMacro{lualatex}{directlua}, especially in complex documents, you can reset internal data structures — such as coordinate tables and scaling factors — using the \tkzFct{package}{init\_elements()} function.
 
 \begin{minipage}[t]{.52\textwidth}\vspace{0pt}%
-   The key points are: 
+   The key points are:
    \begin{itemize}
       \item The source file must be \tkzRHand\ {\color{red}\uline{ \color{black}UTF-8}}  encoded.
       \item Compilation must be done with  \tkzRHand\ {\color{red}\uline{ \color{black}lua\LATEX{}}}.
       \item You need to load \tkzNamePack{tkz-euclide} and \code{tkz-elements}.
       \item All definitions and calculations are carried out in an \tkzClass{occs} (orthonormal cartesian coordinate system,) using Lua either via the macro \tkzMacro{lualatex}{directlua} or within the  \tkzEnv{tkz-elements}{tkzelements} environment.
    \end{itemize}
-   
+
 On the right, you will find a minimal template.
-  
+
 The code is divided into two main parts:  the Lua code (executed using \tkzMacro{lualatex}{directlua} or placed inside a \tkzEnv{tkz-elements}{tkzelements} environment), and the  \tkzEnv{tikz}{tikzpicture} environment, where drawing commands — typically from \tkzNamePack{tkz-euclide} — are issued.
 
 When using \tkzNamePack{tkz-euclide}, the mini option is recommended to load only the macros needed for drawing.
@@ -56,12 +50,12 @@ Important: From this point on, all scaling operations must be avoided in the \tk
 \begin{verbatim}
 % !TEX TS-program = lualatex
 % Created by Alain Matthes
-\documentclass{standalone} 
+\documentclass{standalone}
 \usepackage[mini]{tkz-euclide}
 % or simply TikZ
 \usepackage{tkz-elements}
-begin{document} 
-    
+begin{document}
+
 \directlua{
 init_elements()
 % definition of some points
@@ -84,10 +78,8 @@ z.B = point:new(   ,   )
 \end{verbatim}
 \end{mybox}
 \end{minipage}
-% subsection with_lua (end)
 
-\subsection{The main process} % (fold)
-\label{sub:the_main_process}
+\subsection{The main process}
 
 \tikzset{concept/.append style={fill={none}}}
 \tikzset{root concept/.style=   {minimum size=3cm,text width=2.8cm}}%
@@ -97,17 +89,17 @@ z.B = point:new(   ,   )
     node[concept] {Transfers\\\textcolor{orange}{ \textbackslash{tkzGetNodes}}}
     child[concept color=red,grow=right] {
       node[concept] {Drawings\\\textcolor{red}{tkz-euclide}\\\textcolor{red}{\TIKZ}} }
-    child[concept color=purple,grow=left] { 
+    child[concept color=purple,grow=left] {
     node[concept] {Definitions\\Calculations\\\textcolor{purple}{tkz-elements}} };
 \end{tikzpicture}
 
 After obtaining all the necessary points for the drawing, they must be transformed into \tkzname{nodes} so that \tkzNamePack{\TIKZ} or \tkzNamePack{tkz-euclide} can render the figure. This is accomplished using the macro \tkzMacro{tkz-elements}{tkzGetNodes}. This macro iterates through  all the elements of the table \tkzname{z} using the key (which is essentially the name of the point) and retrieves the associated values, namely the coordinates of the point (node).
-% subsection the_main_process (end)
 
-\subsection{Complete example: Pappus circle} % (fold)
+\subsection{Complete example: Pappus circle}
 \label{sub:the_figure_pappus_circle}
 
-\subsubsection{The figure} 
+
+\subsubsection{The figure}
 
 \directlua{
 z.A = point(0, 0)
@@ -150,10 +142,7 @@ z.O_3 = T.P.circumcenter
 \end{tikzpicture}
 \end{center}
 
-
-% subsection the_figure_pappus_circle (end)
-
-\subsubsection{The code} % (fold)
+\subsubsection{The code}
 \label{ssub:the_code}
 
 \begin{verbatim}
@@ -171,9 +160,9 @@ z.O_3 = T.P.circumcenter
   z.C = L.AB:gold_ratio()       %  use of a method linked to “line”
   z.O_0 = line(z.A, z.B).mid % midpoint of segment with an attribute of “line”
   z.O_1 = line(z.A, z.C).mid %  objects are not stored and cannot be reused.
-  z.O_2 = line(z.C, z.B).mid   
+  z.O_2 = line(z.C, z.B).mid
   C.AB = circle(z.O_0, z.B)  %  new object “circle” stored and reused
-  C.AC = circle(z.O_1, z.C) 
+  C.AC = circle(z.O_1, z.C)
   C.CB = circle(z.O_2, z.B)
   z.P = C.CB.north            %  “north” atrributes of a circle
   z.Q = C.AC.north
@@ -203,11 +192,8 @@ z.O_3 = T.P.circumcenter
 \end{tikzpicture}
 \end{document}
 \end{verbatim}
-% subsubsection the_code (end)
 
-\subsection{Another example with comments: South Pole} % (fold)
-\label{sub:south_pole}
-
+\subsection{Another example with comments: South Pole}
 Here's another example with comments
 
 \begin{verbatim}
@@ -217,7 +203,7 @@ Here's another example with comments
 \usepackage{tkz-elements}
 \begin{document}
 \directlua{
- init_elements()                     % Clear tables 
+ init_elements()                     % Clear tables
  z.A = point(2, 4)
  z.B = point(0, 0)                   % three fixed points are used
  z.C = point(8, 0)                   %
@@ -268,8 +254,6 @@ Here's another example with comments
   \end{tikzpicture}
 \end{center}
 
-
-
 \vspace{12pt}
 Here's the \tkzEnv{tikz}{tikzpicture} environment to obtain the drawing:
 \begin{verbatim}
@@ -287,5 +271,4 @@ Here's the \tkzEnv{tikz}{tikzpicture} environment to obtain the drawing:
 \tkzLabelPoints[above](A)
 \end{tikzpicture}
 \end{verbatim}
-% subsection south_pole (end)
 \endinput

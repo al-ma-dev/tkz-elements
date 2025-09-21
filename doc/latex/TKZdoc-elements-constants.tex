@@ -1,11 +1,9 @@
 \newpage
-\section{Global Variables and constants} % (fold)
-\label{sec:global_variables}
-
+\section{Global Variables and constants}
 This module defines default values and mathematical constants used for precision control and symbolic computations in \tkzNamePack{tkz-elements}.
 
-\subsection{Global Variables} % (fold)
-\label{sub:tkz_settings_variables}
+
+\subsection{Global Variables}
 
 \begin{center}
   \bgroup
@@ -22,7 +20,7 @@ This module defines default values and mathematical constants used for precision
           \midrule
      \textbf{Constant} & \textbf{Description} \\
      \midrule
-     
+
      \tkzConst{tkz.phi}        & Golden ratio $\varphi = \dfrac{1 + \sqrt{5}}{2}$ \\
      \tkzConst{tkz.invphi}     & Inverse golden ratio $1/\varphi = \dfrac{\sqrt{5} - 1}{2}$ \\
      \tkzConst{tkz.sqrtphi}    & Square root of the golden ratio $\sqrt{\varphi}$ \\
@@ -32,8 +30,7 @@ This module defines default values and mathematical constants used for precision
 \end{center}
 
 
-\subsection{Functions} % (fold)
-\label{sub:tkz_settings_functions}
+\subsection{Functions}
 
 \begin{center}
   \bgroup
@@ -51,7 +48,8 @@ This module defines default values and mathematical constants used for precision
   \egroup
 \end{center}
 
-\subsubsection{Function \tkzFct{tkz-elements}{reset\_defaults()}} % (fold)
+
+\subsubsection{Function \tkzFct{tkz-elements}{reset\_defaults()}}
 \label{ssub:tkz_reset_defaults}
 
 Restores default values for numerical precision and formatting:
@@ -61,7 +59,8 @@ Restores default values for numerical precision and formatting:
   \item \code{tkz.dc = 2}
 \end{itemize}
 
-\subsubsection{Function \tkzFct{tkz}{tkz.set\_nb\_dec(n)}} % (fold)
+
+\subsubsection{Function \tkzFct{tkz}{tkz.set\_nb\_dec(n)}}
 \label{ssub:tkz_set_nb_dec}
 
 
@@ -70,7 +69,4 @@ Sets the number of decimals used in floating-point comparisons and updates the t
   \item \code{tkz.nb\_dec = $n$}
   \item \code{tkz.epsilon = $10^{-n}$}
 \end{itemize}
-%
-% \noindent
-% \textbf{Effect:} Updates both \code{tkz\\\_nb\\\_dec} and \code{tkz\\\_epsilon} (which becomes $10^{-n}$).
-% section constants (end)
+\endinput

@@ -1,5 +1,5 @@
-\newpage\section{Class  \tkzClass{matrix}} % (fold)
-\label{sec:matrices}
+\newpage\section{Class  \tkzClass{matrix}}
+
 The variable \tkzVar{matrix}{M} holds a table used to store matrices. It is optional, and you are free to choose the variable name. However, using \code{M} is a recommended convention for clarity and consistency. If you use a custom variable (e.g., Matrices), you must initialize it manually.\\
 The \code{init\_elements()} function reinitializes the \code{M} table if used.
 
@@ -14,7 +14,7 @@ This \code{matrix} class has been created to avoid the need for an external libr
 {\color{red}\lefthand\ } While some methods are valid for any matrix size, the majority are reserved for square matrices of order 2 and 3.
 
 
-\subsection{Matrix creation} % (fold)
+\subsection{Matrix creation}
 \label{sub:matrix_creation}
 
 The creation of a matrix is the result of numerous possibilities. Let's take a look at the different cases
@@ -173,10 +173,8 @@ V.u.mtx:print()}
 \end{tkzexample}
 
 \end{itemize}
-% subsection matrix_creation (end)
 
-
-\subsection{Display a matrix: method \code{print}} % (fold)
+\subsection{Display a matrix: method \code{print}}
 \label{sub:display_a_matrix_method_print}
 
 
@@ -189,9 +187,7 @@ This method (See  \ref{ssub:method_print}) is necessary to control the results, 
   M.new:print()}
 \end{tkzexample}
 
-% subsection display_a_matrix_method_print (end)
-
-\subsection{Attibutes of a matrix} % (fold)
+\subsection{Attibutes of a matrix}
 \label{sub:attibutes_of_a_matrix}
 
 \begin{center}
@@ -214,7 +210,8 @@ This method (See  \ref{ssub:method_print}) is necessary to control the results, 
 \end{center}
 
 
-\subsubsection{Attribute \tkzAttr{matrix}{type}} % (fold)
+
+\subsubsection{Attribute \tkzAttr{matrix}{type}}
 \label{ssub:attribute_iattr_matrix_type}
 \begin{mybox}
   |M.new = matrix{ { 1, 1}, { 0, 2} } |
@@ -223,9 +220,7 @@ This method (See  \ref{ssub:method_print}) is necessary to control the results, 
 
 \code{M} is a matrix (and therefore a table) whereas A is a table. Thus \code{M.type} gives \code{'matrix'} and \code{A.type = nil}. \code{type(A) or type(M) = table}.
 
-% subsubsection attribute_iattr_matrix_type (end)
-
-\subsubsection{Attribute \tkzAttr{matrix}{set}} % (fold)
+\subsubsection{Attribute \tkzAttr{matrix}{set}}
 \label{sub:attribute_set}
 A simple array such as |{{1,2},{2,-1}}| is often considered a \code{matrix}. In \tkzNamePack{tkz-elements}, we'll consider |M.new| defined by
 
@@ -237,9 +232,7 @@ You can access a particular element of the matrix, for example: |M.new.set[2][1]
 
 |\tkzUseLua{M.new.set[2][1]}| is the expression that displays $2$.
 
-% subsubsection attribute_set (end)
-
-\subsubsection{Attributes \tkzAttr{matrix}{rows} and \tkzAttr{matrix}{cols}} % (fold)
+\subsubsection{Attributes \tkzAttr{matrix}{rows} and \tkzAttr{matrix}{cols}}
 \label{ssub:attributes_matrix_rows_and_cols}
 
 The number of rows is accessed with |M.n.rows| and the number of columns with |M.n.cols|, here's an example:
@@ -263,9 +256,8 @@ The number of rows is accessed with |M.n.rows| and the number of columns with |M
  tex.print("Rows:  "..M.n.rows)
  tex.print("Cols:  "..M.n.cols)}
 \end{minipage}
-% subsubsection attributes_matrix_rows_and_col (end)
 
-\subsubsection{Attributes \tkzAttr{matrix}{det} } % (fold)
+\subsubsection{Attributes \tkzAttr{matrix}{det} }
 \label{ssub:attributes_matrix_det}
 Give the determinant of the matrix if it is square, otherwise it is \code{nil}. The coefficients of the matrix can be complex numbers.
 
@@ -297,12 +289,7 @@ Give the determinant of the matrix if it is square, otherwise it is \code{nil}. 
  tex.print ("Its determinant is:  "..tostring(M.A.det))}
 \end{minipage}
 
-% subsubsection attributes_iattr_matrix_det (end)
-
-% subsection attibutes_of_a_matrix (end)
-
-
-\subsection{Metamethods for the matrices} % (fold)
+\subsection{Metamethods for the matrices}
 \label{sub:metamethods_for_the_matrices}
 Conditions on matrices must be valid for certain operations to be possible.
 
@@ -328,7 +315,8 @@ Conditions on matrices must be valid for certain operations to be possible.
 \end{center}
 
 
-\subsubsection{Addition and subtraction of matrices} % (fold)
+
+\subsubsection{Addition and subtraction of matrices}
 \label{ssub:addition_of_matrices}
 To simplify the entries, I've used a few functions to simplify the displays.
 
@@ -385,10 +373,8 @@ To simplify the entries, I've used a few functions to simplify the displays.
   nl() nl()
   dsp(M.D,'D') sym(" = ") dsp(M.A) sym(' - ') dsp(M.B)}
 \end{minipage}
-% subsubsection addition_of_matrices (end)
 
-
-\subsubsection{Multiplication and power of matrices} % (fold)
+\subsubsection{Multiplication and power of matrices}
 \label{ssub:multiplication_of_matrices}
 To simplify the entries, I've used a few functions. You can find their definitions in the sources section of this documentation. n integer > or < 0 or |'T'|
 
@@ -435,15 +421,12 @@ To simplify the entries, I've used a few functions. You can find their definitio
   dsp(M.K,'K')}
 \end{minipage}
 
-\subsubsection{Metamethod \code{eq}} % (fold)
+
+\subsubsection{Metamethod \code{eq}}
 \label{ssub:metamthod_eq}
 Test whether two matrices are equal or identical.
-% subsubsection metamthod_eq (end)
-% subsubsection multiplication_of_matrices (end)
-% subsection metamethods_for_the_matrices (end)
 
-
-\subsection{Methods of the class matrix} % (fold)
+\subsection{Methods of the class matrix}
 \label{sub:methods_of_the_class_matrix}
 
 \begin{center}
@@ -455,7 +438,7 @@ Test whether two matrices are equal or identical.
   \toprule
   \textbf{Functions} & \textbf{Reference}   & \\
   \midrule
-  \tkzFct{matrix}{new(...)} & See  [\ref{ssub:method_new}]\\
+  \tkzFct{matrix}{new(...)} & See  [\ref{ssub:method_new}; \ref{sub:matrix_creation}]\\
   \tkzFct{matrix}{square()} & [\ref{ssub:method_square}]\\
   \tkzFct{matrix}{vector()} & [\ref{ssub:method_vector}] \\
   \tkzFct{matrix}{row\_vector()} & [\ref{ssub:function_row_vector}] \\
@@ -482,7 +465,8 @@ Test whether two matrices are equal or identical.
 \end{center}
 
 
-\subsubsection{Method  \tkzMeth{matrix}{print}} % (fold)
+
+\subsubsection{Method  \tkzMeth{matrix}{print}}
 \label{ssub:method_print}
 
 With the \tkzNamePack{amsmath} package loaded, this method can be used. By default, the \tkzEnv{latex}{bmatrix} environment is selected, although you can choose from \tkzEnv{latex}{matrix}, \tkzEnv{latex}{pmatrix}, \tkzEnv{latex}{Bmatrix}, "vmatrix", "Vmatrix". Another option lets you set the number of digits after the decimal point. The "tkz\_dc" global variable is used to set the number of decimal places. Here's an example:
@@ -523,10 +507,8 @@ init_elements()
   M.s = matrix:square(2,1,0,0,2)
   M.s:print()}
 \end{minipage}
-% subsubsection method_print (end)
 
-
-\subsubsection{Function \tkzFct{matrix}{new}} % (fold)
+\subsubsection{Function \tkzFct{matrix}{new}}
 \label{ssub:method_new}
 
 This is the main method for creating a matrix. Here's an example of a 2x3 matrix with complex coefficients:
@@ -558,10 +540,8 @@ This is the main method for creating a matrix. Here's an example of a 2x3 matrix
  M.n = matrix({ { a, b, c }, { d, e, f } })
  M.n:print()}
 \end{minipage}
-% subsubsection method_new (end)
 
-
-\subsubsection{Function \tkzFct{matrix}{vector}} % (fold)
+\subsubsection{Function \tkzFct{matrix}{vector}}
 \label{ssub:method_vector}
 
 The special case of a column matrix, frequently used to represent a vector, can be treated as follows:
@@ -581,9 +561,8 @@ The special case of a column matrix, frequently used to represent a vector, can 
  M.v = matrix:vector(1, 2, 3)
  M.v:print()}
 \end{minipage}
-% subsubsection method_vector (end)
 
-\subsubsection{Function \tkzFct{matrix}{row\_vector}} % (fold)
+\subsubsection{Function \tkzFct{matrix}{row\_vector}}
 \label{ssub:function_row_vector}
 
 \begin{mybox}
@@ -592,9 +571,7 @@ The special case of a column matrix, frequently used to represent a vector, can 
 m.rv = \directlua{matrix:row_vector (1, 2, 3):print()}
 \end{mybox}
 
-% subsubsection function_row_vector (end)
-
-\subsubsection{Method \tkzMeth{matrix}{create(n,m)}} % (fold)
+\subsubsection{Method \tkzMeth{matrix}{create(n,m)}}
 \label{ssub:function_matrix_create_n_m}
 
 \begin{mybox}
@@ -603,9 +580,7 @@ m.rv = \directlua{matrix:row_vector (1, 2, 3):print()}
 M.c = \directlua{matrix:create (2, 3):print()}
 \end{mybox}
 
-% subsubsection function_matrix_create_n_m (end)
-
-\subsubsection{Method \tkzMeth{matrix}{square}(liste)} % (fold)
+\subsubsection{Method \tkzMeth{matrix}{square}(liste)}
 \label{ssub:method_square}
 
 We have already seen this method in the presentation of matrices. We first need to give the order of the matrix, then the coefficients, row by row.
@@ -625,9 +600,7 @@ We have already seen this method in the presentation of matrices. We first need 
  M.s:print()}
 \end{minipage}
 
-% subsubsection method_square (end)
-
-\subsubsection{Method \tkzMeth{matrix}{identity}}% (fold)
+\subsubsection{Method \tkzMeth{matrix}{identity}}
 \label{ssub:method_identity}
 
 Creating the identity matrix order 3
@@ -647,9 +620,8 @@ Creating the identity matrix order 3
   M.Id_3 = matrix:identity(3)
   M.Id_3:print()}
 \end{minipage}
-% subsubsection method_identity (end)
 
-\subsubsection{Method  \tkzMeth{matrix}{is\_orthogonal}} % (fold)
+\subsubsection{Method  \tkzMeth{matrix}{is\_orthogonal}}
 \label{ssub:method_is_orthogonal}
 
 The method returns \code{true} if the matrix is orthogonal and \code{false} otherwise.
@@ -695,18 +667,13 @@ The method returns \code{true} if the matrix is orthogonal and \code{false} othe
  print_matrix(transposeMatrix(M.A))
  tex.print("=")
  inv_matrix(M.A):print()}
-% subsubsection method_is_orthogonal (end)
 
-\subsubsection{Method \tkzMeth{matrix}{is\_diagonal}} % (fold)
+\subsubsection{Method \tkzMeth{matrix}{is\_diagonal}}
 \label{ssub:method_is_diagonal}
 
 The method returns \code{true} if the matrix is diagonal and \code{false} otherwise.
 
-% subsubsection method_is_diagonal (end)
-
-
-
-\subsubsection{Function \tkzFct{matrix}{print\_array}} % (fold)
+\subsubsection{Function \tkzFct{matrix}{print\_array}}
 \label{ssub:display_a_table_or_array_function_code_print_array}
 
 We'll need to display results, so let's look at the different ways of displaying them, and distinguish the differences between arrays and matrices.
@@ -742,9 +709,8 @@ Below, $A$ is an array. It can be displayed as a simple array or as a matrix, bu
  tex.print("M = ")
  M.A:print()}
  \end{minipage}
-% subsubsection display_a_table_or_array_function_code_print_array (end)
 
-\subsubsection{Method  \tkzMeth{matrix}{get}} % (fold)
+\subsubsection{Method  \tkzMeth{matrix}{get}}
 \label{ssub:get_an_element_of_a_matrix}
 Get an element of a matrix.
 
@@ -766,9 +732,7 @@ Get an element of a matrix.
   tex.print(S)}
 \end{minipage}
 
-% subsubsection get_an_element_of_a_matrix (end)
-
-\subsubsection{Method  \tkzMeth{matrix}{inverse}} % (fold)
+\subsubsection{Method  \tkzMeth{matrix}{inverse}}
 \label{ssub:inverse_matrix}
 
 \begin{minipage}{.6\textwidth}
@@ -789,9 +753,8 @@ Get an element of a matrix.
  M.B = M.A:inverse()
  M.B:print()}
 \end{minipage}
-% subsubsection inverse_matrix (end)
 
-\subsubsection{Inverse matrix with power syntax} % (fold)
+\subsubsection{Inverse matrix with power syntax}
 \label{ssub:inverse_matrix_with_power_syntax}
 
 \begin{minipage}{.6\textwidth}
@@ -814,10 +777,8 @@ Get an element of a matrix.
   tex.print("$M = M^{-1} = $")
   print_matrix(M.n ^ -1)}
 \end{minipage}
-% subsubsection inverse_matrix_with_power_syntax (end)
 
-
-\subsubsection{Method  \tkzMeth{matrix}{transpose}} % (fold)
+\subsubsection{Method  \tkzMeth{matrix}{transpose}}
 \label{ssub:transpose_matrix}
 
 A transposed matrix can be accessed with |A: transpose ()| or with |A^{'T'}|.
@@ -845,10 +806,7 @@ A transposed matrix can be accessed with |A: transpose ()| or with |A^{'T'}|.
 \vspace{.5em}
 Remark: |(A ^'T')^'T' = A|
 
-% subsubsection transpose_matrix (end)
-% subsection methods_of_the_class_matrix (end)
-
-\subsubsection{Method \tkzMeth{matrix}{adjugate}} % (fold)
+\subsubsection{Method \tkzMeth{matrix}{adjugate}}
 \label{ssub:method_adjugate}
 
 \begin{minipage}{.6\textwidth}
@@ -884,12 +842,10 @@ Remark: |(A ^'T')^'T' = A|
   tex.print('\\\\')
   tex.print('det(N) = ') tex.print(M.N.det)}
 \end{minipage}
-
-% subsubsection method_adjugate (end)
-
 \newpage
 
-\subsubsection{Method \tkzMeth{matrix}{diagonalize}} % (fold)
+
+\subsubsection{Method \tkzMeth{matrix}{diagonalize}}
 \label{ssub:diagonalization}
 
 For the moment, this method only concerns matrices of order 2.
@@ -936,9 +892,8 @@ For the moment, this method only concerns matrices of order 2.
  M.T = M.P ^ -1 * M.P
  M.T:print()}
 \end{minipage}
-% subsubsection diagonalization (end)
 
-\subsubsection{Method \tkzMeth{matrix}{homogenization}} % (fold)
+\subsubsection{Method \tkzMeth{matrix}{homogenization}}
 \label{ssub:method_homogenization}
 
 \code{Homogenization} of vector: the aim is to be able to use a homogeneous transformation matrix
@@ -975,10 +930,8 @@ which gives:
  tex.print("then after homogenization: ")
  M.V:print()}
 \end{minipage}
-% subsubsection method_homogenization (end)
 
-
-\subsubsection{Method \tkzMeth{matrix}{htm}} % (fold)
+\subsubsection{Method \tkzMeth{matrix}{htm}}
 \label{ssub:method_htm}
 Homogeneous transformation matrix.
 
@@ -1021,9 +974,8 @@ M.W : print()
 }
 
 All that remains is to extract the coordinates of the new point.
-% subsubsection method_htm (end)
 
-\subsubsection{Method \tkzMeth{matrix}{get\_htm\_point}} % (fold)
+\subsubsection{Method \tkzMeth{matrix}{get\_htm\_point}}
 \label{ssub:method_get_htm_point}
 
 In the previous section, we obtained the $W$ matrix. Now we need to obtain the point it defines.
@@ -1058,10 +1010,8 @@ The  method \code{get\_htm\_point}  extracts a point from a vector obtained afte
   tex.print("The affix of $P$ is: ")
   tex.print(tkz.display(z.P))}
 \end{minipage}
-% subsubsection method_get_htm_point (end)
 
-
-\subsubsection{Method \tkzMeth{matrix}{htm\_apply}} % (fold)
+\subsubsection{Method \tkzMeth{matrix}{htm\_apply}}
 \label{ssub:method_code_htm__apply}
 The above operations can be simplified by using the \code{htm\_apply} method directly at point $A$.
 
@@ -1173,8 +1123,4 @@ tex.print(tkz.display(z.N))}
  z.N = get_htm_point(M.V)
  tex.print(tkz.display(z.N))}
 \end{minipage}
-
-% subsubsection method_code_htm__apply (end)
-
-
-% section matrices (end)
+\endinput

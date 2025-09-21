@@ -1,8 +1,10 @@
 \newpage
-\section{Class \tkzClass{rectangle}} % (fold)
+\section{Class \tkzClass{rectangle}}
+
 The variable \code{R} holds a table used to store triangles. It is optional, and you are free to choose the variable name. However, using \code{R} is a recommended convention for clarity and consistency. If you use a custom variable (e.g., rectangles), you must initialize it manually. The \code{init\_elements()} function reinitializes the \code{R} table if used.
 
-\subsection{Rectangle attributes} % (fold)
+
+\subsection{Rectangle attributes}
 \label{sub:rectangle_attributes}
 
 
@@ -12,11 +14,10 @@ Points are created in the direct direction. A test is performed to check whether
 Creation | R.ABCD = rectangle : new (z.A,z.B,z.C,z.D)|
 \end{mybox}
 
-\begin{center}
   \bgroup
   \catcode`_=12
   \small
-  \captionof{table}{rectangle attributes.}\label{rectangle:att}
+  \captionof{table}{rectangle attributes.}
   \begin{tabular}{lll}
   \toprule
   \textbf{Attributes}       & \textbf{Application} & \\
@@ -39,11 +40,11 @@ Creation | R.ABCD = rectangle : new (z.A,z.B,z.C,z.D)|
   \bottomrule
   \end{tabular}
   \egroup
-\end{center}
 
 
-\subsubsection{Example} % (fold)
-\label{ssub:example}
+
+\subsubsection{Example}
+
 \begin{minipage}{.5\textwidth}
 \begin{verbatim}
 \directlua{
@@ -84,45 +85,37 @@ Creation | R.ABCD = rectangle : new (z.A,z.B,z.C,z.D)|
  \tkzLabelPoints[above](C,D)
  \tkzDrawPoints[red](I)
  \tkzLabelPoint[right = 10pt](I){$I$\\ |R.new.center|}
- \tkzLabelSegment[sloped,above](C,D){|R.new.length| =    
+ \tkzLabelSegment[sloped,above](C,D){|R.new.length| =
     \pmpn{\tkzUseLua{R.new.length}}}
- \tkzLabelSegment[sloped,above](A,C){|R.new.diagonal| = 
+ \tkzLabelSegment[sloped,above](A,C){|R.new.diagonal| =
    \pmpn{\tkzUseLua{R.new.diagonal}}}
    % \tkzUseLua{R.new.length} and \tkzUseLua{R.new.diagonal} to get the values.
 \end{tikzpicture}
 \end{minipage}
-% subsubsection example (end)
-% subsection rectangle_attributes (end)
-
 \newpage
-\subsection{Rectangle methods} % (fold)
-\label{sub:rectangle_methods}
 
-\begin{center}
+\subsection{Rectangle methods}
+
   \bgroup
   \catcode`_=12
   \small
-  \captionof{table}{Rectangle methods.}\label{rectangle:met}
+  \captionof{table}{Rectangle methods.}
   \begin{tabular}{lll}
-  \toprule
-  \textbf{Functions} & \textbf{Reference}  &  \\
-  \midrule  
-  \tkzFct{rectangle}{angle (zi, za, angle)} &\\
-  \tkzFct{rectangle}{gold (za, zb)} & \\
-  \tkzFct{rectangle}{diagonal (za, zc)} &\\
-  \tkzFct{rectangle}{side (za, zb, d)} & \\
-  \midrule 
   \textbf{Methods} & \textbf{Reference}  &  \\
-  \toprule 
-  \tkzMeth{rectangle}{new(za ,zb, zc, zd)} &\\
-  \tkzMeth{rectangle}{get\_lengths ()} & \\
+  \toprule
+  \tkzMeth{rectangle}{new(za ,zb, zc, zd)} & Note\footnote{rectangle(pt,pt,pt,pt) (short form, recommended)};[\ref{meth_rectangle_new}]\\
+  \tkzMeth{rectangle}{angle (zi, za, angle)} & [\ref{ssub:angle_method}]\\
+  \tkzMeth{rectangle}{gold (za, zb)} & [\ref{ssub:gold_method}]\\
+  \tkzMeth{rectangle}{diagonal (za, zc)} &[\ref{ssub:diagonal_method}]\\
+  \tkzMeth{rectangle}{side (za, zb, d)} & [\ref{ssub:side_method}]\\
+  \tkzMeth{rectangle}{get\_lengths ()} & [\ref{ssub:function_rectangle_get__lengths}]\\
   \bottomrule %
   \end{tabular}
   \egroup
-\end{center}
 
-\subsubsection{Method \tkzMeth{rectangle}{new(pt,pt,pt,pt)}} % (fold)
-\label{ssub:function_igfct_rectangle_new_pt_pt_pt_pt}
+
+\subsubsection{Method \tkzMeth{rectangle}{new(pt,pt,pt,pt)}}
+\label{meth_rectangle_new}
 This function creates a square using four points. No test is performed, and verification is left to the user.
 
 \begin{tkzexample}[latex=.5\textwidth]
@@ -148,10 +141,7 @@ This function creates a square using four points. No test is performed, and veri
   \end{tikzpicture}
 \end{tkzexample}
 
-
-% subsubsection function_igfct_rectangle_new_pt_pt_pt_pt (end)
-
-\subsubsection{Method \tkzMeth{rectangle}{angle(pt,pt,an)}} % (fold)
+\subsubsection{Method \tkzMeth{rectangle}{angle(pt,pt,an)}}
 \label{ssub:angle_method}
 
 |R.ang = rectangle : angle (z.I,z.A)| ; |z.A | vertex ; ang angle between 2 vertices
@@ -199,9 +189,8 @@ This function creates a square using four points. No test is performed, and veri
     |rectangle: angle (z.C,z.A,math.pi/6)|}
 \end{tikzpicture}
 \end{minipage}
-% subsubsection angle_method (end)
 
-\subsubsection{Method \tkzMeth{rectangle}{side(pt,pt,d)}} % (fold)
+\subsubsection{Method \tkzMeth{rectangle}{side(pt,pt,d)}}
 \label{ssub:side_method}
 \begin{minipage}{.5\textwidth}
 \begin{verbatim}
@@ -243,9 +232,8 @@ This function creates a square using four points. No test is performed, and veri
    |rectangle : side (z.A,z.B,3)|}
 \end{tikzpicture}
 \end{minipage}
-% subsubsection side_method (end)
 
-\subsubsection{Method \tkzMeth{rectangle}{diagonal(pt,pt)}} % (fold)
+\subsubsection{Method \tkzMeth{rectangle}{diagonal(pt,pt)}}
 \label{ssub:diagonal_method}
 \begin{minipage}{.5\textwidth}
 \begin{verbatim}
@@ -289,9 +277,8 @@ z.I = R.diag.center}
    |rectangle : diagonal (z.A,z.C)|}
 \end{tikzpicture}
 \end{minipage}
-% subsubsection diagonal_method (end)
 
-\subsubsection{Method \tkzMeth{rectangle}{gold(pt,pt)}} % (fold)
+\subsubsection{Method \tkzMeth{rectangle}{gold(pt,pt)}}
 \label{ssub:gold_method}
 \begin{minipage}{.5\textwidth}
 \begin{verbatim}
@@ -336,9 +323,8 @@ z.I = R.gold.center}
   |rectangle :  gold (z.X,z.Y)|}
 \end{tikzpicture}
 \end{minipage}
-% subsubsection gold_method (end)
 
-\subsubsection{Method \tkzMeth{rectangle}{get\_lengths}()} % (fold)
+\subsubsection{Method \tkzMeth{rectangle}{get\_lengths}()}
 \label{ssub:function_rectangle_get__lengths}
 
 \begin{tkzexample}[latex=.45\textwidth]
@@ -365,7 +351,4 @@ z.I = R.gold.center}
     $\pmpn{\tkzUseLua{tkzy}}$}
 \end{tikzpicture}
 \end{tkzexample}
-
-
-% subsubsection function_rectangle_get__lengths (end)
-% subsection rectangle_methods (end)
+\endinput

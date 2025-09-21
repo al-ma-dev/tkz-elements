@@ -2,7 +2,14 @@
 
 All notable changes to **tkz-elements** will be documented in this file.
 This format follows the spirit of <https://keepachangelog.com/> (categories **Added / Changed / Fixed / Removed / Deprecated / Docs / Security**).
-Versions here reflect the project’s scheme (e.g. `4.20c`).
+Versions here reflect the project’s scheme (e.g. `4.21c`).
+
+## [4.21c] — 2025-09-21
+### Docs
+- Changed the names of the examples.
+- The examples now use external Lua files.
+- Corrected the documentation.
+- Cleaned up the files: unused labels have been removed, as well as **overfull box**.
 
 ## [4.20c] — 2025-09-17
 ### Added

@@ -1,6 +1,6 @@
 \newpage
-\section{Class \tkzClass{{path}} % (fold)
-\label{sec:section_name}
+\section{Class \tkzClass{path}}
+
 This class was developed in response to a question posted on \code{tex.stackexchange.com} [\href{https://tex.stackexchange.com/questions/741663/fill-a-space-made-by-three-arcs/741758#741758}{fill-a-space-made-by-three-arcs}].
 
 The concept was missing from the package, although in some cases it was possible to work around this using \TIKZ{} paths. When creating the \code{conic} class, I frequently had to manipulate tables of coordinates, so it became natural to formalize these as \code{paths}.
@@ -138,8 +138,7 @@ PA.co = CO.EL:points(0, 1, 50) -- conic arc from t=0 to t=1
 These generated paths can be combined, reversed, filled, or used for \TIKZ{} decorations.
 
 
-\subsection{Overview} % (fold)
-\label{sub:Overview}
+\subsection{Overview}
 
 The path object represents an ordered sequence of 2D complex points, stored as TikZ-compatible strings in the form "(x,y)". It supports geometric operations such as translation, homothety, and rotation, and can be combined with other paths using Lua operator overloading.
 
@@ -147,7 +146,6 @@ The variable \code{PA} holds a table used to store paths. It is optional, and yo
  It is primarily intended for geometric constructions and drawing operations in \TIKZ{} via lua\LATEX{}.
 
 It supports arithmetic operations for combining and manipulating paths, as well as geometric transformations such as translation, rotation, homothety, and reversal.
-% subsection Overview (end)
 
 \subsection{Constructor}
 
@@ -169,6 +167,7 @@ Here is a \tkzname{path} representing a simple triangle:
   \end{mybox}
 
 
+
 \subsection{Operator Overloading}
 
 \begin{itemize}
@@ -181,6 +180,7 @@ Here is a \tkzname{path} representing a simple triangle:
   \item \code{p1 - p2} — \textbf{Subtraction} \\
   Equivalent to \code{p1 + (-p2)} (concatenates \code{p1} with the reversed \code{p2}).
 \end{itemize}
+
 
 \subsection{Methods}
 
@@ -213,9 +213,10 @@ Here is a \tkzname{path} representing a simple triangle:
 
 \tkzMeth{path}{add\_pair\_to\_path(z1, z2, n)}  & See [\ref{ssub:subsubsection_name}] \\
 
-\tkzMeth{path}{path\_from\_pairs(pt, pt, n)}  & See [\ref{ssub:subsubsection_name}] \\
+\tkzMeth{path}{path\_from\_pairs(pt, pt, n)}  & See [\ref{ssub:subsubsection_name}; \ref{ssub:method_tkzmeth_path_path_from_pairs}] \\
 
-\tkzMeth{path}{stock\_paths(...}  & See [\ref{ssub:subsubsection_name}] \\
+\tkzMeth{path}{stock\_paths(...}  & See [\ref{ssub:method_tkzmeth_path_stock__paths}
+; \ref{ssub:subsubsection_name}] \\
 
 \tkzMeth{path}{concat(sep)}       & See [\ref{ssub:method_tkzmeth_path_concat}]\\
 
@@ -224,8 +225,9 @@ Here is a \tkzname{path} representing a simple triangle:
 \egroup
 \end{center}
 
-\subsubsection{Notes} % (fold)
-\label{ssub:notes}
+
+\subsubsection{Notes}
+
 \begin{itemize}
 \item Points are internally stored as strings like "(x,y)", and parsing is done via a utility function parse\_point.
 
@@ -236,9 +238,6 @@ Here is a \tkzname{path} representing a simple triangle:
 
 \end{itemize}
 
-% subsubsection notes (end)
-
-
 \subsection{String Representation}
 
 The \code{tostring} metamethod provides a readable form, mainly for debugging:
@@ -246,6 +245,7 @@ The \code{tostring} metamethod provides a readable form, mainly for debugging:
 \begin{verbatim}
 tostring(p) --> path: { (x1,y1) , (x2,y2) , ... }
 \end{verbatim}
+
 
 \subsection{Example}
 
@@ -278,7 +278,8 @@ tostring(p) --> path: { (x1,y1) , (x2,y2) , ... }
 \end{tikzpicture}
 \end{tkzexample}
 
-\subsubsection*{Using Indexed Names for Paths} % (fold)
+
+\subsubsection*{Using Indexed Names for Paths}
 
 When working with path objects—especially when several intermediate curves are involved—it is strongly recommended to use indexed names such as \code{PA.p1}, \code{PA.p2}, etc., rather than a generic name like \code{PA.p}.
 
@@ -289,15 +290,15 @@ Using \code{PA.p1}, \code{PA.p2}, \code{PA.result}, etc., improves clarity, avoi
 
 This approach aligns with the overall philosophy of \tkzNamePack{tkz-elements}, where named tables like \code{PA}, \code{T}, \code{C}, and \code{L} are used to store structured geometric information. Indexing also helps make diagrams more readable, reproducible, and easier to debug.
 
-\subsubsection{Metamethod \tkzMeta{path}{tostring}} % (fold)
-\label{ssub:metamethod_tkzmeta_path_tostring}
 
-% subsubsection metamethod_tkzmeta_path_tostring (end)
+\subsubsection{Metamethod \tkzMeta{path}{tostring}}
 
-\subsubsection{Method \tkzMeth{path}{add\_point(pt,<n>)}} % (fold)
+\subsubsection{Method \tkzMeth{path}{add\_point(pt,<n>)}}
 \label{ssub:method_tkzmeth_path_add__point}
 
-Adds a point (given as a complex table) to the path. Let's take one of the first examples: | PA.triangle = path({ "(0, 0)", "(1, 0)","(1, 1)" })|and use the method to build the path automatically
+Adds a point (given as a complex table) to the path. Let's take one of the first examples:
+
+| PA.triangle = path({ "(0, 0)", "(1, 0)","(1, 1)" })|and use the method to build the path automatically
 
 \begin{tkzexample}[latex=.3\textwidth]
 \directlua{
@@ -310,10 +311,8 @@ Adds a point (given as a complex table) to the path. Let's take one of the first
   PA.triangle:add_point(z.C, 0)
   tex.print(tostring(PA.triangle))}
 \end{tkzexample}
-% subsubsection method_tkzmeth_path_add__point (end)
 
-
-\subsubsection{Method \tkzMeth{path}{copy()}} % (fold)
+\subsubsection{Method \tkzMeth{path}{copy()}}
 \label{ssub:method_tkzmeth_path_copy}
 
 Returns a deep copy of the path
@@ -327,9 +326,8 @@ Returns a deep copy of the path
   \tkzDrawCoordinates(PA.p2)
 \end{tikzpicture}
 \end{tkzexample}
-% subsubsection method_tkzmeth_path_copy (end)
 
-\subsubsection{Method \tkzMeth{path}{translate(dx,dy)}} % (fold)
+\subsubsection{Method \tkzMeth{path}{translate(dx,dy)}}
 \label{ssub:method_tkzmeth_path_translate}
 
 Translates the path by a given vector \((dx,dy)\)
@@ -342,9 +340,8 @@ Translates the path by a given vector \((dx,dy)\)
 \tkzDrawCoordinates(PA.p2)
 \end{tikzpicture}
 \end{tkzexample}
-% subsubsection method_tkzmeth_path_translate_r_r (end)
 
-\subsubsection{Method \tkzMeth{path}{homothety(pt,r)}} % (fold)
+\subsubsection{Method \tkzMeth{path}{homothety(pt,r)}}
 \label{ssub:method_tkzmeth_path_homothety}
 
 Applies a homothety centered at \(pt\) with ratio \(k\)
@@ -362,11 +359,8 @@ Applies a homothety centered at \(pt\) with ratio \(k\)
   \tkzDrawPoint(O)
 \end{tikzpicture}
 \end{tkzexample}
-% subsubsection method_tkzmeth_path_homothety (end)
 
-
-
-\subsubsection{Method \tkzMeth{path}{rotate(pt, an)}} % (fold)
+\subsubsection{Method \tkzMeth{path}{rotate(pt, an)}}
 \label{ssub:method_tkzmeth_path_rotate}
 
  Rotates the path around \(pt\) by angle \(\theta\) (radians)
@@ -384,9 +378,7 @@ Applies a homothety centered at \(pt\) with ratio \(k\)
 \end{tikzpicture}
 \end{tkzexample}
 
-% subsubsection method_tkzmeth_path_rotate (end)
-
-\subsubsection{Method \tkzMeth{path}{close()}} % (fold)
+\subsubsection{Method \tkzMeth{path}{close()}}
 \label{ssub:method_tkzmeth_path_close}
 
 Closes the path by repeating the first point at the end
@@ -400,10 +392,7 @@ Closes the path by repeating the first point at the end
 \end{tikzpicture}
 \end{tkzexample}
 
-% subsubsection method_tkzmeth_path_close (end)
-
-
-\subsubsection{Method \tkzMeth{path}{sub(i1, i2)}} % (fold)
+\subsubsection{Method \tkzMeth{path}{sub(i1, i2)}}
 \label{ssub:method_tkzmeth_path_sub_i1_i2}
 
 Returns a subpath between two indices
@@ -418,7 +407,8 @@ Returns a subpath between two indices
 \end{tikzpicture}
 \end{tkzexample}
 
-\subsubsection{Method \tkzMeth{path}{show()}} % (fold)
+
+\subsubsection{Method \tkzMeth{path}{show()}}
 \label{ssub:method_tkzmeth_path_show}
 
 Prints the path in the terminal (for debugging)
@@ -429,9 +419,7 @@ Prints the path in the terminal (for debugging)
   PA.p:show()}
 \end{tkzexample}
 
-% subsubsectionmethod_tkzmeth_path_show (end)
-
-\subsubsection{Method \tkzMeth{path}{add\_pair\_to\_path(p, p, n)}} % (fold)
+\subsubsection{Method \tkzMeth{path}{add\_pair\_to\_path(p, p, n)}}
 \label{ssub:subsubsection_name}
 Adds a formatted point pair to a \tkzname{path} object. The coordinates of \code{z1} and \code{z2} are extracted, formatted with a fixed number of decimals, and combined into a string \code{"x1/y1/x2/y2"} appended to the path.
 
@@ -451,10 +439,10 @@ local z.B = point(3, 4)
 add_pair_to_path(PA.p, z.A, z.B, 2)
 -- PA.p = {"1.00/2.00/3.00/4.00"}
 \end{verbatim}
-% subsubsection subsubsection_name (end)
 
 
-\subsubsection{Method \tkzMeth{path}{path\_from\_pairs(p, p, n)}} % (fold)
+
+\subsubsection{Method \tkzMeth{path}{path\_from\_pairs(p, p, n)}}
 \label{ssub:method_tkzmeth_path_path_from_pairs}
 
 Creates a new \tkzname{path} object by combining pairs of points taken from two parallel paths. Each resulting entry is a string \code{"x1/y1/x2/y2"}.
@@ -477,9 +465,9 @@ local PA.result = path_from_pairs(PA.p1, PA.p2, 1)
 -- PA.result = {"0.0/0.0/1.0/0.0", "1.0/1.0/2.0/1.0"}
 \end{verbatim}
 
-% subsubsection method_tkzmeth_path_path_from_pairs (end)
 
-\subsubsection{Method \tkzMeth{path}{stock\_paths(...)}} % (fold)
+
+\subsubsection{Method \tkzMeth{path}{stock\_paths(...)}}
 \label{ssub:method_tkzmeth_path_stock__paths}
 
 Combines an arbitrary number of paths into a single \tkzname{path}. Each entry contains the concatenated coordinates of corresponding points from all input paths, formatted as \code{"x1/y1/x2/y2/..."}.
@@ -502,11 +490,11 @@ local PA.path = stock_paths(PA.A, PA.B, 2)
 
 \paragraph{Errors} All paths must have the same number of points.
 
-% subsubsection method_tkzmeth_path_stock__paths (end)
 
 
 
-\subsubsection{Method \tkzMeth{path}{concat(<'sep'>)}} % (fold)
+
+\subsubsection{Method \tkzMeth{path}{concat(<'sep'>)}}
 \label{ssub:method_tkzmeth_path_concat}
 
 Concatenates the path into a string (default sep: space)
@@ -520,14 +508,12 @@ Concatenates the path into a string (default sep: space)
 \end{tikzpicture}
 \end{tkzexample}
 
-% subsubsection method_tkzmeth_path_concat_string (end)
 
-\subsubsection{Example : Director circle } % (fold)
+\subsubsection{Example : Director circle }
 \label{ssub:director_circle}
 
 
 Conics are drawn using the \tkzClass{path} tool.
-
 
 \begin{minipage}{.55\textwidth}
   \begin{verbatim}
@@ -595,9 +581,9 @@ Conics are drawn using the \tkzClass{path} tool.
 \end{tikzpicture}
 \end{verbatim}
 
-% subsubsection director_circle (end)
 
-\subsubsection{Classic parabola} % (fold)
+
+\subsubsection{Classic parabola}
 \label{ssub:classic_parabola}
 
 This example moves away from the concept of Euclidean geometry, but the method used can be reused.
@@ -666,10 +652,4 @@ Knowing three of its points, we can determine the equation. The set of points fo
  \directlua{tex.print(f(-1,3,100))}};
 \end{tikzpicture}
 \end{verbatim}
-
-
-% subsubsection classic_parabola (end)
-
-
-% subsection example_director_circle (end)
-% section section_name (end)
+\endinput

@@ -1,12 +1,11 @@
 \newpage
-\section{Structure} % (fold)
-\label{sec:structure}
+\section{Structure}
 
 The package defines  two macros \tkzMacro{tkz-elements}{tkzGetNodes} and \tkzMacro{tkz-elements}{tkzUseLua}.
 
  Additionally, the package loads the file |tkz_elements_main.lua|. This file initializes all the tables used by the modules in which the classes are defined. It also defines the function \tkzFct{tkz-elements}{init\_elements()}, which resets all tables.
- 
- 
+
+
 \begin{tikzpicture}[scale=.75]
 \begin{scope}
 \path[mindmap, concept color=MidnightBlue!60, text=white,text width=38mm,
@@ -23,8 +22,8 @@ The package defines  two macros \tkzMacro{tkz-elements}{tkzGetNodes} and \tkzMac
 node[concept,circular drop shadow] {|tkz-elements.sty|} [clockwise from=10]
 
 child[concept color= MidnightBlue!80,minimum size=4cm,text width=38mm,
-clockwise from=27] { 
-  node[concept,circular drop shadow] {|tkz\_elements\_main|} 
+clockwise from=27] {
+  node[concept,circular drop shadow] {|tkz\_elements\_main|}
   [clockwise from=0]
   child[L2] { node[concept,circular drop shadow] {|Regular \_Polygon|} }
   child[L2] { node[concept,circular drop shadow] {|Quadri\-lateral|} }
@@ -47,11 +46,8 @@ clockwise from=27] {
 The current classes are :
 
  \tkzClass{point} (z), \tkzClass{circle} (C), \tkzClass{line} (L), \tkzClass{matrix} (M), \tkzClass{occs} (O), \tkzClass{parallelogram} (P), \tkzClass{quadrilateral} (Q), \tkzClass{rectangle} (R), \tkzClass{square} (S), \tkzClass{triangle} (T), \tkzClass{vector} (V), \tkzClass{conic} (CO),   \tkzClass{regular\_polygon} (RP) and \tkzClass{path} (PA).\\
- 
-  The variable in parentheses indicates the name typically assigned to the table containing objects of the corresponding class.  
+
+  The variable in parentheses indicates the name typically assigned to the table containing objects of the corresponding class.
 
 If \tkzname{name} refers to a class, its definition can be found in the file \code{tkz\_elements\_name.lua}.
-     
-% section structure (end)
-
-
+\endinput

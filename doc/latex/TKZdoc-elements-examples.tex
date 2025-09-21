@@ -1,9 +1,9 @@
 \newpage
 
-\section{Examples} % (fold)
-\label{sec:examples}
+\section{Examples}
 
-\subsection{Length transfer} % (fold)
+
+\subsection{Length transfer}
 \label{sub:report_de_distance}
 
 Use of |north and east| functions linked to points, to transfer lengths, See  (\ref{sub:length_of_a_segment})
@@ -55,9 +55,7 @@ Use of |north and east| functions linked to points, to transfer lengths, See  (\
      \tkzLabelPoints[above right](C,D,F)
   \end{tikzpicture}
 \end{center}
-
 \end{minipage}
-% subsection report_de_distance (end)
 
 
 \subsubsection{Harmonic\_division and ethod \tkzMeth{triangle}{bisector(n)}} %(fold)
@@ -107,7 +105,6 @@ Let four points $A$, $C$, $B$ and $D$, in this order, lying on the straight line
   \end{tikzpicture}
   \end{center}
 
-
 \begin{minipage}{.5\textwidth}
   \begin{verbatim}
   \directlua{
@@ -155,10 +152,7 @@ Let four points $A$, $C$, $B$ and $D$, in this order, lying on the straight line
 \end{verbatim}
 \end{minipage}
 
-% subsubsection harmonic_division_and_bisector(end)
-
-
-\subsubsection{Harmonic division with tkzphi } % (fold)
+\subsubsection{Harmonic division with tkzphi }
 \label{ssub:harmonic_division_with_tkzphi}
 
 \begin{Verbatim}
@@ -194,10 +188,9 @@ Let four points $A$, $C$, $B$ and $D$, in this order, lying on the straight line
      \tkzLabelPoints(a,b,n,m)
   \end{tikzpicture}
 \end{center}
-% subsubsection harmonic_division_with_tkzphi (end)
 
-\subsection{D'Alembert-Monge 1} % (fold)
-\label{sub:d_alembert_1}
+
+\subsection{D'Alembert-Monge 1}
 
 \vspace{1em}
 \directlua{
@@ -257,10 +250,7 @@ Let four points $A$, $C$, $B$ and $D$, in this order, lying on the straight line
 \end{tikzpicture}
 \end{verbatim}
 
-
-% subsection d_alembert_1 (end)
-
-\subsection{D'Alembert-Monge 2} % (fold)
+\subsection{D'Alembert-Monge 2}
 \label{sub:d_alembert_2}
 
 \vspace{1em}
@@ -309,12 +299,7 @@ Let four points $A$, $C$, $B$ and $D$, in this order, lying on the straight line
 \end{tikzpicture}
 \end{verbatim}
 
-
-
-
-% subsection d_alembert_2 (end)
-
-\subsection{Altshiller} % (fold)
+\subsection{Altshiller}
 \label{sub:altshiller}
 
 \begin{minipage}{.5\textwidth}
@@ -375,9 +360,8 @@ Let four points $A$, $C$, $B$ and $D$, in this order, lying on the straight line
      \end{tikzpicture}
    \end{center}
 \end{minipage}
-%subsection altshiller (end)
 
-\subsection{Lemoine} % (fold)
+\subsection{Lemoine}
 \label{sub:lemoine}
 
 \begin{minipage}{.4\textwidth}
@@ -440,10 +424,8 @@ z.R = intersection(L.tC, T.ABC.ab)}
 
 \end{minipage}
 %\caption{Lemoine line}
-% subsection lemoine (end)
 
-
-\subsection{Alternate} % (fold)
+\subsection{Alternate}
 \label{sub:alternate}
 \begin{minipage}[t]{.5\textwidth}\vspace{0pt}%
 \begin{verbatim}
@@ -500,9 +482,8 @@ z.R = intersection(L.tC, T.ABC.ab)}
   \end{tikzpicture}
 \end{center}
 \end{minipage}
-% subsection alternate (end)
 
-\subsection{Method \tkzMeth{circle}{common tangent}: orthogonality} % (fold)
+\subsection{Method \tkzMeth{circle}{common tangent}: orthogonality}
 \label{sub:common_tangent_orthogonality}
 For two circles  to be orthogonal, it is necessary and sufficient for a secant  passing through one of their common points to be seen from the other common point at a right angle.
 
@@ -572,10 +553,7 @@ z.Mp = intersection(L.mm, C.BC)}
 \end{center}
 \end{minipage}
 
-% subsection common_tangent_orthogonality (end)
-
-
-\subsection{Apollonius circle} % (fold)
+\subsection{Apollonius circle}
 \label{sub:apollonius_circle}
 
 \directlua{
@@ -653,11 +631,7 @@ Remark : The circle can be obtained with:
 
 |C.AB = T.MAB.bc : apollonius (tkz.length(z.M,z.A)/tkz.length(z.M,z.B))|
 
-
-%subsection apollonius_circle (end)
-
-\subsection{Apollonius and circle circumscribed } % (fold)
-\label{sub:apollonius_and_circle_circumscribed}
+\subsection{Apollonius and circle circumscribed }
 
 \begin{verbatim}
 \directlua{
@@ -726,11 +700,7 @@ Remark : The circle can be obtained with:
   \end{tikzpicture}
 \end{center}
 
-
-% subsection apollonius_and_circle_circumscribed (end)
-
-\subsection{Apollonius circles in a triangle} % (fold)
-\label{sub:apollonius_circles}
+\subsection{Apollonius circles in a triangle}
 
 
 \begin{verbatim}
@@ -823,10 +793,9 @@ Remark : The circle can be obtained with:
   \end{tikzpicture}
 \end{center}
 
-% subsection apollonius_circles (end)
 
-\subsection{Apollonius circles in a triangle with method} % (fold)
-\label{sub:apollonius_circles_of_a_triangle}
+\subsection{Apollonius circles in a triangle with method}
+
 
 \emph{The three Apollonius circles of a (non-equilateral) triangle meet at exactly two points.
 }
@@ -897,10 +866,7 @@ Same result than the previous example using the function |T.ABC.ab : apollonius 
   \end{tikzpicture}
 \end{center}
 
-% subsection apollonius_circles_of_a_triangle (end)
-
-
-\subsection{Archimedes} % (fold)
+\subsection{Archimedes}
 \label{sub:archimedes}
 
 \begin{minipage}[t]{.5\textwidth}\vspace{0pt}%
@@ -956,9 +922,8 @@ Same result than the previous example using the function |T.ABC.ab : apollonius 
 \end{center}
 
 \end{minipage}
-% subsection archimedes (end)
 
-\subsection{Bankoff circle} % (fold)
+\subsection{Bankoff circle}
 \label{sub:bankoff_circle}
 \begin{verbatim}
 \directlua{
@@ -1091,10 +1056,8 @@ Same result than the previous example using the function |T.ABC.ab : apollonius 
   \end{tikzpicture}
 \end{center}
 
-% subsection bankoff_circle (end)
+\subsection{Symmedian property}
 
-\subsection{Symmedian property} % (fold)
-\label{sub:example_symmedian_property}
 
 $L$ is the symmedian point or lemoine point. $\dfrac{CL}{CLc} = \dfrac{a^2+b^2}{a^2+b^2+c^2}$
 
@@ -1160,10 +1123,9 @@ $L$ is the symmedian point or lemoine point. $\dfrac{CL}{CLc} = \dfrac{a^2+b^2}{
   \end{center}
 \end{minipage}
 
-% subsection example_symmedian_property (end)
 
-\subsection{Example: Cevian with orthocenter} % (fold)
-\label{sub:example_cevian_with_orthocenter}
+\subsection{Example: Cevian with orthocenter}
+
 \begin{minipage}{.5\textwidth}
 \begin{verbatim}
 \directlua{
@@ -1211,9 +1173,7 @@ $L$ is the symmedian point or lemoine point. $\dfrac{CL}{CLc} = \dfrac{a^2+b^2}{
 \end{center}
 \end{minipage}
 
-% subsection example_cevian_with_orthocenter (end)
-
-\subsection{Excircles} % (fold)
+\subsection{Excircles}
 \label{sub:excircles}
 
 \begin{verbatim}
@@ -1287,11 +1247,8 @@ $L$ is the symmedian point or lemoine point. $\dfrac{CL}{CLc} = \dfrac{a^2+b^2}{
 \end{center}
 
 
-% subsection excircles (end)
+\subsection{Divine ratio}
 
-
-\subsection{Divine ratio} % (fold)
-\label{sub:divine_ratio}
 
 \begin{verbatim}
 \directlua{
@@ -1366,10 +1323,7 @@ $L$ is the symmedian point or lemoine point. $\dfrac{CL}{CLc} = \dfrac{a^2+b^2}{
 \end{center}
 
 
-% subsection divine_ratio (end)
-
-\subsection{Gold division} % (fold)
-\label{sub:gold_division}
+\subsection{Gold division}
 
 \begin{minipage}{.5\textwidth}
 \begin{verbatim}
@@ -1435,9 +1389,7 @@ $L$ is the symmedian point or lemoine point. $\dfrac{CL}{CLc} = \dfrac{a^2+b^2}{
 \end{center}
 \end{minipage}
 
-% subsection gold_division (end)
-
-\subsection{Ellipse} % (fold)
+\subsection{Ellipse}
 \label{sub:ellipse}
 \begin{minipage}{.5\textwidth}
 \begin{verbatim}
@@ -1485,13 +1437,11 @@ $L$ is the symmedian point or lemoine point. $\dfrac{CL}{CLc} = \dfrac{a^2+b^2}{
 \tkzLabelPoints[left](F)
 \end{tikzpicture}
 \end{center}
-
-
 \end{minipage}
- % subsection ellipse (end)
 
-\subsection{Ellipse with radii} % (fold)
-\label{sub:ellipse_with_radii}
+
+\subsection{Ellipse with radii}
+
 
 In this example, $K$ is the projection of the focus $F$ on the directrix.
 
@@ -1540,10 +1490,9 @@ In this example, $K$ is the projection of the focus $F$ on the directrix.
 \end{tikzpicture}
 \end{verbatim}
 
-% subsection ellipse_with_radii (end)
 
-\subsection{Ellipse\_with\_foci} % (fold)
-\label{sub:ellipse_with_foci}
+\subsection{Ellipse\_with\_foci}
+
 \begin{minipage}{.55\textwidth}
 \begin{verbatim}
 \directlua{
@@ -1600,9 +1549,8 @@ In this example, $K$ is the projection of the focus $F$ on the directrix.
   \end{tikzpicture}
 \end{center}
 \end{minipage}
-% subsection ellipse_with_foci (end)
 
-\subsubsection{Parabola with Focus, Axis of Symmetry, and a Point on the Curve} % (fold)
+\subsubsection{Parabola with Focus, Axis of Symmetry, and a Point on the Curve}
 \label{ssub:parabola_with_focus_axis_of_symmetry_and_curve_point}
 
 This construction illustrates how to define a parabola from its focus, its axis of symmetry, and a single point on the curve.
@@ -1665,10 +1613,8 @@ This method is particularly useful when the directrix is not known explicitly.
   \end{center}
 \end{minipage}
 
-% subsubsection parabola_with_focus_axis_of_symmetry_and_curve_point (end)
 
-\subsubsection{Ellipse with Center, Vertex, and Covertex} % (fold)
-\label{ssub:ellipse_with_center_vertex_and_covertex}
+\subsubsection{Ellipse with Center, Vertex, and Covertex}
 
 This construction defines an ellipse from its center, a vertex, and a covertex.
 From these three points, the semi-axes lengths \( a \) and \( b \) are computed, allowing the eccentricity \( e \) to be derived.
@@ -1742,10 +1688,8 @@ The foci and the direction of the directrix are then constructed accordingly, ma
   \end{tikzpicture}
 \end{verbatim}
 
-% subsubsection ellipse_with_center_vertex_and_covertex (end)
 
-\subsubsection{Ellipse with Foci and a Point} % (fold)
-\label{ssub:ellipse_with_foci_and_point}
+\subsubsection{Ellipse with Foci and a Point}
 
 This construction defines an ellipse given its two foci and a single point on the curve.
 The fundamental property \( MF + MG = 2a \), where \( F \) and \( G \) are the foci and \( M \) a point on the ellipse, allows the computation of the semi-major axis \( a \).
@@ -1817,10 +1761,8 @@ From this, the eccentricity and the direction of the directrix can be derived.
 \end{tikzpicture}
   \end{verbatim}
 
-% subsubsection ellipse_with_foci_and_point (end)
 
-\subsubsection{Orthic\_inellipse with \code{search\_ellipse} } % (fold)
-\label{ssub:example_orthic_inellipse_with}
+\subsubsection{Orthic\_inellipse with \code{search\_ellipse} }
 
 \directlua{
  init_elements()
@@ -1880,10 +1822,7 @@ From this, the eccentricity and the direction of the directrix can be derived.
 \end{tkzexample}
 
 
-% subsubsection example_orthic_inellipse_with (end)
-
-
-\subsubsection{Kiepert hyperbola} % (fold)
+\subsubsection{Kiepert hyperbola}
 \label{ssub:kiepert_hyperbola}
 
 In triangle geometry, the Kiepert conics are two special conics associated with the reference triangle. One of them is a hyperbola, called the Kiepert hyperbola and the other is a parabola, called the Kiepert parabola
@@ -1963,10 +1902,8 @@ It has been proved that the Kiepert hyperbola is the hyperbola passing through t
   \end{tikzpicture}
 \end{center}
 
-% subsubsection kiepert_hyperbola (end)
 
-\subsubsection{Kierpert parabola} % (fold)
-\label{ssub:kierpert_parabola}
+\subsubsection{Kierpert parabola}
 
 The Euler line of a triangle is the conic section directrix of the Kiepert parabola. In fact, the directrices of all parabolas inscribed in a triangle pass through the orthocenter. The  triangle  formed by the points of contact is called the Steiner triangle.
 
@@ -2035,8 +1972,9 @@ The Kiepert parabola is tangent to the sides of the triangle (or their extension
    \tkzLabelPoints[right](F,c)
 \end{tikzpicture}
 \end{center}
-% subsubsection kierpert_parabola (end)
-\subsection{Euler relation} % (fold)
+
+
+\subsection{Euler relation}
 \label{sub:euler_relation}
 
 \begin{verbatim}
@@ -2057,7 +1995,7 @@ The Kiepert parabola is tangent to the sides of the triangle (or their extension
  _, z.E = intersection(L.Ow, C.OA)}
    \begin{tikzpicture}
    \tkzGetNodes
-   \tkzDrawArc(J,X)(Y)
+   \tkzDrawArc(J,Y)(X)
    \tkzDrawCircles(I,H O,A)
    \tkzDrawCircle[red](w,I)
    \tkzDrawLines(Y,C A,B X,C E,w E,B)
@@ -2087,7 +2025,7 @@ The Kiepert parabola is tangent to the sides of the triangle (or their extension
 \begin{center}
   \begin{tikzpicture}
   \tkzGetNodes
-  \tkzDrawArc(J,X)(Y)
+  \tkzDrawArc(J,Y)(X)
   \tkzDrawCircles(I,H O,A)
   \tkzDrawCircle[red](w,I)
   \tkzDrawLines(Y,C A,B X,C E,w E,B)
@@ -2098,10 +2036,8 @@ The Kiepert parabola is tangent to the sides of the triangle (or their extension
   \end{tikzpicture}
 \end{center}
 
-% subsection euler_relation (end)
+\subsection{External angle}
 
-\subsection{External angle} % (fold)
-\label{sub:external_angle}
 \begin{minipage}[t]{.5\textwidth}\vspace{0pt}%
 \begin{verbatim}
 \directlua{
@@ -2156,10 +2092,9 @@ The Kiepert parabola is tangent to the sides of the triangle (or their extension
   \end{tikzpicture}
 \end{center}
 \end{minipage}
-% subsection external_angle (end)
 
-\subsection{Internal angle} % (fold)
-\label{sub:internal_angle}
+\subsection{Internal angle}
+
 \begin{minipage}[t]{.5\textwidth}\vspace{0pt}%
 \begin{verbatim}
 \directlua{
@@ -2217,12 +2152,9 @@ The Kiepert parabola is tangent to the sides of the triangle (or their extension
   \tkzMarkSegments(A,C C,E)
   \end{tikzpicture}
 \end{center}
-
 \end{minipage}
-%subsection internal_angle (end)
 
-\subsubsection{Morley triangle} % (fold)
-\label{ssub:morley_triangle}
+\subsubsection{Morley triangle}
 
 \begin{tkzexample}[latex = .5\textwidth]
 \directlua{
@@ -2249,10 +2181,7 @@ The Kiepert parabola is tangent to the sides of the triangle (or their extension
 \end{center}
 \end{tkzexample}
 
-% subsubsection morley_triangle (end)
-
-
-\subsection{Feuerbach theorem} % (fold)
+\subsection{Feuerbach theorem}
 \label{sub:nine_points}
 
 
@@ -2333,10 +2262,7 @@ The Kiepert parabola is tangent to the sides of the triangle (or their extension
   \end{tikzpicture}
 \end{center}
 
-
-% subsection nine_points (end)
-
-\subsection{Gold ratio with segment} % (fold)
+\subsection{Gold ratio with segment}
 \label{sub:gold_ratio_with_segment}
 \begin{minipage}{.5\textwidth}
  \begin{verbatim}
@@ -2385,11 +2311,9 @@ The Kiepert parabola is tangent to the sides of the triangle (or their extension
   \tkzLabelPoints(A,B,C)
   \end{tikzpicture}
 \end{center}
-
 \end{minipage}
-%subsection gold_ratio_with_segment (end)
 
-\subsection{Gold Arbelos} % (fold)
+\subsection{Gold Arbelos}
 \label{sub:gold_arbelos}
 \begin{minipage}{.5\textwidth}
 \begin{verbatim}
@@ -2436,17 +2360,14 @@ The Kiepert parabola is tangent to the sides of the triangle (or their extension
   \tkzLabelPoints[below right](A,C,B)
   \end{tikzpicture}
 \end{center}
-
 \end{minipage}
-% subsection gold_arbelos (end)
 
-\subsection{Points cocylics with Arbelos} % (fold)
-\label{sub:points_cocylics_with_arbelos}
+\subsection{Points cocylics with Arbelos}
 
 \begin{verbatim}
 \directlua{
  init_elements()
- dofile("preamble.lua")
+ dofile("lua/preamble.lua")
  L.OA = line(z.O, z.A)
  z.Op = intersection(L.OA, L.CD)
  L.BQ = line(z.B, z.Q)
@@ -2491,7 +2412,7 @@ The Kiepert parabola is tangent to the sides of the triangle (or their extension
 
 \directlua{
  init_elements()
- dofile("preamble.lua")
+ dofile("lua/preamble.lua")
 }
 
 \begin{center}
@@ -2525,11 +2446,8 @@ The Kiepert parabola is tangent to the sides of the triangle (or their extension
    \end{tikzpicture}
 \end{center}
 
-% subsection points_cocylics_with_arbelos (end)
+\subsection{Harmonic division v1}
 
-
-\subsection{Harmonic division v1} % (fold)
-\label{sub:harmonic_division_v1}
 \begin{minipage}[t]{.4\textwidth}\vspace{0pt}%
 
 \begin{verbatim}
@@ -2581,10 +2499,9 @@ The Kiepert parabola is tangent to the sides of the triangle (or their extension
   \end{tikzpicture}
 \end{center}
 \end{minipage}
-% subsection harmonic_division_v1 (end)
 
-\subsection{Harmonic division v2} % (fold)
-\label{sub:harmonic_division_v2}
+\subsection{Harmonic division v2}
+
 \begin{minipage}[t]{.45\textwidth}\vspace{0pt}%
 \begin{verbatim}
 \directlua{
@@ -2643,10 +2560,9 @@ The Kiepert parabola is tangent to the sides of the triangle (or their extension
   \tkzLabelPoints(A,...,G,X)
 \end{tikzpicture}
 \end{verbatim}
-% subsection harmonic_division_v2 (end)
 
-\subsection{Menelaus} % (fold)
-\label{sub:menelaus}
+\subsection{Menelaus}
+
 \begin{minipage}{.4\textwidth}
 \begin{verbatim}
 \directlua{
@@ -2696,9 +2612,8 @@ The Kiepert parabola is tangent to the sides of the triangle (or their extension
 \end{center}
 
 \end{minipage}
-% subsection menelaus (end)
 
-\subsubsection{Orthopole and Simson line} % (fold)
+\subsubsection{Orthopole and Simson line}
 \label{ssub:orthopole_and_simson_line}
 
 \begin{tkzexample}[latex=.5\textwidth]
@@ -2742,10 +2657,7 @@ The Kiepert parabola is tangent to the sides of the triangle (or their extension
 \end{center}
 \end{tkzexample}
 
-
-
-% subsubsection orthopole_and_simson_line (end)
-\subsection{Euler ellipse} % (fold)
+\subsection{Euler ellipse}
 \label{sub:hexagram}
 \directlua{
  init_elements()
@@ -2859,10 +2771,7 @@ The Kiepert parabola is tangent to the sides of the triangle (or their extension
 
 \end{verbatim}
 
-% subsection hexagram (end)
-
-\subsection{Gold Arbelos properties} % (fold)
-\label{sub:gold_arbelos_properties}
+\subsection{Gold Arbelos properties}
 
 \directlua{
  init_elements()
@@ -2976,8 +2885,6 @@ The Kiepert parabola is tangent to the sides of the triangle (or their extension
   \tkzLabelPoints[below right](B,U,W,O_7)
   \end{tikzpicture}
 \end{center}
-
-
 \end{minipage}
 
 \begin{verbatim}
@@ -3010,9 +2917,8 @@ The Kiepert parabola is tangent to the sides of the triangle (or their extension
    \tkzLabelPoints[below right](B,U,W,O_7)
 \end{tikzpicture}
 \end{verbatim}
-% subsection gold_arbelos_properties (end)
 
-\subsection{Apollonius circle v1 with inversion} % (fold)
+\subsection{Apollonius circle v1 with inversion}
 \label{sub:apollonius_circle_v1_with_inversion}
 \begin{verbatim}
 \directlua{
@@ -3090,11 +2996,8 @@ The Kiepert parabola is tangent to the sides of the triangle (or their extension
   \end{tikzpicture}
 \end{center}
 
+\subsection{Apollonius circle v2}
 
-% subsection apollonius_circle_v1_with_inversion (end)
-
-\subsection{Apollonius circle v2} % (fold)
-\label{sub:apollonius_circle_v2}
 \begin{verbatim}
 \directlua{
 init_elements()
@@ -3176,12 +3079,8 @@ z.t = intersection(L.ox, L.MaS)}
   \tkzLabelPoints[right,font=\tiny](A,B,C,Ja,Jb,Jc,O,N,L,S,Ma,o)
   \end{tikzpicture}
 \end{center}
-% subsection apollonius_circle_v2 (end)
 
-
-
-\subsection{Orthogonal circles} % (fold)
-\label{sub:orthogonal_circles_v2}
+\subsection{Orthogonal circles}
 
 \begin{minipage}{.5\textwidth}
 \begin{verbatim}
@@ -3254,13 +3153,9 @@ z.M = L.OOp.mid}
     \end{tikzpicture}
   \end{center}
 \end{minipage}
-
-
-
-% subsection orthogonal_circles_v2 (end)
 %
-\subsection{Orthogonal circle to two circles} % (fold)
-\label{sub:orthogonal_circle_to_two_circles}
+
+\subsection{Orthogonal circle to two circles}
 
 \begin{minipage}{.5\textwidth}
 \begin{verbatim}
@@ -3329,8 +3224,8 @@ z.M = L.OOp.mid}
 
 % subsection Orthogonal to two circles (fold)
 
-\subsection{Midcircles} % (fold)
-\label{sub:midcircles}
+
+\subsection{Midcircles}
 
 \directlua{
 init_elements()
@@ -3490,10 +3385,7 @@ z.H_4, z.F, z.E, z.H_0 = L.AB:projection(z.O_4, z.G, z.H, z.P_0)}
 \end{tikzpicture}
 \end{verbatim}
 
-
-% subsection midcircles (end)
-
-\subsection{Pencil v1} % (fold)
+\subsection{Pencil v1}
 \label{sub:pencil_v1}
 \begin{verbatim}
 \directlua{
@@ -3555,10 +3447,8 @@ z.H_4, z.F, z.E, z.H_0 = L.AB:projection(z.O_4, z.G, z.H, z.P_0)}
   \end{tikzpicture}
 \end{verbatim}
 
-% subsection pencil_v1 (end)
+\subsection{Pencil v2}
 
-\subsection{Pencil v2} % (fold)
-\label{sub:pencil_v2}
 \begin{verbatim}
 \directlua{
  init_elements()
@@ -3622,11 +3512,7 @@ z.H_4, z.F, z.E, z.H_0 = L.AB:projection(z.O_4, z.G, z.H, z.P_0)}
 \end{tikzpicture}
 \end{verbatim}
 
-%subsection pencil_v2 (end)
-
-
-\subsection{Reim v1} % (fold)
-\label{sub:reim_v1}
+\subsection{Reim v1}
 
 \begin{minipage}{.5\textwidth}
 \begin{verbatim}
@@ -3699,12 +3585,7 @@ z.H_4, z.F, z.E, z.H_0 = L.AB:projection(z.O_4, z.G, z.H, z.P_0)}
 \end{center}
 \end{minipage}
 
-
-
-% subsection reim_v1 (end)
-
-\subsection{Reim v2} % (fold)
-\label{sub:reim_v2}
+\subsection{Reim v2}
 
 \begin{minipage}{.5\textwidth}
 \begin{verbatim}
@@ -3767,10 +3648,7 @@ z.H_4, z.F, z.E, z.H_0 = L.AB:projection(z.O_4, z.G, z.H, z.P_0)}
   \end{tikzpicture}
 \end{verbatim}
 
-% subsection reim_v2 (end)
-
-\subsection{Reim v3} % (fold)
-\label{sub:reim_v3}
+\subsection{Reim v3}
 
 \begin{minipage}{.5\textwidth}
 \begin{verbatim}
@@ -3856,9 +3734,7 @@ z.H_4, z.F, z.E, z.H_0 = L.AB:projection(z.O_4, z.G, z.H, z.P_0)}
 \end{center}
 \end{minipage}
 
-% subsection reim_v3 (end)
-
-\subsection{Circle and path} % (fold)
+\subsection{Circle and path}
 \label{sub:circle_and_path}
 
 \begin{tkzexample}[vbox]
@@ -3896,14 +3772,10 @@ z.H_4, z.F, z.E, z.H_0 = L.AB:projection(z.O_4, z.G, z.H, z.P_0)}
     \tkzDrawLines(O,B R,B)
   \end{tikzpicture}
 \end{center}
-
 \end{tkzexample}
 
+\subsection{Tangent and circle}
 
-% subsection circle_and_path (end)
-
-\subsection{Tangent and circle} % (fold)
-\label{sub:tangent_and_circle}
 \begin{minipage}{.5\textwidth}
 \begin{verbatim}
 \directlua{
@@ -3953,12 +3825,10 @@ z.H_4, z.F, z.E, z.H_0 = L.AB:projection(z.O_4, z.G, z.H, z.P_0)}
   \tkzLabelPoints[right,font=\small](A,B,E,S,M)
   \end{tikzpicture}
 \end{center}
-
 \end{minipage}
-% subsection tangent_and_circle (end)
 
-\subsection{Tangent and chord} % (fold)
-\label{sub:tangent_and_chord}
+\subsection{Tangent and chord}
+
 \begin{minipage}{.5\textwidth}
 \begin{verbatim}
 \directlua{
@@ -4020,13 +3890,9 @@ z.H_4, z.F, z.E, z.H_0 = L.AB:projection(z.O_4, z.G, z.H, z.P_0)}
   \tkzLabelPoints(A,B,C,D,H,O)
   \end{tikzpicture}
 \end{center}
-
 \end{minipage}
-% subsection tangent_and_chord (end)
 
-
-\subsection{Three chords} % (fold)
-\label{sub:three_chords}
+\subsection{Three chords}
 
 \directlua{
   init_elements()
@@ -4134,10 +4000,7 @@ z.H_4, z.F, z.E, z.H_0 = L.AB:projection(z.O_4, z.G, z.H, z.P_0)}
 \end{tikzpicture}
 \end{verbatim}
 
-% subsection three_chords (end)
-
-\subsection{Three tangents} % (fold)
-\label{sub:three_tangents}
+\subsection{Three tangents}
 
 \begin{minipage}[t]{.5\textwidth}\vspace{0pt}%
 \begin{verbatim}
@@ -4206,10 +4069,9 @@ z.H_4, z.F, z.E, z.H_0 = L.AB:projection(z.O_4, z.G, z.H, z.P_0)}
   \end{tikzpicture}
 \end{center}
 \end{minipage}
-% subsection three_tangents (end)
 
-\subsection{Midarc} % (fold)
-\label{sub:midarc}
+\subsection{Midarc}
+
 \begin{minipage}[t]{.5\textwidth}\vspace{0pt}%
 \begin{verbatim}
 \directlua{
@@ -4248,10 +4110,8 @@ z.D = C.AB:midarc (z.B, z.C)
   \end{tikzpicture}
 \end{center}
 \end{minipage}
-% subsection midarc (end)
 
-\subsection{Lemoine axis without macro} % (fold)
-\label{sub:lemoine_line_without_macro}
+\subsection{Lemoine axis without macro}
 
 \begin{minipage}[t]{.5\textwidth}\vspace{0pt}%
 \begin{verbatim}
@@ -4321,14 +4181,15 @@ z.D = C.AB:midarc (z.B, z.C)
   \end{tikzpicture}
 \end{center}
 \end{minipage}
-% subsection lemoine_line_without_macro (end)
 
-\subsection{First Lemoine circle} % (fold)
-\label{sub:first_lemoine_circle}
+\subsection{First Lemoine circle}
 
 Draw lines through the symmedian point $L$ and parallel to the sides of the triangle. The points where the parallel lines intersect the sides of the triangle then lie on a circle known as the first Lemoine circle.  It has center at the Brocard midpoint, i.e., the midpoint of $[OL]$, where $O$ is the circumcenter and $K$ is the symmedian point
-
-[\href{https://mathworld.wolfram.com/FirstLemoineCircle.html}{Weisstein, Eric W. "First Lemoine Circle." From MathWorld--A Wolfram Web Resource.}]
+\begin{flushright}
+\small
+\href{https://mathworld.wolfram.com/FirstLemoineCircle.html}{Weisstein, Eric W. "First Lemoine Circle." From MathWorld--A Wolfram Web Resource.}
+\end{flushright}
+\small
 
 \vspace{1em}
 \directlua{
@@ -4385,14 +4246,15 @@ Draw lines through the symmedian point $L$ and parallel to the sides of the tria
   \end{tikzpicture}
 \end{tkzexample}
 
-% subsection first_lemoine_circle (end)
-
-\subsection{First and second Lemoine circles} % (fold)
+\subsection{First and second Lemoine circles}
 \label{sub:first_and_second_lemoine_circles}
 
 Draw antiparallels through the symmedian point $L$. The points where these lines intersect the sides then lie on a circle, known as the cosine circle (or sometimes the second Lemoine circle). See  [\ref{sub:antiparallel_through_lemoine_point}]
-
-[\href{https://mathworld.wolfram.com/CosineCircle.html}{Weisstein, Eric W. "Cosine Circle." From MathWorld--A Wolfram Web Resource.}]
+\begin{flushright}
+\small
+\href{https://mathworld.wolfram.com/CosineCircle.html}{Weisstein, Eric W. "Cosine Circle." From MathWorld--A Wolfram Web Resource.}
+\end{flushright}
+\small
 
 
 \begin{verbatim}
@@ -4469,11 +4331,7 @@ Draw antiparallels through the symmedian point $L$. The points where these lines
   \end{tikzpicture}
 \end{center}
 
-
-% subsection first_and_second_lemoine_circles (end)
-
-\subsection{Inversion} % (fold)
-\label{sub:inversion}
+\subsection{Inversion}
 
 \directlua{
  init_elements()
@@ -4528,12 +4386,10 @@ Draw antiparallels through the symmedian point $L$. The points where these lines
      \tkzLabelPoints[above](C')
    \end{tikzpicture}
  \end{center}
-
 \end{minipage}
-% subsection inversion (end)
 
-\subsection{Pappus chain} % (fold)
-\label{sub:pappus_chain}
+\subsection{Pappus chain}
+
 
 \directlua{
 init_elements()
@@ -4617,10 +4473,8 @@ end}
    }
  \end{tikzpicture}
 
-% subsection pappus_chain (end)
+\subsection{Three Circles}
 
-\subsection{Three Circles} % (fold)
-\label{sub:three_circles}
 Construct a circle tangent to two circles tangent to each other and to a straight line.
 
 \begin{verbatim}
@@ -4676,10 +4530,7 @@ threecircles("A", 4, "B", 3, "C", "E", "G", "F")}
   \end{tikzpicture}
 \end{center}
 
-% subsection three_circles (end)
-
-\subsection{Pentagons in a golden arbelos} % (fold)
-\label{sub:golden_arbelos}
+\subsection{Pentagons in a golden arbelos}
 
 \directlua{
 init_elements()
@@ -4813,15 +4664,7 @@ z.D_2, z.E_2, z.F_2, z.G_2 = z.M_0:homothety(kk, z.D_1, z.E_1, z.F_1, z.G_1)}
   \end{tikzpicture}
 \end{center}
 
-
-
-
-
-% subsection golden_arbelos (end)
-
-\subsection{Polar and Pascal's theorem} % (fold)
-\label{sub:polar_and_pascal_s_theorem}
-
+\subsection{Polar and Pascal's theorem}
 
 Given a cyclic quadrilateral $ABCD$  if the intersection of $(AC)$ and $(BD)$ is $P$, the intersection of $(AB)$ and $(CD)$ is $Q$ and the intersection of $(AD)$ and $(BC)$ is $R$, prove the polar of
 $P$ with respect of $\mathcal{C}(O,A)$ passes through $Q$ and $R$.
@@ -4922,10 +4765,8 @@ $P$ with respect of $\mathcal{C}(O,A)$ passes through $Q$ and $R$.
     \end{tikzpicture}
   \end{center}
 
-% subsection polar_and_pascal_s_theorem (end)
+\subsection{Iran Lemma}
 
-\subsection{Iran Lemma} % (fold)
-\label{sub:iran_lemma}
 
 Let $ABC$ be a triangle. Let $I$ be the incenter, $M_a$, $M_b$, $M_c$ be the midpoints of $[BC]$, $[CA]$, $[AB]$ and let $T_a$, $T_b$, $T_c$ be the points of tangency of the incircle with $[BC]$, $[CA]$, $[AB]$. Then $(AI)$, $M_aM_b$, $T_aT_c$, the circle $\mathcal{C}(G,A)$  and the circle $\mathcal{C}(M_b,A)$ concur.
 
@@ -5013,14 +4854,16 @@ z.L = intersection(L.CI, L.MbMc)
   \end{tikzpicture}
 \end{center}
 
-% subsection iran_lemma (end)
-
-\subsection{Adams's circle} % (fold)
+\subsection{Adams's circle}
 \label{sub:adams_circle}
 
 Given a triangle $ABC$, construct the contact triangle. Now extend lines parallel to the sides of the contact triangle from the Gergonne point. These intersect the triangle $ABC$ in the six points $M$, $N$, $I$, $J$, $K$, $L$. Adams proved in 1843 that these points are concyclic in a circle now known as the Adams' circle.
-[\href{https://mathworld.wolfram.com/AdamsCircle.html}{Weisstein, Eric W. "Adams' Circle." From MathWorld--A Wolfram Web Resource.}
-]
+\begin{flushright}
+\small
+\href{https://mathworld.wolfram.com/AdamsCircle.html}{Weisstein, Eric W. "Adams' Circle." From MathWorld--A Wolfram Web Resource.}
+\end{flushright}
+\small
+
 \begin{tkzexample}[overhang,vbox]
   \directlua{
     z.A = point(0.5, 4)
@@ -5058,13 +4901,16 @@ Given a triangle $ABC$, construct the contact triangle. Now extend lines paralle
   \end{center}
 \end{tkzexample}
 
-% subsection adams_circle (end)
-
-\subsection{Van Lamoen's circle} % (fold)
+\subsection{Van Lamoen's circle}
 \label{sub:van_lamoen_s_circle}
 
 Divide a triangle by its three medians into six smaller triangles. Surprisingly, the circumcenters  of the six circumcircles of these smaller triangles  are concyclic. Their circumcircle  is known as the van Lamoen circle.
- [\href{https://mathworld.wolfram.com/vanLamoenCircle.html}{Weisstein, Eric W. "van Lamoen Circle." From MathWorld--A Wolfram Web Resource.} ]
+
+ \begin{flushright}
+ \small
+ \href{https://mathworld.wolfram.com/vanLamoenCircle.html}{Weisstein, Eric W. "van Lamoen Circle." From MathWorld--A Wolfram Web Resource.}
+ \end{flushright}
+
 
  \vspace{1em}
 \begin{tkzexample}[vbox]
@@ -5097,10 +4943,8 @@ Divide a triangle by its three medians into six smaller triangles. Surprisingly,
   \end{tikzpicture}
 \end{center}
 \end{tkzexample}
-% subsection van_lamoen_s_circle (end)
 
-\subsection{Yiu's circles variant one} % (fold)
-\label{sub:yiu_circles_variant_one}
+\subsection{Yiu's circles variant one}
 
 The Yiu circles of a reference triangle is the circles passing through one vertex  and the reflections of other vertices  with respect to the opposite sides. All three circles have one thing in common: their \code{radical center}.
 
@@ -5183,11 +5027,7 @@ The Yiu circles of a reference triangle is the circles passing through one verte
   \end{tikzpicture}
 \end{center}
 
-
-% subsection yiu_circles_variant_one (end)
-
-\subsection{Yiu's circles variant two} % (fold)
-\label{sub:yiu_s_circles_variant_two}
+\subsection{Yiu's circles variant two}
 
 \directlua{
  z.A = point(3.8, 4.5)
@@ -5254,11 +5094,7 @@ The Yiu circles of a reference triangle is the circles passing through one verte
 \end{verbatim}
 \end{minipage}
 
-
-% subsection yiu_s_circles_variant_two (end)
-
-\subsection{Yff's circles variant one} % (fold)
-\label{sub:yff_s_circles_variant_one}
+\subsection{Yff's circles variant one}
 
 \begin{tkzexample}[overhang,vbox]
 \directlua{
@@ -5308,10 +5144,7 @@ The Yiu circles of a reference triangle is the circles passing through one verte
   \end{center}
 \end{tkzexample}
 
-% subsection yff_s_circles_variant_one (end)
-
-\subsection{Yff's circles variant two} % (fold)
-\label{sub:yff_s_circles_variant_two}
+\subsection{Yff's circles variant two}
 
 \begin{tkzexample}[overhang,vbox]
 \directlua{
@@ -5360,7 +5193,4 @@ The Yiu circles of a reference triangle is the circles passing through one verte
 \end{center}
 
 \end{tkzexample}
-
-% subsection yff_s_circles_variant_two (end)
-
-% section examples (end)
+\endinput

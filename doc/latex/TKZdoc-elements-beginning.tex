@@ -1,5 +1,4 @@
-\section{Getting started} % (fold)
-\label{sec:getting_started}
+\section{Getting started}
 
 A quick introduction to get you started. We assume that the following packages are installed:  \tkzNamePack{tkz-euclide}, and \tkzNamePack{tkz-elements}.
 Compile the following code using the \tkzEngine{lualatex} engine; you should obtain a line passing through points $A$ and $B$.
@@ -7,13 +6,13 @@ Compile the following code using the \tkzEngine{lualatex} engine; you should obt
 \begin{minipage}{.6\textwidth}
   \begin{tkzexample}[code only]
   % !TEX TS-program = lualatex
-  \documentclass{article} 
+  \documentclass{article}
   \usepackage[mini]{tkz-euclide}
   \usepackage{tkz-elements}
   \begin{document}
   \directlua{
     init_elements()
-    z.A = point(0, 1) 
+    z.A = point(0, 1)
     % or z.A = point:new(0, 1)
     z.B = point(2, 0)
   }
@@ -55,6 +54,4 @@ Another essential element is the use of the function \tkzFct{tkz-elements}{init\
 If everything worked correctly with the previous code, you're ready to begin creating geometric objects. Section~\ref{sec:class_and_object} introduces the available options and object structures.
 
 Finally, it is important to be familiar with basic drawing commands in \tkzNamePack{tkz-euclide}, as they will be used to render the objects defined in \tkzname{Lua}.
-
-
-% section getting_started (end)
+\endinput

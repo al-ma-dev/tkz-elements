@@ -1,7 +1,5 @@
 \newpage
-
-\section{Maths tools} % (fold)
-\label{sec:maths_tools}
+\section{Maths tools}
 
 The \tkzname{maths tools} module provides general-purpose mathematical functions for solving algebraic equations and linear systems. These tools serve as computational backbones for various geometric or algebraic operations in the \tkzNamePack{tkz-elements} library.
 
@@ -13,13 +11,14 @@ The key features include:
 
 These functions handle both symbolic and numerical workflows and are suitable for educational, demonstrative, or computational geometry contexts.
 
+
 \subsection*{Functions overview}
 
 \begin{center}
   \bgroup
   \catcode`_=12
   \small
-  \captionof{table}{Math functions} \label{line:methods_maths}
+  \captionof{table}{Math functions}
 \begin{tabular}{ll}
 \toprule
 \textbf{Name}  & \textbf{Reference} \\
@@ -33,9 +32,7 @@ These functions handle both symbolic and numerical workflows and are suitable fo
 \end{center}
 
 
-\subsection{\tkzFct{tkz}{solve(...)}} % (fold)
-\label{sub:function_solve}
-
+\subsection{\tkzFct{tkz}{solve(...)}}
 This general-purpose function solves polynomial equations of degree 1, 2, or 3 with real or complex coefficients. It delegates to specific solvers depending on the number of parameters.
 
 \paragraph{Syntax.}
@@ -74,12 +71,7 @@ x1, x2, x3 = solve(1, -6, 11, -6) -- x1 = 1, x2 = 2, x3 = 3
 \item Internally uses the functions \code{tkz.solve\_quadratic} and \code{tkz.solve\_cubic}.
 \end{itemize}
 
-% subsection function_solve (end)
-
-
-\subsection{Function \tkzFct{math}{solve\_linear\_system(M, N)}} % (fold)
-\label{ssub:solve_linear_system}
-
+\subsection{Function \tkzFct{math}{solve\_linear\_system(M, N)}}
 Solves the linear system $MX = N$ using Gauss–Jordan elimination on the augmented matrix $[M\|N]$.
 
 \begin{itemize}
@@ -105,8 +97,4 @@ M = matrix({{2,1}, {4,-6}})
 N = matrix({{5}, {-2}})
 X = solve_linear_system(M, N)
 \end{tkzexample}
-
-
-
-% subsection solve_linear_system (end)
-
+\endinput

@@ -1,10 +1,8 @@
-\newpage\section{Coordinates} % (fold)
-\label{sec:coordinates}
+\newpage\section{Coordinates}
+
 This section outlines the various coordinate systems available to users. Given the removal of scaling operations from the \tkzname{Lua} layer, such clarification seems more necessary than ever.
 
-
-\subsection{Common Use of Coordinates} % (fold)
-\label{sub:common_use_of_coordinates}
+\subsection{Common Use of Coordinates}
 As with \tkzNamePack{tkz-euclide}, \tkzNamePack{tkz-elements} is based on a two-dimensional orthonormal Cartesian coordinate system, using centimeters as the default unit.
 
 It would be inconsistent to use what we will see  as an \emph{occs} (orthogonal coordinate coordinate system) in a context focused on Euclidean geometry.
@@ -28,17 +26,15 @@ Moreover, the concept of a point in \tkzNamePack{tkz-elements} is tied to the af
    \tkzDrawSegments[->,add = 0 and 0.25](O,B O,A)
    \begin{scope}[every annotation/.style={fill=lightgray!15,anchor = east}]
    \node [annotation,font =\small,text width=6cm] at (current bounding box.west) {
-Coordinates of $M$ 
+Coordinates of $M$
    \begin{mybox}{}
    \code{ z.A = point(2, 3)}
    \end{mybox}
        };
    \end{scope}
    \end{tikzpicture}
-% subsection common_use_of_coordinates (end)
 
-\subsection{Use of barycentric coordinates.} % (fold)
-\label{sub:use_of_barycentric_coordinates}
+\subsection{Use of barycentric coordinates.}
 
 A barycentric coordinate system describes the position of a point relative to a reference triangle. Any point in the plane can be expressed with barycentric coordinates, which are defined up to a scalar multiple (homothety). Alternatively, they may be normalized so their sum equals 1.
 
@@ -92,10 +88,7 @@ z.H = T.ABC:barycentric(math.tan(T.ABC.alpha),
 \end{tkzexample}
 \end{minipage}
 
-
-% subsection use_of_barycentric_coordinates (end)
-
-\subsection{Use of Trilinear Coordinates} % (fold)
+\subsection{Use of Trilinear Coordinates}
 \label{sub:use_of_trilinear_coordinates}
 
 The trilinear coordinates of a point $P$ with respect to a triangle $ABC$ are a triple of values proportional to the directed distances from $P$ to each of the triangle’s sides. These coordinates are homogeneous and typically written as $x : y : z$ or $(x, y, z)$.
@@ -105,7 +98,6 @@ Since only the ratio between the coordinates is relevant, trilinear coordinates 
 So
 
 $ a' : b' : c' = ka : kb : kc$ in the next example ($a = BC, b = AC, c = AB$).
-
 
 \begin{minipage}{.5\textwidth}
 \directlua{
@@ -143,13 +135,9 @@ z.a, z.b, z.c = T.ABC:projection(z.L)}
 \end{tkzexample}
 \end{minipage}
 
-% subsection use_of_trilinear_coordinates (end)
-
-\subsection{OCCS} % (fold)
-\label{sub:occs}
+\subsection{OCCS}
 
 Objects in this class are \emph{orthonormal Cartesian coordinate system}. They are obtained from the reference system by translation and rotation. They can be used to simplify certain expressions and coordinates.
 See  [\ref{sec:orthonormal_cartesian_coordinate_system}
 ]
-% subsection occs (end)
-% section coordinates (end)
+\endinput

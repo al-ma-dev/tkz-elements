@@ -1,10 +1,7 @@
 \newpage
+\section{Some theorems}
+\subsection{Viviani's Theorem}
 
-\section{Some theorems} % (fold)
-\label{sec:some_theorems}
-
-\subsection{Viviani's Theorem} % (fold)
-\label{sub:viviani_s_theorem}
 Viviani's theorem, named after Vincenzo Viviani, states that the sum of the shortest distances from any interior point to the sides of an equilateral triangle equals the length of the triangle's altitude.
 [Wikipedia].
 
@@ -83,11 +80,8 @@ Here's the visual demonstration I gave at the CAPES oral exam in 1989 to become 
 \end{tikzpicture}
 \end{minipage}
 
-% subsection viviani_s_theorem (end)
+\subsection{Reuschle's theorem}
 
-
-\subsection{Reuschle's theorem} % (fold)
-\label{sub:reuschle_s_theorem}
 In elementary geometry, Reuschle's theorem describes a property of the cevians of a triangle intersecting in a common point and is named after the German mathematician Karl Gustav Reuschle (1812–1875). It is also known as Terquem's theorem after the French mathematician Olry Terquem (1782–1862), who published it in 1842.
 
 \vspace{1em}
@@ -123,8 +117,6 @@ In elementary geometry, Reuschle's theorem describes a property of the cevians o
 \end{tikzpicture}
 \end{verbatim}
 
-
-
 \directlua{
  init_elements()
  z.A = point(0, 0)
@@ -156,10 +148,8 @@ In elementary geometry, Reuschle's theorem describes a property of the cevians o
   \end{tikzpicture}
 \end{center}
 
-% subsection reuschle_s_theorem (end)
+\subsection{Thébault's problem III}
 
-\subsection{Thébault's problem III} % (fold)
-\label{sub:thebault_s_problemIII}
 Given any triangle ABC, and any point M on BC, construct the incircle and circumcircle of the triangle. Then construct two additional circles, each tangent to AM, BC, and to the circumcircle. Then their centers and the center of the incircle are collinear.[wikipedia]
 \vspace{1em}
 
@@ -238,11 +228,7 @@ Given any triangle ABC, and any point M on BC, construct the incircle and circum
 \end{tikzpicture}
 \end{minipage}
 
-% subsection thebault_s_problemIII (end)
-
-\subsection{Thébault's problem III with a method} % (fold)
-\label{sub:_thebault_s_problem_iii_fold}
-
+\subsection{Thébault's problem III with a method}
 The |c_c| or |thebault| method selects a vertex of a triangle to construct a circle tangent to the two adjacent sides and to a given circle passing through the opposite vertices.
 
 \begin{tkzexample}[latex = .5\textwidth]
@@ -277,11 +263,7 @@ The |c_c| or |thebault| method selects a vertex of a triangle to construct a cir
 
 \end{tkzexample}
 
-
-% subsection _thebault_s_problem_iii_fold (end)
-
-\subsection{Thebault's problem II} % (fold)
-\label{sub:thebault_s_problemII}
+\subsection{Thebault's problem II}
 
 Given a square, construct equilateral triangles on two adjacent edges, either both inside or both outside the square. Then the triangle formed by joining the vertex of the square distant from both triangles and the vertices of the triangles distant from the square is equilateral.[wikipedia]
 
@@ -327,10 +309,7 @@ Given a square, construct equilateral triangles on two adjacent edges, either bo
 \end{tikzpicture}
 \end{minipage}
 
-
-% subsection thebault_s_problemII (end)
-
-\subsection{Varignon's Theorem} % (fold)
+\subsection{Varignon's Theorem}
 \label{sub:varignon_s_theorem}
 In Euclidean geometry, Varignon's theorem holds that the midpoints of the sides of an arbitrary quadrilateral form a parallelogram, called the Varignon parallelogram. It is named after Pierre Varignon, whose proof was published posthumously in 1731. [Wikipedia]
 
@@ -384,14 +363,16 @@ In Euclidean geometry, Varignon's theorem holds that the midpoints of the sides 
 
 \end{minipage}
 
-% subsection varignon_s_theorem (end)
-
-
-\subsection{Wittenbauer's Parallelogram} % (fold)
+\subsection{Wittenbauer's Parallelogram}
 \label{sub:wittenbauer_s_parallelogram}
 
 Divide the sides of a quadrilateral into three equal parts. The figure formed by connecting and extending adjacent points on either side of a polygon vertex is a parallelogram known as Wittenbauer's parallelogram.
-[\href{https://mathworld.wolfram.com/WittenbauersParallelogram.html}{Weisstein, Eric W. "Wittenbauer's Parallelogram." From MathWorld--A Wolfram Web Resource.}]
+
+\begin{flushright}
+\small
+\href{https://mathworld.wolfram.com/WittenbauersParallelogram.html}{Weisstein, Eric W. "Wittenbauer's Parallelogram." From MathWorld--A Wolfram Web Resource.}
+\end{flushright}
+\small
 
 \vspace{1em}
 
@@ -465,20 +446,21 @@ Divide the sides of a quadrilateral into three equal parts. The figure formed by
 \end{center}
 
 \end{minipage}
-% subsection wittenbauer_s_parallelogram (end)
 
-\subsection{Soddy circles of a triangle} % (fold)
-\label{sub:soddy_circles_of_a_triangle}
+\subsection{Soddy circles of a triangle}
 
 In geometry, the Soddy circles of a triangle are two circles associated with any triangle in the plane.[wikipedia]
 
  Given three noncollinear points, construct three tangent circles such that one is centered at each point and the circles are pairwise tangent to one another. Then there exist exactly two nonintersecting circles that are tangent to all three circles. These are called the inner and outer Soddy circles, and their centers are called the inner and outer Soddy centers, respectively.
+\begin{flushright}
+\small
+ \href{https://mathworld.wolfram.com/SoddyCircles.html}{ Weisstein, Eric W. "Soddy Circles." From MathWorld--A Wolfram Web Resource}
+ \end{flushright}
+ \small
 
-[\href{https://mathworld.wolfram.com/SoddyCircles.html}{ Weisstein, Eric W. "Soddy Circles." From MathWorld--A Wolfram Web Resource}]
 
 
-\subsubsection{Soddy circle without function} % (fold)
-\label{ssub:soddy}
+\subsubsection{Soddy circle without function}
 
 \begin{verbatim}
 \directlua{
@@ -574,11 +556,7 @@ In geometry, the Soddy circles of a triangle are two circles associated with any
   \end{tikzpicture}
 \end{center}
 
-% subsubsection soddy (end)
-
-\subsubsection{Soddy circle with function} % (fold)
-\label{ssub:soddy_circle_with_function}
-
+\subsubsection{Soddy circle with function}
 \directlua{
  init_elements()
  z.A = point(0, 0)
@@ -660,17 +638,13 @@ In geometry, the Soddy circles of a triangle are two circles associated with any
  \tkzLabelPoints[left](F)
 \end{tikzpicture}
 \end{verbatim}
-% subsubsection soddy_circle_with_function (end)
 
-
-% subsection soddy_circles_of_a_triangle (end)
-
-\subsection{Six circles in a triangle} % (fold)
+\subsection{Six circles in a triangle}
 \label{sub:six_circles_in_a_triangle}
 In geometry, the six circles theorem relates to a chain of six circles together with a triangle, such that each circle is tangent to two sides of the triangle and also to the preceding circle in the chain. The chain closes, in the sense that the sixth circle is always tangent to the first circle.[1][2] It is assumed in this construction that all circles lie within the triangle, and all points of tangency lie on the sides of the triangle. [Wikipedia]
 
 \vspace{1em}
-The file \code{search\_circle.lua} used in this example:
+The file \code{lua/search\_circle.lua} used in this example:
 
 \begin{mybox}
 \begin{verbatim}
@@ -716,7 +690,7 @@ end
    z.A = point(0, 0)
    z.B = point(8, 0)
    z.C = point(2, 6)
-   loadfile("search_circle.lua")(1.4)}
+   loadfile("lua/search_circle.lua")(1.4)}
   \begin{tikzpicture}
   \tkzGetNodes
   \tkzFillPolygon[lightgray!30](A,B,C)
@@ -729,20 +703,16 @@ end
   \end{tikzpicture}
 \end{tkzexample}
 
-
-
 \vspace{12pt}
 When the first circle is the incircle then you get only 4 circles.
-
 
 \begin{mybox}
   \begin{verbatim}
   T.ABC  = triangle(z.A,z.B,z.C)
   R = T.ABC.inradius/math.sin((T.ABC.alpha)/2)
-    loadfile ("search_circle.lua")(R)
+    loadfile ("lua/search_circle.lua")(R)
   \end{verbatim}
 \end{mybox}
-
 
 \begin{tkzexample}[vbox]
   \directlua{
@@ -752,7 +722,7 @@ When the first circle is the incircle then you get only 4 circles.
    z.C = point(2, 6)
    T.ABC = triangle(z.A, z.B, z.C)
    R = T.ABC.inradius/math.sin((T.ABC.alpha)/2)
-   loadfile ("search_circle.lua")(R)}
+   loadfile ("lua/search_circle.lua")(R)}
 
   \begin{tikzpicture}[scale = .75]
   \tkzGetNodes
@@ -764,9 +734,4 @@ When the first circle is the incircle then you get only 4 circles.
   \tkzDrawPoints(A,B,C)
   \end{tikzpicture}
 \end{tkzexample}
-
-
-
-
-% subsection six_circles_in_a_triangle (end)
-% section some_theorems (end)
+\endinput

@@ -1,6 +1,5 @@
 \newpage
-\section{Why tkz-elements?} % (fold)
-\label{sec:why_tkz_elements}
+\section{Why tkz-elements?}
 
 The \tkzNamePack{tkz-elements} package was created to address two key challenges in geometric work with TeX. First, TeX alone lacks the numerical precision and flexibility required for complex geometric calculations. By leveraging \tkzname{Lua}, \tkzNamePack{tkz-elements} provides accurate and stable computations for operations such as intersections, projections, and transformations.
 
@@ -9,32 +8,24 @@ Second, the package introduces an object-oriented approach to geometry. Geometri
 Beyond these two core ideas, \tkzNamePack{tkz-elements} offers several additional benefits:
 
 \begin{itemize}
- 
+
  \item  Simplified computations: \tkzname{Lua}'s floating-point arithmetic and expressive syntax make geometric calculations much easier to write and understand than in pure TeX.
 
 \item   Extensibility: Thanks to its modular design and use of classes, new geometric objects and methods can be added with minimal effort, making the package scalable and adaptable.
 
 \item   Interoperability: Calculated points and data integrate smoothly with \TIKZ{} or other TeX drawing tools, allowing users to combine computation and visualization effectively.
- 
+
  \item  Pedagogical clarity: With its structured and expressive syntax, \tkzNamePack{tkz-elements} is well-suited for educational purposes, where clarity of construction and notation is essential.
 \end{itemize}
 
 Altogether, \tkzNamePack{tkz-elements} provides a modern, object-oriented, and Lua-powered framework for geometric constructions within the TeX ecosystem.
 
-
-
-
-
-\subsection{Calculation accuracy} % (fold)
-\label{sub:calculation_accuracy}
-
-\subsubsection{Calculation accuracy in \TIKZ} % (fold)
-\label{ssub:calculation_accuracy_in_tikz}
-
+\subsection{Calculation accuracy}
+\subsubsection{Calculation accuracy in \TIKZ}
 With \TIKZ,  the expression \tkzimp{|veclen(x,y)|} calculates the expression $\sqrt{x^2+y^2}$.
 This calculation is achieved through a polynomial approximation, drawing inspiration from the ideas  of \tkzimp{Rouben Rostamian}.
 
-\pgfkeys{/pgf/number format/.cd,std,precision=5} \pgfmathparse{veclen(65,72)} 
+\pgfkeys{/pgf/number format/.cd,std,precision=5} \pgfmathparse{veclen(65,72)}
 \begin{mybox}{}
 \begin{verbatim}
    pgfmathparse{veclen(65,72)} \pgfmathresult
@@ -42,11 +33,8 @@ This calculation is achieved through a polynomial approximation, drawing inspira
 \end{mybox}
 
  \tkzHand $\sqrt{65^2+72^2} \approx \pmpn{\pgfmathresult} $ \tkzRBomb.
-% subsubsection calculation_accuracy_in_tikz (end)
 
-\subsubsection{Calculation accuracy in Lua} % (fold)
-\label{ssub:calculation_accuracy_in_lua}
-
+\subsubsection{Calculation accuracy in Lua}
 A |luaveclen| macro can be defined as follows:
 
 \begin{mybox}{}
@@ -64,7 +52,7 @@ and
 \end{verbatim}
 \end{mybox}
 
-gives 
+gives
 \tkzHand $\sqrt{65^2+72^2} = \pmpn{\luaveclen{65}{72}} $ {\color{red}!!}
 
 The error, though insignificant when it comes to the placement of an object on a page by a hundredth of a point, becomes problematic for the results of mathematical demonstrations. Moreover, these inaccuracies can accumulate and lead to erroneous constructions.
@@ -76,14 +64,11 @@ This was the primary motivation behind creating the package, with the secondary 
 
 At that time, I had received some Lua programming examples from {\tkzimpbf{Nicolas Kisselhoff}}, but I struggled to understand the code initially, so I dedicated time to studying Lua patiently. Eventually, I was able to develop \tkzname{\tkznameofpack}, incorporating many of his ideas that I adapted for the package.
 
-
-% subsubsection calculation_accuracy_in_lua (end)
-\subsubsection{Using objects} % (fold)
-\label{ssub:using_objects}
-
+\subsubsection{Using objects}
 Subsequently, I came across an article by \tkzimp{Roberto Giacomelli}\footnote{\href{https://www.guitex.org/home/images/meeting2012/slides/presentazione_giacomell_guitmeeting_2012.pdf}{Grafica ad oggetti con LuaTEX}}  on object-oriented programming using \tkzname{Lua} and \tkzNamePack{\TIKZ} tools. This served as my second source of inspiration.   Not only did this approach enable programming to be executed step-by-step, but the introduction of objects facilitated a direct link between the code and geometry. As a result, the code became more readable, explicit, and better structured.
 
-\subsubsection{Example: Apollonius circle (new version 2025/05/12)} % (fold)
+
+\subsubsection{Example: Apollonius circle (new version 2025/05/12)}
 \label{ssub:example_apollonius_circle}
 
 \begin{mybox}{Problem:}
@@ -128,7 +113,7 @@ For instance, suppose \code{T} is a table that associates the triangle object wi
 \vspace{1em}
 \begin{mybox}
 \begin{verbatim}
- z.N = T.ABC.eulercenter 
+ z.N = T.ABC.eulercenter
 \end{verbatim}
 \end{mybox}
 
@@ -137,12 +122,11 @@ For instance, suppose \code{T} is a table that associates the triangle object wi
 
 \begin{mybox}
 \begin{verbatim}
- T.excentral     = T.ABC : excentral () 
+ T.excentral     = T.ABC : excentral ()
 \end{verbatim}
 \end{mybox}
 
-In this context, \tkzname{excentral} is a method associated with the \tkzname{T.ABC }object. It defines the triangle formed by the centers of the exinscribed circles. 
-
+In this context, \tkzname{excentral} is a method associated with the \tkzname{T.ABC }object. It defines the triangle formed by the centers of the exinscribed circles.
 
 
 \begin{tcolorbox}[
@@ -189,7 +173,7 @@ The radius of the radical circle is given by:
 \textbf{Note:} The following code replaces the previous version with a more elegant and object-oriented approach.
 The previous code demonstrated the kinds of calculations that can be performed manually. However, \tkzNamePack{tkz-elements} offers a wide range of methods associated with the various geometric objects. Among the methods related to circles is one that allows you to define a circle orthogonal to another, given a center point.
 
-We want to obtain the circle orthogonal to the three exinscribed circles of the triangle. Its center ($S$) is the radical center of these three circles. It suffices to compute a circle orthogonal to one of them \footnote{Given a main circle and two secondary circles, a specific method exists for defining the radical circle orthogonal to all three.}, taking as center the point $S$.  
+We want to obtain the circle orthogonal to the three exinscribed circles of the triangle. Its center ($S$) is the radical center of these three circles. It suffices to compute a circle orthogonal to one of them \footnote{Given a main circle and two secondary circles, a specific method exists for defining the radical circle orthogonal to all three.}, taking as center the point $S$.
 
 The second important line performs an inversion with respect to this orthogonal circle.
 
@@ -202,13 +186,13 @@ The second important line performs an inversion with respect to this orthogonal 
 
 \vspace{1em}
 
-Lastly, it's worth noting that the inversion of the Euler circle with respect to the radical circle yields the Apollonius circle.\footnote{The nine-point circle, also known as Euler's circle, is externally tangent to the three exinscribed circles. The points of tangency form the Feuerbach triangle.}  
+Lastly, it's worth noting that the inversion of the Euler circle with respect to the radical circle yields the Apollonius circle.\footnote{The nine-point circle, also known as Euler's circle, is externally tangent to the three exinscribed circles. The points of tangency form the Feuerbach triangle.}
 
 This transformation requires an object as a parameter. The method automatically detects the object type (as all objects in the package are typed) and selects the appropriate algorithm accordingly.
 
 \begin{mybox}{}
 \begin{verbatim}
-  C.apo   = C.ortho : inversion (C.euler) 
+  C.apo   = C.ortho : inversion (C.euler)
 \end{verbatim}
 \end{mybox}
 
@@ -274,11 +258,5 @@ The subsequent section exclusively deals with drawings, and is managed by \tkzNa
    \tkzLabelPoints[right](S,C)
 \end{tikzpicture}
 \end{center}
-
- 
 \end{minipage}
-
-% subsubsection example_apollonius_circle (end)
-% subsubsection using_objects (end)
-% subsection calculation_accuracy (end)
-% section why_tkz_elements (end)
+\endinput
