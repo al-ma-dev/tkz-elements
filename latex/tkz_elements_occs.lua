@@ -1,5 +1,4 @@
 -- File: tkz_elements_occs.lua
--- Version: 4.21c   Date: 2025/09/21
 -- Copyright (c) 2023–2025 Alain Matthes
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
@@ -35,7 +34,7 @@ function occs:coordinates(pt) -- S,U,V orthonormé
 	local ysv = (self.y - self.origin).im
 	local xxs = x - xs
 	local yys = y - ys
-	return checknumber_(xsu * xxs + ysu * yys), checknumber_(xsv * xxs + ysv * yys)
+	return (xsu * xxs + ysu * yys), (xsv * xxs + ysv * yys)
 end
 
 return occs
