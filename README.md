@@ -1,6 +1,6 @@
 # tkz-elements — Euclidean geometry with LuaLaTeX
 
-_Current release: **4.21c** (2025-09-21)_
+_Current release: **4.25c** (2025-09-24)_
 
 `tkz-elements` is a Lua library that performs the computations needed to define the objects of an Euclidean geometry figure (points, lines, circles, conics, triangles, paths, …). All numerical work happens in **Lua**; the drawing is left to **tkz‑euclide** (recommended) or **TikZ**.
 
@@ -72,21 +72,18 @@ Please open a GitHub issue and include:
 - your **TeX distribution** (TeX Live/MacTeX/MiKTeX), LuaLaTeX version, OS;
 - relevant **log excerpts** (with `-file-line-error`).
 
-### Build from source (manual)
-From the repository root:
-```bash
-latexmk
-# Manual PDF: doc/src/build/TKZdoc-elements-main.pdf
-
-# (optional) deliverable copy for distribution:
-# cp doc/src/build/TKZdoc-elements-main.pdf doc/tkz-elements.pdf
-```
-> A project `.latexmkrc` is provided (LuaLaTeX, synctex, outdir `doc/src/build/`).
-> For **Skim** forward/backward sync, open the PDF located in `doc/src/build/`.
-
 ### Versioning & releases
-- Versions follow the scheme `4.xx c` (e.g., `4.21c`) and are tagged on GitHub.
+- Versions follow the scheme `4.xx c` (e.g., `4.25c`) and are tagged on GitHub.
 - The PDF manual ships in the repository and on CTAN.
+
+The official version number and release date of **tkz-elements** are recorded in:
+
+- `tkz-elements.sty` (LaTeX package file, visible in the log),
+- `README.md` (this file),
+- `CHANGELOG.md` (detailed history),
+- `doc/tkz-elements.pdf` (documentation front page).
+
+Lua source files (`tkz_elements_xxx.lua`) no longer carry their own version/date headers.
 
 ---
 

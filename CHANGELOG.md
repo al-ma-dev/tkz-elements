@@ -1,8 +1,33 @@
-# CHANGELOG
+## [4.25c] — 2025-09-25
+### Added
+- **path**:
+  - `get_point`
+  - `iter()`.
+- **tkz-elements.sty**:
+  - `\tkzGetPointFromPath(#1,#2){#3}`
+  - `\tkzPathCount(#1){#2}`
+  - `\tkzDrawFromPointToPath`.
+- **tkz**: Function `tkz.parabola(a, b, c)` to obtain the quadratic form whose graph passes through the three points `a`, `b`, and `c` (under certain conditions).
 
-All notable changes to **tkz-elements** will be documented in this file.
-This format follows the spirit of <https://keepachangelog.com/> (categories **Added / Changed / Fixed / Removed / Deprecated / Docs / Security**).
-Versions here reflect the project’s scheme (e.g. `4.21c`).
+### Changed
+- **Source structure**: Removed version numbers and dates from each `tkz_elements_xxx.lua` file.
+	The official version and release date are now maintained **only** in:
+	- `tkz-elements.sty` (for LaTeX users),
+	- `README.md`,
+	- `CHANGELOG.md`,
+	- `doc/tkz-elements.pdf`.
+- **occs**: The `coordinates` method now returns numbers instead of strings (removed `checknumber_`).
+- **path**: Improved `get_number_path` method.
+
+
+### Docs
+- Renamed several examples: the old names were more explicit.
+- After **Overview**, added three navigation tables (attributes, methods, metamethods) for each class. All elements should now be listed, with links to their definitions and, where relevant, to examples.
+- Rewrote the section on **path**.
+- Added in **Theorems**: Circle–Point Midpoint Theorem.
+- Added documentation for the new macros of **tkz-elements.sty**.
+- Added in **Examples**: Construction of the midcircle of two disjoint circles.
+
 
 ## [4.21c] — 2025-09-21
 ### Docs
