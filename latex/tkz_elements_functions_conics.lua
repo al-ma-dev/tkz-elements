@@ -1,5 +1,4 @@
 -- File: tkz_elements_functions_conics.lua
--- Version: 4.21c   Date: 2025/09/21
 -- Copyright (c) 2023–2025 Alain Matthes
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
