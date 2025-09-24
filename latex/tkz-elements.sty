@@ -1,11 +1,9 @@
-% encoding : utf8
 % File: tkz-elements.sty
-% Version: 4.21c   Date: 2025/09/21
 % Copyright (c) 2023–2025 Alain Matthes
 % SPDX-License-Identifier: LPPL-1.3c
 % Maintainer: Alain Matthes
 
-\ProvidesPackage{tkz-elements}[2025/09/21 version 4.21c Graphic Object Library]
+\ProvidesPackage{tkz-elements}[2025/09/25 version 4.25c Graphic Object Library]
 \RequirePackage{iftex}
 \ifluatex\else
   \PackageError{tkz-elements}{%
@@ -155,6 +153,45 @@
   end
   out:close()
 }}
-\makeatother
+
+% \tkzDrawFromPointToPath[<style>](<PointTikZ>,<PathLua>)
+\def\tkzDrawFromPointToPath{%
+  \pgfutil@ifnextchar[{\tkz@DrawFromPointToPath}{\tkz@DrawFromPointToPath[]}%
+}
+\def\tkz@DrawFromPointToPath[#1](#2,#3){%
+  \begingroup
+  \directlua{%
+    local P = #3
+    local A = "\luatexluaescapestring{#2}"
+    for i,x,y in P:iter() do
+      tex.print("\\tkzDefPoint("..x..","..y.."){tmp}")
+      tex.print("\\tkzDrawSegment["..
+                "\luatexluaescapestring{#1}".."]("..A..",tmp)")
+    end
+  }%
+  \endgroup
+}\makeatother
+
+% Returns the number of points in a path (usage: \tkzPathCount{PA.A}{N})
+
+\def\tkzPathCount(#1)#2{%
+  \directlua{
+    local n = #1:count()
+    tex.print("\\edef\\#2{"..n.."}")  % <-- \N = "10" (par ex.)
+  }%
+}
+
+%\newcommand{\tkzGetPointFromPath}[3]{%
+\def\tkzGetPointFromPath(#1,#2)#3{%
+\begingroup
+  \directlua{%
+    local i = \number#2
+    local cx,cy = #1:get_number_path(i)
+    tex.print("\\tkzDefPoint("..cx..","..cy.."){#3}")
+  }%
+  \endgroup
+}
+
+
 \def\tkzEraseLuaObj#1{\directlua{#1 = nil}}
 \endinput
