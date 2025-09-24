@@ -1,5 +1,4 @@
 -- File: tkz_elements_path.lua
--- Version: 4.21c   Date: 2025/09/21
 -- Copyright (c) 2023–2025 Alain Matthes
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
@@ -172,8 +171,49 @@ function path:count()
 	return #self
 end
 
+function path:get_point(i)
+	local x, y = self:get_number_path(i)
+	return point(x, y)
+end
+
+local function parse_xy(entry)
+	if type(entry) == "table" then
+		-- au cas où tu ranges déjà sous forme table
+		if entry.x_num and entry.y_num then return entry.x_num, entry.y_num end
+		if entry.x and entry.y then return tonumber(entry.x), tonumber(entry.y) end
+	end
+	-- formats tolérés: "(x,y)" | "x,y" | "x/y"
+	local s = tostring(entry)
+	local x, y = s:match("%(?%s*([%+%-]?%d+%.?%d*)%s*[,/ ]%s*([%+%-]?%d+%.?%d*)%s*%)?")
+	return tonumber(x), tonumber(y)
+end
+
+--  coordinates of the i-th point
 function path:get_number_path(i)
-	return self[i]:match("%(([^,]+),([^%)]+)%)")
+	local item = self[i]
+	if not item then
+		error(("path:get_number_path: index %s hors limites (1..%d)"):format(tostring(i), #self))
+	end
+	local x, y = parse_xy(item)
+	if not x or not y then
+		error(("path:get_number_path: impossible d’analyser l’entrée #%d"):format(i))
+	end
+	return x, y
+end
+
+--  Practical iterator
+-- for i, x, y in PA.A:iter() do
+	-- -- do something with (i, x, y)
+-- end
+function path:iter()
+	local i, n = 0, #self
+	return function()
+		i = i + 1
+		if i <= n then
+			local x, y = self:get_number_path(i)
+			return i, x, y
+		end
+	end
 end
 
 return path
