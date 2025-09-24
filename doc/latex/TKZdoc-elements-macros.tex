@@ -191,6 +191,105 @@ Example usage:
 \end{verbatim}
 \end{mybox}
 
+\subsection{Macro \tkzMacro{tkz-elements}{tkzDrawFromPointToPath}}
+This macro draws a set of line segments from a given TikZ point to every point of a Lua \emph{path} object.
+
+\medskip
+\noindent
+Syntax:
+\begin{verbatim}
+\tkzDrawFromPointToPath[<options>](<PointTikZ>,<PathLua>)
+\end{verbatim}
+
+\noindent
+Arguments:
+\verb|<options>| (optional): pgf/tikz drawing options (color, thickness, etc.).
+\verb|<PointTikZ>|: the name of a TikZ point (already defined).
+\verb|<PathLua>|: identifier of a Lua \verb|path| object (with \verb|:iter()| available).
+\medskip
+\noindent
+Remarks:
+For each vertex
+(
+x
+,
+y
+)
+(x,y) in the path, a temporary TikZ point \verb|tmp| is created and connected to the fixed point.
+The path must already exist on the Lua side.
+\medskip
+\noindent
+Example usage:
+\begin{mybox}
+\begin{verbatim}
+% Draw segments from O to all points of path PA.A
+\tkzDrawFromPointToPath[blue,very thick](O, PA.A)
+\end{verbatim}
+\end{mybox}
+\subsection{Macro \tkzMacro{tkz-elements}{tkzPathCount}}
+This macro retrieves the number of vertices in a Lua path and stores the result in a TeX macro.
+\medskip
+\noindent
+Syntax:
+\begin{verbatim}
+\tkzPathCount(<PathLua>){<MacroName>}
+\end{verbatim}
+\noindent
+Arguments:
+\verb|<PathLua>|: identifier of a Lua \verb|path| object.
+\verb|<MacroName>|: name of a TeX macro (without the backslash) that will store the count.
+\medskip
+\noindent
+Remarks:
+The macro is defined with \verb|\edef|, e.g., \verb|\edef\N{10}|.
+This allows direct iteration in TikZ or pgfloops.
+\medskip
+\noindent
+Example usage:
+\begin{mybox}
+\begin{verbatim}
+% Count the number of vertices of PA.A
+\tkzPathCount(PA.A){N} % -> \N holds the count
+% Iterate using TikZ
+\foreach \i in {1,...,\N}{
+% ...
+}
+\end{verbatim}
+\end{mybox}
+\subsection{Macro \tkzMacro{tkz-elements}{tkzGetPointFromPath}}
+This macro extracts the i-th vertex of a Lua path and defines it as a TikZ point with a given name.
+\medskip
+\noindent
+Syntax:
+\begin{verbatim}
+\tkzGetPointFromPath(<PathLua>,<index>){<PointName>}
+\end{verbatim}
+\noindent
+Arguments:
+\verb|<PathLua>|: identifier of a Lua \verb|path| object.
+\verb|<index>|: index of the vertex to retrieve (TeX number or numeric macro).
+\verb|<PointName>|: name of the TikZ point to create.
+\medskip
+\noindent
+Remarks:
+The index is passed as a number to the Lua method \verb|get_number_path(i)|.
+Indexing is consistent with the Lua implementation (usually 1-based).
+The created point is defined with \verb|\tkzDefPoint(x,y){<PointName>}|.
+\medskip
+\noindent
+Example usage:
+\begin{mybox}
+\begin{verbatim}
+% Get the 3rd vertex of PA.A and name it P3
+\tkzGetPointFromPath(PA.A,3){P3}
+% With counting and a loop
+\tkzPathCount(PA.A){N}
+\foreach \i in {1,...,\N}{
+\expandafter\tkzGetPointFromPath\expandafter(PA.A,\i){P\i}
+}
+\end{verbatim}
+\end{mybox}
+
 \subsection{Macro \tkzMacro{tkz-elements}{tkzUseLua}}
 
 This macro evaluates a Lua expression and inserts its result in the document.

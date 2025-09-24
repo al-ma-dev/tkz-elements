@@ -3224,8 +3224,27 @@ z.M = L.OOp.mid}
 
 % subsection Orthogonal to two circles (fold)
 
+\subsection{Construction of the midcircle of two disjoint circles}
+File: lua/mid-circle.lua
 
-\subsection{Midcircles}
+\VerbatimInput[fontsize=\small]{lua/mid-circle.lua}
+
+\begin{tkzexample}[vbox]
+\directlua{dofile("lua/mid-circle.lua")}
+
+\begin{tikzpicture}%[ scale = 1]
+  \tkzGetNodes
+  \tkzDrawCircles[blue,thick](A,a B,b)
+  \tkzDrawCircles[lightgray](M,A B,X C,R N,O)
+  \tkzDrawCircle[red,thick](O,ta)
+  \tkzDrawPoints(O,Ta,Tb,X,P,Q,R,S,A,B,C,N,ta,tb)
+  \tkzLabelPoints[above](O,A,B,C,Ta,Tb,X,P,Q,R,S,N)
+  \tkzDrawLines(O,Tb O,B B,Tb O,S)
+\end{tikzpicture}
+
+\end{tkzexample}
+
+\subsection{Midcircles and Arbelos}
 
 \directlua{
 init_elements()

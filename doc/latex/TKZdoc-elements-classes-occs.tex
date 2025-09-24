@@ -11,7 +11,7 @@ All calculations in this package are performed in a fixed OCCS. For convenience 
 \noindent
 The typical use case is to simplify the coordinates of geometric objects such as conics, by aligning the axes with their natural directions.
 
-\subsection{Creating an OCCS}
+\subsection{Creating an OCCS}\label{occs:create}
 
 An OCCS (orthonormal Cartesian coordinate system) is defined by:
 \begin{itemize}
@@ -50,7 +50,7 @@ The new abscissa axis is automatically computed to ensure orthonormality.
   \bgroup
   \catcode`_=12
   \small
-  \captionof{table}{Attributes of an \texttt{occs} object.}
+  \captionof{table}{Attributes of an \texttt{occs} object.}\label{occs:attributes}
   \begin{tabular}{ll}
     \toprule
     \textbf{Attribute} & \textbf{Description}  \\
@@ -149,10 +149,129 @@ If this line is constructed as an orthogonal to another line (as in the example 
 
 This class provides the following methods:
 
-\begin{itemize}
-  \item \texttt{occs:new(dir, origin)} or \texttt{occs(dir, origin)} — creates the OCCS.
-  \item \texttt{sys:coordinates(P)} — returns the coordinates of a point $P$ in the OCCS.
-\end{itemize}
+\bgroup
+\small
+\captionof{table}{occs methods.}\label{occs:methods}
+\begin{tabular}{ll}
+\toprule
+\textbf{Methods} & \textbf{Reference}   \\
+\midrule
+\textbf{Creation} &    \\
+\midrule
+  \tkzMeth{occs}{occs(dir, origin)} & Note\footnote{occs(L, pt) (short form, recommended)};  [\ref{occs:new}; \ref{ssub:example_attributes_of_occs}] \\
+  \tkzMeth{occs}{coordinates(pt)}  & [\ref{occs:coordinates}] \\
+\bottomrule
+\end{tabular}
+\egroup
+
+\subsection{Method \tkzMeth{occs}{occs(L, pt)}}
+\label{occs:new}
+
+The general creation of an orthonormal coordinate system attached to a line has already been presented
+[see \ref{occs:create}].
+
+Here we emphasize the important role of the two points defining the line~\(L\).
+If these points are swapped, the resulting coordinate system is not the same:
+the orientation of the axes is reversed. In every case, the system is oriented in the
+forward direction, following the order of the defining points.
+
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{%
+z.O = point(0, 0)
+z.A = point(0, 1)
+z.B = point(4, 2)
+z.S = point(1, 3)
+L.AB = line(z.A, z.B)
+z.K = L.AB:projection(z.S)
+O.sys = occs(L.AB, z.S)
+z.u, z.v = O.sys.x, O.sys.y}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawLines[purple](A,B)
+  \tkzDrawPoints(A,B,S,O,K)
+  \tkzLabelPoints(A,B,S,O,K,u,v)
+  \tkzDrawSegments[thick,->](S,u S,v)
+\end{tikzpicture}
+\end{tkzexample}
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{%
+z.O = point(0, 0)
+z.A = point(0, 1)
+z.B = point(4, 2)
+z.S = point(1, 3)
+L.AB = line(z.B, z.A)
+z.K = L.AB:projection(z.S)
+O.sys = occs(L.AB, z.S)
+z.u, z.v = O.sys.x, O.sys.y}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawLines[purple](A,B)
+  \tkzDrawPoints(A,B,S,O,K)
+  \tkzLabelPoints(A,B,S,O,K,u,v)
+  \tkzDrawSegments[thick,->](S,u S,v)
+\end{tikzpicture}
+\end{tkzexample}
+
+\subsection{Method \tkzMeth{occs}{coordinates(pt)}}\label{occs:coordinates}
+We want to construct the parabola passing through three given points,
+knowing that the axis of symmetry of the parabola is parallel to a given line \((MN)\).
+
+\begin{enumerate}
+  \item First, we must check that the three points \(A,B,C\) are not collinear,
+        and that no two of them lie on the same line perpendicular to \((MN)\).
+  \item Next, we define a reference system
+        \((M,\overrightarrow{MU},\overrightarrow{MV})\) attached to the line \((MN)\).
+  \item In this new system, there exists a unique parabola through the three points.
+        The function \tkzFct{tkz}{parabola(pt, pt, pt)}
+        [see \ref{tkz:parabola}] computes the coefficients of the quadratic function
+        \(y = Ax^2 + Bx + C\).
+  \item To apply this function, we need the coordinates of \(A,B,C\) in the new system.
+        This is exactly the role of the method
+        \tkzMeth{occs}{coordinates(pt)}.
+\end{enumerate}
+
+\directlua{
+z.O = point(0, 0)
+z.A = point(-1.5, 1)
+z.B = point(1, 0.25)
+z.C = point(2.5, 1.8)
+z.M = point(3, 0)
+z.N = point(2, 1)
+L.MN = line(z.M, z.N)
+sys = occs(L.MN, z.M)
+z.U = sys.x
+z.V = sys.y
+L.MV = line(z.M, z.V)
+L.MU = line(z.M, z.U)
+local a, b, c = tkz.parabola(point(sys:coordinates(z.A)),
+                             point(sys:coordinates(z.B)),
+                             point(sys:coordinates(z.C)))
+function f(x)
+  return a * x ^ 2 + b * x + c
+end
+
+xf = - b / (2 * a)
+yf = (4 * a * c - b ^ 2 + 1) / (4 * a)
+xk = xf
+yk = (4 * a * c - (b ^ 2) - 1) / (4 * a)
+z.K = L.MV:report(yk, L.MU:report(xk))
+z.f = L.MU:report(xf)
+z.F = L.MV:report(yf, z.f)
+L.dir = L.MU:ll_from(z.K)
+PA = conic(z.F, L.dir, 1)
+curve = PA:points(-3, 3, 30)
+}
+\begin{tikzpicture}
+ \tkzGetNodes
+ \tkzDrawSegments[->,purple,thick](M,U M,V)
+ \tkzDrawLines(M,N)
+ \tkzDrawCoordinates[smooth,red,thick](curve)
+ \tkzDrawPoints(A,B,C)
+ \tkzLabelPoints(A,B,U,V)
+ \tkzLabelPoints[above](M,N,C)
+\end{tikzpicture}
 
 \subsection{Example: Using \texttt{occs} with a parabola}
 

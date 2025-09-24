@@ -23,3 +23,11 @@ __MACOSX/
 # Editors / tools
 .nova/
 .git.bak-*/
+
+# ignorer les scripts en général
+*.sh
+*.zsh
+
+# MAIS garder ceux du dossier scripts/
+!scripts/*.sh
+!scripts/*.zsh

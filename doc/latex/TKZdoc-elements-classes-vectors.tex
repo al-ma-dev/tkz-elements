@@ -66,7 +66,7 @@ V.v2 = vector(3, -1)
   \bgroup
   \small
   \catcode`_=12
-  \captionof{table}{Vector attributes.}
+  \captionof{table}{Vector attributes.}\label{vector:attributes}
   \begin{tabular}{ll}
   \toprule
   \textbf{Attributes}      & \textbf{Reference}\\
@@ -200,11 +200,11 @@ This attribute is very useful for working with the \code{\^{}} and \code{..} met
 \subsection{Methods of the class vector}
 
 \vspace{1em}
-\begin{center}
-  \bgroup
+
+\bgroup
   \catcode`_=12
   \small
-  \captionof{table}{Methods of the class vector.}
+  \captionof{table}{Methods of the class vector.}\label{vector:metamethods}
   \begin{tabular}{ll}
   \toprule
    \textbf{Metamethods} & \textbf{Reference} \\
@@ -215,7 +215,16 @@ This attribute is very useful for working with the \code{\^{}} and \code{..} met
   \tkzMeta{vector}{mul(k,u)}   & [\ref{ssub:method_vector_mul}]        \\
   \tkzMeta{vector}{pow(k,u)}   & [\ref{ssub:method_vector_det}]        \\
   \tkzMeta{vector}{concat(k,u)}& [\ref{ssub:method_vector_dot}]        \\
-   \midrule
+  \bottomrule
+    \end{tabular}
+  \egroup
+
+ \bgroup
+ \catcode`_=12
+ \small
+ \captionof{table}{Methods of the class vector.}\label{vector:methods}
+ \begin{tabular}{ll}
+ \toprule
    \textbf{Methods} & \textbf{Reference} \\
    \midrule
   \tkzMeth{vector}{new(pt, pt)}    & Note\footnote{vector(pt, pt) (short form, recommended)}; \ref{sub:creating_a_vector}                                        \\
@@ -224,8 +233,8 @@ This attribute is very useful for working with the \code{\^{}} and \code{..} met
   \tkzMeth{vector}{at (V)}         & [\ref{ssub:method_vector_at}]            \\
   \bottomrule
   \end{tabular}
-  \egroup
-\end{center}
+\egroup
+
 
 
 \subsection{Example of metamethods}

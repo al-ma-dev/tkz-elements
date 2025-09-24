@@ -143,9 +143,35 @@ These generated paths can be combined, reversed, filled, or used for \TIKZ{} dec
 The path object represents an ordered sequence of 2D complex points, stored as TikZ-compatible strings in the form "(x,y)". It supports geometric operations such as translation, homothety, and rotation, and can be combined with other paths using Lua operator overloading.
 
 The variable \code{PA} holds a table used to store paths. It is optional, and you are free to choose the variable name. However, using \code{PA} is a recommended convention for clarity and consistency. If you use a custom variable (e.g., Paths), you must initialize it manually. The \tkzFct{tkz-elements}{init\_elements()} function reinitializes the \code{PA} table if used.
- It is primarily intended for geometric constructions and drawing operations in \TIKZ{} via lua\LATEX{}.
+
+When working with path objects—especially when several intermediate curves are involved—it is strongly recommended to use indexed names such as \code{PA.p1}, \code{PA.p2}, etc., rather than a generic name.
+
+\begin{mybox}
+\textbf{Rule — Prefer explicit, indexed names:}
+Using \code{PA.p1}, \code{PA.p2}, \code{PA.result}, etc., improves clarity, avoids accidental overwriting, and ensures that all geometric data can be reset with a single call to \tkzFct{init\_elements()}.
+\end{mybox}
+
+This approach aligns with the overall philosophy of \tkzNamePack{tkz-elements}, where named tables like \code{PA}, \code{T}, \code{C}, and \code{L} are used to store structured geometric information. Indexing also helps make diagrams more readable, reproducible, and easier to debug.
+
 
 It supports arithmetic operations for combining and manipulating paths, as well as geometric transformations such as translation, rotation, homothety, and reversal.
+
+\subsection{Notes}
+
+\begin{itemize}
+\item Points are internally stored as strings like "(x,y)", and parsing is done via a utility function parse\_point.
+
+\begin{verbatim}
+local x, y = utils.parse_point("(3.5, -2)")
+-- x = 3.5, y = -2.0
+\end{verbatim}
+
+
+\item Number formatting (e.g., for \TIKZ{} compatibility) should be handled by checknumber, assumed to be defined globally or in a utility module.
+
+\item The class is designed to be lightweight and compatible with TikZ/LuaLaTeX workflows.
+
+\end{itemize}
 
 \subsection{Constructor}
 
@@ -168,77 +194,55 @@ Here is a \tkzname{path} representing a simple triangle:
 
 
 
-\subsection{Operator Overloading}
+\subsection{Operator Overloading; metamethods}
 
-\begin{itemize}
-  \item \code{p1 + p2} — \textbf{Concatenation} \\
+\subsubsection{Table of metamethods}
+\bgroup
+  \catcode`_=12
+  \small
+  \captionof{table}{Methods of the class vector.}\label{path:metamethods}
+  \begin{tabular}{ll}
+  \toprule
+   \textbf{Metamethods} & \textbf{Reference} \\
+   \midrule
+  \tkzMeta{path}{add(path1,path2)}   & [\ref{ssub:method_imeth_vector_add}]  \\
+  \tkzMeta{path}{sub(path1,path2)}   & [\ref{ssub:method_imeth_vector_sub}]  \\
+  \tkzMeta{path}{unm(path1)}     &  []                                   \\
+  \tkzMeta{vector}{tostring(path1)}   & [\ref{ssub:method_vector_mul}]        \\
+  \bottomrule
+  \end{tabular}
+\egroup
+
+\subsubsection{Metamethod \tkzMeta{path}{add}}
+
+If p1 and p2 are two paths, we can obtain a third path with
+  |p3 = p1:add(p2)|
+
+ More easily with an operator
+
+ \code{p3 = p1 + p2} — \textbf{Concatenation} \\
   Returns a new path by appending \code{p2} after \code{p1}.
 
-  \item \code{-p} — \textbf{Reversal} \\
+\subsubsection{Metamethod \tkzMeta{path}{unm}}
+|p2 = p1:unm()|
+
+ More easily with an operator
+
+  \code{-p} — \textbf{Reversal} \\
   Returns a copy of the path in reverse order.
 
-  \item \code{p1 - p2} — \textbf{Subtraction} \\
+\subsubsection{Metamethod \tkzMeta{path}{sub}}
+If p1 and p2 are two paths, we can obtain a third path with
+|p3 = p1:sub(p2)|
+
+ More easily with an operator
+
+  \code{p1 - p2} — \textbf{Subtraction} \\
   Equivalent to \code{p1 + (-p2)} (concatenates \code{p1} with the reversed \code{p2}).
-\end{itemize}
 
+\subsubsection{Metamethod \tkzMeta{path}{tostring}}
 
-\subsection{Methods}
-
-\begin{center}
-  \bgroup
-  \catcode`\_ = 12
-  \small
-  \captionof{table}{Methods of the \texttt{path} class.}\label{tab:path_methods}
-  \begin{tabular}{ll}
-    \toprule
-    \textbf{Method} & \textbf{Reference} \\
-    \midrule
-\tkzMeth{path}{add\_point(z)}       & See [\ref{ssub:method_tkzmeth_path_add__point}]\\
-
-
-\tkzMeth{path}{copy()}          & See [\ref{ssub:method_tkzmeth_path_copy}] \\
-
-\tkzMeth{path}{translate(dx, dy)} & See [\ref{ssub:method_tkzmeth_path_translate}] \\
-
-\tkzMeth{path}{homothety(pt, k)} & See [\ref{ssub:method_tkzmeth_path_homothety}] \\
-
-\tkzMeth{path}{rotate(pt, an)}  & See [\ref{ssub:method_tkzmeth_path_rotate}] \\
-
-\tkzMeth{path}{close()}      & See [\ref{ssub:method_tkzmeth_path_close}]\\
-
-\tkzMeth{path}{sub(i1, i2)}   & See [\ref{ssub:method_tkzmeth_path_sub_i1_i2}] \\
-
-\tkzMeth{path}{show()}    & See [\ref{ssub:method_tkzmeth_path_show}] \\
-
-
-\tkzMeth{path}{add\_pair\_to\_path(z1, z2, n)}  & See [\ref{ssub:subsubsection_name}] \\
-
-\tkzMeth{path}{path\_from\_pairs(pt, pt, n)}  & See [\ref{ssub:subsubsection_name}; \ref{ssub:method_tkzmeth_path_path_from_pairs}] \\
-
-\tkzMeth{path}{stock\_paths(...}  & See [\ref{ssub:method_tkzmeth_path_stock__paths}
-; \ref{ssub:subsubsection_name}] \\
-
-\tkzMeth{path}{concat(sep)}       & See [\ref{ssub:method_tkzmeth_path_concat}]\\
-
-\bottomrule
-\end{tabular}
-\egroup
-\end{center}
-
-
-\subsubsection{Notes}
-
-\begin{itemize}
-\item Points are internally stored as strings like "(x,y)", and parsing is done via a utility function parse\_point.
-
-
-\item Number formatting (e.g., for \TIKZ{} compatibility) should be handled by checknumber, assumed to be defined globally or in a utility module.
-
-\item The class is designed to be lightweight and compatible with TikZ/LuaLaTeX workflows.
-
-\end{itemize}
-
-\subsection{String Representation}
+String Representation
 
 The \code{tostring} metamethod provides a readable form, mainly for debugging:
 
@@ -246,52 +250,72 @@ The \code{tostring} metamethod provides a readable form, mainly for debugging:
 tostring(p) --> path: { (x1,y1) , (x2,y2) , ... }
 \end{verbatim}
 
+An example:
 
-\subsection{Example}
-
-\begin{tkzexample}[latex=.45\textwidth]
-\directlua{
-  z.O = point(0, 0)
-  z.A = point(5, 0)
-  C.OA = circle(z.O, z.A)
-  z.S = C.OA.south
-  C.SO = circle(z.S, z.O)
-  z.B, z.C = intersection(C.OA, C.SO)
-  C.BC = circle(z.B, z.C)
-  z.D = intersection(C.OA, C.BC)
-  C.CD = circle(z.C, z.D)
-
-  local p1 = C.SO:path(z.C, z.B, 50)
-  local p2 = C.BC:path(z.C, z.D, 50)
-  local p3 = C.CD:path(z.D, z.B, 50)
-  thepath = (-p1) + p2 + p3 }
-\begin{tikzpicture}[scale=.5]
-  \tkzGetNodes
-  \tkzDrawCircles(O,A S,O)
-  \tkzDrawArc(B,C)(D)
-  \tkzDrawArc(C,D)(B)
-  \tkzDrawCoordinates[fill = purple!20,
-                      opacity=.4](thepath)
-  \tkzDrawCoordinates[smooth,red,thick](thepath)
-  \tkzDrawPoints(A,O,B,C,S,D)
-  \tkzLabelPoints(A,B,C)
-\end{tikzpicture}
+\begin{tkzexample}[latex=.5\textwidth]
+  \directlua{
+    local function print_section(title)
+      tex.print("\\par\\noindent
+      \\textbf{" .. title .. "}\\par")
+    end
+    local A = point(1,0)
+    local B = point(2,2)
+    local C = point(3,3)
+    local p1 = path()
+    local p2 = path()
+    p1 = path({ "(0, 0)", "(1, 0)","(1, 1)" })
+    p2 = path({"(0,1)"})
+    tex.print("\\noindent p1 = ",tostring(p1))
+    tex.print("\\\\")
+    tex.print("p2 = ", tostring(p2))
+    print_section("operator +")
+    local p3 = p1 + p2
+    tex.print("p3 = p1 + p2 = ",tostring(p3))
+    print_section("operator -")
+    local p4 = p2 - p1
+    tex.print("p4 = p2 - p1 = ",tostring(p4))}
 \end{tkzexample}
 
 
-\subsubsection*{Using Indexed Names for Paths}
+\subsection{Methods}
 
-When working with path objects—especially when several intermediate curves are involved—it is strongly recommended to use indexed names such as \code{PA.p1}, \code{PA.p2}, etc., rather than a generic name like \code{PA.p}.
+\bgroup
+  \catcode`\_ = 12
+  \small
+  \captionof{table}{Methods of the \texttt{path} class.}\label{path:methods}
+  \begin{tabular}{ll}
+    \toprule
+    \textbf{Method} & \textbf{Reference} \\
+    \midrule
+\tkzMeth{path}{add\_point(z)} & See [\ref{ssub:method_tkzmeth_path_add__point}; \ref{thm:circle-point}]\\
 
-\begin{mybox}
-\textbf{Rule — Prefer explicit, indexed names:}
-Using \code{PA.p1}, \code{PA.p2}, \code{PA.result}, etc., improves clarity, avoids accidental overwriting, and ensures that all geometric data can be reset with a single call to \tkzFct{init\_elements()}.
-\end{mybox}
+\tkzMeth{path}{copy()}       & See [\ref{ssub:method_tkzmeth_path_copy}] \\
 
-This approach aligns with the overall philosophy of \tkzNamePack{tkz-elements}, where named tables like \code{PA}, \code{T}, \code{C}, and \code{L} are used to store structured geometric information. Indexing also helps make diagrams more readable, reproducible, and easier to debug.
+\tkzMeth{path}{translate(dx, dy)} & See [\ref{ssub:method_tkzmeth_path_translate}] \\
+
+\tkzMeth{path}{homothety(pt, k)} & See [\ref{ssub:method_tkzmeth_path_homothety}] \\
+
+\tkzMeth{path}{rotate(pt, an)}  & See [\ref{ssub:method_tkzmeth_path_rotate}] \\
+
+\tkzMeth{path}{close()}  & See [\ref{ssub:method_tkzmeth_path_close}]\\
+
+\tkzMeth{path}{sub(i1, i2)} & See [\ref{ssub:method_tkzmeth_path_sub_i1_i2}] \\
+
+\tkzMeth{path}{show()}  & See [\ref{ssub:method_tkzmeth_path_show}] \\
+
+\tkzMeth{path}{add\_pair\_to\_path(z1, z2, n)} & or add\_pair  See [\ref{ssub:subsubsection_name}] \\
+
+\tkzFct{path}{path\_from\_pairs(pt, pt, n)} & See [\ref{ssub:subsubsection_name}; \ref{ssub:method_tkzmeth_path_path_from_pairs}] \\
+
+\tkzFct{path}{stock\_paths(...}  & See [\ref{ssub:method_tkzmeth_path_stock__paths}
+; \ref{ssub:subsubsection_name}] \\
+
+\tkzMeth{path}{concat(sep)}       & See [\ref{ssub:method_tkzmeth_path_concat}]\\
+\bottomrule
+\end{tabular}
+\egroup
 
 
-\subsubsection{Metamethod \tkzMeta{path}{tostring}}
 
 \subsubsection{Method \tkzMeth{path}{add\_point(pt,<n>)}}
 \label{ssub:method_tkzmeth_path_add__point}
@@ -419,9 +443,25 @@ Prints the path in the terminal (for debugging)
   PA.p:show()}
 \end{tkzexample}
 
-\subsubsection{Method \tkzMeth{path}{add\_pair\_to\_path(p, p, n)}}
+% ADD(AM, 4.25) some complements
+\subsubsection{Method \tkzMeth{path}{add\_pair\_to\_path(p, p, n)} or \tkzMeth{path}{add\_pair(p, p, n)}}
 \label{ssub:subsubsection_name}
-Adds a formatted point pair to a \tkzname{path} object. The coordinates of \code{z1} and \code{z2} are extracted, formatted with a fixed number of decimals, and combined into a string \code{"x1/y1/x2/y2"} appended to the path.
+\begin{verbatim}
+  path:add_pair(z1, z2, decimals)
+\end{verbatim}
+
+or equivalently:
+
+\begin{verbatim}
+ path:add_pair_to_path(z1, z2, decimals)
+\end{verbatim}
+
+\paragraph{Description}
+ The coordinates of \code{z1} and \code{z2} are extracted, formatted with a fixed number of decimals $n$, and combined into a string \code{"x1/y1/x2/y2"} appended to the path.
+This string is then inserted into the current path table.This method appends to a \tkzname{path} object. a formatted point pair.
+It is mainly used to store segments, by keeping together the coordinates of two points.
+
+
 
 \paragraph{Arguments}
 \begin{itemize}
@@ -431,18 +471,19 @@ Adds a formatted point pair to a \tkzname{path} object. The coordinates of \code
 
 \paragraph{Returns} Nothing (modifies the path in place).
 
+
+
 \paragraph{Example}
 \begin{verbatim}
-local PA.p = path() -- chemin vide
-local z.A = point(1, 2)
-local z.B = point(3, 4)
-add_pair_to_path(PA.p, z.A, z.B, 2)
--- PA.p = {"1.00/2.00/3.00/4.00"}
+   local PA.p = path() -- empty path
+   local z.A = point(1, 2)
+   local z.B = point(3, 4)
+   PA.p:add_pair(z.A, z.B, 2)
+   -- PA.p = {"1.00/2.00/3.00/4.00"}
 \end{verbatim}
 
 
-
-\subsubsection{Method \tkzMeth{path}{path\_from\_pairs(p, p, n)}}
+\subsubsection{Function \tkzFct{path}{path\_from\_pairs(p, p, n)}}
 \label{ssub:method_tkzmeth_path_path_from_pairs}
 
 Creates a new \tkzname{path} object by combining pairs of points taken from two parallel paths. Each resulting entry is a string \code{"x1/y1/x2/y2"}.
@@ -467,7 +508,7 @@ local PA.result = path_from_pairs(PA.p1, PA.p2, 1)
 
 
 
-\subsubsection{Method \tkzMeth{path}{stock\_paths(...)}}
+\subsubsection{Function \tkzFct{path}{stock\_paths(...)}}
 \label{ssub:method_tkzmeth_path_stock__paths}
 
 Combines an arbitrary number of paths into a single \tkzname{path}. Each entry contains the concatenated coordinates of corresponding points from all input paths, formatted as \code{"x1/y1/x2/y2/..."}.
@@ -487,12 +528,7 @@ local PA.path = stock_paths(PA.A, PA.B, 2)
 -- PA.path = {"1.00/2.00/1.00/3.00", "2.00/2.00/2.00/3.00"}
 \end{verbatim}
 
-
 \paragraph{Errors} All paths must have the same number of points.
-
-
-
-
 
 \subsubsection{Method \tkzMeth{path}{concat(<'sep'>)}}
 \label{ssub:method_tkzmeth_path_concat}
@@ -652,4 +688,35 @@ Knowing three of its points, we can determine the equation. The set of points fo
  \directlua{tex.print(f(-1,3,100))}};
 \end{tikzpicture}
 \end{verbatim}
+
+\subsection{Example with several paths}
+
+\begin{tkzexample}[latex=.45\textwidth]
+\directlua{
+  z.O = point(0, 0)
+  z.A = point(5, 0)
+  C.OA = circle(z.O, z.A)
+  z.S = C.OA.south
+  C.SO = circle(z.S, z.O)
+  z.B, z.C = intersection(C.OA, C.SO)
+  C.BC = circle(z.B, z.C)
+  z.D = intersection(C.OA, C.BC)
+  C.CD = circle(z.C, z.D)
+
+  local p1 = C.SO:path(z.C, z.B, 50)
+  local p2 = C.BC:path(z.C, z.D, 50)
+  local p3 = C.CD:path(z.D, z.B, 50)
+  thepath = (-p1) + p2 + p3 }
+\begin{tikzpicture}[scale=.5]
+  \tkzGetNodes
+  \tkzDrawCircles(O,A S,O)
+  \tkzDrawArc(B,C)(D)
+  \tkzDrawArc(C,D)(B)
+  \tkzDrawCoordinates[fill = purple!20,
+                      opacity=.4](thepath)
+  \tkzDrawCoordinates[smooth,red,thick](thepath)
+  \tkzDrawPoints(A,O,B,C,S,D)
+  \tkzLabelPoints(A,B,C)
+\end{tikzpicture}
+\end{tkzexample}
 \endinput

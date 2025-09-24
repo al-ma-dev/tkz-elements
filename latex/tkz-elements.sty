@@ -3,7 +3,7 @@
 % SPDX-License-Identifier: LPPL-1.3c
 % Maintainer: Alain Matthes
 
-\ProvidesPackage{tkz-elements}[2025/09/25 version 4.25c Graphic Object Library]
+\ProvidesPackage{tkz-elements}[2025/09/24 version 4.25c Graphic Object Library]
 \RequirePackage{iftex}
 \ifluatex\else
   \PackageError{tkz-elements}{%
@@ -173,7 +173,6 @@
 }\makeatother
 
 % Returns the number of points in a path (usage: \tkzPathCount{PA.A}{N})
-
 \def\tkzPathCount(#1)#2{%
   \directlua{
     local n = #1:count()
@@ -191,7 +190,6 @@
   }%
   \endgroup
 }
-
 
 \def\tkzEraseLuaObj#1{\directlua{#1 = nil}}
 \endinput

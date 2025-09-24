@@ -28,14 +28,14 @@ A circle object stores various geometric attributes that can be accessed for fur
 
 \bgroup
   \small
-  \captionof{table}{Circle attributes.}
+  \captionof{table}{Circle attributes.}\label{circle:attributes}
   \begin{tabular}{ll}
   \toprule
   \textbf{Attributes}         & \textbf{Meaning / Reference}                \\
   \midrule
-  \tkzAttr{circle}{type}      &  Type of circle, always "circle"   \\
+  \tkzAttr{circle}{type}      &  Type of circle, always "circle"            \\
   \tkzAttr{circle}{center}    &  Center of the circle                       \\
-  \tkzAttr{circle}{through}   &  Point through which the circle passes     \\
+  \tkzAttr{circle}{through}   &  Point through which the circle passes      \\
   \tkzAttr{circle}{radius}    &  [\ref{ssub:example_circle_attributes}]     \\
   \tkzAttr{circle}{north}     &  [\ref{ssub:example_circle_attributes}]     \\
   \tkzAttr{circle}{south}     &  [\ref{ssub:example_circle_attributes}]     \\
@@ -138,7 +138,7 @@ The circle class offers a wide range of methods, which can be grouped according 
 
 \bgroup
   \small
-  \captionof{table}{Circle methods.}
+  \captionof{table}{Circle methods.}\label{circle:methods}
   \begin{tabular}{ll}
   \toprule
   \textbf{Methods} & \textbf{Reference}   \\
@@ -203,8 +203,7 @@ The circle class offers a wide range of methods, which can be grouped according 
  \bgroup
   \catcode`_=12
   \small
-  \captionof{table}{Auxiliary functions for circle construction.}
-
+  \captionof{table}{Auxiliary functions for circle construction.}\label{circle:functions}
   \begin{tabular}{ll}
   \toprule
   \textbf{Functions} & \textbf{Reference}     \\
@@ -2310,6 +2309,8 @@ There are 4 circles verifying the conditions. Two are tangent externally, and tw
 A \textbf{midcircle} of two given circles is a circle that maps one to the other via an \textbf{inversion}. Midcircles belong to the same pencil of circles as the two originals. The center(s) of the midcircle(s) correspond to the \emph{centers of similitude} of the given circles.
 \end{quote}
 
+I have adopted the term \textbf{midcircle} used by \tkzimp{Eric Danneels} and \tkzimp{Floor van Lamoen}, as well as by \tkzimp{Eric W. Weisstein}, but many other names exist, such as \textbf{mid-circle} or \textbf{circle of antisimilitude} [Wikipedia]. The latter name can be found in Advanced Euclidean Geometry by \tkzimp{Roger A. Johnson} (2007). On the website \textit{cut-the-knot.org}, reference is made to the \textbf{bisectal circle}, translated from French as \textbf{cercle bissecteur} and used by \tkzimp{Hadamard}, but this refers to the case where the two given circles intersect.
+
 \noindent
 Four cases can be distinguished:
 
@@ -2679,6 +2680,123 @@ This circle performs an inversion that maps one circle onto the other and lies i
 
 \end{enumerate}
 
+\paragraph*{Midcircle between a circle and a line}
+It is possible to generalize the notion of midcircle to the case of a circle and a line.
+A midcircle of a circle and a straight line is defined as a circle with respect to which the given circle and line are mutually inverse.
+
+\noindent
+In this situation, there are only three possible cases, but they share several common features.
+The center of the midcircle lies on the line passing through the center of the given circle and perpendicular to the given line.
+Moreover, the center is also one of the intersection points of the circle and the line.
+
+Three cases can be distinguished:
+
+\begin{enumerate}[label=(\roman*)]
+  \item \textbf{The circle and the line intersect};
+  \item \textbf{The circle and the line are disjoint};
+  \item \textbf{The circle and the line are tangent}.
+\end{enumerate}
+
+Let's look at each case:
+
+\paragraph*{Note} It should be noted that in each case, inversion allows us to verify that the two objects are inverses of each other.
+
+
+\begin{enumerate}
+\item  \textbf{The circle and the line are disjoint.}
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+init_elements()
+z.o = point(-1,1)
+z.a = point(1,2)
+C.oa = circle(z.o, z.a)
+z.c = point(3,2)
+z.d = point(0,4)
+L.cd = line(z.c, z.d)
+C.OH = C.oa:inversion(L.cd)
+z.O, z.H = C.OH:get()
+L.inv = C.oa:inversion(C.OH)
+z.x, z.y = L.inv:get()
+C.inv  = C.OH:midcircle(L.cd)
+z.w, z.t = C.inv:get()
+z.P = L.cd:projection(z.o)
+z.T = intersection(C.inv,line(z.o,z.P))}
+\begin{center}
+\begin{tikzpicture}[scale=.75]
+\tkzGetNodes
+\tkzDrawCircles[blue](O,H)
+\tkzDrawCircles[red](w,t)
+\tkzDrawLines[blue](c,d)
+\tkzDrawLines[lightgray](o,P)
+\tkzDrawPoint(w)
+\tkzMarkRightAngle(w,P,c)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+\item  \textbf{The circle and the line intersect}
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+init_elements()
+z.o = point(0,1)
+z.a = point(1,3)
+C.oa = circle(z.o, z.a)
+z.c = point(-1,2)
+z.d = point(1,3)
+L.cd = line(z.c, z.d)
+C.OH = C.oa:inversion(L.cd)
+z.O, z.H = C.OH:get()
+L.inv = C.oa:inversion(C.OH)
+z.x, z.y = L.inv:get()
+C.inv  = C.OH:midcircle(L.cd)
+z.w, z.t = C.inv:get()
+z.P = L.cd:projection(z.o)
+z.T = intersection(C.inv,line(z.o,z.P))}
+\begin{center}
+\begin{tikzpicture}[scale=.75]
+\tkzGetNodes
+\tkzDrawCircles[blue](O,H)
+\tkzDrawCircles[red](w,t)
+\tkzDrawLines[blue,add = 2 and 1](c,d)
+\tkzDrawLines[lightgray](o,T)
+\tkzDrawPoint(w)
+\tkzMarkRightAngle(w,P,c)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+\item \textbf{The circle and the line are tangent}
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+init_elements()
+z.o = point(-1,1)
+z.a = point(1,3)
+C.oa = circle(z.o, z.a)
+z.c = point(3,2)
+z.d = point(0,4)
+L.cd = C.oa:tangent_at(z.a)
+C.OH = C.oa:inversion(L.cd)
+C.wt = C.OH:midcircle(L.cd)
+z.O, z.H = C.OH:get()
+z.w, z.t = C.wt:get()
+z.c, z.d = L.cd:get()}
+\begin{center}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawCircles[red](w,t)
+\tkzDrawCircles[blue](O,H)
+\tkzDrawLines[blue](c,d)
+\tkzDrawLines[lightgray](o,H)
+\tkzDrawPoint(w)
+\tkzMarkRightAngle(w,a,c)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+\end{enumerate}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

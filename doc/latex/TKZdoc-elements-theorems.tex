@@ -456,8 +456,6 @@ In geometry, the Soddy circles of a triangle are two circles associated with any
 \small
  \href{https://mathworld.wolfram.com/SoddyCircles.html}{ Weisstein, Eric W. "Soddy Circles." From MathWorld--A Wolfram Web Resource}
  \end{flushright}
- \small
-
 
 
 \subsubsection{Soddy circle without function}
@@ -679,11 +677,7 @@ end
 \end{verbatim}
 \end{mybox}
 
-
 \vspace{1em}
-
-
-
 \begin{tkzexample}[vbox]
   \directlua{
    init_elements()
@@ -734,4 +728,59 @@ When the first circle is the incircle then you get only 4 circles.
   \tkzDrawPoints(A,B,C)
   \end{tikzpicture}
 \end{tkzexample}
-\endinput
+
+\subsection{Circle-Point Midpoint Theorem}
+\label{thm:circle-point}
+Taking the locus of midpoints from a fixed point to a circle of radius r results in a circle of radius r/2.
+\begin{flushright}
+\small
+ \href{https://mathworld.wolfram.com/Circle-PointMidpointTheorem.html}{ Weisstein, Eric W. "Circle-Point Midpoint Theorem." From MathWorld--A Wolfram Resource. }
+ \end{flushright}
+
+\begin{tkzexample}[latex=.45\textwidth]
+ \directlua{
+ init_elements()
+ z.O = point(0, 0)
+ z.A = point(5, 1)
+ z.Ta = point(8, 2)
+ C.A = circle(z.A, z.Ta)
+ L.OA = line(z.O,z.A)
+ z.x, z.y = intersection(C.A, L.OA,{near=z.O})
+ C.A.through = z.y
+ z.m = tkz.midpoint(z.O, z.x)
+ z.n = tkz.midpoint(z.O, z.y)
+ z.w = tkz.midpoint(z.m, z.n)
+ PA.A = path()
+ PA.c = path()
+ for t = 0, 1 - 1e-12, 0.1 do
+   PA.A:add_point(C.A:point(t))
+   local m = tkz.midpoint(z.O, C.A:point(t))
+   PA.c:add_point(m)
+ end}
+
+\begin{center}
+  \begin{tikzpicture}[scale=.65]
+ \tkzGetNodes
+ \tkzDrawCircle(A,Ta)
+ \tkzDrawLine(O,A)
+ \tkzDrawPoints(O,A,m,n,w,x,y)
+ \tkzLabelPoints(O,A,m,n,w)
+ \tkzDrawCircle[red](w,n)
+ \tkzDrawPointsFromPath[red](PA.c)
+ \tkzDrawPointsFromPath[blue](PA.A)
+ \tkzDrawSegmentsFromPaths[draw,teal](PA.c,PA.A)
+ \tkzDrawFromPointToPath[orange](O,PA.A)
+ \end{tikzpicture}
+ \end{center}
+ \end{tkzexample}
+
+ Instead of |\tkzDrawFromPointToPath[orange](O,PA.A)|, possible is:
+
+\begin{verbatim}
+ \tkzPathCount(PA.A){N}
+  \foreach \i in {1,...,\N}{
+     \tkzGetPointFromPath(PA.A,\i){P\i}
+     \tkzDrawSegment[orange](O,P\i)
+    }
+ \end{verbatim}
+
