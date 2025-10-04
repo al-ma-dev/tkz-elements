@@ -20,9 +20,9 @@ function triangle:new(za, zb, zc)
 	local alpha = find_angle_(za, zb, zc)
 	local beta = find_angle_(zb, zc, za)
 	local gamma = find_angle_(zc, za, zb)
-	local ab = line(za, zb)
-	local ca = line(zc, za)
-	local bc = line(zb, zc)
+	local ab = line:new(za, zb)
+	local ca = line:new(zc, za)
+	local bc = line:new(zb, zc)
 	local semiperimeter = (a + b + c) / 2
 	local area = math.sqrt(semiperimeter * (semiperimeter - a) * (semiperimeter - b) * (semiperimeter - c))
 	local inradius = area / semiperimeter
@@ -517,8 +517,8 @@ function triangle:orthopole(l)
 	local ap, bp, cp = l:projection(self.pa, self.pb, self.pc)
 	local bpp = self.ca:projection(bp)
 	local app = self.bc:projection(ap)
-	local la = line(ap, app)
-	local lb = line(bp, bpp)
+	local la = line:new(ap, app)
+	local lb = line:new(bp, bpp)
 	return intersection(la, lb)
 end
 -------------------
@@ -891,15 +891,16 @@ function triangle:c_c(p, C)
 	local Lm = self:mediator(p)
 	local n = intersection(Lm, C)
 	local i = self.incenter
-	local m = line(c, i):reflection(n)
-	local L = line(c, m):parallel_from(i)
-	local Lac = line(a, c)
+	local m = line:new(c, i):reflection(n)
+	local L = line:new(c, m):parallel_from(i)
+	local Lac = line:new(a, c)
 	local e = intersection(L, Lac)
-	local Lia = line(i, a)
+	local Lia = line:new(i, a)
 	local Le = Lac:orthogonal_from(e)
 	return circle(intersection(Lia, Le), e)
 end
 triangle.thebault = triangle.c_c
+
 
 function triangle:three_tangent_circles()
 	local i = self.incenter

@@ -81,7 +81,7 @@ z.A = point(0, 0)
 z.B = point(3, 1)
 z.C = point(1, 3)
 T.ABC = triangle(z.A, z.B, z.C)
-z.G = T.ABC:barycentric(1,1,1)
+z.G = T.ABC:barycentric(1, 1, 1)
 z.H = T.ABC:barycentric(math.tan(T.ABC.alpha),
                         math.tan(T.ABC.beta),
                         math.tan(T.ABC.gamma))}

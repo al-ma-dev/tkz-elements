@@ -35,9 +35,9 @@ It is preferable to use methods—or better yet, object attributes—rather than
 
 For example, to determine the midpoint of a segment $AB$, iit was previously possible to write:
 
-|z.m = midpoint (z.A,z.B)|.  This is now considered incorrect: you must use
+|z.m = midpoint(z.A, z.B)|.  This is now considered incorrect: you must use
 
-|z.m = tkz.midpoint (z.A,z.B)|.
+|z.m = tkz.midpoint(z.A, z.B)|.
 
 However, the recommended approach is to define the segment first with:
 
@@ -127,8 +127,8 @@ If a point’s name ends in |p| (like Bp),  then when passing into \tkzNamePack{
 Examples of valid naming:
 \begin{mybox}
 \begin{itemize}
-   \item |z.A = point(1,2)|
-   \item |z.Bp = point(3,4)|  --> this gives |B'| in the \tkzEnv{tikz}{tikzpicture}
+   \item |z.A = point(1, 2)|
+   \item |z.Bp = point(3, 4)|  --> this gives |B'| in the \tkzEnv{tikz}{tikzpicture}
    \item |z.H_a = T.ABC:altitude ()| --> this gives |H_a| in the \tkzEnv{tikz}{tikzpicture} code and $H_a$ in math display.
 
    \item |z.euler = T.ABC.eulercenter|

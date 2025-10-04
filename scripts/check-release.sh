@@ -11,7 +11,7 @@ CHECK_FILES=(
   "README.md"
   "CHANGELOG.md"
 )
-  
+
 # Motifs de scripts autorisés exécutables
 EXEC_GLOBS=("*.sh" "*.zsh" "scripts/*.sh" "scripts/*.zsh")
 
@@ -21,7 +21,8 @@ PRUNE_DIRS=(.git)
 # ---------- Utils ----------
 die() { print -r -- "Error: $*" >&2; exit 1; }
 
-perm_of() { stat -f "%Mp%Lp" "$1" }  # macOS ; sous Linux: stat -c "%a"
+# macOS : permissions octales pures (ex: 755). (Sous Linux: stat -c "%a")
+perm_of() { stat -f "%OLp" "$1" }
 
 require_nonempty() {
   local v="$1" msg="$2"

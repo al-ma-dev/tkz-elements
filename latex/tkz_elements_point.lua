@@ -79,13 +79,6 @@ local min = math.min
 local max = math.max
 local abs = math.abs
 
--- local function topoint(z1)
---   if type(z1) == "number" then
---     return point(z1, 0)
---   else
---     return z1
---   end
--- end
 
 local function is_point(obj)
 	if type(obj) ~= "table" then
@@ -107,7 +100,7 @@ local function topoint(z)
 	elseif type(z) == "number" then
 		return point(z, 0)
 	elseif type(z) == "table" and type(z.re) == "number" and type(z.im) == "number" then
-		return point(z) -- c'est géré dans le constructeur
+		return point(z) -- It is managed in the constructor.
 	else
 		tex.error("topoint: cannot convert value to point")
 	end
@@ -289,8 +282,8 @@ function point.sqrt(z)
 	return point(math.sqrt((cx.re + len) / 2), sign * math.sqrt((len - cx.re) / 2))
 end
 
--- methods ---
-
+-- ============= methods =========--
+-- the result is a point
 function point:new(a, b)
 	return point(a, b)
 end
@@ -321,6 +314,55 @@ end
 function point:west(d)
 	local d = d or 1
 	return self + polar_(d, math.pi)
+end
+
+function point:normalize()
+	local d = point.abs(self)
+	return point(self.re / d, self.im / d)
+end
+
+function point:normalize_from(p)
+	local u = (self - p)
+	local d = point.abs(u)
+	return point(u.re / d, u.im / d) + p
+end
+
+function point:identity(pt)
+	return point.abs(self - pt) < tkz.epsilon
+end
+
+function point:orthogonal(d)
+	local m
+	if d == nil then
+		-- If no scaling factor d is provided, return the point rotated 90 degrees counterclockwise
+		return point(-self.im, self.re)
+	else
+		m = point.mod(self) -- Get the modulus (magnitude) of the current point
+		return point(-self.im * d / m, self.re * d / m) -- Return the scaled orthogonal point
+	end
+end
+
+function point:at(z)
+	return point(self.re + z.re, self.im + z.im)
+end
+
+function point:print()
+	tex.print(tostring(self))
+end
+
+-- Shift the current point A orthogonally to the direction (AB)
+-- by a distance "dist"
+function point:shift_orthogonal_to(B, dist)
+	local v = B - self             -- vecteur AB
+	local n = v:orthogonal(dist)   -- vecteur normal de norme "dist"
+	return n:at(self)              -- applique le décalage à A
+end
+
+-- Shift the current point A along the direction (AB)
+-- by a distance "dist"
+function point:shift_collinear_to(B, dist)
+	local v = (B - self):normalized()
+	return self + v*dist
 end
 -- ----------------------------------------------------------------
 -- transformations
@@ -417,36 +459,4 @@ function point:homothety(coeff, ...)
 	end
 end
 
-function point:normalize()
-	local d = point.abs(self)
-	return point(self.re / d, self.im / d)
-end
 
-function point:normalize_from(p)
-	local u = (self - p)
-	local d = point.abs(u)
-	return point(u.re / d, u.im / d) + p
-end
-
-function point:identity(pt)
-	return point.abs(self - pt) < tkz.epsilon
-end
-
-function point:orthogonal(d)
-	local m
-	if d == nil then
-		-- If no scaling factor d is provided, return the point rotated 90 degrees counterclockwise
-		return point(-self.im, self.re)
-	else
-		m = point.mod(self) -- Get the modulus (magnitude) of the current point
-		return point(-self.im * d / m, self.re * d / m) -- Return the scaled orthogonal point
-	end
-end
-
-function point:at(z)
-	return point(self.re + z.re, self.im + z.im)
-end
-
-function point:print()
-	tex.print(tostring(self))
-end

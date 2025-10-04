@@ -1,3 +1,26 @@
+## [2025/10/04 version 4.30c]
+### Added
+- **circle**:
+  - `in_disk` same as `in_out_disk`
+  - `on_circle` same as `in_out`
+  - `in_disk_strict`
+  - `out_disk_strict`
+- **line**
+  - `side_line` This method assigns a value of -1, 0, or 1 to a given point depending on its position in the plane relative to the line.
+  - `on_line` = `in_out_line`
+  - `on_segment` = `in_out_segment`
+### Changed
+- **circle**
+  - `common_tangent` Complete rewriting of the procedure, which now takes into account the position of circles and, above all, adds an option to choose between external tangents and internal tangents when they exist.
+  - `c_cc_p` Complete rewriting of the procedure. You can use an "external" or "internal" option to determine whether solution circles exist. The method takes into account the relative position of the circles.
+- **line**
+  - `c_ll_p(L, p)` now has a line and a point as its argument.
+
+### Docs
+- Correction of typography.
+- Adjusting documentation for new methods.
+- Rewriting of numerous method presentations.
+
 ## [2025/09/24 version 4.25c]
 ### Added
 - **path**:
@@ -11,11 +34,11 @@
 
 ### Changed
 - **Source structure**: Removed version numbers and dates from each `tkz_elements_xxx.lua` file.
-	The official version and release date are now maintained **only** in:
-	- `tkz-elements.sty` (for LaTeX users),
-	- `README.md`,
-	- `CHANGELOG.md`,
-	- `doc/tkz-elements.pdf`.
+  The official version and release date are now maintained **only** in:
+  - `tkz-elements.sty` (for LaTeX users),
+  - `README.md`,
+  - `CHANGELOG.md`,
+  - `doc/tkz-elements.pdf`.
 - **occs**: The `coordinates` method now returns numbers instead of strings (removed `checknumber_`).
 - **path**: Improved `get_number_path` method.
 
@@ -39,14 +62,14 @@
 ## [4.20c] — 2025-09-17
 ### Added
 - **triangle**: `thebault/c_c` (Thébault’s problem III), `poncelet_point`, `orthopole(L)`,
-	`mixtilinear_incircle`, `three_tangent_circles`, `morley`, `soddy`, `napoleon`.
+  `mixtilinear_incircle`, `three_tangent_circles`, `morley`, `soddy`, `napoleon`.
 - **quadrilateral**: support for orthopole via helper function `tkz.orthopole(a, b, c, l)`.
 
 ### Changed
 - **circle**: improved `common_tangent`, `orthogonal_through`, `orthogonal_from`, `c_cc_p`.
 - **line**: improved `distance`.
 - **triangle**: rewrites of `symmedian_line`, `altitude`, `bisector`, `bisector_ext`,
-	`mediator`, `ex_circle`, `reflection`.
+  `mediator`, `ex_circle`, `reflection`.
 
 ### Fixed
 - **circle**: `common_tangent` correctness issues.

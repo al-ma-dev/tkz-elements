@@ -7,8 +7,12 @@ function length_(a, b)
 	return point.abs(a - b)
 end
 
-function distance_(L, pt)
-	return point.mod(projection_(L.pa, L.pb, pt) - pt)
+function distance_(a, b, pt)
+	return point.mod(projection_(a, b, pt) - pt)
+end
+
+function line_in_out_(a, b, pt)
+	return math.abs((pt - a) ^ (pt - b)) <= tkz.epsilon
 end
 ---------------------------------------------------------------------------
 --                 Lines

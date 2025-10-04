@@ -52,9 +52,8 @@ function utils.format_point(z, decimals)
 end
 
 -- Compare two numbers with tolerance.
-function utils.almost_equal(a, b, eps)
-	eps = eps or tkz.epsilon
-	return math.abs(a - b) < eps
+function utils.almost_equal(a, b)
+	return math.abs(a - b) < tkz.epsilon
 end
 
 -- Print formatted message to terminal and log.

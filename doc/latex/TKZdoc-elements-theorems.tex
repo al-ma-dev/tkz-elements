@@ -649,10 +649,11 @@ The file \code{lua/search\_circle.lua} used in this example:
  local r = ...
 
  function newcircle(T, C)
- 	local NT, L, NC, c, t
+ 	local NT, NC, c, t
  	NT = T.incenter:homothety((1 + C.radius / T.inradius), T)
- 	L = line(NT.pb, NT.pa)
- 	_, NC = L:c_ll_p(NT.pc, C.center)
+ 	local Lba = line(NT.pb, NT.pa)
+  Lbc = line(NT.pb, NT.pc)
+ 	_, NC = Lba:c_ll_p(Lbc, C.center)
  	return NC.center, T.bc:projection(NC.center)
  end
 

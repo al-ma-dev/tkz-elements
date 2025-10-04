@@ -345,8 +345,8 @@ function tkz.orthopole(a, b, c, l)
 	local ap, bp, cp = l:projection(a, b, c)
 	local bpp = self.ca:projection(bp)
 	local app = self.bc:projection(ap)
-	local la = line(ap, app)
-	local lb = line(bp, bpp)
+	local la = line:new(ap, app)
+	local lb = line:new(bp, bpp)
 	return intersection(la, lb)
 end
 

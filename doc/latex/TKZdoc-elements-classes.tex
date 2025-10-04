@@ -114,7 +114,7 @@ Attributes are accessed using the standard method. For example, |T.pc| retrieves
 
 \vspace{1em}
 \noindent
-  \textbf{Example}: |z.O,z.T = C.OT:get()| retrieves the center and a point of the circle.
+  \textbf{Example}: |z.O, z.T = C.OT:get()| retrieves the center and a point of the circle.
 
 \subsubsection{Methods}
 \label{ssub:methods}
@@ -126,18 +126,18 @@ Example:   The point object is used to vertically determine a new point object l
 \begin{verbatim}
 \directlua{
       init_elements()
-      z.A = point(1,0)
-      z.B = z.A:north (2)
-      z.C = z.A:rotation (math.pi/3,z.B)
+      z.A = point(1, 0)
+      z.B = z.A:north(2)
+      z.C = z.A:rotation (math.pi / 3, z.B)
       tex.print(tostring(z.C))
 }
 \end{verbatim}
 
 \directlua{
    init_elements()
-   z.A = point (1,0)
-   z.B = z.A : north (2)
-   z.C = z.A : rotation (math.pi/3,z.B)
+   z.A = point(1, 0)
+   z.B = z.A:north(2)
+   z.C = z.A:rotation(math.pi / 3, z.B)
    tex.print(tostring("The coordinates of $C$ are: " .. z.C.re .." and "..z.C.im))
 }
 \endinput

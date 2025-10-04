@@ -154,16 +154,19 @@ The circle class offers a wide range of methods, which can be grouped according 
 
   \tkzMeth{circle}{power(pt)}& \ref{sub:apollonius_circle_v1_with_inversion}; \ref{ssub:power} ] \\
   \midrule
-   \textbf{Strings} &\\
-   \midrule
-
-   \tkzMeth{circle}{circles\_position(C1)}  & [\ref{ssub:circles_position}] \\
-   \midrule
-   \textbf{Booleans} &\\
+  \textbf{Strings} &\\
+  \midrule
+  \tkzMeth{circle}{circles\_position(C1)}  & [\ref{ssub:circles_position}] \\
+  \midrule
+  \textbf{Booleans} &\\
   \midrule
 
-  \tkzMeth{circle}{in\_out(pt)}  & [\ref{ssub:in_out_for_circle_and_disk}]  \\
-  \tkzMeth{circle}{in\_out\_disk(pt)}  & [\ref{ssub:in_out_for_circle_and_disk}]  \\
+  \tkzMeth{circle}{in\_out(pt)} &  [\ref{ssub:in_out_for_circle_and_disk}]  \\
+  \tkzMeth{circle}{in\_out\_disk(pt)} &  [\ref{ssub:in_out_for_circle_and_disk}] \\
+  \tkzMeth{circle}{on\_circle(pt)} & idem \\
+  \tkzMeth{circle}{in\_disk(pt)} & idem \\
+  \tkzMeth{circle}{in\_disk\_strict(pt)} & idem \\
+  \tkzMeth{circle}{out\_disk\_strict(pt)} & idem \\
   \tkzMeth{circle}{is\_tangent(L)} & [\ref{ssub:method_circle_is__tangent}]  \\
 
   \textbf{Points} &\\
@@ -182,9 +185,20 @@ The circle class offers a wide range of methods, which can be grouped according 
   \tkzMeth{circle}{radical\_axis(C)} &   [ \ref{ssub:method_circle_radical__axis_c} ; \ref{sub:d_alembert_2}; \ref{par:radical_axis_v1}; \ref{par:radical_axis_v2}; \ref{par:radical_axis_v3}; \ref{par:radical_axis_v4} ]  \\
   \tkzMeth{circle}{tangent\_at(pt)} &  [\ref{ssub:method_circle_tangent__at_pt}] \\
   \tkzMeth{circle}{tangent\_from(pt)}&  [\ref{ssub:method_circle_tangent__from_pt}] \\
+ \tkzMeth{circle}{tangent\_parallel(L)}&  [\ref{ssub:method_circle_tangent_parallel}] \\
+
   \tkzMeth{circle}{common\_tangent(C)}&  [\ref{ssub:common_tangent} ; \ref{sub:common_tangent_orthogonality}] \\
   \tkzMeth{circle}{polar()} & [\ref{ssub:method_circle_polar_pt}] \\
-  \midrule
+   \bottomrule
+    \end{tabular}
+  \egroup
+
+\newpage
+  \bgroup
+  \small
+  \captionof{table}{Circle methods.}\label{circle:methods 2}
+  \begin{tabular}{ll}
+  \toprule
    \textbf{Circles}&\\
   \midrule
   \tkzMeth{circle}{orthogonal\_from(pt)}   & [\ref{ssub:method_circle_orthogonal_from_pt} ;\ref{sub:altshiller} ; \ref{sub:pencil_v1}]  \\
@@ -503,7 +517,6 @@ Example:
 \subsubsection{Method \tkzMeth{circle}{in\_out} for circle and disk}
 \label{ssub:in_out_for_circle_and_disk}
 
-
 These two methods determine the position of a point relative to a circle or the closed disk it defines.
 
 \medskip
@@ -521,9 +534,21 @@ Given a point and a circle \code{C}, the result is a string among the following 
   \item \code{in\_out\_disk()} treats the boundary as inside: it returns only \code{"in"} or \code{"out"}.
 \end{itemize}
 
+For circles and disks, different methods allow you to check the relative position of a point.
+The general method \code{in\_out(p)} is shared with other objects: it simply returns whether the point lies on the boundary or outside/inside.
+In addition, a few specialized methods are provided for circles:
+
+\begin{itemize}
+ \item \code{on\_circle(p)} Same as \code{in\_out(p)}   restricted to the boundary.
+ It returns true only if the point lies on the circle (distance to the center equal to the radius within tolerance).
+ \item \code{in\_disk(p)}   Same as \code{in\_out\_disk(p)} (legacy alias).
+ It returns true if the point is inside or on the closed disk, otherwise false.
+ \item \code{in\_disk\_strict(p)}   Returns true only if the point lies strictly inside the disk (distance to the center < radius). Points on the boundary are excluded.
+ \item \code{out\_disk\_strict(p)}   Returns true only if the point lies strictly outside the disk (distance to the center > radius).
+ Points on the boundary are excluded.
+\end{itemize}
+
 \vspace{1em}
-
-
 
 \begin{verbatim}
 \directlua{
@@ -1164,11 +1189,102 @@ This construction is useful in many classical geometric configurations (radical 
 \end{tkzexample}
 \end{minipage}
 
+\subsubsection{Method \tkzMeth{circle}{tangent\_parallel(line)}}
+\label{ssub:method_circle_tangent_parallel}
+This method constructs the two tangents to a circle that are \emph{parallel} to a given direction (provided as a line).
+\medskip
+\noindent
+Each tangent is returned as a straight line segment centered at its point of contact with the circle. For convenience of drawing and labeling, the two endpoints of every tangent segment are placed symmetrically at equal distances from the contact point.
+\medskip
+\noindent
+
+\begin{verbatim}
+ L1, L2 = C:tangent_parallel(Ldir)
+\end{verbatim}
+
+\begin{tkzexample}[latex = .5\textwidth]
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(4, 4)
+ L.AB = line(z.A, z.B)
+ z.O = point(3, -2)
+ z.T = point(3, 0)
+ C.OT = circle(z.O, z.T)
+ L.T1, L.T2 = C.OT:tangent_parallel(L.AB)
+ z.x, z.y = L.T1:get()
+ z.u, z.v = L.T2:get()
+ z.M = L.T1.mid
+ z.N = L.T2.mid}
+\begin{center}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawCircle(O,T)
+\tkzDrawLines(A,B x,y u,v)
+\tkzDrawPoints(O,A,B,M,N)
+\tkzLabelPoints(O,A,B,M,N)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+
 \subsubsection{Method \tkzMeth{circle}{commun\_tangent(C)}}
 \label{ssub:common_tangent}
 
-This method constructs a \textbf{common tangent} to two given circles.
+This method constructs a \textbf{common tangent} to two circles.
+It used to return only external tangents; the new version supports three options for \verb|mode|:
+\verb|"external"| (default), \verb|"internal"|, and \verb|"both"|.
+The number of solutions depends on the relative position of the circles and ranges from 0 to 4.
+\medskip
+\noindent
+Typical cases:
+\begin{itemize}
+\small
+\item \textbf{Disjoint (separate) circles:} 4 tangents (2 external, 2 internal).
+\item \textbf{Externally tangent circles (touch at one point):} 3 tangents (2 external, 1 internal).
+\item \textbf{Intersecting circles (two crossings):} 2 tangents (both external).
+\item \textbf{Internally tangent circles (one inside, touching):} 1 tangent (external).
+\item \textbf{One circle strictly contained in the other (no contact):} 0 tangents.
+\end{itemize}
+\noindent
+Notes and conventions:
+\begin{itemize}
+\item \verb|mode="external"| returns the external common tangents; \verb|mode="internal"| returns the internal ones.
+\item Degenerate cases are handled explicitly: coincident circles yield infinitely many common tangents (undefined), concentric circles with distinct radii yield none.
+\item When radii are equal and circles are disjoint, there are still 4 tangents; the external homothety center is at infinity, which may influence the construction method but not the result.
+\end{itemize}
 
+\medskip
+\noindent
+
+\begin{tkzexample}[latex=.45\textwidth]
+\directlua{
+init_elements()
+z.A = point(0, 0)
+z.a = point(4, 0)
+z.B = point(6, 0)
+z.b = point(5, 0)
+C.Aa = circle(z.A, z.a)
+C.Bb = circle(z.B, z.b)
+L.Tx, L.Ty = C.Aa:common_tangent(C.Bb,"external")
+z.x, z.y = L.Tx:get()
+z.xp, z.yp = L.Ty:get()
+L.Tu, L.Tv = C.Aa:common_tangent(C.Bb,"internal")
+z.u, z.v = L.Tu:get()
+z.up, z.vp = L.Tv:get()}
+
+\begin{center}
+\begin{tikzpicture}[scale =.5]
+  \tkzGetNodes
+  \tkzDrawCircles(A,a B,b)
+  \tkzDrawLines[red](x,y x',y' u,v u',v')
+  \tkzDrawPoints(x,y,x',y',u,v,u',v')
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+
+\textbf{Application}
 \medskip
 \noindent
 Let $T$ and $T'$ be the points of tangency of a common external tangent to two circles, chosen such that $T$ lies on the first circle and $T'$ on the second, both on the same side. Consider a secant parallel to this tangent passing through a fixed point $C$ (typically the center of one of the circles).
@@ -1184,7 +1300,7 @@ This elegant geometric relationship is used in the construction of tangents and 
 \vspace{1em}
 
 
-\begin{minipage}{.6\textwidth}
+\begin{minipage}{.5\textwidth}
 \directlua{
 init_elements()
 z.A = point(0 , 0 )
@@ -1211,12 +1327,14 @@ _, z.D = intersection(C.AC,C.BC)}
   \tkzDrawPoints(A,B,C,D,M,M',T,T')
   \tkzLabelPoints(A,B,D,M)
   \tkzLabelPoints[above](C,M',T,T')
-  \tkzMarkAngles[mark=|,size=.75](T,C,M C,T,T' C,D,T T,D,M)
-  \tkzMarkAngles[mark=||,size=.75](M',C,T' T,T',C T',D,C M',D,T')
-  \end{tikzpicture}
+  \tkzMarkAngles[mark=|,size=.75](T,C,M C,T,T'
+       C,D,T T,D,M)
+  \tkzMarkAngles[mark=||,size=.75](M',C,T' T,T',C
+       T',D,C M',D,T')
+\end{tikzpicture}
 \end{center}
 \end{minipage}
-\begin{minipage}{.4\textwidth}
+\begin{minipage}{.5\textwidth}
 \begin{tkzexample}[code only]
 \directlua{
 init_elements()
@@ -1770,11 +1888,11 @@ This construction plays a key role in advanced configurations such as coaxal sys
 
 \medskip
 \noindent
-The name \code{c\_c\_pp} stands for:
+\paragraph*{Purpose}
+Construct the circle(s) tangent to a given circle (the receiver \verb|self|) and passing through two given points a and b.
 
-\begin{center}
-\textbf{c}ircle tangent to one \textbf{c}ircle and passing through two \textbf{p}oints.
-\end{center}
+The name \verb|c_c_pp| stands for: \emph{circle tangent to one \underline{c}ircle and passing through two \underline{p}oints}.
+
 
 \noindent
 This method computes one or two solution circles that satisfy these conditions.
@@ -1782,7 +1900,18 @@ However, a solution exists only if both points are on the same side of the given
 
 \medskip
 \noindent
-If one point lies inside and the other outside the given circle, then \textbf{no solution exists}.
+\paragraph*{Parameters}
+\begin{itemize}
+\item \verb|a|, \verb|b| — two points that each solution circle must pass through.
+\end{itemize}
+
+\medskip
+\noindent
+\paragraph*{Returns}
+Two circles (C1,C2)(C1,C2). In limiting cases (e.g.\ tangency), these two results may coincide.
+\paragraph*{Existence condition (necessary \& sufficient in this context)}
+A solution exists \textbf{only if} both points a and b are on the \emph{same side} of the given circle (both inside its disk, or both outside).
+If one point lies inside the disk and the other outside, \verb|c_c_pp| raises an error (no solution).
 
 \vspace{1em}
 
@@ -1922,49 +2051,6 @@ Special case: the two points are equidistant from the center of the circle
 \end{tkzexample}
 \end{minipage}
 
-The line $(AB)$ is tangent to the circle. Only one circle answers the question.
-
-\begin{minipage}{.5\textwidth}
-\directlua{
- init_elements()
- z.A = point(1,5)
- z.B = point(1,-3)
- z.O = point(0,0)
- z.C = point(1,0)
- L.AB = line(z.A, z.B)
- C.OC = circle(z.O, z.C)
- C1,C2 = C.OC:c_c_pp(z.A, z.B)
- z.O1 = C1.center
- z.T1 = C1.through
- z.O2 = C2.center
- z.T2 = C2.through}
-\begin{tikzpicture}[scale =.5]
- \tkzGetNodes
- \tkzDrawLines[red](A,B)
- \tkzDrawCircles[red](O,C)
- \tkzDrawPoints(A,B,C,O)
- \tkzDrawCircles[cyan](O1,T1 O2,T2)
- \tkzLabelPoints(O,C,A,B)
-\end{tikzpicture}
-\end{minipage}
-\begin{minipage}{.5\textwidth}
-\begin{tkzexample}[code only]
-\directlua{
- init_elements()
- z.A = point(1,5)
- z.B = point(1,-3)
- z.O = point(0,0)
- z.C = point(1,0)
- L.AB = line(z.A, z.B)
- C.OC = circle(z.O, z.C)
- C1,C2 = C.OC:c_c_pp(z.A, z.B)
- z.O1 = C1.center
- z.T1 = C1.through
- z.O2 = C2.center
- z.T2 = C2.through}
-\end{tkzexample}
-\end{minipage}
-
 
 Another special case occurs when the straight line $(AB)$ is tangent to the initial circle, and it's even possible for points $A$ and $B$ to be equidistant from the center and for the straight line to be tangent to the circle. Here too, a single circle answers the question
 
@@ -1982,14 +2068,16 @@ Another special case occurs when the straight line $(AB)$ is tangent to the init
  z.T1 = C.one.through
  z.O2 = C.two.center
  z.T2 = C.two.through}
- \begin{tikzpicture}
+\begin{center}
+\begin{tikzpicture}[scale = .75]
    \tkzGetNodes
    \tkzDrawLines[red](A,B)
    \tkzDrawCircles[red](O,C)
    \tkzDrawPoints(A,B,C,O)
    \tkzDrawCircles[cyan](O1,T1 O2,T2)
    \tkzLabelPoints(O,C,A,B)
- \end{tikzpicture}
+\end{tikzpicture}
+ \end{center}
 \end{minipage}
 \begin{minipage}{.5\textwidth}
 \begin{tkzexample}[code only]
@@ -2009,9 +2097,12 @@ Another special case occurs when the straight line $(AB)$ is tangent to the init
 \end{tkzexample}
 \end{minipage}
 
-\subsubsection{Method \tkzMeth{circle}{c\_cc\_p}}
+\subsubsection{Method \tkzMeth{circle}{c\_cc\_p(C,p[,mode])}}
 \label{ssub:method_c_cc_p}
 \textbf{Circle tangent to two given circles and passing through a point.}
+
+This method constructs 0, 2, or 4 circles depending on the configuration, passing through a given point $p$ and tangent to two given circles.
+
 
 \medskip
 \noindent
@@ -2023,32 +2114,39 @@ The name \code{c\_cc\_p} stands for:
 
 \medskip
 \noindent
-This method constructs one (or possibly two) circles that are tangent to two given circles and pass through a specified point~$P$.
+The general problem may admit up to four solutions: two circles tangent along the \emph{external} common tangents, and two circles tangent along the \emph{internal} common tangents.
+For convenience, the method accepts an option:
+
+\begin{itemize}
+  \item \code{"external"} (default): returns the two solutions associated with the external tangents,
+  \item \code{"internal"}: returns the two solutions associated with the internal tangents.
+\end{itemize}
+
 
 \medskip
 \noindent
-Let us first consider the general case where:
+\textbf{Special cases:}
 \begin{itemize}
-  \item the two given circles are disjoint,
-  \item and the point $P$ lies outside both of them.
-\end{itemize}
-
-\noindent
-In this configuration:
-\begin{itemize}
-  \item there exist two solution circles,
-  \item both are tangent to the two original circles,
-  \item both pass through the point $P$,
-  \item and they intersect at $P$ and another point, which is determined via a \emph{similitude construction}.
+  \item If the point $p$ lies strictly inside or outside both disks, up to four solutions exist in total (two external, two internal).
+  \item If $p$ lies on the circumference of one of the given circles, then $p$ is already a contact point; only two solutions remain.
+  \item If $p$ lies simultaneously on both circles (intersection points), the configuration is degenerate and usually no non-trivial solution exists.
 \end{itemize}
 
 \medskip
 \noindent
-This general setup gives rise to an elegant and classical special case: the \textbf{Arbelos configuration}. In this scenario, the solution circles are not only tangent to the two given circles and pass through $P$, but are also tangent to each other at $P$. One of these is the well-known \textbf{Pappus circle}.
+\textbf{Syntax:}
 
-\vspace{1em}
+\begin{verbatim}
+C1, C2 = C.A:c_cc_p(C.B, p)              -- external solutions
+C3, C4 = C.A:c_cc_p(C.B, p, "internal")  -- internal solutions
+\end{verbatim}
 
-\begin{minipage}{.5\textwidth}
+\medskip
+\noindent
+\textbf{Examples usage:}
+
+
+\begin{tkzexample}[latex=.5\textwidth]
 \directlua{
   init_elements()
   z.A = point(0, 0)
@@ -2058,215 +2156,113 @@ This general setup gives rise to an elegant and classical special case: the \tex
   z.P = point(3, 6)
   C.A = circle(z.A, z.TA)
   C.B = circle(z.B, z.TB)
-  C.one,C.two= C.A:c_cc_p(C.B, z.P)
+  C.one,C.two = C.A:c_cc_p(C.B,
+    z.P,"external")
   z.O1 = C.one.center
   z.T1 = C.one.through
   z.O2 = C.two.center
-  z.T2 = C.two.through}
-\begin{tikzpicture}[scale =.75]
+  z.T2 = C.two.through
+  C.three,C.four = C.A:c_cc_p(C.B,
+    z.P,"internal")
+  z.O3 = C.three.center
+  z.T3 = C.three.through
+  z.O4 = C.four.center
+  z.T4 = C.four.through}
+\begin{center}
+  \begin{tikzpicture}[scale =.5]
  \tkzGetNodes
  \tkzDrawCircles[thick](A,TA B,TB)
  \tkzDrawCircles[red](O1,T1 O2,T2)
- \tkzDrawPoints(A,B,O1,O2)
- \tkzLabelPoints(A,B)
+ \tkzDrawCircles[blue](O3,T3 O4,T4)
  \tkzDrawPoints[size=3](P)
  \tkzLabelPoints[above](P)
 \end{tikzpicture}
-\end{minipage}
-\begin{minipage}{.5\textwidth}
-\begin{tkzexample}[code only]
-\directlua{
-  init_elements()
-  z.A = point(0, 0)
-  z.TA = point(3, 0)
-  z.B = point(6, 2)
-  z.TB = point(6, 1)
-  z.P = point(3, 6)
-  C.A = circle(z.A, z.TA)
-  C.B = circle(z.B, z.TB)
-  C.one,C.two = C.A:c_cc_p(C.B, z.P)
-  z.O1 = C.one.center
-  z.T1 = C.one.through
-  z.O2 = C.two.center
-  z.T2 = C.two.through}
+\end{center}
 \end{tkzexample}
-\end{minipage}
 
 \vspace{1em}
-The first special case involves two given tangent circles. The point $P$ is not the point of tangency of the Pappus circle.
-
-\vspace{1em}
-
-\begin{minipage}{.5\textwidth}
+\begin{tkzexample}[latex = .5\textwidth]
 \directlua{
-  init_elements()
-  z.A = point(0, 0)
-  z.TA = point(2, 0)
-  z.B = point(3, 0)
-  z.TB = point(2, 0)
-  z.P = point(3, 4)
-  C.A = circle(z.A, z.TA)
-  C.B = circle(z.B, z.TB)
-  C.one,C.two = C.A:c_cc_p(C.B, z.P)
-  z.O1 = C.one.center
-  z.T1 = C.one.through
-  z.O2 = C.two.center
-  z.T2 = C.two.through}
-\begin{tikzpicture}
+z.A = point(0, 0)
+z.TA = point(3, 0)
+z.B = point(4, 0)
+L.AB = line(z.A, z.B)
+z.TB = point(6, 0)
+C.A = circle(z.A, z.TA)
+C.B = circle(z.B, z.TB)
+z.P = point(3.45, 0.5)
+z.X, z.Y = intersection(C.A,C.B)
+C.S1, C.S2 = C.A:c_cc_p(C.B, z.P)
+z.wa, z.ta = C.S1:get()
+z.wb, z.tb = C.S2:get()}
+\begin{center}
+\begin{tikzpicture}[scale=.5]
 \tkzGetNodes
-\tkzDrawCircles[thick](A,TA B,TB)
-\tkzDrawCircles[red](O1,T1 O2,T2)
-\tkzDrawPoints(A,B,O1,O2)
-\tkzDrawPoints[size = 3](P)
-\tkzLabelPoints(A,B)
-\tkzLabelPoints[above](P)
+\tkzDrawCircles(A,TA B,TB)
+\tkzDrawCircles[red](wa,ta wb,tb)
+ \tkzDrawPoints(P)
 \end{tikzpicture}
-\end{minipage}
-\begin{minipage}{.5\textwidth}
-\begin{tkzexample}[code only]
-\directlua{
-  init_elements()
-  z.A = point(0, 0)
-  z.TA = point(2, 0)
-  z.B = point(3, 0)
-  z.TB = point(2, 0)
-  z.P = point(3, 4)
-  C.A = circle(z.A, z.TA)
-  C.B = circle(z.B, z.TB)
-  C.one,C.two = C.A:c_cc_p(C.B, z.P)
-  z.O1 = C.one.center
-  z.T1 = C.one.through
-  z.O2 = C.two.center
-  z.T2 = C.two.through}
+\end{center}
 \end{tkzexample}
-\end{minipage}
 
-\vspace{1em}
-Here's the Arbelos configuration
-
-\vspace{1em}
-\begin{minipage}{.5\textwidth}
-\directlua{
-  init_elements()
-  z.A = point(0, 0)
-  z.TA = point(2, 0)
-  z.B = point(3, 0)
-  z.TB = point(2, 0)
-  C.A = circle(z.A, z.TA)
-  C.B = circle(z.B, z.TB)
-  z.I = C.A:external_similitude(C.B)
-  z.TD = C.B:antipode(z.TB)
-  z.TE =  C.A:antipode(z.TA)
-  z.O = tkz.midpoint(z.TD, z.TE)
-  C.O = circle(z.O, z.TD)
-  z.P = C.O:tangent_from(z.I).pb
-  C.one,C.two = C.A:c_cc_p(C.B, z.P)
-  z.O1 = C.one.center
-  z.T1 = C.one.through
-  z.O2 = C.two.center
-  z.T2 = C.two.through}
-\begin{tikzpicture}
-\tkzGetNodes
-\tkzDrawCircles[thick](A,TA B,TB)
-\tkzDrawCircles[red](O1,T1 O2,T2)
-\tkzDrawPoints(A,B,O1,O2)
-\tkzLabelPoints(A,B)
-\tkzDrawPoints[size=3](P)
-\tkzLabelPoints[above](P)
-\end{tikzpicture}
-\end{minipage}
-\begin{minipage}{.5\textwidth}
-\begin{tkzexample}[code only]
-\directlua{
-  init_elements()
-  z.A = point(0, 0)
-  z.TA = point(2, 0)
-  z.B = point(3, 0)
-  z.TB = point(2, 0)
-  C.A = circle(z.A, z.TA)
-  C.B = circle(z.B, z.TB)
-  z.I = C.A:external_similitude(C.B)
-  z.TD = C.B:antipode(z.TB)
-  z.TE =  C.A:antipode(z.TA)
-  z.O = tkz.midpoint(z.TD, z.TE)
-  C.O = circle(z.O, z.TD)
-  z.P = C.O:tangent_from(z.I).pb
-  C.one,C.two = C.A:c_cc_p(C.B, z.P)
-  z.O1 = C.one.center
-  z.T1 = C.one.through
-  z.O2 = C.two.center
-  z.T2 = C.two.through}
-\end{tkzexample}
-\end{minipage}
-
-\vspace{1em}
-If the point $P$ is not the contact point of the Pappus circle, we return to the general case.
-
-\vspace{1em}
-\begin{minipage}{.5\textwidth}
-\directlua{
-  init_elements()
-  z.A = point(0 , 0 )
-  z.TA = point(2 , 0 )
-  z.B = point( 3, 0 )
-  z.TB = point( 2, 0 )
-  C.A = circle(z.A, z.TA)
-  C.B = circle(z.B, z.TB)
-  z.I = C.A:external_similitude(C.B)
-  z.TD = C.B:antipode(z.TB)
-  z.TE =  C.A:antipode(z.TA)
-  z.O = tkz.midpoint(z.TD, z.TE)
-  C.O = circle(z.O, z.TD)
-  z.P = C.O:tangent_from(z.I).pb
-  C.one,C.two = C.A:c_cc_p(C.B, z.P)
-  z.O1 = C.one.center
-  z.T1 = C.one.through
-  z.O2 = C.two.center
-  z.T2 = C.two.through}
-\begin{tikzpicture}
-\tkzGetNodes
-\tkzDrawCircles[thick](A,TA B,TB)
-\tkzDrawCircles[red](O1,T1 O2,T2)
-\tkzDrawPoints(A,B,O1,O2)
-\tkzLabelPoints(A,B)
-\tkzDrawPoints[size=3](P)
-\tkzLabelPoints[above](P)
-\end{tikzpicture}
-\end{minipage}
-\begin{minipage}{.5\textwidth}
-\begin{tkzexample}[code only]
-\directlua{
-  init_elements()
-  z.A = point(0 , 0 )
-  z.TA = point(2 , 0 )
-  z.B = point( 3, 0 )
-  z.TB = point( 2, 0 )
-  C.A = circle(z.A, z.TA)
-  C.B = circle(z.B, z.TB)
-  z.I = C.A:external_similitude(C.B)
-  z.TD = C.B:antipode(z.TB)
-  z.TE =  C.A:antipode(z.TA)
-  z.O = tkz.midpoint(z.TD, z.TE)
-  C.O = circle(z.O, z.TD)
-  z.P = C.O:tangent_from(z.I).pb
-  C.one,C.two = C.A:c_cc_p(C.B, z.P)
-  z.O1 = C.one.center
-  z.T1 = C.one.through
-  z.O2 = C.two.center
-  z.T2 = C.two.through}
-\end{tkzexample}
-\end{minipage}
 
 \subsubsection{Method c\_lc\_p}
 \label{ssub:method_c_lc_p}
+\textbf{Circle tangent to a given line and to the current circle, passing through a given point.}
 
-Circle tangent to a line and a circle passing through a given point.
+\medskip
+\noindent
+\textbf{Signature:}
+\begin{verbatim}
+circle:c_lc_p(l, p [, mode])
+\end{verbatim}
 
-First, let's look at the general case. The point and the circle are in the same half-plane with respect to the line.
-The point is neither on the line nor on the circle.
+\begin{itemize}
+  \item \code{l} — a line object.
+  \item \code{p} — a point object through which the solution circle(s) must pass.
+  \item \code{mode} — optional string; if equal to \code{"inside"}, the method
+        returns the pair of internally tangent solutions; otherwise the pair of
+        externally tangent solutions.
+\end{itemize}
 
-There are 4 circles verifying the conditions. Two are tangent externally, and two internally to the initial circle. The latter two are obtained with the \code{inside} argument.
+\noindent
+\textbf{Returns:} two circles (possibly coincident in degenerate cases).
 
+
+%-------------------------------------------------
+\paragraph*{Existence and number of solutions.}
+\begin{itemize}
+  \item In the \emph{generic case} (the point \code{p} is neither on the line nor on the circle),
+        there are \textbf{four} solution circles:
+        two externally tangent (default) and two internally tangent (with \code{mode = "inside"}).
+  \item In special cases, only two solutions exist:
+    \begin{itemize}
+      \item If \code{p} lies on the circle, two solutions.
+      \item If \code{p} lies on the line, two solutions.
+      \item If the line is tangent to the circle, one pair may collapse into a double solution.
+    \end{itemize}
+\end{itemize}
+
+
+%-------------------------------------------------
+\paragraph*{Options.}
+\begin{itemize}
+  \item Default (no \code{inside}) $\Rightarrow$ external pair.
+  \item \code{inside = "inside"} $\Rightarrow$ internal pair.
+\end{itemize}
+
+%-------------------------------------------------
+\paragraph*{Notes and edge cases.}
+\begin{itemize}
+  \item The method internally uses the vertical diameter (\code{north}, \code{south})
+        for robustness, but the result is invariant under isometries.
+  \item Degenerate cases (parallel line, tangent situations) are handled,
+        but may lead to coincident or unstable solutions if points are nearly collinear.
+  \item Use \code{tkz.epsilon} to guard against numerical instabilities.
+\end{itemize}
+
+\vspace{1em}
+\textbf{Examples usage}
 
 \begin{tkzexample}[latex=.5\textwidth]
 \directlua{
@@ -2293,9 +2289,92 @@ There are 4 circles verifying the conditions. Two are tangent externally, and tw
   \tkzDrawLines[thick](A,B)
   \tkzDrawPoints[size = 2](P)
   \tkzDrawPoints(A,B,O,O1,O2,O3,O4)
-  \tkzLabelPoints(A,B,O,O1,O2,O3,O4)
-  \tkzLabelPoints[above](P)
 \end{tikzpicture}
+\end{tkzexample}
+
+\vspace{1em}
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(4, 0)
+ L.AB = line (z.A, z.B)
+ z.O = point(3, 2)
+ z.T = point(3, 1)
+ C.OT = circle(z.O, z.T)
+ C1, C2 = C.OT:c_lc_p (L.AB, z.A, "inside")
+ z.O1 = C1.center
+ z.O2 = C2.center}
+\begin{center}
+\begin{tikzpicture}[scale=.5]
+\tkzGetNodes
+\tkzDrawCircles[thick](O,T)
+\tkzDrawCircles[red](O1,A O2,A)
+\tkzDrawLines[thick](A,B)
+\tkzDrawPoints[size = 3](A)
+\tkzDrawPoints(B,O,O1,O2)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+\vspace{1em}
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(4, 0)
+ L.AB = line(z.A, z.B)
+ z.O = point(3, 2)
+ z.T = point(2, 2)
+ C.OT = circle(z.O, z.T)
+ z.P = C.OT:point(0.1)
+ C.OT  = circle (z.O , z.T)
+ C1, C2 = C.OT:c_lc_p(L.AB, z.P)
+ z.O1 = C1.center
+ z.O2 = C2.center
+ z.T1 = C1.through
+ z.T2 = C2.through}
+\begin{center}
+\begin{tikzpicture}[scale=.75]
+\tkzGetNodes
+\tkzDrawCircles[thick](O,T)
+\tkzDrawCircles[red](O1,T1 O2,T2)
+\tkzDrawLines[thick](A,B)
+\tkzDrawPoints[size = 3](P)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+\medskip
+\textbf{Application}
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+ init_elements()
+ xB = 5
+ z.A = point(0, 0)
+ z.B = point(xB, 0)
+ L.AB = line(z.A, z.B)
+ C.AB = circle(z.A, z.B)
+ C.BA = circle(z.B, z.A)
+ S.AB = L.AB:square()
+  _, _, z.C, z.D = S.AB:get()
+ z.E = point(1, 0)
+ z.F = point(4, 0)
+ L.EF = line(z.E, z.F)
+ S.EF = L.EF:square()
+  _, _, z.G, z.H = S.EF:get()
+  z.M = S.EF.cd.mid
+  C1,C2 = C.AB:c_lc_p (S.EF.cd , z.M)
+  z.w, z.t = C2:get()}
+\begin{center}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawCircles(w,t)
+\tkzDrawArc(A,B)(D)
+\tkzDrawArc(B,C)(A)
+\tkzDrawPolygons(A,B,C,D E,F,G,H)
+\end{tikzpicture}
+\end{center}
 \end{tkzexample}
 
 \subsubsection{Method \tkzMeth{circle}{midcircle}}

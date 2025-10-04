@@ -2,10 +2,11 @@
 local r = ...
 
 function newcircle(T, C)
-	local NT, L, NC, c, t
-	NT = T.incenter:homothety((1 + C.radius / T.inradius), T)
-	L = line(NT.pb, NT.pa)
-	_, NC = L:c_ll_p(NT.pc, C.center)
+	local NC
+	local NT = T.incenter:homothety((1 + C.radius / T.inradius), T)
+	local Lba = line(NT.pb, NT.pa)
+	local Lbc = line(NT.pb, NT.pc) --
+	_, NC = Lba:c_ll_p(Lbc, C.center)
 	return NC.center, T.bc:projection(NC.center)
 end
 

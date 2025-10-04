@@ -134,7 +134,7 @@ Both forms are equivalent. The shorter syntax is available since version 4 and p
 
 \begin{mybox}
    Creation \\
-   |z.A = point (1,2) |
+   |z.A = point(1, 2) |
 \end{mybox}
  The point $A$ has coordinates $x=1$ and $y=2$. If you use the notation |z.A|, then $A$ will be  referenced as a node in \TIKZ\ or in \tkzNamePack{tkz-euclide}.
 
@@ -165,13 +165,13 @@ This is the creation of a fixed point with coordinates $1$ and $2$ and which is 
 
 \directlua{
 init_elements()
-   z.M = point(1,2)}
+   z.M = point(1, 2)}
 \hspace*{\fill}
 
 \begin{verbatim}
 \directlua{
    init_elements()
-   z.M = point(1,2)}
+   z.M = point(1, 2)}
 \end{verbatim}
 \pgfkeys{/pgf/number format/.cd,std,precision=2}
 \let\pmpn\pgfmathprintnumber
@@ -248,14 +248,14 @@ This attribute allows the point to be used in conjunction with matrices.
 \begin{minipage}{.5\textwidth}
 \begin{verbatim}
   \directlua{
-  z.A = point(2,-1)
+  z.A = point(2, -1)
   z.A.mtx:print()}
 \end{verbatim}
 \end{minipage}
 \begin{minipage}{.5\textwidth}
 \begin{center}
   \directlua{
-  z.A = point(2,-1)
+  z.A = point(2, -1)
   z.A.mtx:print()}
 \end{center}
 \end{minipage}
@@ -307,6 +307,7 @@ This attribute allows the point to be used in conjunction with matrices.
 \end{center}
 \end{minipage}
 
+\newpage
 \subsection{Methods of the class point}
 
 The methods listed in the following table are standard and commonly used throughout the examples at the end of this documentation. Each of these methods returns a \tkzNameObj{point} object.
@@ -349,6 +350,8 @@ For more advanced operations using complex numbers and operator overloading, see
 \tkzMeth{point}{normalize\_from(pt)} &   [\ref{ssub:method_normalize}] \\
 \tkzMeth{point}{orthogonal(d)} & [\ref{ssub:orthogonal_method}]\\
 \tkzMeth{point}{at()} &   [\ref{ssub:_point_at_method}] \\
+\tkzMeth{point}{shift\_orthogonal\_to(pt, d)} &   [\ref{shift_orthogonal}] \\
+\tkzMeth{point}{shift\_colinear\_to(pt, d)} &   [\ref{shift_colinear}] \\
 \midrule
 
 \textbf{Transformations} & \\
@@ -369,7 +372,7 @@ For more advanced operations using complex numbers and operator overloading, see
 \subsubsection{Method \tkzMeth{point}{new(r, r)}}
 \label{ssub:method_point_new}
 
-This method creates a point in the plane using Cartesian coordinates. The shorter syntax \tkzMeth{point}{(r, r)} is available since version 4 and preferred for readability and consistency.
+This method creates a point in the plane using Cartesian coordinates. The \textbf{shorter syntax} \tkzMeth{point}{(r, r)} is available since version 4 and preferred for readability and consistency.
 
 \medskip
 \noindent
@@ -430,7 +433,9 @@ This method improves code readability and makes it easier to pass coordinates to
  L.CD = line(z.C, z.D)
  z.I = intersection(L.AB, L.CD)
  x, y = z.I:get()
- tex.sprint("$z_I = $"..x.." ".."$y_I = $"..y)}
+ tex.print("$x_I = $"..x)
+ tex.print('\\\\')
+ tex.print("$y_I = $"..y)}
 \end{minipage}
 \begin{minipage}{.5\textwidth}
 \begin{tkzexample}[code only]
@@ -442,7 +447,9 @@ This method improves code readability and makes it easier to pass coordinates to
  L.CD = line(z.C, z.D)
  z.I = intersection(L.AB, L.CD)
  x, y = z.I:get()
- tex.print("$x_I = $"..x.." ".."$y_I = $"..y)}
+ tex.print("$x_I = $"..x)
+ tex.print('\\\\')
+ tex.print("$y_I = $"..y)}
 \end{tkzexample}
 \end{minipage}
 
@@ -499,6 +506,7 @@ Internally, the point is represented as a complex number: \code{r * exp(i * an)}
 \subsubsection{Method \tkzMeth{point}{polar\_deg(d,an)}}
 \label{ssub:method_point_polar_deg}
 
+Identical to the previous one, except that the angle is given in degrees.
 
 \begin{tkzexample}[latex=7cm]
 \directlua{
@@ -594,11 +602,11 @@ The second approach requires prior creation of the line object \code{L.BC}.
   z.N = z.B:normalize()
   z.U = z.C:normalize_from(z.B)}
 \begin{tikzpicture}
-\tkzGetNodes
-\tkzDrawLines(A,B  B,C)
-\tkzDrawPoints(A,B,C,U,N)
-\tkzLabelPoints(A,B,C,U,N)
-\tkzDrawSegment(B,C)
+  \tkzGetNodes
+  \tkzDrawLines(A,B  B,C)
+  \tkzDrawPoints(A,B,C,U,N)
+  \tkzLabelPoints(A,B,C,U,N)
+  \tkzDrawSegment(B,C)
 \end{tikzpicture}
 \end{tkzexample}
 
@@ -661,10 +669,10 @@ This method is useful when working with local orthogonal directions, such as whe
 \begin{tkzexample}[latex=7cm]
  \directlua{
  init_elements()
- z.O = point(0,0 )
- z.A = point(3, 2 )
+ z.O = point(0, 0)
+ z.A = point(3, 2)
  z.B = z.A:orthogonal(1)
- z.C = z.A+z.B
+ z.C = z.A + z.B
  z.D =(z.C - z.A):orthogonal(2):at(z.C)}
  \begin{center}
    \begin{tikzpicture}[gridded]
@@ -720,9 +728,58 @@ In the following example, a list of points is rotated about a given center.
 \end{center}
 \end{tkzexample}
 
-\subsubsection{Method \tkzMeth{point}{rotation(an, obj)}} — Second example
+\subsubsection{Method \tkzMeth{point}{shift\_orthogonal\_to(pt, dist)}}\label{shift_orthogonal}
+
+\paragraph*{Syntax}
+
+\begin{verbatim}
+z.P = z.A:shift_orthogonal_to(z.B, 2)
+\end{verbatim}
+
+\medskip
+This method returns the point obtained by shifting the current point
+A in the direction orthogonal to the line (AB), at a signed distance dist.
+A positive distance corresponds to a rotation of the vector $\overrightarrow{AB}$
+by $+90^\circ$ around the point A, while a negative distance corresponds to
+$-90^\circ$.
+
+\begin{verbatim}
+z.Q = z.B:shift_orthogonal_to(z.A, 2)
+\end{verbatim}
+A positive distance corresponds to a rotation of the vector $\overrightarrow{BA}$
+by $+90^\circ$, around the point B.
+
+\begin{tkzexample}[latex=.4\textwidth]
+\directlua{
+z.A = point(3, 2)
+z.a = point(3, 3)
+z.B = point(7, 3)
+z.b = point(7, 4)
+C.A = circle(z.A, z.a)
+C.B = circle(z.B, z.b)
+z.TA = z.A:shift_orthogonal_to(z.B, C.A.radius)
+z.TB = z.B:shift_orthogonal_to(z.A, -C.A.radius)
+}
+\begin{tikzpicture}[gridded]
+\tkzGetNodes
+\tkzDrawCircles(A,a B,b)
+\tkzDrawLines(A,B TA,TB)
+\tkzDrawPoints(A,B,TA,TB)
+\end{tikzpicture}
+\end{tkzexample}
+
+\subsubsection{Method \tkzMeth{point}{shift\_colinear\_to(pt, dist)}}\label{shift_colinear}
+This method returns the point obtained by shifting the current point
+A in the same direction  that line (AB), at a signed distance dist.
+
+\paragraph*{Syntax}\begin{verbatim}
+z.P = z.A:shift_colinear_to(z.B, 2)
+\end{verbatim}
+
+\subsubsection{Method \tkzMeth{point}{rotation(an, obj)}}
 \label{ssub:object_rotation}
 
+\paragraph{Purpose.}
 This method rotates a geometric object by a given angle around a specified point.
 
 \medskip
@@ -731,18 +788,26 @@ In this example, the triangle is rotated by an angle of~$\pi/3$ around the point
 
 \medskip
 \noindent
+\paragraph{Signature.}
+\begin{verbatim}
+  new_obj = z.I:rotation(an, obj)
+\end{verbatim}
+
+\medskip
+\noindent
+\paragraph{Arguments.}
 The arguments are:
 \begin{itemize}
   \item \code{an} —> the angle of rotation, in radians;
   \item \code{obj} —> the geometric object to be rotated (e.g., a triangle).
 \end{itemize}
 
+\medskip
 \noindent
+\paragraph{Returns.}
 The method returns a new object of the same type, rotated accordingly.
 
 \vspace{1em}
-
-
 \begin{tkzexample}[latex=7cm]
 \directlua{
  init_elements()
@@ -794,11 +859,11 @@ The following example shows how to apply central symmetry to an object (e.g., a 
 \begin{tkzexample}[latex=7cm]
 \directlua{
   init_elements()
-  z.a = point(0,-1)
+  z.a = point(0, -1)
   z.b = point(2, 0)
-  L.ab = line(z.a,z.b)
-  C.ab = circle(z.a,z.b)
-  z.o = point(1,1)
+  L.ab = line(z.a, z.b)
+  C.ab = circle(z.a, z.b)
+  z.o = point(1, 1)
   z.ap, z.bp = z.o:symmetry(C.ab):get()}
 \begin{center}
   \begin{tikzpicture}

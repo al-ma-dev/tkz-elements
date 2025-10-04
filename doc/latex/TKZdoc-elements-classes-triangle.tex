@@ -2002,9 +2002,9 @@ See  the corresponding figure in section~\ref{ssub:method_triangle_conway} for a
 
 \begin{mybox}
 \begin{tkzexample}[code only]
-  C.conway = T.ABC : conway_circle ()
+  C.conway = T.ABC:conway_circle()
   z.w,z.t  = C.conway:get() %   % z.w = T.ABC : conway_center ()
-  z.t1,z.t2,z.t3,z.t4,z.t5,z.t6= T.ABC : conway_points ()
+  z.t1, z.t2, z.t3, z.t4, z.t5, z.t6 = T.ABC: onway_points()
 \end{tkzexample}
 \end{mybox}
 
@@ -2015,10 +2015,10 @@ In a given triangle $ABC$ with all angles less than  120 degrees (2pi/3), the fi
 
 \begin{tkzexample}[latex=.5\textwidth]
 \directlua{
- z.A = point (1, 2)
+ z.A = point(1, 2)
  z.B = point(5, 1)
  z.C = point(2.5, 4)
- T.ABC = triangle (z.A,z.B,z.C)
+ T.ABC = triangle(z.A, z.B, z.C)
  z.F1 = T.ABC:first_fermat_point()
  _,_,z.E = T.ABC.bc:equilateral("swap"):get()
  _,_,z.F = T.ABC.ca:equilateral("swap"):get()
@@ -2106,7 +2106,7 @@ If the three vertices and the $p$ point do not form a orthocentric system et no 
  z.B = point(6, 0)
  z.C = point(0, 5)
  z.X = point(2, 2)
- T.ABC = triangle(z.A,z.B,z.C)
+ T.ABC = triangle(z.A, z.B, z.C)
  z.P = T.ABC:poncelet_point(z.X)
  z.I = T.ABC.eulercenter
  z.Ma, z.Mb, z.Mc = T.ABC:medial():get()
@@ -2138,12 +2138,12 @@ See the following example for the link between orthopole and Simson line: [\ref{
 \begin{tkzexample}[latex=.5\textwidth]
 \directlua{
  init_elements()
- z.A  = point:new(0, 0)
- z.B  = point:new(5, 0)
- z.C  = point:new(1, 4)
- T.ABC  = triangle:new(z.A, z.B, z.C)
- z.N  = T.ABC.eulercenter
- z.H  = T.ABC.orthocenter
+ z.A = point(0, 0)
+ z.B = point(5, 0)
+ z.C = point(1, 4)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.N = T.ABC.eulercenter
+ z.H = T.ABC.orthocenter
  L.NH = line(z.N, z.H)
  z.P = T.ABC:orthopole(L.NH)
 }
@@ -3580,10 +3580,10 @@ Through the \code{symmedian point} \( L \) of triangle \( ABC \), draw lines par
 \begin{tkzexample}[code only]
 \directlua{
   init_elements()
-  z.A  = point(0,0)
-  z.B  = point(5,1)
-  z.C  = point(1,4)
-  T.ABC = triangle(z.A,z.B,z.C)
+  z.A  = point(0, 0)
+  z.B  = point(5, 1)
+  z.C  = point(1, 4)
+  T.ABC = triangle(z.A, z.B, z.C)
   z.L = T.ABC:lemoine_point()
   C.slemoine  = T.ABC:second_lemoine_circle()
   z.w, z.t = C.slemoine:get()
@@ -3605,11 +3605,6 @@ The Bevan circle is the \emph{circumcircle} of the excentral triangle of the ref
 \href{https://mathworld.wolfram.com/BevanCircle.html}
 {\textit{Weisstein, Eric W. "Bevan Circle." From MathWorld—A Wolfram Web Resource.}}
 \end{flushright}
-\begin{flushright}
-\small
-\href{https://mathworld.wolfram.com/BevanPoint.html}
-{\textit{Weisstein, Eric W. "Bevan Point." From MathWorld—A Wolfram Web Resource.}}
-\end{flushright}
 
 \vspace{1em}
 \begin{tkzexample}[latex=.5\textwidth]
@@ -3622,7 +3617,8 @@ The Bevan circle is the \emph{circumcircle} of the excentral triangle of the ref
     z.Ea,z.Eb,z.Ec = T.ABC:excentral():get()
     C.bevan = T.ABC:bevan_circle()
     z.V, z.t = C.bevan:get()}
-  \begin{tikzpicture}[scale =.4]
+\begin{center}
+      \begin{tikzpicture}[scale =.4]
       \tkzGetNodes
       \tkzDrawPolygons(A,B,C Ea,Eb,Ec)
       \tkzDrawCircle(V,t)
@@ -3630,6 +3626,7 @@ The Bevan circle is the \emph{circumcircle} of the excentral triangle of the ref
       \tkzLabelPoints(A,B,V)
       \tkzLabelPoints[above](C)
   \end{tikzpicture}
+    \end{center}
 \end{tkzexample}
 
 \subsubsection{Method \tkzMeth{triangle}{taylor\_circle()}} %(fold)
@@ -3637,7 +3634,7 @@ The Bevan circle is the \emph{circumcircle} of the excentral triangle of the ref
 
 The six projections of the feet of the heights of a triangle onto the adjacent sides are cocylic.
 
-\begin{minipage}{.5\textwidth}
+\begin{tkzexample}[latex=.5\textwidth]
 \directlua{
   init_elements()
   z.A = point(0, 0)
@@ -3669,33 +3666,14 @@ The six projections of the feet of the heights of a triangle onto the adjacent s
   \tkzLabelPoints[above right](E_2,D,F_1)
 \end{tikzpicture}
 \end{center}
-\end{minipage}
-\begin{minipage}{.5\textwidth}
-\begin{tkzexample}[code only]
-\directlua{
-  init_elements()
-  z.A = point(0, 0)
-  z.B = point(6, 0)
-  z.C = point(2.8, 4)
-  T.ABC = triangle(z.A, z.B, z.C)
-  T.DEF = T.ABC:orthic()
-  z.D, z.E, z.F = T.DEF:get()
-  z.D_1,
-  z.D_2,
-  z.E_1,
-  z.E_2,
-  z.F_1,
-  z.F_2 = T.ABC:taylor_points()
-  C.taylor = T.ABC:taylor_circle()
-  z.w, z.t = C.taylor:get()}
 \end{tkzexample}
-\end{minipage}
+
 
 \subsubsection{Method \tkzMeth{triangle}{adams\_circle()}}
 \label{ssub:method_triangle_adams_circle}
 See  [\ref{ssub:method_triangle_adams_points}] and [\ref{sub:adams_circle}]
 
-\begin{minipage}{.5\textwidth}
+\begin{tkzexample}[latex=.5\textwidth]
 \directlua{
   z.A = point(0.5, 4)
   z.B = point(0, 0)
@@ -3706,7 +3684,8 @@ See  [\ref{ssub:method_triangle_adams_points}] and [\ref{sub:adams_circle}]
   z.t1, z.t2, z.t3,
   z.t4, z.t5,
    z.t6 = T.ABC:adams_points()}
-\begin{tikzpicture}[scale = .75]
+\begin{center}
+   \begin{tikzpicture}[scale = .75]
   \tkzGetNodes
   \tkzDrawPolygon(A,B,C)
   \tkzDrawCircles[blue](w,t)
@@ -3717,21 +3696,9 @@ See  [\ref{ssub:method_triangle_adams_points}] and [\ref{sub:adams_circle}]
   \tkzLabelPoints[left](t1,t2)
   \tkzLabelPoints[right](t5,t6)
 \end{tikzpicture}
-\end{minipage}
-\begin{minipage}{.5\textwidth}
-\begin{tkzexample}[code only]
-\directlua{
-  z.A = point(0.5, 4)
-  z.B = point(0, 0)
-  z.C = point(5, 0)
-  T.ABC = triangle(z.A, z.B, z.C)
-  C.a  = T.ABC:adams_circle()
-  z.w, z.t = C.a:get()
-  z.t1, z.t2, z.t3,
-  z.t4, z.t5,
-  z.t6 = T.ABC:adams_points()}
+\end{center}
 \end{tkzexample}
-\end{minipage}
+
 
 % lamoen_points()
 \subsubsection{Method \tkzMeth{triangle}{lamoen\_circle}}
@@ -3745,7 +3712,7 @@ The six circumcenters themselves are called the \emph{Lamoen points}. See  [\ref
 
 \vspace{1em}
 
-\begin{minipage}{.5\textwidth}
+\begin{tkzexample}[latex=.5\textwidth]
 \directlua{
  init_elements()
  z.A = point(1.2, 2)
@@ -3760,7 +3727,8 @@ The six circumcenters themselves are called the \emph{Lamoen points}. See  [\ref
  z.Oca, z.Ocb = T.ABC:lamoen_points()
  C.lamoen = T.ABC:lamoen_circle()
  z.w = C.lamoen.center}
-\begin{tikzpicture}[scale = 1.5]
+\begin{center}
+ \begin{tikzpicture}[scale = 1.5]
  \tkzGetNodes
  \tkzDrawPolygon(A,B,C)
  \tkzDrawPolygon[red](ma,mb,mc)
@@ -3771,81 +3739,43 @@ The six circumcenters themselves are called the \emph{Lamoen points}. See  [\ref
   fill=white](Oab,Oac,Oba,Obc,Oca,Ocb)
  \tkzLabelPoints(A,B,C,G)
 \end{tikzpicture}
-\end{minipage}
-\begin{minipage}{.5\textwidth}
-\begin{tkzexample}[code only]
-\directlua{
- init_elements()
- z.A = point(1.2, 2)
- z.B = point(0, 0)
- z.C = point(4, 0)
- T.ABC = triangle(z.A, z.B, z.C)
- T.med = T.ABC:medial()
- z.G = T.ABC.centroid
- z.ma,z.mb,z.mc = T.med:get()
- z.Oab, z.Oac,
- z.Oba, z.Obc,
- z.Oca, z.Ocb = T.ABC:lamoen_points()
- C.lamoen = T.ABC:lamoen_circle()
- z.w = C.lamoen.center}
+ \end{center}
 \end{tkzexample}
-\end{minipage}
+
 
 \subsubsection{Method \tkzMeth{triangle}{soddy\_circle()}}
 \label{ssub:method_triangle_soddy_circle}
 
-\begin{minipage}{.5\textwidth}
-  \directlua{
-     init_elements()
-     z.A = point (0, 0)
-     z.B = point (4, 0.5)
-     z.C = point (1, 3)
-     T.ABC = triangle(z.A, z.B, z.C)
-     local ra = (T.ABC.b + T.ABC.c -T.ABC.a)/2
-     local rb = (T.ABC.c + T.ABC.a -T.ABC.b)/2
-     local rc = (T.ABC.b + T.ABC.a -T.ABC.c)/2
-     C.a = circle(through(z.A,ra))
-     C.b = circle(through(z.B,rb))
-     C.c = circle(through(z.C,rc))
-     z.ta = C.a.through
-     z.tb = C.b.through
-     z.tc = C.c.through
-     C.i = T.ABC:soddy_circle()
-     z.w,z.t = C.i:get()
-     C.o = T.ABC:soddy_circle("outer")
-     z.wp,z.tp = C.o:get()}
-    \begin{tikzpicture}[scale=.75]
-      \tkzGetNodes
-      \tkzDrawPolygon(A,B,C)
-      \tkzDrawCircles(A,ta B,tb C,tc)
-      \tkzDrawCircles[red](w,t w',t')
-      \tkzDrawPoints(A,B,C)
-      \tkzLabelPoints(A,B,C)
-    \end{tikzpicture}
-\end{minipage}
-\begin{minipage}{.5\textwidth}
-\begin{tkzexample}[code only]
+\begin{tkzexample}[latex=.5\textwidth]
 \directlua{
-     init_elements()
-     z.A = point (0, 0)
-     z.B = point (4, 0.5)
-     z.C = point (1, 3)
-     T.ABC = triangle(z.A, z.B, z.C)
-     local ra = (T.ABC.b + T.ABC.c -T.ABC.a)/2
-     local rb = (T.ABC.c + T.ABC.a -T.ABC.b)/2
-     local rc = (T.ABC.b + T.ABC.a -T.ABC.c)/2
-     C.a = circle(through(z.A,ra))
-     C.b = circle(through(z.B,rb))
-     C.c = circle(through(z.C,rc))
-     z.ta = C.a.through
-     z.tb = C.b.through
-     z.tc = C.c.through
-     C.i = T.ABC:soddy_circle()
-     z.w,z.t = C.i:get()
-     C.o = T.ABC:soddy_circle("outer")
-     z.wp,z.tp = C.o:get()}
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(4, 0.5)
+  z.C = point(1, 3)
+  T.ABC = triangle(z.A, z.B, z.C)
+  local ra = (T.ABC.b + T.ABC.c -T.ABC.a)/2
+  local rb = (T.ABC.c + T.ABC.a -T.ABC.b)/2
+  local rc = (T.ABC.b + T.ABC.a -T.ABC.c)/2
+  C.a = circle(through(z.A, ra))
+  C.b = circle(through(z.B, rb))
+  C.c = circle(through(z.C, rc))
+  z.ta = C.a.through
+  z.tb = C.b.through
+  z.tc = C.c.through
+  C.i = T.ABC:soddy_circle()
+  z.w, z.t = C.i:get()
+  C.o = T.ABC:soddy_circle("outer")
+  z.wp,z.tp = C.o:get()}
+\begin{tikzpicture}[scale=.75]
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawCircles(A,ta B,tb C,tc)
+  \tkzDrawCircles[red](w,t w',t')
+  \tkzDrawPoints(A,B,C)
+  \tkzLabelPoints(A,B,C)
+\end{tikzpicture}
 \end{tkzexample}
-\end{minipage}
+
 
 \subsubsection{Method \tkzMeth{triangle}{yiu\_circles()}}
 \label{ssub:method_yiu_circles}
@@ -3861,7 +3791,7 @@ The \emph{Yiu $B$-} and \emph{$C$-circles} are defined analogously. These three 
 
 \vspace{1em}
 
-\begin{minipage}{.5\textwidth}
+\begin{tkzexample}[latex=.5\textwidth]
   \directlua{
   z.A = point(-.2, 2)
   z.B = point(0, 0)
@@ -3877,7 +3807,8 @@ The \emph{Yiu $B$-} and \emph{$C$-circles} are defined analogously. These three 
   x,y = intersection(C.A,C.B)
   if C.C:in_out(x) then  z.S = x
     else  z.S = y end}
-\begin{tikzpicture}[scale=.8]
+\begin{center}
+    \begin{tikzpicture}[scale=.8]
  \tkzGetNodes
  \tkzInit[xmin=-4,xmax=4,ymin=-4,ymax=4]
  \tkzClip
@@ -3889,26 +3820,9 @@ The \emph{Yiu $B$-} and \emph{$C$-circles} are defined analogously. These three 
  \tkzLabelPoints(B,C,A',C')
  \tkzLabelPoints[above](A,B',S)
 \end{tikzpicture}
-\end{minipage}
-\begin{minipage}{.5\textwidth}
-\begin{tkzexample}[code only]
-  \directlua{
-  z.A = point(-.2, 2)
-  z.B = point(0, 0)
-  z.C = point(2, 0)
-  T.ABC = triangle(z.A,z.B,z.C)
-  z.Ap,
-  z.Bp,
-  z.Cp = T.ABC:reflection():get()
-  z.O_A, z.O_B, z.O_C = T.ABC:yiu_centers()
-  C.A,
-  C.B,
-  C.C = T.ABC:yiu_circles()
-  x,y = intersection(C.A,C.B)
-  if C.C:in_out(x) then  z.S = x
-    else  z.S = y end}
+    \end{center}
 \end{tkzexample}
-\end{minipage}
+
 
 \subsubsection{Method \tkzMeth{triangle}{kenmotu\_circle()}}
 \label{ssub:kenmotu_circle}
@@ -3960,16 +3874,47 @@ The Kenmotu circle contains all six points of tangency between the triangle side
 \subsubsection{Method \tkzMeth{triangle}{c\_ll\_p}}
 \label{ssub:method_triangle_c_ll_p}
 
-This method determines a circle tangent to two sides of a triangle and passing through a given point.
+\paragraph{Purpose.}
+This method constructs the circle(s) tangent to the two sides issuing from a vertex of the triangle and passing through a given point~\(p\).
 
-Unlike the corresponding method in the \code{line} class, the arguments are adapted to the triangle context. The two lines are automatically selected among the triangle’s sides, and the method constructs a circle tangent to both and passing through the point given as an argument.
+\medskip
+\noindent
+The chosen vertex is \code{self.pa}, and the two lines are \((AB)\) and \((AC)\).
+The centers of the solution circles lie on the internal bisector of the angle at \(A\).
 
-This situation arises, for instance, when solving Apollonius-like problems or in triangle geometry configurations where a point determines a unique circle tangent to two sides.
+\medskip
+\noindent
+The method name \code{c\_ll\_p} stands for:
+\emph{circle tangent to two straight lines and passing through a point.}
+
+\paragraph{Signature.}
+\verb|function triangle:c_ll_p(p) -> circle, circle|
+
+\medskip
+\noindent
+\paragraph{Arguments.}
+\begin{itemize}
+  \item \code{p} — a point in the plane.
+\end{itemize}
+
+\medskip
+\noindent
+\paragraph{Returns.}
+Up to two circles:
+\begin{itemize}
+  \item If two distinct solutions exist, both circles are returned.
+  \item If the point lies on one of the triangle sides, the two circles may coincide.
+  \item If the configuration is degenerate (for example \(p=A\)), an error should be raised.
+\end{itemize}
+
+\medskip
+\noindent
+\paragraph{Example.}\mbox{}\\
 
 \vspace{1em}
 
 
-\begin{minipage}{.5\textwidth}
+\begin{tkzexample}[latex=.5\textwidth]
 \directlua{
 init_elements()
   z.A = point(0, 0)
@@ -3994,38 +3939,68 @@ init_elements()
  \tkzLabelPoints[above](C)
 \end{tikzpicture}
 \end{center}
- \end{minipage}
- \begin{minipage}{.5\textwidth}
- \begin{tkzexample}[code only]
-\directlua{
-  init_elements()
-  z.A = point(0, 0)
-  z.B = point(8, 0)
-  L.AB = line(z.A, z.B)
-  z.C = point(6,  4)
-  L.AC = line(z.A, z.C)
-  T.ABC = triangle(z.A, z.B, z.C)
-  z.P = point(3, 1)
-  C1,C2 = T.ABC:c_ll_p(z.P)
-  z.O1 = C1.center
-  z.T1 = C1.through
-  z.O2 = C2.center
-  z.T2 = C2.through}
- \end{tkzexample}
- \end{minipage}
+\end{tkzexample}
+
 
 \subsubsection{Method \tkzMeth{triangle}{thebault} or \tkzMeth{triangle}{c\_c} }
 \label{ssub:method_triangle_c_c}
 
 The |c_c| (or |thebault|) method constructs a circle tangent to two sides of a triangle at a chosen vertex, and tangent to a given circle passing through the two remaining vertices.
 
+
+\paragraph*{Name and purpose}
+Circle tangent to the two sides issuing from a vertex $p$ and tangent to the circle centered at $C$ passing through the other two vertices of the triangle.
+Alias: \code{triangle.thebault = triangle.c\_c}.
+
+\medskip
+\noindent
+Given a non-degenerate triangle $ABC$ and a chosen vertex $p\in\{A,B,C\}$, this method constructs the unique circle $\mathcal{T}$ that
+\begin{itemize}
+  \item is tangent to the two sides adjacent to $p$ (i.e.\ the lines through $p$ that contain the two incident edges of the triangle), and
+  \item is tangent to the circle with center $C$ and radius equal to the distance from \(C\) to each of the two vertices \emph{other than} $p$.
+\end{itemize}
+
+\paragraph*{Signature}
+\begin{verbatim}
+  circle triangle:c_c(p, C)
+\end{verbatim}
+
+\paragraph*{Parameters}
+\begin{description}
+  \item[\code{p}] The chosen vertex of the triangle (\code{triangle.pa}, \code{.pb} or \code{.pc}). The method internally detects which vertex you passed.
+  \item[\code{C}] The center of the reference circle through the other two vertices (i.e.\ if \(p=A\), then \(|CB|=|CC|=|C\!B|\) and the circle \(\mathcal{C}(C,|CB|)\) passes through \(B\) and \(C\)). In practice, \(C\) must lie on the perpendicular bisector of the segment joining those two vertices.
+\end{description}
+
+\paragraph*{Return value}
+A \code{circle} object $\mathcal{T}$ tangent to the two sides adjacent to \(p\) and tangent to the circle $\mathcal{C}(C,\cdot)$ through the other two vertices.
+
+
+\paragraph*{Preconditions \& diagnostics}
+\begin{itemize}
+  \item The triangle must be non-degenerate (three non-collinear points).
+  \item The point \code{p} must coincide with one of the triangle’s vertices; otherwise the internal index resolution will be inconsistent.
+  \item The point \code{C} must be equidistant from the two vertices other than \(p\) (i.e.\ it lies on their perpendicular bisector). If not, the “reference circle” is ill-defined for this problem and the construction may fail or produce an irrelevant circle.
+\end{itemize}
+
+\paragraph*{Notes}
+\begin{itemize}
+  \item This configuration is a classical variant often linked to Thébault-type constructions; for convenience an alias \code{triangle.thebault} is provided.
+  \item The circle returned is tangent to the \emph{lines} supporting the two sides adjacent to \(p\). If you need the segment contact points explicitly, intersect the result with those lines and/or use orthogonal projections.
+\end{itemize}
+
+\medskip
+\noindent
+\paragraph*{Example}\mbox{}\\
+
+\medskip
+\noindent
 \begin{tkzexample}[latex=.5\textwidth]
 \directlua{
  init_elements()
  z.A = point(2, 4)
  z.B = point(-3, 0)
  z.C = point(3, 0)
- T.ABC = triangle:new(z.A, z.B, z.C)
+ T.ABC = triangle(z.A, z.B, z.C)
  L.med = T.ABC:mediator(z.A)
  z.Oa = L.med:point(1)
  C.main = circle(z.Oa, z.C)
@@ -4042,8 +4017,8 @@ The |c_c| (or |thebault|) method constructs a circle tangent to two sides of a t
  z.wc,
  z.Ec = T.ABC:thebault(z.C, C.main):get()
  }
-
-\begin{tikzpicture}[scale = .7]
+\begin{center}
+ \begin{tikzpicture}[scale = .7]
   \tkzGetNodes
   \tkzFillCircles[purple!20,opacity=.2](Oa,C)
   \tkzFillCircles[purple!40,opacity=.2](wa,Ea)
@@ -4057,6 +4032,7 @@ The |c_c| (or |thebault|) method constructs a circle tangent to two sides of a t
   \tkzDrawPoints(A,B,C,wa,wb,wc)
   \tkzLabelPoints(A,B,C,wa,wb,wc)
 \end{tikzpicture}
+ \end{center}
 \end{tkzexample}
 
 
@@ -4074,10 +4050,10 @@ The argument is either one of the vertices of the triangle or an integer between
 
 \begin{tkzexample}[latex=.52\textwidth]
 \directlua{
-z.A = point:new (0, 0)
-z.B = point:new (5, 0)
-z.C = point:new (-1, 4)
-T.ABC = triangle:new(z.A, z.B, z.C)
+z.A = point(0, 0)
+z.B = point(5, 0)
+z.C = point(-1, 4)
+T.ABC = triangle(z.A, z.B, z.C)
 C.mix = T.ABC:mixtilinear_incircle(z.B)
 z.w, z.t = C.mix:get()
 z.O = T.ABC.circumcenter}
@@ -4094,21 +4070,39 @@ z.O = T.ABC.circumcenter}
 \subsubsection{Method \tkzMeth{triangle}{three\_tangent\_circles}()}
 \label{ssub:method_triangle_three_tgt_c}
 
-Any three points can serve as the centers of three mutually tangent circles. If we connect the centers, we obtain a triangle. The angle bisectors of this triangle meet at a single point (the incenter). From this point, perpendiculars dropped to the three sides determine the points of tangency with an inscribed circle.
-This inscribed circle (the incircle) touches each side at exactly one point, and those points also serve as the common tangency points with the three outer circles. Each of these outer circles is defined by one vertex of the triangle (the center) and the tangency point opposite to it.
-The method triangle:three\_tangent\_circles() implements this construction:
+Any three points can serve as the centers of three mutually tangent circles.
+If we connect these centers, we obtain a triangle.
+The angle bisectors of this triangle meet at a single point called the \emph{incenter}.
+From this point, perpendiculars dropped to the three sides determine the points of tangency with an inscribed circle (the \emph{incircle}).
 
-it computes the incenter of the triangle,
-finds its perpendicular projections onto the three sides,
-and builds the three tangent circles, each one passing through a vertex and tangent to the incircle.
+\medskip
+This incircle touches each side at exactly one point, and those points also serve as the common tangency points with the three outer circles.
+Each of these outer circles is defined by one vertex of the triangle (its center) and the tangency point opposite to it.
 
+\medskip
+The method \tkzname{three\_tangent\_circles()} implements this geometric construction as follows:
+\begin{itemize}
+  \item it computes the incenter of the triangle,
+  \item finds the perpendicular projections of this incenter onto the three sides,
+  \item and constructs the three outer circles, each passing through one vertex and tangent to the incircle.
+\end{itemize}
+
+\medskip
+\noindent
+\paragraph*{Return value} Three circle objects tangent to one another and to the triangle’s sides.
+
+\medskip
+\noindent
+\paragraph*{Example}\mbox{}\\
+
+\medskip
 \begin{tkzexample}[latex=.45\textwidth]
 \directlua{
   init_elements()
-  z.A = point:new (0, 0)
-  z.B = point:new (5, 0)
-  z.C = point:new (1, 4)
-  T.ABC = triangle:new(z.A, z.B, z.C)
+  z.A = point(0, 0)
+  z.B = point(5, 0)
+  z.C = point(1, 4)
+  T.ABC = triangle(z.A, z.B, z.C)
   C.A,
   C.B,
   C.C = T.ABC:three_tangent_circles()
@@ -5581,10 +5575,10 @@ The method checks that both points lie on the triangle’s boundary using the se
 This function is useful for tracing polygonal arcs or combining triangle edges with other curves to build filled shapes.
 
 \directlua{
- z.A = point:new(0, 0)
- z.B = point:new(6, 0)
- z.C = point:new(1, 4)
- T.ABC = triangle:new(z.A, z.B, z.C)
+ z.A = point(0, 0)
+ z.B = point(6, 0)
+ z.C = point(1, 4)
+ T.ABC = triangle(z.A, z.B, z.C)
  z.M = T.ABC.bc.mid
  z.N = T.ABC.ca.mid
  PA.path = T.ABC:path(z.M,z.N,4)
