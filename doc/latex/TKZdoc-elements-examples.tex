@@ -1762,7 +1762,7 @@ From this, the eccentricity and the direction of the directrix can be derived.
   \end{verbatim}
 
 
-\subsubsection{Orthic\_inellipse with \code{search\_ellipse} }
+\subsubsection{Orthic\_inellipse with \texttt{search\_ellipse} }
 
 \directlua{
  init_elements()
@@ -2458,7 +2458,7 @@ The Kiepert parabola is tangent to the sides of the triangle (or their extension
  z.G = point(2, 2)
  L.AG = line(z.A, z.G)
  L.AB = line(z.A, z.B)
- z.E = L.AG:colinear_at(z.B, 0.5)
+ z.E = L.AG:collinear_at(z.B, 0.5)
  L.GE = line(z.G, z.E)
  z.D = intersection(L.GE, L.AB)
  z.F = z.B:symmetry(z.E)
@@ -2482,7 +2482,7 @@ The Kiepert parabola is tangent to the sides of the triangle (or their extension
  z.G = point(2, 2)
  L.AG = line(z.A, z.G)
  L.AB = line(z.A, z.B)
- z.E = L.AG:colinear_at(z.B, 0.5)
+ z.E = L.AG:collinear_at(z.B, 0.5)
  L.GE = line(z.G, z.E)
  z.D = intersection(L.GE, L.AB)
  z.F = z.B:symmetry(z.E)

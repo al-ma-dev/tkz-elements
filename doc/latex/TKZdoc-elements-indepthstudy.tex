@@ -71,7 +71,8 @@ This will print:
 \end{verbatim}
 
 
-\paragraph{Key–Value Tables.}
+\textbf{Key–Value Tables.}
+
 Tables may also use string keys to associate names to values. This is especially useful in geometry for storing attributes like color or label:
 
 \begin{mybox}
@@ -95,7 +96,8 @@ end
 \end{verbatim}
 \end{mybox}
 
-\paragraph{Deleting an entry.}
+\textbf{Deleting an entry.}
+
 To remove an entry, assign \code{nil} to the corresponding key:
 
 \begin{verbatim}
@@ -130,7 +132,8 @@ ParamToTable("A", "B", "C")
 
 This technique is useful for collecting points, coordinates, or any variable-length data.
 
-\paragraph{Accessing with Sugar Syntax.}
+\textbf{Accessing with Sugar Syntax.}
+
 In tables with string keys, there are two common syntaxes:
 
 \begin{itemize}
@@ -534,9 +537,6 @@ The problem encountered in this example stems from the notation of the point nam
 \subsection{Use of tables}
 \label{sub:use_of_tables}
 
-
-
-
 \subsubsection{Plotting a Curve}
 \label{ssub:plotting_a_curve}
 
@@ -548,7 +548,8 @@ f(x) = x\cdot e^{-x^2} + 1
 
 The list of points computed from this function will be stored in a \tkzNameObj{path} object named \tkzname{PA.curve}.
 
-\paragraph{Function definition.}
+\textbf{Function definition.}
+
 In the \LaTeX{} part of the code, we define the mathematical expression using:
 
 \begin{center}
@@ -557,7 +558,8 @@ In the \LaTeX{} part of the code, we define the mathematical expression using:
 
 This expression will later be passed to Lua for numerical evaluation.
 
-\paragraph{Generating the path.}
+\textbf{Generating the path.}
+
 The macro \tkzname{tkzGetPath} takes five arguments:
 \begin{itemize}
   \item the expression of the function (as a string),
@@ -569,13 +571,16 @@ The macro \tkzname{tkzGetPath} takes five arguments:
 
 The macro internally evaluates the function for each value of $x$ in the interval, and stores the corresponding points in a \code{path} object.
 
-\paragraph{Percent character.}
+\textbf{Percent character.}
+
 In LuaTeX, the percent symbol \code{\%} is treated as a comment initiator within Lua code. To avoid syntax errors when formatting a string that contains a percent character (used in \code{string.format}), we define a control sequence \tkzMacro{latex}{percentchar} to refer to \verb|\@percentchar|. This ensures compatibility when embedding Lua code via \tkzMacro{lualatex}{directlua}.
 
-\paragraph{Evaluating single values.}
+\textbf{Evaluating single values.}
+
 To retrieve the value of the function at a given point, the macro \tkzname{tkzval} can be used. It evaluates the Lua function with the input value and returns the result, which can then be used as a coordinate or label in the diagram.
 
-\paragraph{Complete Example.}
+\textbf{Complete Example.}
+
 The following example shows how to compute and draw the curve using the methods described above.
 
 \def\tkzfct{x*exp(-x^2)+1}
@@ -621,7 +626,8 @@ The following example shows how to compute and draw the curve using the methods 
 \end{tikzpicture}
 \end{center}
 
-\paragraph{Code definitions.}
+\textbf{Code definitions.}
+
 Below are the definitions of the macros used in this example:
 
 \begin{verbatim}
@@ -796,7 +802,7 @@ Projecting a point onto a line is a fundamental operation in geometry. The proje
 
 \begin{verbatim}
 function projection_(pa, pb, pt)
-  if aligned(pa, pb, pt) then
+  if tkz.aligned(pa, pb, pt) then
     return pt
   else
     local v = pb - pa
@@ -806,7 +812,7 @@ function projection_(pa, pb, pt)
 end
 \end{verbatim}
 
-The function \tkzMeth{math}{aligned} is currently used to check if the point is already on the line. Internally, it avoids using the determinant. This function will eventually be replaced or unified with \tkzFct{tkz}{tkz.is\_linear}.
+The function \tkzMeth{math}{tkz.aligned} is currently used to check if the point is already on the line. Internally, it avoids using the determinant. This function will eventually be replaced or unified with \tkzFct{tkz}{tkz.is\_linear}.
 
 \subsection{Point Method}
 
@@ -821,7 +827,8 @@ The \tkzMeth{object}{point} method is a generic method available for several geo
 
 This method returns a point located on the object at a relative position given by a parameter \( t \in [0,1] \). The value \( t = 0 \) corresponds to the start of the object (e.g., the first point or vertex), while \( t = 1 \) corresponds to its end (or to a full revolution for a circle or conic). Intermediate values of \( t \) return proportionally interpolated or parametrically calculated points on the object.
 
-\paragraph{Example.}
+\texttt{Example.}
+
 The following code illustrates how to use the \code{point} method with a line, a circle, and a triangle. In each case, we evaluate the midpoint of the object (\( t = 0.5 \)).
 
 \begin{minipage}{.5\textwidth}
@@ -876,7 +883,7 @@ The following code illustrates how to use the \code{point} method with a line, a
 \end{center}
 \end{minipage}
 
-\paragraph{Remarks.}
+\textbf{Remarks.}
 \begin{itemize}
   \item For a line segment, \code{object:point(0.5)} returns the midpoint.
   \item For a circle, the parameter corresponds to the angle \( 2\pi t \) starting from the origin point.
@@ -909,7 +916,7 @@ With objects, we instead define a \tkzNameObj{line} or \tkzNameObj{segment}, and
 \vspace{1em}
 The original point-based functions—referred to here as **primary functions**—are still available. They can be identified by a trailing underscore in their names (e.g., \code{midpoint\_}, \code{rotation\_}, \code{intersection\_lc\_}). In fact, almost all object methods internally rely on these primary functions.
 
-\paragraph{Examples.}
+\texttt{Examples.}
 
 \begin{itemize}
   \item \textbf{Rotation around a point.}
@@ -951,7 +958,7 @@ end
 \end{itemize}
 
 \vspace{1em}
-\paragraph{Summary.}
+\textbf{Summary.}
 
-The primary functions (whose names end with an underscore, such as \code{midpoint\_}, \code{rotation\_}, or \code{intersection\_lc\_}) are internal and are not part of the official API. They are not documented separately, as they serve only as internal building blocks for object methods. Users are encouraged to interact exclusively with object-oriented methods for clarity, stability, and forward compatibility.
+The primary functions (whose names end with an underscore, such as \code{midpoint\_}, or \code{intersection\_lc\_}) are internal and are not part of the official API. They are not documented separately, as they serve only as internal building blocks for object methods. Users are encouraged to interact exclusively with object-oriented methods for clarity, stability, and forward compatibility.
 \endinput

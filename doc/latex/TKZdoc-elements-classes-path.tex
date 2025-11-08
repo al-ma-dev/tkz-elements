@@ -250,31 +250,6 @@ The \code{tostring} metamethod provides a readable form, mainly for debugging:
 tostring(p) --> path: { (x1,y1) , (x2,y2) , ... }
 \end{verbatim}
 
-An example:
-
-\begin{tkzexample}[latex=.5\textwidth]
-  \directlua{
-    local function print_section(title)
-      tex.print("\\par\\noindent
-      \\textbf{" .. title .. "}\\par")
-    end
-    local A = point(1,0)
-    local B = point(2,2)
-    local C = point(3,3)
-    local p1 = path()
-    local p2 = path()
-    p1 = path({ "(0, 0)", "(1, 0)","(1, 1)" })
-    p2 = path({"(0,1)"})
-    tex.print("\\noindent p1 = ",tostring(p1))
-    tex.print("\\\\")
-    tex.print("p2 = ", tostring(p2))
-    print_section("operator +")
-    local p3 = p1 + p2
-    tex.print("p3 = p1 + p2 = ",tostring(p3))
-    print_section("operator -")
-    local p4 = p2 - p1
-    tex.print("p4 = p2 - p1 = ",tostring(p4))}
-\end{tkzexample}
 
 
 \subsection{Methods}
@@ -288,6 +263,8 @@ An example:
     \textbf{Method} & \textbf{Reference} \\
     \midrule
 \tkzMeth{path}{add\_point(z)} & See [\ref{ssub:method_tkzmeth_path_add__point}; \ref{thm:circle-point}]\\
+
+\tkzMeth{path}{get(i)}       & See [\ref{ssub:method_tkzmeth_path_get}] \\
 
 \tkzMeth{path}{copy()}       & See [\ref{ssub:method_tkzmeth_path_copy}] \\
 
@@ -335,6 +312,27 @@ Adds a point (given as a complex table) to the path. Let's take one of the first
   PA.triangle:add_point(z.C, 0)
   tex.print(tostring(PA.triangle))}
 \end{tkzexample}
+
+\subsubsection{Method \tkzMeth{path}{get(i)}}
+\label{ssub:method_tkzmeth_path_get}
+
+The method \code{get(i)} returns the i-th point stored in the path \texttt{PA.p}.
+
+Paths in tkz-elements store their points as formatted coordinate strings
+(e.g. "(1.000,2.000)") for compatibility with TikZ and for efficient
+transfer from Lua to \TeX.
+When \code{get(i)} is called, these coordinates are automatically converted back
+into a proper Lua point object.
+
+\textbf{Return value}
+
+A point object corresponding to the i-th element of the path.
+
+\textbf{Errors}
+
+If the index is outside the valid range, an error is raised:
+
+
 
 \subsubsection{Method \tkzMeth{path}{copy()}}
 \label{ssub:method_tkzmeth_path_copy}
@@ -456,24 +454,28 @@ or equivalently:
  path:add_pair_to_path(z1, z2, decimals)
 \end{verbatim}
 
-\paragraph{Description}
+\texttt{Purpose: }
+
  The coordinates of \code{z1} and \code{z2} are extracted, formatted with a fixed number of decimals $n$, and combined into a string \code{"x1/y1/x2/y2"} appended to the path.
 This string is then inserted into the current path table.This method appends to a \tkzname{path} object. a formatted point pair.
 It is mainly used to store segments, by keeping together the coordinates of two points.
 
 
 
-\paragraph{Arguments}
+\texttt{Arguments: }
+
 \begin{itemize}
   \item \code{z1}, \code{z2} – points given as tables \code{\{re, im\}}.
   \item \code{decimals} (optional) – number of decimals (default: \code{5}).
 \end{itemize}
 
-\paragraph{Returns} Nothing (modifies the path in place).
+\texttt{Returns: }
+
+Nothing (modifies the path in place).
 
 
+\texttt{Example usage: }
 
-\paragraph{Example}
 \begin{verbatim}
    local PA.p = path() -- empty path
    local z.A = point(1, 2)
@@ -488,17 +490,23 @@ It is mainly used to store segments, by keeping together the coordinates of two 
 
 Creates a new \tkzname{path} object by combining pairs of points taken from two parallel paths. Each resulting entry is a string \code{"x1/y1/x2/y2"}.
 
-\paragraph{Arguments}
+\texttt{Arguments: }
+
 \begin{itemize}
   \item \code{p1}, \code{p2} – tables of point strings \code{"(x,y)"}.
   \item \code{decimals} (optional) – number of decimals to retain (default: \code{5}).
 \end{itemize}
 
-\paragraph{Returns} A new \tkzname{path} object.
+\texttt{Returns: }
 
-\paragraph{Errors} Raises an error if the paths do not have the same length.
+A new \tkzname{path} object.
 
-\paragraph{Example}
+\textbf{Errors}
+
+Raises an error if the paths do not have the same length.
+
+\texttt{Example usage: }
+
 \begin{verbatim}
 local PA.p1 = {point(0,0), point(1,1)}
 local PA.p2 = {point(1,0), point(2,1)}
@@ -513,14 +521,18 @@ local PA.result = path_from_pairs(PA.p1, PA.p2, 1)
 
 Combines an arbitrary number of paths into a single \tkzname{path}. Each entry contains the concatenated coordinates of corresponding points from all input paths, formatted as \code{"x1/y1/x2/y2/..."}.
 
-\paragraph{Arguments}
+\texttt{Arguments: }
+
 \begin{itemize}
   \item \code{...} – one or more tables of TikZ-style points \code{"(x,y)"}. An optional final argument may specify the number of decimals.
 \end{itemize}
 
-\paragraph{Returns} A new \tkzname{path} object.
+\texttt{Returns: }
 
-\paragraph{Example}
+A new \tkzname{path} object.
+
+\texttt{Example usage: }
+
 \begin{verbatim}
 local PA.A = {point(1,2), point(2,2)}
 local PA.B = {point(1,3), point(2,3)}
@@ -528,7 +540,9 @@ local PA.path = stock_paths(PA.A, PA.B, 2)
 -- PA.path = {"1.00/2.00/1.00/3.00", "2.00/2.00/2.00/3.00"}
 \end{verbatim}
 
-\paragraph{Errors} All paths must have the same number of points.
+\textbf{Errors}
+
+ All paths must have the same number of points.
 
 \subsubsection{Method \tkzMeth{path}{concat(<'sep'>)}}
 \label{ssub:method_tkzmeth_path_concat}

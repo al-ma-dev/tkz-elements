@@ -10,7 +10,7 @@ It would be inconsistent to use what we will see  as an \emph{occs} (orthogonal 
 Moreover, the concept of a point in \tkzNamePack{tkz-elements} is tied to the affix of a complex number. To maintain code clarity and consistency, the option to modify units within Lua has been deliberately omitted.
 
 \medskip
-\noindent
+
 \textbf{Conclusion:} For any figure created with \tkzNamePack{tkz-elements}, all points are placed within a 2D orthonormal system using centimeters.
 
    \begin{tikzpicture}
@@ -42,7 +42,9 @@ Barycentric coordinates are particularly useful in triangle geometry, especially
 
 Consider a triangle $ABC$. One can define key points like the centroid and orthocenter using barycentric coordinates.
 
-\paragraph{About the Orthocenter.}
+\medskip
+\texttt{About the Orthocenter.}
+
 Computing barycentric coordinates for the orthocenter requires knowledge of the triangle's angles. These are stored as attributes in the table \texttt{T.ABC}:
 \begin{itemize}
   \item \texttt{T.ABC.alpha} — angle $\widehat{A}$ at vertex $A$
@@ -52,7 +54,9 @@ Computing barycentric coordinates for the orthocenter requires knowledge of the 
 
 See  [\ref{ssub:_triangle_barycentric_ka_kb_kc}]
 
-\paragraph{Retrieving Barycentric Coordinates.}
+\medskip
+\texttt{Retrieving Barycentric Coordinates.}
+
 It is possible to compute the barycentric coordinates of a given point with respect to a triangle. The returned values are automatically normalized. See Section~[\ref{ssub:_triangle_barycentric__coordinates_pt}] for usage.
 
 
@@ -95,9 +99,7 @@ The trilinear coordinates of a point $P$ with respect to a triangle $ABC$ are a 
 
 Since only the ratio between the coordinates is relevant, trilinear coordinates are particularly well suited for expressing geometric relationships that are invariant under scaling.
 
-So
-
-$ a' : b' : c' = ka : kb : kc$ in the next example ($a = BC, b = AC, c = AB$).
+So $ a' : b' : c' = ka : kb : kc$ in the next example ($a = BC, b = AC, c = AB$).
 
 \begin{minipage}{.5\textwidth}
 \directlua{

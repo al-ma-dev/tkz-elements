@@ -14,6 +14,21 @@ end
 function line_in_out_(a, b, pt)
 	return math.abs((pt - a) ^ (pt - b)) <= tkz.epsilon
 end
+
+function is_parallel_(pa, pb, pc, pd)
+	local det = (pb - pa) ^ (pd -pc)
+	return math.abs(det) < tkz.epsilon
+end
+
+function is_orthogonal_(pa, pb, pc, pd)
+	local dot = (pb - pa) .. (pd - pc)
+	return math.abs(dot) < tkz.epsilon
+end
+
+function is_equidistant_(a, b, p)
+	return math.abs(point.mod(a - p) - point.mod(b - p)) < tkz.epsilon
+end
+
 ---------------------------------------------------------------------------
 --                 Lines
 ---------------------------------------------------------------------------
@@ -156,7 +171,7 @@ function report_(za, zb, d, pt)
 	end
 end
 
-function colinear_at_(za, zb, pt, k)
+function collinear_at_(za, zb, pt, k)
 	if k then
 		return pt + k * (zb - za)
 	else
@@ -171,6 +186,13 @@ function orthogonal_at_(za, zb, pt, k)
 		return pt + (zb - za) * point(0, 1)
 	end
 end
+
+function collinear_at_distance_(za, zb, d)
+	 local len = point.mod(zb - za)
+	 local x = orthogonal_at_(za, zb, za, d / len)
+	 return x, collinear_at_(za, zb, x, 1)
+end
+
 
 function bisector(a, b, c)
 	local i = in_center_(a, b, c)
@@ -206,3 +228,47 @@ end
 --   local y = ortho_from_(p,p,x)
 --   return x,y
 -- end
+
+-- Lignes équidistantes de deux droites L1 et L2
+-- Cas parallèles : retourne la parallèle "milieu" (unique)
+-- Cas sécantes  : retourne les deux bissectrices (interne, externe)
+-- Paramètre optionnel 'choice' :
+--   * nil     → retourne soit 1 ligne (parallèles) soit 2 lignes (sécantes)
+--   * 1 ou 2  → ne retourner que la bissectrice #1 (u,v) ou #2 (up,vp)
+function lines_equidistant_(L1, L2, choice)
+	local a, b = L1:get()
+	local c, d = L2:get()
+
+	-- 1) Parallèles → ligne "milieu"
+	if is_parallel_(a, b, c, d) then
+		-- Distance entre deux parallèles (AB) et (CD)
+		local D = distance_(a, b, c)
+		-- Signe pour aller du côté de L2
+		local s = (L1:side_line(c) >= 0) and 1 or -1
+		-- La droite à mi-distance (unique)
+		local mid = L1:collinear_at_distance(s * D / 2)
+		return mid
+	end
+
+	-- 2) Sécantes → deux bissectrices passant par l'intersection
+	local i = intersection_ll_(a, b, c, d)
+
+	-- Points unité depuis i sur chaque droite, dans les deux orientations
+	-- NB : report_(pa, pb, ±1, i) → point sur (AB) à distance unitaire depuis i
+	local u  = report_(a, b,  1, i)
+	local up = report_(a, b, -1, i)
+	local v  = report_(c, d,  1, i)
+	local vp = report_(c, d, -1, i)
+
+	-- Les bissectrices sont les médiatrices de [u v] et [up vp]
+	local p1, q1 = mediator_(u,  v)   -- bissectrice #1 (interne)
+	local p2, q2 = mediator_(v, up)  -- bissectrice #2 (externe)
+
+	local B1 = line:new(p1, q1)
+	local B2 = line:new(p2, q2)
+
+	if choice == 1 then return B1 end
+	if choice == 2 then return B2 end
+	return B1, B2
+end
+

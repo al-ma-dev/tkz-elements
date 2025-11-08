@@ -5,7 +5,37 @@
 
 triangle = {}
 triangle.__index = triangle
+
+
 function triangle:new(za, zb, zc)
+	local eps = tkz.epsilon
+	-- ===== Guardrails against degeneration =====
+	-- sall vertices combined
+	if point.abs(za - zb) <= eps or point.abs(zb - zc) <= eps or point.abs(zc - za) <= eps then
+		tex.error("Degenerate triangle: two vertices coincide.")
+		return
+	end
+	-- aligned vertices
+	if tkz.is_linear(za, zb, zc) then
+		tex.error("Degenerate triangle: vertices aligned.")
+		return
+	end
+
+	-- ===== Side lengths =====
+	local c = point.abs(zb - za)
+	local a = point.abs(zc - zb)
+	local b = point.abs(za - zc)
+
+	-- ===== Line objects =====
+	local ab = line:new(za, zb)
+	local bc = line:new(zb, zc)
+	local ca = line:new(zc, za)
+
+	-- ===== Angles =====
+	local alpha = find_angle_(za, zb, zc)
+	local beta = find_angle_(zb, zc, za)
+	local gamma = find_angle_(zc, za, zb)
+
 	local type = "triangle"
 	local circumcenter = circum_center_(za, zb, zc)
 	local centroid = barycenter_({ za, 1 }, { zb, 1 }, { zc, 1 })
@@ -14,19 +44,13 @@ function triangle:new(za, zb, zc)
 	local eulercenter = euler_center_(za, zb, zc)
 	local spiekercenter = spieker_center_(za, zb, zc)
 	local orientation = find_orientation_(za, zb, zc)
-	local c = point.abs(zb - za)
-	local a = point.abs(zc - zb)
-	local b = point.abs(za - zc)
-	local alpha = find_angle_(za, zb, zc)
-	local beta = find_angle_(zb, zc, za)
-	local gamma = find_angle_(zc, za, zb)
-	local ab = line:new(za, zb)
-	local ca = line:new(zc, za)
-	local bc = line:new(zb, zc)
+
 	local semiperimeter = (a + b + c) / 2
-	local area = math.sqrt(semiperimeter * (semiperimeter - a) * (semiperimeter - b) * (semiperimeter - c))
+	local cross = (zb - za) ^ (zc - za)
+	local area = 0.5 * math.abs((zb - za) ^ (zc - za))
 	local inradius = area / semiperimeter
 	local circumradius = (a * b * c) / (4 * area)
+
 	local tr = {
 		pa = za,
 		pb = zb,
@@ -80,9 +104,10 @@ end
 -----------------------
 -- Result -> boolean
 -----------------------
-
-function triangle:in_out(pt)
-	return in_out_(self.pa, self.pb, self.pc, pt)
+-- added strict
+function triangle:in_out(pt, strict)
+	-- ne change pas → tous les anciens documents restent valides
+	return in_out_(self.pa, self.pb, self.pc, pt, strict)
 end
 
 function triangle:check_equilateral()
@@ -114,10 +139,10 @@ function triangle:barycentric_coordinates(pt)
 	local xB, yB = self.pb:get()
 	local xC, yC = self.pc:get()
 	local xP, yP = pt:get()
-	local orient2d_ABC = orient2d_(xA, yA, xB, yB, xC, yC)
-	local l_A = orient2d_(xP, yP, xB, yB, xC, yC) / orient2d_ABC
-	local l_B = orient2d_(xA, yA, xP, yP, xC, yC) / orient2d_ABC
-	local l_C = orient2d_(xA, yA, xB, yB, xP, yP) / orient2d_ABC
+	local orient2d_ABC = oriented_area2_(xA, yA, xB, yB, xC, yC)
+	local l_A = oriented_area2_(xP, yP, xB, yB, xC, yC) / orient2d_ABC
+	local l_B = oriented_area2_(xA, yA, xP, yP, xC, yC) / orient2d_ABC
+	local l_C = oriented_area2_(xA, yA, xB, yB, xP, yP) / orient2d_ABC
 	return l_A, l_B, l_C
 end
 
@@ -698,7 +723,7 @@ function triangle:euler_circle()
 end
 
 function triangle:circum_circle()
-	return circle:new(circum_circle_(self.pa, self.pb, self.pc), self.pa)
+	return circle:new(circum_center_(self.pa, self.pb, self.pc),self.pa)
 end
 
 function triangle:in_circle()
@@ -731,14 +756,14 @@ end
 
 function triangle:cevian_circle(p)
 	local pta, ptb, ptc = cevian_(self.pa, self.pb, self.pc, p)
-	return circle:new(circum_circle_(pta, ptb, ptc), pta)
+	return circle:new(circum_center_(pta, ptb, ptc), pta)
 end
 
 function triangle:symmedial_circle()
 	local pta, ptb, ptc, p
 	p = lemoine_point_(self.pa, self.pb, self.pc)
 	pta, ptb, ptc = cevian_(self.pa, self.pb, self.pc, p)
-	return circle:new(circum_circle_(pta, ptb, ptc), pta)
+	return circle:new(circum_center_(pta, ptb, ptc), pta)
 end
 
 function triangle:conway_circle()
@@ -786,7 +811,7 @@ function triangle:taylor_circle()
 	local d = projection_(self.pa, self.pb, a)
 	local e = projection_(self.pb, self.pc, b)
 	local f = projection_(self.pc, self.pa, c)
-	return circle:new(circum_circle_(d, e, f), d)
+	return circle:new(circum_center_(d, e, f), d)
 end
 
 function triangle:adams_circle()
@@ -837,41 +862,6 @@ function triangle:kenmotu_circle()
 	local rho = (math.sqrt(2) * a * b * c) / (4 * area + (a ^ 2 + b ^ 2 + c ^ 2))
 	local center = self:kimberling(371)
 	return circle:new(through(center, rho))
-end
-
--- Circle tangent to two straight lines passing through a given point
-function triangle:c_ll_p(p)
-	-- Compute the bisector of the triangle
-	local lbi = bisector(self.pa, self.pb, self.pc)
-
-	if lbi:in_out(p) then
-		-- Orthogonal projection of p onto the bisector
-		local lp = lbi:ortho_from(p)
-
-		-- Intersection of line from p to its projection with self.pa and self.pb
-		local i = intersection_ll_(p, lp.pb, self.pa, self.pb)
-
-		-- Intersection points of the line with the circle defined by (i, p)
-		local t1, t2 = intersection_lc_(self.pa, self.pb, i, p)
-
-		-- Create the main line and find orthogonal projections from t1 and t2
-		local lab = line:new(self.pa, self.pb)
-		local x = lab:ortho_from(t1).pb
-		local y = lab:ortho_from(t2).pb
-
-		-- Return two circles based on the orthogonal projections and points t1, t2
-		return circle:new(intersection_ll_(x, t1, self.pa, p), t1), circle:new(intersection_ll_(y, t2, self.pa, p), t2)
-	else
-		local lab = line:new(self.pa, self.pb)
-		-- Reflection of p across the bisector
-		local q = lbi:reflection(p)
-
-		-- Compute circles from the Wallis construction
-		local c1, c2 = lab:c_l_pp(p, q)
-
-		-- Return two circles with centers and points on their circumference
-		return c1, c2
-	end
 end
 
 
@@ -934,6 +924,8 @@ function triangle:mixtilinear_incircle(arg)
 
 	return circle(W, P1)
 end
+
+
 
 -------------------
 -- Result -> triangle
@@ -1250,5 +1242,33 @@ function triangle:path(p1, p2)
 
 	return path:new(list)
 end
+
+--- CONTACT PROBLEM APOLLONIUS
+
+-- Circle tangent to the three lines of the triangle:
+-- returns (in this order): incircle, excircle at pa, excircle at pb, excircle at pc.
+-- Optionnel: which ∈ { nil/"all", "in", "pa", "pb", "pc", "ex_a", "ex_b", "ex_c" }
+function triangle:LLL(which)
+	which = which or "all"
+	-- --- sélecteur
+	local C_in = self:in_circle()
+	local C_ea = self:ex_circle(0) -- pa
+	local C_eb = self:ex_circle(1) -- pb
+	local C_ec = self:ex_circle(2) -- pc
+	if which == "all" or which == nil then
+		return C_in, C_ea, C_eb, C_ec
+	end
+
+	-- alias pratiques
+	if which == "in" then return C_in end
+	if which == "pa" or which == "ex_a" then return C_ea end
+	if which == "pb" or which == "ex_b" then return C_eb end
+	if which == "pc" or which == "ex_c" then return C_ec end
+
+	tex.error("Unknown selector for triangle:c_lll: "..tostring(which))
+
+end
+triangle.c_lll = triangle.LLL
+
 
 return triangle

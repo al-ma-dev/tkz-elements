@@ -9,29 +9,16 @@
 ----------------------------
 ---- boolean ---------------
 ----------------------------
-function in_out_(a, b, c, pt)
+function in_out_(a, b, c, pt, strict)-- nil (absent or fals or true)
 	local x, y, z = barycentric_coordinates_(a, b, c, pt)
-	if x > 0 and y > 0 and z > 0 then
-		return true
+	local eps = tkz.epsilon
+	if strict then
+		return (x > eps and y > eps and z > eps)
 	else
-		return false
+		return (x >= -eps and y >= -eps and z >= -eps)
 	end
 end
--- function in_out_(a, b, c, pt)
---   local cba, cbb, cbc, TT, AT, AA, AB, AC
---   AT = area_(a, b, c)
---   AA = area_(pt, b, c)
---   AB = area_(a, pt, c)
---   AC = area_(a, b, pt)
---   cba = AA / AT
---   cbb = AB / AT
---   cbc = AC / AT
---   if (cba >= 0 and cba <= 1) and (cbb >= 0 and cbb <= 1) and (cbc >= 0 and cbc <= 1) then
---     return true
---   else
---     return false
---   end
--- end
+
 
 function check_equilateral_(A, B, C)
 	local a, b, c = length_(B, C), length_(A, C), length_(A, B)
@@ -49,7 +36,7 @@ end
 -------------------------
 
 function find_orientation_(za, zb, zc)
-	local d = orient2d_(za.re, za.im, zb.re, zb.im, zc.re, zc.im)
+	local d = oriented_area2_(za.re, za.im, zb.re, zb.im, zc.re, zc.im)
 	if is_zero_(d) then
 		return "aligned"
 	elseif d > 0 then
@@ -86,10 +73,10 @@ function barycentric_coordinates_(a, b, c, pt)
 	local xB, yB = b.re, b.im
 	local xC, yC = c.re, c.im
 	local xP, yP = pt.re, pt.im
-	local orient2d_ABC = orient2d_(xA, yA, xB, yB, xC, yC)
-	local l_A = orient2d_(xP, yP, xB, yB, xC, yC) / orient2d_ABC
-	local l_B = orient2d_(xA, yA, xP, yP, xC, yC) / orient2d_ABC
-	local l_C = orient2d_(xA, yA, xB, yB, xP, yP) / orient2d_ABC
+	local orient2d_ABC = oriented_area2_(xA, yA, xB, yB, xC, yC)
+	local l_A = oriented_area2_(xP, yP, xB, yB, xC, yC) / orient2d_ABC
+	local l_B = oriented_area2_(xA, yA, xP, yP, xC, yC) / orient2d_ABC
+	local l_C = oriented_area2_(xA, yA, xB, yB, xP, yP) / orient2d_ABC
 	return l_A, l_B, l_C
 end
 
@@ -314,7 +301,7 @@ function circum_circle_(a, b, c)
 	local ka = math.sin(2 * get_angle_(a, b, c))
 	local kb = math.sin(2 * get_angle_(b, c, a))
 	local kc = math.sin(2 * get_angle_(c, a, b))
-	return barycenter_({ a, ka }, { b, kb }, { c, kc })
+	return barycenter_({ a, ka }, { b, kb }, { c, kc }), a
 end
 
 function in_circle_(a, b, c)

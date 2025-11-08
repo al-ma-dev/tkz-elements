@@ -8,7 +8,7 @@ The \texttt{occs} class models an \emph{orthonormal Cartesian coordinate system}
 All calculations in this package are performed in a fixed OCCS. For convenience and clarity, this class allows defining and transforming to a new OCCS using a direction (a line) and a new origin point.
 
 \medskip
-\noindent
+
 The typical use case is to simplify the coordinates of geometric objects such as conics, by aligning the axes with their natural directions.
 
 \subsection{Creating an OCCS}\label{occs:create}
@@ -22,7 +22,7 @@ An OCCS (orthonormal Cartesian coordinate system) is defined by:
 The abscissa axis (the $x$-axis) is automatically computed to be orthogonal to the ordinate axis, ensuring a right-handed coordinate system.
 
 \medskip
-\noindent
+
 There are two equivalent ways to create an OCCS:
 
 \begin{mybox}
@@ -34,7 +34,7 @@ There are two equivalent ways to create an OCCS:
 The result is stored in the table \code{O} under the key \code{"S"}, representing the OCCS centered at point \code{z.S}.
 
 \medskip
-\noindent
+
 This object can then be used to:
 \begin{itemize}
   \item compute coordinates of points in the new system,

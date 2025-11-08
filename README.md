@@ -1,28 +1,28 @@
 # tkz-elements — Euclidean geometry with LuaLaTeX
 
-_Current release: [2025/10/04 version 4.30c]_
+_Current release: [2025/11/08 version 4.35c]_
 
-`tkz-elements` is a Lua library that performs the computations needed to define the objects of an Euclidean geometry figure (points, lines, circles, conics, triangles, paths, …). All numerical work happens in **Lua**; the drawing is left to **tkz‑euclide** (recommended) or **TikZ**.
+`tkz-elements` is a Lua library that performs the computations needed to define the objects of a Euclidean geometry figure (points, lines, circles, conics, triangles, paths, …). All numerical work happens in **Lua**; drawing is done with **tkz‑euclide** (recommended) or **TikZ**.
 
 ---
 
 ## Features
 - **Object-oriented design**: classes `point`, `line`, `circle`, `conic`, `triangle`, `path`, …
-- **Rich geometry toolbox**: bisectors, altitudes, tangents, radical axis/center, Poncelet point, orthopole, Kimberling points, mixtilinear circle, Morley/Soddy/Napoleon constructions, and more
+- **Rich geometry toolbox**: bisectors, altitudes, tangents, radical axis/center, Poncelet point, orthopole, Kimberling points, mixtilinear circle, Morley/Soddy/Napoleon constructions, Apollonius and more
 - **Utilities module**: helpers for formatting numbers/points, solving equations, trigonometry/angles, barycentric & trilinear coordinates, comparisons, rounding, etc.
-- **Smooth Lua → TikZ transfer**: move computed objects from Lua to TikZ/`tkz-euclide` with simple macros
+- **Smooth Lua → TikZ transfer**: transfer computed objects from Lua to TikZ/`tkz-euclide` with simple macros
 
 ## Requirements
 - **LuaLaTeX** (Lua 5.3)
 - **tkz‑euclide** (or **TikZ**)
 - A recent TeX distribution (TeX Live / MiKTeX / MacTeX)
 
-> Tip: If you use `xcolor`, load it **before** `tkz-euclide`.
+> > Tip: If you use `xcolor`, load it **before** `tkz-euclide`.
 
 ## Installation
 `tkz-elements` is available via TeX Live and MiKTeX package managers.
 
-For a manual install, place files in your TDS tree (or `TEXMFHOME`) following the usual directory structure of LaTeX packages.
+For a manual install, place the files in your TDS tree (or `TEXMFHOME`) following the usual LaTeX directory structure.
 
 ## Quick start
 ```tex
@@ -73,7 +73,7 @@ Please open a GitHub issue and include:
 - relevant **log excerpts** (with `-file-line-error`).
 
 ### Versioning & releases
-- Versions follow the scheme `4.xx c` (e.g., `4.25c`) and are tagged on GitHub.
+- Versions follow the scheme `4.xx c` (e.g., `4.35c`) and are tagged on GitHub.
 - The PDF manual ships in the repository and on CTAN.
 
 The official version number and release date of **tkz-elements** are recorded in:

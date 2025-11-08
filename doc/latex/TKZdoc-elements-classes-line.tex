@@ -22,7 +22,7 @@ This creates a line object \code{L.AB} representing:
 \end{itemize}
 
 \medskip
-\noindent
+
 Internally, this object stores the two defining points and derives several geometric properties from them.
 
 \subsection{Attributes of a line} %(fold)
@@ -123,75 +123,66 @@ Here's the list of methods for the \tkzNameObj{line} object. The results can be 
 
 \begin{minipage}{\textwidth}
 \bgroup
-  \catcode`_=12
-  \small
-  \captionof{table}{Methods of the class line.(part 1)}\label{line:methods part 1}
+\catcode`_=12
+\small
+\captionof{table}{Methods of the class line.(part 1)}\label{line:methods part 1}
 \begin{tabular}{ll}
 \toprule
 \textbf{Methods} & \textbf{Reference}  \\
 \midrule
-    \textbf{Constructor} & \\
-    \tkzMeth{line}{new(pt, pt)} &Note\footnote{line(pt, pt) (short form, recommended)}; [\ref{sub:creating_a_line}; \ref{ssub:method_line_new_pt_pt}; \ref{sub:altshiller}] \\
 
-  \midrule
-  \textbf{Real-valued Methods} & \\
-  \midrule
-  \tkzMeth{line}{distance(pt)}  &  [\ref{ssub:method_line_distance}] \\
-  \midrule
-    \textbf{Boolean Methods} & \\
-  \midrule
-  \tkzMeth{line}{in\_out(pt)}  & [\ref{ssub:method_in_out};\ref{ssub:in_out_for_a_line}] \\
-  \tkzMeth{line}{in\_out\_segment(pt)} & [\ref{ssub:method_line_in_out_segment}] \\
- \tkzMeth{line}{on\_line(pt)}  & idem \\
- \tkzMeth{line}{on\_segment(pt)} & idem \\
- \tkzMeth{line}{is\_parallel(L)}  & [\ref{ssub:method_line_is_parallel}]  \\
-  \tkzMeth{line}{is\_orthogonal(L)}  & [\ref{ssub:method_line_is_orthogonal}] \\
-  \tkzMeth{line}{is\_equidistant(pt)}  & [\ref{ssub:method_line_is_equidistant}] \\
+\textbf{Constructor} & \\
+\tkzMeth{line}{new(pt, pt)} &Note\footnote{line(pt, pt) (short form, recommended)}; [\ref{sub:creating_a_line}; \ref{ssub:method_line_new_pt_pt}; \ref{sub:altshiller}] \\
+
+\midrule
+
+\textbf{Real-valued Methods} & \\
+\midrule
+\tkzMeth{line}{distance(pt)}  &  [\ref{ssub:method_line_distance}] \\
+\midrule
+
+\textbf{Boolean Methods} & \\
+\midrule
+\tkzMeth{line}{in\_out(pt)}  & [\ref{ssub:method_in_out};\ref{ssub:in_out_for_a_line}] \\
+\tkzMeth{line}{in\_out\_segment(pt)} & [\ref{ssub:method_line_in_out_segment} \\
+\tkzMeth{line}{on\_line(pt)}  & idem \\
+\tkzMeth{line}{on\_segment(pt)} & idem \\
+\tkzMeth{line}{is\_parallel(L)}  & [\ref{ssub:method_line_is_parallel}]  \\
+\tkzMeth{line}{is\_orthogonal(L)}  & [\ref{ssub:method_line_is_orthogonal}] \\
+\tkzMeth{line}{is\_equidistant(pt)}  & [\ref{ssub:method_line_is_equidistant}]\\
 \midrule
 
 \textbf{Points Methods} & \\
-  \midrule
-  \tkzMeth{line}{get(n)}     & [\ref{ssub:method_line_get}] \\
-
- \tkzMeth{line}{random()}     & [  \ref{ssub:method_line_random}] \\
-
-  \tkzMeth{line}{gold\_ratio()}  &  [\ref{ssub:methode_imeth_line_gold__ratio}; \ref{sub:gold_ratio_with_segment} ; \ref{sub:the_figure_pappus_circle} ; \ref{sub:bankoff_circle} ]  \\
+\midrule
+\tkzMeth{line}{get(n)}     & [\ref{ssub:method_line_get}] \\
+\tkzMeth{line}{random()}     & [  \ref{ssub:method_line_random}] \\
+\tkzMeth{line}{gold\_ratio()}  &  [\ref{ssub:methode_imeth_line_gold__ratio}; \ref{sub:gold_ratio_with_segment} ; \ref{sub:the_figure_pappus_circle} ; \ref{sub:bankoff_circle} ]  \\
 
 \tkzMeth{line}{normalize()}  &  [ \ref{ssub:normalize}]  \\
-
 \tkzMeth{line}{normalize\_inv()}  & [\ref{ssub:normalize}]\\
-
 \tkzMeth{line}{barycenter(r,r)}    &   [\ref{ssub:barycenter_with_a_line}] \\
-
 \tkzMeth{line}{point(r)}   &   [\ref{sub:ellipse} ; \ref{ssub:method_point}] \\
-
 \tkzMeth{line}{midpoint()}    & [\ref{ssub:method_line_midpoint}]  \\
-
 \tkzMeth{line}{harmonic\_int(pt)}   &  [\ref{ssub:method_line_harmonic_int};  \ref{sub:bankoff_circle}] \\
-
 \tkzMeth{line}{harmonic\_ext(pt)}  & [ \ref{sub:bankoff_circle}] \\
-
 \tkzMeth{line}{harmonic\_both(r)}  & [\ref{ssub:harmonic_both}; \ref{ssub:harmonic_division_with_tkzphi}] \\
 
 \tkzMeth{line}{report(d,pt)}    &[\ref{ssub:method_report}]\\
 
-\tkzMeth{line}{colinear\_at(pt,k)}  & [ex. \ref{ssub:method_line_colinear__at}]\\
+\tkzMeth{line}{collinear\_at(pt,k)}  & [ex. \ref{ssub:method_line_collinear__at}]\\
   \midrule
 
     \textbf{Line Constructors} & \\
   \midrule
 
 \tkzMeth{line}{ll\_from(pt)}  & [\ref{ssub_line_from_a_defined_line}] \\
-
 \tkzMeth{line}{ortho\_from(pt)} & [\ref{ssubline_ortho_from}] \\
-
 \tkzMeth{line}{mediator()} & Note  Note\footnote{You may use \tkzMeth{perpendicular\_bisector} as a synonym.} ; [\ref{ssub:method_line_mediator}]\\
 
 \tkzMeth{line}{swap\_line()}  & [\ref{ssub:method_line_swap__line} ; \ref{ssub:intersection_line_parabola_explained}] \\
 
 \tkzMeth{line}{orthogonal\_at()} & \ref{ssub:method_line_orthogonal__at} \\
   \midrule
-
 
 \textbf{Triangle Constructors} & \\
 \midrule
@@ -208,21 +199,15 @@ Here's the list of methods for the \tkzNameObj{line} object. The results can be 
 \tkzMeth{line}{s\_s(r,r<,'swap'>)}  &  [\ref{ssub:triangle_with_three_given_sides}] \\
 
 \tkzMeth{line}{sa\_(r,an<,'swap'>)}  &  [\ref{ssub:_line_sas_d_an}]  \\
-
-  \tkzMeth{line}{\_as(r,an<,'swap'>)}  &  [\ref{ssub:_line__as_d_an_swap}]  \\
-
-  \tkzMeth{line}{a\_s(r,an<,'swap'>)}  &  [\ref{ssub:_line_a__s_d_an_swap}]\\
-
-  \tkzMeth{line}{s\_a(r,an<,'swap'>)}  &  [\ref{ssub:_line_sa}]\\
-  \bottomrule
-  \end{tabular}
-  \egroup
-
-
+\tkzMeth{line}{\_as(r,an<,'swap'>)}  &  [\ref{ssub:_line__as_d_an_swap}]  \\
+\tkzMeth{line}{a\_s(r,an<,'swap'>)}  &  [\ref{ssub:_line_a__s_d_an_swap}]\\
+\tkzMeth{line}{s\_a(r,an<,'swap'>)}  &  [\ref{ssub:_line_sa}]\\
+\bottomrule
+\end{tabular}
+\egroup
 \end{minipage}
 
 \begin{minipage}{\textwidth}
-
 \bgroup
 \catcode`_=12
 \small
@@ -245,8 +230,10 @@ Here's the list of methods for the \tkzNameObj{line} object. The results can be 
 
 \tkzMeth{line}{circle()}  &  \\
 \tkzMeth{line}{apollonius(r)}  &  [\ref{ssub:apollonius_circle_ma_mb_k}] \\
-\tkzMeth{line}{c\_l\_pp(pt, pt)} &[\ref{ssub:c_l_pp}]  \\
-\tkzMeth{line}{c\_ll\_p(pt, pt)} & [\ref{ssub:method_c__ll__p}]  \\
+\tkzMeth{line}{LPP} & or c\_l\_pp(pt, pt) [\ref{ssub:c_l_pp}]  \\
+\tkzMeth{line}{LLP} & or c\_ll\_p(L, pt) [\ref{ssub:method_c__ll__p}]  \\
+\tkzMeth{line}{LLL(L, L)} & [\ref{ssub:method_LLL}]  \\
+
 \midrule
 \textbf{Squares Constructors}&\\
 \midrule
@@ -529,13 +516,14 @@ This method is available for most geometric objects that are defined by two or m
 \subsubsection{Method \tkzMeth{line}{report(r,<pt>)}} %(fold)
 \label{ssub:method_report}
 
-TThis method constructs and returns a \tkzname{point} located at a given distance \( r \) from a reference point along the direction of the line.
+\texttt{Purpose: } This method constructs and returns a \tkzname{point} located at a given distance \( r \) from a reference point along the direction of the line.
 
 \medskip
-\noindent
+
 It generalizes the idea of “reporting a length” on a line segment. Depending on whether a reference point is specified, the method either measures from the first endpoint of the line or from a user-defined origin.
 
-\paragraph{Syntax}
+\texttt{Syntax: }
+
 \begin{center}
 \begin{tabular}{lcl}
 \code{L:report(r)} & $\rightarrow$ & returns the point at distance \( r \) from \code{L.pa} along \code{L.pb} \\
@@ -543,7 +531,8 @@ It generalizes the idea of “reporting a length” on a line segment. Depending
 \end{tabular}
 \end{center}
 
-\paragraph{Arguments}
+\texttt{Arguments: }
+
 \begin{description}
   \item[\code{r}] (number) — the signed distance to report along the line.
   If \(\,r>0\), the point lies in the direction from \code{pa} to \code{pb};
@@ -552,17 +541,17 @@ It generalizes the idea of “reporting a length” on a line segment. Depending
 \end{description}
 
 
-\paragraph*{Special cases}
+\texttt{Special cases: }
+
 \begin{itemize}
   \item If the line has zero length (i.e., both endpoints coincide), an error is raised.
   \item Negative distances produce points on the opposite extension of the line.
   \item The method works consistently with open or oriented lines (not just finite segments).
 \end{itemize}
 
-\paragraph*{Alias}
-The synonym \code{point\_at\_distance} is provided for readability, especially when the geometrical intent is to “locate a point at a given distance along a direction”.
+\texttt{Alias: } The synonym \code{point\_at\_distance} is provided for readability, especially when the geometrical intent is to “locate a point at a given distance along a direction”.
 
-\paragraph*{Returned value}
+\texttt{Returned value :}
 A new \tkzname{point} object corresponding to the computed location.
 
 
@@ -593,7 +582,7 @@ A new \tkzname{point} object corresponding to the computed location.
 This method returns the barycenter of the two points that define the line, weighted by the coefficients \code{ka} and \code{kb}.
 
 \medskip
-\noindent
+
 Geometrically, the barycenter lies on the line segment $[AB]$ (or its extension) and divides it internally or externally, depending on the sign and ratio of the coefficients.
 
 
@@ -664,7 +653,7 @@ This method is implemented for all objects that are defined by at least two poin
 This method has been replaced by \code{tkz.midpoint} [See \ref{sub:midpoint_and_midpoints}].
 
 \medskip
-\noindent
+
 However, when the line object has not been created and its creation is unnecessary, the standalone function \code{tkz.midpoint(z.A, z.B)} remains convenient and efficient.
 
 
@@ -678,14 +667,14 @@ However, when the line object has not been created and its creation is unnecessa
 Given a point on the line but located \emph{outside} the segment $[AB]$, this method returns a point on the segment that maintains a harmonic ratio.
 
 \medskip
-\noindent
+
 Let $AB$ be a line, and let $D$ be a point such that $D \in (AB)$ but $D \not\in [AB]$. The method returns a point $C \in [AB]$ such that:
 
 \[
 \frac{AC}{BC} = \frac{AD}{BD}
 \]
 
-\noindent
+
 This construction is particularly useful in projective geometry and when working with harmonic divisions.
 
 \vspace{2em}
@@ -713,14 +702,14 @@ This construction is particularly useful in projective geometry and when working
 This method returns a point located outside the segment $[AB]$ that satisfies a harmonic relation with a given point on the segment.
 
 \medskip
-\noindent
+
 Let $AB$ be a line segment, and let $C$ be a point on $[AB]$ (but not its midpoint). The method returns a point $D$ lying on the line $(AB)$ but \emph{outside} the segment $[AB]$, such that:
 
 \[
 \frac{AC}{BC} = \frac{AD}{BD}
 \]
 
-\noindent
+
 This is the inverse of the operation performed by the method \tkzMeth{line}{harmonic\_int(pt)}.
 
 \subsubsection{Method \tkzMeth{line}{harmonic\_both(k)}}
@@ -733,17 +722,17 @@ This method returns two points on the line defined by $AB$:
   \item one point $D$ lying \emph{outside} the segment $[AB]$,
 \end{itemize}
 
-\noindent such that the following harmonic ratio holds:
+ such that the following harmonic ratio holds:
 
 \[
 \frac{AC}{BC} = \frac{AD}{BD} = k
 \]
 
-\noindent
+
 The parameter \code{k} represents the desired ratio between the distances. This method is useful when you want to construct both the internal and external harmonic conjugates of a given segment.
 
 \medskip
-\noindent
+
 The method returns the two corresponding points in the order: \code{internal, external}.
 
 \vspace{2em}
@@ -774,7 +763,7 @@ This method returns a point $C$ on the segment $[AB]$ that divides it according 
 \frac{AC}{CB} = \varphi = \frac{1 + \sqrt{5}}{2} \approx 1.618
 \]
 
-\noindent
+
 This construction is useful in design, geometry, and aesthetics where harmonic proportions are desired.
 
 \begin{tkzexample}[vbox]
@@ -830,24 +819,24 @@ $bd = 1$ and $d\in [ab]$
 \end{center}
 \end{tkzexample}
 
-\subsubsection{Method \tkzMeth{line}{colinear\_at(pt,<r>)}} %(fold)
-\label{ssub:method_line_colinear__at}
+\subsubsection{Method \tkzMeth{line}{collinear\_at(pt,<r>)}} %(fold)
+\label{ssub:method_line_collinear__at}
 
 This method returns a point located on a line parallel to $(AB)$ and passing through a given point. The resulting point is placed at a distance proportional to the length of $AB$, in the same direction.
 
 \medskip
-\noindent
+
 If the second argument \meta{r} is omitted, it defaults to $1$. In that case, the method produces a segment of the same length and direction as $[AB]$.
 
 \medskip
-\noindent
+
 \smallbf{Example interpretations:}
 \begin{itemize}
-  \item If \code{L.AB:colinear\_at(z.C)} produces point $E$, then $CE = AB$ and $(AB) \parallel (CE)$.
-  \item If \code{L.AB:colinear\_at(z.C, 0.5)} produces point $D$, then $CD = 0.5 \cdot AB$ and $(AB) \parallel (CD)$.
+  \item If \code{L.AB:collinear\_at(z.C)} produces point $E$, then $CE = AB$ and $(AB) \parallel (CE)$.
+  \item If \code{L.AB:collinear\_at(z.C, 0.5)} produces point $D$, then $CD = 0.5 \cdot AB$ and $(AB) \parallel (CD)$.
 \end{itemize}
 
-\noindent
+
 This is particularly useful for replicating a vector or projecting a direction onto another position in the plane.
 
 \vspace{1em}
@@ -858,8 +847,8 @@ This is particularly useful for replicating a vector or projecting a direction o
   z.B = point(4, 0)
   z.C = point(1, 3)
   L.AB = line(z.A, z.B)
-  z.D = L.AB:colinear_at(z.C, .5)
-  z.E = L.AB:colinear_at(z.C)}
+  z.D = L.AB:collinear_at(z.C, .5)
+  z.E = L.AB:collinear_at(z.C)}
 \begin{center}
 \begin{tikzpicture}
  \tkzGetNodes
@@ -877,8 +866,8 @@ This is particularly useful for replicating a vector or projecting a direction o
   z.B = point(4, 0)
   z.C = point(1, 3)
   L.AB = line(z.A, z.B)
-  z.D = L.AB:colinear_at(z.C, .5)
-  z.E = L.AB:colinear_at(z.C)}
+  z.D = L.AB:collinear_at(z.C, .5)
+  z.E = L.AB:collinear_at(z.C)}
 \end{tkzexample}
 \end{minipage}
 
@@ -889,18 +878,18 @@ This method returns a point located on a line \textbf{perpendicular} to the line
 The resulting point is placed at a distance proportional to the length of $AB$, in a direction orthogonal to it.
 
 \medskip
-\noindent
+
 If the second argument \meta{r} is omitted, it defaults to $1$.
 
 \medskip
-\noindent
-\smallbf{Example interpretations:}
+
+\texttt{Example interpretations:}
 \begin{itemize}
   \item If \code{L.AB:orthogonal\_at(z.C)} gives point $E$, then $CE = AB$ and $(AB) \perp (CE)$.
   \item If \code{L.AB:orthogonal\_at(z.C, 0.5)} gives point $D$, then $CD = 0.5 \cdot AB$ and $(AB) \perp (CD)$.
 \end{itemize}
 
-\noindent
+
 This method is useful for constructing perpendicular vectors or building geometric figures such as rectangles or perpendicular bisectors.
 
 \vspace{1em}
@@ -939,28 +928,32 @@ This method is useful for constructing perpendicular vectors or building geometr
 \label{ssub:method_line_random}
 The method returns a point belonging to the segment.
 
-\paragraph*{Syntax}
+\medskip
+\texttt{Syntax: } \verb|z.M = L.AB:random()|
 
-\verb|z.M = L.AB:random()|
 
+%%================================
 \subsection{The result is a line}
-
+%%================================
 
 \subsubsection{Method \tkzMeth{line}{ll\_from(pt)}} %(fold)
 \label{ssub_line_from_a_defined_line}
 
-\paragraph*{Alias} \code{parallel\_from}
+\medskip
+\texttt{Alias: } \code{parallel\_from}
 
 
-This method constructs a new object of type \code{line}, parallel to the original line and passing through the given point.
+\texttt{Purpose: } This method constructs a new object of type \code{line}, parallel to the original line and passing through the given point.
 
 \medskip
-\noindent
-Unlike the \code{colinear\_at} method, which simply returns a point translated along the same direction, \code{ll\_from} returns a full line object. This allows further operations such as intersections, projections, or constructions involving new points along that line.
+
+Unlike the \code{collinear\_at} method, which simply returns a point translated along the same direction, \code{ll\_from} returns a full line object. This allows further operations such as intersections, projections, or constructions involving new points along that line.
 
 \medskip
-\noindent
-\textbf{Use this method when you need a new line object rather than a point.} The choice between \code{ll\_from} and \code{colinear\_at} depends on the context and on whether you need to work with the resulting direction as a geometric object.
+
+\texttt{Use this method when you need a new line object rather than a point.}.
+
+ The choice between \code{ll\_from} and \code{collinear\_at} depends on the context and on whether you need to work with the resulting direction as a geometric object.
 
 \begin{minipage}{.5\textwidth}
 \directlua{
@@ -999,13 +992,13 @@ Unlike the \code{colinear\_at} method, which simply returns a point translated a
 %\begin{table}[h!]
 
 
-\subsubsection{Comparison between \texttt{colinear\_at} and \texttt{ll\_from} methods}
+\subsubsection{Comparison between \texttt{collinear\_at} and \texttt{ll\_from} methods}
 
 \bgroup
   \small
   \begin{tabular}{@{} l ll @{}}
   \toprule
-  \smallbf{Aspect} & \code{colinear\_at(pt, r)} & \code{ll\_from(pt)} \\
+  \smallbf{Aspect} & \code{collinear\_at(pt, r)} & \code{ll\_from(pt)} \\
   \midrule
   Return type     & \code{point}                & \code{line} \\
   Purpose         & Translated point            & Parallel line \\
@@ -1020,18 +1013,18 @@ Unlike the \code{colinear\_at} method, which simply returns a point translated a
 \subsubsection{Method \tkzMeth{line}{ortho\_from(pt)}} %(fold)
 \label{ssubline_ortho_from}
 
-\paragraph*{Alias} \code{orthogonal\_from}
+\texttt{Alias: } \code{orthogonal\_from}
 
 
-This method constructs a new object of type \code{line}, perpendicular to the original line and passing through the given point.
+\texttt{Purpose: } This method constructs a new object of type \code{line}, perpendicular to the original line and passing through the given point.
 
 \medskip
-\noindent
+
 Unlike the \code{orthogonal\_at} method, which returns a \code{point} located at a given distance in the perpendicular direction, \code{ortho\_from} returns a full \code{line} object. This makes it suitable for further geometric constructions such as intersections, projections, or drawing perpendiculars.
 
 \medskip
-\noindent
-\smallbf{Use this method when a perpendicular line is needed as a geometric object.} Choose between \code{orthogonal\_at} and \code{ortho\_from} depending on whether you need a point or a line.
+
+\texttt{Use this method when a perpendicular line is needed as a geometric object.} Choose between \code{orthogonal\_at} and \code{ortho\_from} depending on whether you need a point or a line.
 
 \begin{minipage}{.5\textwidth}
   \directlua{
@@ -1092,12 +1085,12 @@ In mathematical literature (e.g., \textit{MathWorld}), the \emph{mediator} of a 
 The term \emph{mediator} has historical roots, and was notably used by J. Neuberg (see Altshiller-Court, 1979, p.~298). In this package, I have chosen to adopt the French term \emph{médiatrice}, translated here as \code{mediator}.
 
 \medskip
-\noindent
+
 The method returns a new \code{line} object that is perpendicular to the original and passes through its midpoint.
 
 \medskip
-\noindent
-\smallbf{Alias:} You may also call this method using the alternative name \code{perpendicular\_bisector()}.
+
+\texttt{Alias: } You may also call this method using the alternative name \code{perpendicular\_bisector()}.
 
 \vspace{1em}
 \begin{tkzexample}[latex=.5\textwidth]
@@ -1122,21 +1115,58 @@ The method returns a new \code{line} object that is perpendicular to the origina
 \end{center}
 \end{tkzexample}
 
+
+\subsubsection{Method \tkzMeth{line}{collinear\_at\_distance(d)}}
+\label{ssub:method_line_collinear_at_distance}
+
+\texttt{Description: } This method creates a new line parallel to the current one, at a signed distance \texttt{d}.
+The sign of \texttt{d} follows the usual convention:
+\texttt{d > 0} shifts the line to the \emph{left} of the oriented segment \(\overrightarrow{pa\,pb}\),
+and \texttt{d < 0} to the \emph{right}.
+
+\medskip
+\texttt{Syntax: } \verb|L' = L:collinear_at_distance(d)|
+
+\medskip
+\texttt{Arguments: } \texttt{d} — signed offset distance (real number, same unit as coordinates).
+
+\medskip
+\texttt{Return value: }
+
+A new \tkzname{line} object parallel to \texttt{L} at distance \texttt{d}.
+
+\medskip
+\texttt{Example usage: }
+
+\begin{tkzexample}[latex=.4\textwidth]
+\directlua{
+  z.A = point(0, 0)
+  z.B = point(5, 2)
+  L.AB = line (z.A, z.B)
+  L.n = line(collinear_at_distance_(z.A, z.B, -1))
+  z.D, z.E = L.n:get()}
+\begin{tikzpicture}[gridded,scale=.5]
+\tkzGetNodes
+\tkzDrawLines[blue](A,B)
+\tkzDrawLines[red](D,E)
+\tkzDrawPoints[red,size=4](A,B,D,E)
+\tkzLabelPoints[red](A,B,D,E)
+\end{tikzpicture}
+\end{tkzexample}
+
+
+
 \subsubsection{Method \tkzMeth{line}{swap\_line}}
 \label{ssub:method_line_swap__line}
 
-This method is not intended for frequent use, but it can be useful in specific contexts.
-
-\medskip
-\noindent
+\texttt{Purpose: }This method is not intended for frequent use, but it can be useful in specific contexts.
 When a line is created, it is defined by two points—\code{pa} and \code{pb}—which determine the direction of the line. In certain geometric constructions (notably involving conics), the orientation of the line can affect the outcome of computations or methods.
 
 \medskip
-\noindent
 The \code{swap\_line()} method returns a new \code{line} object with the order of the defining points reversed, effectively reversing the direction of the line.
 
 \medskip
-\noindent
+
 This is particularly relevant when direction-sensitive operations (e.g., projections, asymptotes, or oriented intersection tests) are involved.
 
 \vspace{1em}
@@ -1158,16 +1188,13 @@ This is particularly relevant when direction-sensitive operations (e.g., project
 
 \subsection{The result is a triangle}
 
-Here is a chevron: $\langle$test$\rangle$
-
-
 \subsubsection{Method \tkzMeth{line}{equilateral(<'swap'>)}}
 \label{ssub:method_line_equilateral}
 
 This method constructs an equilateral triangle using the segment defined by the line as its base.
 
 \medskip
-\noindent
+
 The triangle has three equal sides, and its base is the segment from \code{pa} to \code{pb}. The construction respects the orientation of the base.
 
 \begin{itemize}
@@ -1176,7 +1203,7 @@ The triangle has three equal sides, and its base is the segment from \code{pa} t
 \end{itemize}
 
 \medskip
-\noindent
+
 This method returns a \code{triangle} object.
 
 
@@ -1220,15 +1247,14 @@ This method returns a \code{triangle} object.
 This method constructs an isosceles triangle having the segment defined by the line as its base.
 
 \medskip
-\noindent
 The argument \code{d} specifies the length of the two equal sides extending from each endpoint of the base. The triangle is constructed in the default orientation determined by the direction from \code{pa} to \code{pb}.
 
 \medskip
-\noindent
+
 If the optional argument \meta{"swap"} is provided, the triangle is constructed in the opposite orientation (i.e., the apex is placed on the other side of the base).
 
 \medskip
-\noindent
+
 The method returns a \code{triangle} object.
 
 \vspace{1em}
@@ -1269,11 +1295,11 @@ The method returns a \code{triangle} object.
 The \code{school} triangle is a right triangle with angles measuring $30^\circ$, $60^\circ$, and $90^\circ$—commonly used in elementary geometric constructions.
 
 \medskip
-\noindent
+
 By default, the $30^\circ$ angle is at the first point (\code{pa}) of the line, and the $60^\circ$ angle is at the second point (\code{pb}). Using the optional argument \meta{"swap"} reverses this placement, exchanging the two base angles.
 
 \medskip
-\noindent
+
 To reverse the triangle’s orientation (i.e., construct it in the indirect direction), simply reverse the order of the points defining the line, for example:
 \code{L.AB = line(z.B, z.A)}.
 
@@ -1324,11 +1350,11 @@ To reverse the triangle’s orientation (i.e., construct it in the indirect dire
 This method constructs a right triangle in which the two sides adjacent to the right angle are in the ratio $1:2$.
 
 \medskip
-\noindent
+
 By default, the right angle is located at the first point of the line (\code{pa}). If the optional argument \meta{"swap"} is provided, the right angle is placed at the second point (\code{pb}).
 
 \medskip
-\noindent
+
 This type of triangle is useful for constructing simple geometric configurations or illustrating special triangle cases.
 
 \vspace{1em}
@@ -1372,11 +1398,11 @@ This type of triangle is useful for constructing simple geometric configurations
 This method constructs a triangle by specifying two angles located at each endpoint of the given segment. The triangle is completed by determining the third vertex so that the sum of the interior angles is $180^\circ$.
 
 \medskip
-\noindent
+
 The two given angles are applied at the endpoints \code{pa} and \code{pb} of the line. The resulting triangle is determined by extending the sides from these angles until they meet.
 
 \medskip
-\noindent
+
 This method corresponds to the classical ASA construction (\textit{Angle–Side–Angle}) and may also be called using the alternative names \code{asa} or \code{a\_a}.
 
 \vspace{1em}
@@ -1423,11 +1449,11 @@ This method corresponds to the classical ASA construction (\textit{Angle–Side�
 This method constructs a triangle given the lengths of its three sides: the base and the two sides adjacent to it.
 
 \medskip
-\noindent
+
 The base of the triangle is defined by the line object (e.g., \code{L.AB}), which determines the segment between \code{pa} and \code{pb}. The two arguments \code{d} represent the lengths of the remaining sides.
 
 \medskip
-\noindent
+
 This construction corresponds to the classical \code{SSS} configuration (\textit{Side–Side–Side}), and the method may also be called using the aliases \code{s\_s} or \code{sss}.
 
 \vspace{1em}
@@ -1468,11 +1494,11 @@ This construction corresponds to the classical \code{SSS} configuration (\textit
 This method constructs a triangle from a given base (the line), a side length, and the angle between that side and the base.
 
 \medskip
-\noindent
+
 It corresponds to the classical \code{SAS} configuration (\textit{Side–Angle–Side}). The side of length \code{d} is placed at the first point \code{pa} of the base, and the angle \code{an} (in degrees) is formed between this side and the base.
 
 \medskip
-\noindent
+
 If the optional argument \meta{"swap"} is provided, the side and angle are instead applied from the second point \code{pb}, effectively mirroring the triangle across the base.
 
 \vspace{1em}
@@ -1499,11 +1525,11 @@ If the optional argument \meta{"swap"} is provided, the side and angle are inste
 This method is the counterpart of \code{sa\_}. It constructs a triangle using a given base (the line), a side of length \code{d}, and the angle \code{an} adjacent to that side, but this time measured from the second point \code{pb} of the base.
 
 \medskip
-\noindent
+
 The construction still corresponds to the classical \code{SAS} configuration (\textit{Side–Angle–Side}), but applied in reverse order from the base's endpoint.
 
 \medskip
-\noindent
+
 If the optional argument \meta{"swap"} is provided, the triangle is built in indirect (clockwise) orientation, which may be useful for constructing mirrored configurations.
 
 \subsubsection{Method \tkzMeth{line}{s\_a(d, an, <'swap'>)}}
@@ -1512,7 +1538,7 @@ If the optional argument \meta{"swap"} is provided, the triangle is built in ind
 This method constructs a triangle from a given base (the line), a side of length \code{d}, and an angle \code{an} opposite that side.
 
 \medskip
-\noindent
+
 The construction corresponds to the classical \code{SSA} configuration (\emph{Side–Side–Angle}), which is known to be ambiguous: depending on the values of the side and angle, the result may be:
 
 \begin{itemize}
@@ -1522,7 +1548,7 @@ The construction corresponds to the classical \code{SSA} configuration (\emph{Si
 \end{itemize}
 
 \medskip
-\noindent
+
 When two triangles are possible, the method returns the one with the larger angle at the base by default. If the optional argument \meta{"swap"} is provided, the method returns the second solution.
 
 \vspace{1em}
@@ -1609,7 +1635,7 @@ This method constructs a right triangle in which the ratio of the lengths of the
 \dfrac{c}{b} = \sqrt{\varphi}
 \]
 
-\noindent
+
 This triangle corresponds to half of a golden rectangle.
 
 \vspace{1em}
@@ -1649,14 +1675,14 @@ This triangle corresponds to half of a golden rectangle.
 A golden triangle—also known as a \emph{sublime triangle}—is an isosceles triangle in which the equal sides are in the golden ratio $\varphi$ to the base.
 
 \medskip
-\noindent
+
 In this construction, the ratio of a duplicated side $b$ to the base $c$ satisfies:
 
 \[
 \dfrac{b}{c} = \varphi
 \]
 
-\noindent
+
 This triangle appears in many classical constructions, notably in pentagonal geometry and Euclidean aesthetics.
 
 \vspace{1em}
@@ -1703,7 +1729,7 @@ The \code{golden\_gnomon}, also called the \emph{divine triangle}, is an obtuse 
 \dfrac{b}{c} = \frac{1}{\varphi} = \varphi - 1
 \]
 
-\noindent
+
 This triangle has two angles measuring $36^\circ$ and one angle of $108^\circ$. It can be constructed geometrically from a regular pentagon and frequently appears in golden ratio-based constructions.
 
 \vspace{1em}
@@ -1748,14 +1774,14 @@ This triangle has two angles measuring $36^\circ$ and one angle of $108^\circ$. 
 This method constructs the classical right triangle whose side lengths are in the ratio $3\mathbin{:}4\mathbin{:}5$.
 
 \medskip
-\noindent
+
 Also known as the \emph{Egyptian triangle} or \emph{Isis triangle}, it is a Pythagorean triangle with integer side proportions:
 
 \[
 a = 3k,\quad b = 4k,\quad c = 5k
 \]
 
-\noindent
+
 It is one of the most fundamental triangles in Euclidean geometry and appears in many historical constructions.
 
 \vspace{1em}
@@ -1805,7 +1831,7 @@ Given two points $A$ and $B$, this method constructs the Apollonius circle: the 
 \dfrac{MA}{MB} = d
 \]
 
-\noindent
+
 The resulting object is a circle that does not pass through $A$ or $B$ (unless $d = 1$, in which case it becomes the perpendicular bisector of segment $[AB]$). The method returns a \code{circle} object.
 
 \vspace{1em}
@@ -1844,419 +1870,24 @@ The resulting object is a circle that does not pass through $A$ or $B$ (unless $
 
 Remark: |\tkzUseLua{tkz.length(z.P,z.A)/tkz.length(z.P,z.B)}| = \tkzUseLua{tkz.length(z.P,z.A)/tkz.length(z.P,z.B)}
 
-\subsubsection{Method \tkzMeth{line}{c\_l\_pp}}
+\subsubsection{Method \tkzMeth{line}{LPP}(p, p)}
 \label{ssub:c_l_pp}
-\textbf{This method constructs a circle tangent to a given line and passing through two specified points.}
 
-\paragraph*{Synopsis}
-\noindent
-Given a running line~$L$ (the current object \code{self}) and two points \code{a} and \code{b} lying on the \emph{same side} of~$L$, this method constructs the circle(s) tangent to~$L$ and passing through both \code{a} and \code{b}.
+This method is presented in the section \tkzname{Apollonius' problem} [\ref{sub:LPP}]
 
-\medskip
-\noindent
-Signature (Lua):
-\begin{verbatim}
-function line:c_l_pp(a, b) --> C1, C2 (0, 1 or 2 solutions)
-\end{verbatim}
 
-\medskip
-\noindent
-\paragraph*{Parameters}
-\begin{itemize}
-  \item \code{a}, \code{b} : two distinct points.
-  \item \emph{Precondition:} \code{a} and \code{b} are on the same side of the running line \code{self}.%
-\end{itemize}
-
-\medskip
-\noindent
-The method is designed to handle a variety of geometric configurations, including the following special cases:
-
-\begin{itemize}
-  \item The segment $[MN]$ is perpendicular to the line $(AB)$;
-  \item The segment $[MN]$ is parallel to the line $(AB)$;
-  \item The points $M$ and $N$ lie on opposite sides of the line $(AB)$;
-  \item One of the points (either $M$ or $N$) lies on the line $(AB)$.
-\end{itemize}
-
-\noindent
-This construction is useful in problems involving constrained circle placements or Apollonius-type configurations.
-
-\paragraph*{Returns}
-\begin{itemize}
-  \item \code{C1, C2} : the two solution circles when they exist.
-  \item In degenerate cases with a single solution, the same circle is returned twice (\code{C1 == C2}) to preserve the arity of returns.
-  \item If no solution exists, the function raises \verb|tex.error| and returns \code{nil, nil}.
-\end{itemize}
-
-\noindent
-\paragraph*{Existence \& number of solutions}
-\begin{itemize}
-  \item \textbf{No solution (0).} If the intersection point $i=L\cap (ab)$ exists and lies on the segment $[a,b]$, then no circle tangent to $L$ can pass through $a$ and $b$.
-  \item \textbf{Single solution (1).}
-    \begin{itemize}
-      \item If exactly one of the points \code{a} or \code{b} belongs to $L$ (point of tangency), the unique solution has its center at the intersection of the mediator of $[a,b]$ with the perpendicular to $L$ at that point.
-      \item If $L \parallel (ab)$, the unique solution has its center at the circumcenter of the triangle $(a,b,p)$ where $p$ is the orthogonal projection of $\mathrm{mid}(a,b)$ on $L$.
-    \end{itemize}
-  \item \textbf{Two solutions (2).}
-    \begin{itemize}
-      \item If $L \perp (ab)$ and $i=L\cap (ab)$ is defined (and not on $[a,b]$), two symmetric solutions exist.
-      \item In the general oblique case (neither parallel nor orthogonal), two solutions exist.
-    \end{itemize}
-\end{itemize}
-
-\medskip
-\noindent
-\paragraph*{Errors and edge cases}
-\begin{itemize}
-  \item If $i \in [a,b]$ then \verb|tex.error("No circle is possible")|.
-  \item When only one solution exists, the method returns it twice to keep a two-value API.
-  \item Numerical robustness relies on the same tolerances as the auxiliary predicates (parallelism, orthogonality, membership on the line/segment).
-\end{itemize}
-
-\paragraph*{Example}
-\vspace{1em}
-
-\begin{tkzexample}[latex=.5\textwidth]
-\directlua{
-  init_elements()
-  z.A = point(0, 0)
-  z.B = point(6, 0)
-  z.M = point(1, 1)
-  z.N = point(2, 5)
-  L.AB = line(z.A, z.B)
-  C1,C2 = L.AB:c_l_pp(z.M, z.N)
-  z.O1 = C1.center
-  z.O2 = C2.center
-  z.T1 = C1.through
-  z.T2 = C2.through
-  }
-  \begin{tikzpicture}[scale = .6]
-  \tkzGetNodes
-  \tkzDrawLines(A,B M,N)
-  \tkzDrawCircles(O1,T1 O2,T2)
-  \tkzDrawPoints(A,B,M,N)
-  \tkzLabelPoints(A,B,M,N)
-  \tkzDrawPoints(A,B,M,N,O1,T1,O2,T2)
-  \end{tikzpicture}
-\end{tkzexample}
-
-\vspace{1em}
-Let's look at the impossible case: the points are on either side of the line.
-
-The method returns \code{nil} and \code{nil}.
-
-\vspace{1em}
-
-\begin{tkzexample}[latex=.5\textwidth]
-\directlua{
- init_elements()
- z.A = point(0, 0)
- z.B = point(6, 0)
- z.M = point(1,  1)
- z.N = point(3, -5)
- L.AB = line(z.A, z.B)
- L.MN = line(z.M, z.N)
- z.I = intersection(L.AB, L.MN)
-}
-\begin{center}
-  \begin{tikzpicture}[scale =.6]
-  \tkzGetNodes
-  \tkzDrawLines(A,B M,N)
-  \tkzDrawPoints(A,B,M,N)
-  \tkzLabelPoints(A,B,M,N)
-  \end{tikzpicture}
-\end{center}
-\end{tkzexample}
-
-\vspace{1em}
-Let's look at the case where the line $(MN)$ is parallel to the initial line.
-
-\vspace{1em}
-\begin{tkzexample}[latex=.5\textwidth]
-\directlua{
-  init_elements()
-  z.A = point(0, 0)
-  z.B = point(6, 0)
-  z.M = point(0, 3)
-  z.N = point(5, 3)
-  L.AB = line(z.A, z.B)
-  C1, C2 = L.AB:c_l_pp(z.M, z.N)
-  z.O1 = C1.center
-  z.O2 = C2.center
-  z.T1 = C1.through
-  z.T2 = C2.through}
-\begin{center}
-\begin{tikzpicture}
- \tkzGetNodes
- \tkzDrawSegments(A,B M,N)
- \tkzDrawCircles(O1,T1)
- \tkzDrawPoints(A,B,M,N)
- \tkzDrawPoints(A,B,M,N)
- \tkzLabelPoints(A,B,M,N)
-\end{tikzpicture}
-\end{center}
-\end{tkzexample}
-
-\vspace{1em}
-Where the line is perpendicular to the initial line.
-
-\vspace{1em}
-
-\begin{tkzexample}[latex=.5\textwidth]
-\directlua{
-  init_elements()
-  z.A = point(0, 0)
-  z.B = point(6, 0)
-  z.M = point(1, 1)
-  z.N = point(1, 5)
-  L.AB = line(z.A, z.B)
-  C1, C2 = L.AB:c_l_pp(z.M, z.N)
-  z.O1 = C1.center
-  z.O2 = C2.center
-  z.T1 = C1.through
-  z.T2 = C2.through}
-\begin{center}
-\begin{tikzpicture}[scale = .6]
-  \tkzGetNodes
-  \tkzDrawLines(A,B M,N)
-  \tkzDrawCircles(O1,T1 O2,T2)
-  \tkzDrawPoints(A,B,M,N)
-  \tkzLabelPoints(A,B,M,N)
-  \tkzDrawPoints(A,B,M,N,O1,T1,O2,T2)
-\end{tikzpicture}
-\end{center}
-\end{tkzexample}
-
-\vspace{1em}
-The last special case is when one of the points is on the initial line. In this case, there's only one solution.
-
-\vspace{1em}
-
-\begin{tkzexample}[latex=.5\textwidth]
-\directlua{
-  init_elements()
-  z.A = point(0, 0)
-  z.B = point(5, 0)
-  z.M = point(1, 0)
-  z.N = point(3, 5)
-  L.AB = line(z.A, z.B)
-  L.MN = line(z.M, z.N)
-  z.I = intersection(L.AB, L.MN)
-  C1, C2 = L.AB:c_l_pp(z.M, z.N)
-  z.O1 = C1.center
-  z.O2 = C2.center
-  z.T1 = C1.through
-  z.T2 = C2.through}
-\begin{center}
-  \begin{tikzpicture}[scale =.8]
-  \tkzGetNodes
-  \tkzDrawLines(A,B M,N)
-  \tkzDrawCircles(O1,T1 O2,T2)
-  \tkzDrawPoints(A,B,M,N)
-  \tkzLabelPoints(A,B,M,N)
-  \tkzDrawPoints(A,B,M,N,O1,T1,O2,T2)
-  \end{tikzpicture}
-\end{center}
-\end{tkzexample}
-
-\subsubsection{Method \tkzMeth{line}{c\_ll\_p}}
+\subsubsection{Method \tkzMeth{line}{LLP}(L, p)}
 \label{ssub:method_c__ll__p}
 
-\paragraph*{Synopsis}
-\noindent
-Given the running line $D$ (\code{self}), another line $L$, and a point \code{p}, this method constructs the circle(s) passing through \code{p} and tangent to \emph{both} lines $D$ and $L$.
+This method is presented in the section \tkzname{Apollonius' problem} [\ref{sub:LLP}]
 
-\medskip
-\noindent
-\textbf{Signature} (Lua):
-\begin{verbatim}
-function line:c_ll_p(L, p) --> C1, C2  (0, 1 or 2 solutions)
-\end{verbatim}
+%====================================================================
+\subsubsection{Method \tkzMeth{line}{LLL}(L1,L2[,which])}
+%====================================================================
+\label{ssub:method_LLL}
 
+This method is presented in the section \tkzname{Apollonius' problem} [\ref{sub:LLL}]
 
-Let us consider two straight lines, $(AB)$ and $(CD)$, and a point $P$ not lying on either line. The problem is to determine whether there exists a circle passing through $P$ and tangent to both lines.
-
-\medskip
-\noindent
-\textbf{Syntax:}
-
-\begin{verbatim}
-C1, C2 = L.AB:c_ll_p(L.CD, z.P)
-\end{verbatim}
-
-\medskip
-\noindent
-\paragraph*{Parameters}
-\begin{itemize}
-  \item \code{L}: a line distinct from the running line \code{self} (they may be parallel or intersecting).
-  \item \code{p}: a point in the plane.
-\end{itemize}
-
-\medskip
-\noindent
-\paragraph*{Returns}
-\begin{itemize}
-  \item \code{C1, C2}: the two solution circles when two solutions exist.
-  \item If there is a unique solution, it is returned twice (\code{C1 == C2}) to preserve arity.
-  \item If no solution exists, the function raises a descriptive \verb|tex.error| and returns \code{nil, nil}.
-\end{itemize}
-
-
-\medskip
-\noindent
-\textbf{Examples usage:}
-
-\vspace{1em}
-
-General case
-
-\begin{tkzexample}[latex=.5\textwidth]
-\directlua{
-z.A = point(-1, 2)
-z.B = point(2, -3)
-z.C = point(-1, -3)
-z.D = point(2, 1)
-L.AB = line(z.A, z.B)
-L.CD = line(z.C, z.D)
-z.S = intersection(L.AB, L.CD)
-L.SI = bisector(z.S, z.A, z.D)
-z.P = L.SI:point(-1)
-C.one, C.two = L.AB:c_ll_p(L.CD, z.P)
- z.wa , z.ta = C.one:get()
- z.wb , z.tb = C.two:get()}
-\begin{center}
-\begin{tikzpicture}
-\tkzGetNodes
- \tkzDrawCircles[blue](wa,ta wb,tb)
- \tkzDrawLines[red](A,B C,D)
- \tkzDrawPoints(A,B,C,D)
-\tkzLabelPoints(A,B,C,D)
-\tkzDrawPoints[size=3](P)
-\tkzLabelPoints[above](P)
-\end{tikzpicture}
-\end{center}
-\end{tkzexample}
-
-
-\medskip
-\noindent
-\begin{tkzexample}[latex=.5\textwidth]
-\directlua{
-  init_elements()
-  z.A = point(0, 0)
-  z.B = point(6, 0)
-  L.AB = line(z.A, z.B)
-  z.C = point(6, 4)
-  L.AC = line(z.A, z.C)
-  T.ABC = triangle(z.A, z.B, z.C)
-  z.P = point(3, 1.5)
-  C1, C2 = L.AB:c_ll_p(L.AC, z.P)
-  z.O1 = C1.center
-  z.T1 = C1.through
-  z.O2 = C2.center
-  z.T2 = C2.through}
-\begin{center}
-\begin{tikzpicture}[ scale =.75]
-  \tkzGetNodes
-  \tkzDrawLines[thick](A,B A,C)
-  \tkzDrawCircles[red](O1,T1 O2,T2)
-  \tkzDrawPoints(A,B,C,P)
-  \tkzLabelPoints(A,B,C,P)
-\end{tikzpicture}
-\end{center}
-\end{tkzexample}
-
-\vspace{1em}
-The first special case is where the point $P$ lies on the bisector of $A$.
-
-\vspace{1em}
-\begin{tkzexample}[latex=.5\textwidth]
-\directlua{
- init_elements()
- z.A = point(0, 0)
- z.B = point(6, 0)
- L.AB  = line(z.A, z.B)
- z.C = point(6, 4)
- L.AC  = line(z.A, z.C)
- T.ABC = triangle(z.A, z.B, z.C)
- L.bi  = bisector(z.A, z.B, z.C)
- z.P = L.bi:point(0.4)
- C1,C2 = L.AB:c_ll_p(L.AC, z.P)
- z.O1  = C1.center
- z.T1  = C1.through
- z.O2  = C2.center
- z.T2  = C2.through}
-\begin{center}
-\begin{tikzpicture}[scale =.75]
- \tkzGetNodes
- \tkzDrawLines(A,B A,C A,P)
- \tkzDrawCircles(O1,T1 O2,T2)
- \tkzDrawPoints(A,B,C,P)
- \tkzLabelPoints(A,B,C,P)
-\end{tikzpicture}
-\end{center}
-\end{tkzexample}
-
-\vspace{1em}
-A another special case is when the point $P$ lies on one of the lines
-
-\vspace{1em}
-
-\begin{tkzexample}[latex=.5\textwidth]
-\directlua{
- init_elements()
- z.A = point(0, 0)
- z.B = point(4, -3)
- L.AB  = line(z.A, z.B)
- z.C = point(6,  4)
- L.AC  = line(z.A, z.C)
- z.P = point(3,  2)
- L.bi  = bisector(z.A, z.B, z.C)
- z.I = L.bi.pb
- C1,C2 = L.AB:c_ll_p(L.AC, z.P)
- z.O1  = C1.center
- z.T1  = C1.through
- z.O2  = C2.center
- z.T2  = C2.through}
-\begin{center}
- \begin{tikzpicture}[scale = .5]
-  \tkzGetNodes
-  \tkzDrawLines(A,B A,C A,I)
-  \tkzDrawCircles(O1,T1 O2,T2)
-  \tkzDrawPoints(A,B,C,P,I)
-  \tkzLabelPoints(A,B,C,P,I)
-\end{tikzpicture}
- \end{center}
-\end{tkzexample}
-
-And the last case is the situation with lines parallel
-
-\begin{tkzexample}[latex=.5\textwidth]
-\directlua{
-z.A = point(-2, 2)
-z.B = point(1, -1)
-z.C = point(-2, 4)
-z.D = point(1, 1)
-L.AB = line(z.A, z.B)
-L.CD = line(z.C, z.D)
-z.P = point(-1, 2.5)
-z.P = L.AB:point(.5)
-C.one,
-C.two = L.AB:c_ll_p(L.CD, z.P)
-z.wa , z.ta = C.one:get()
-z.wb , z.tb = C.two:get()}
-\begin{center}
-\begin{tikzpicture}
-\tkzGetNodes
- \tkzDrawCircles[blue](wa,ta wb,tb)
- \tkzDrawLines[red](A,B C,D)
- \tkzDrawPoints(A,B,C,D)
-\tkzLabelPoints(A,B,C,D)
-\tkzDrawPoints[size=3](P)
-\tkzLabelPoints[above](P)
-\end{tikzpicture}
-\end{center}
-\end{tkzexample}
 
 
 \subsection{The result is a square}
@@ -2268,11 +1899,11 @@ z.wb , z.tb = C.two:get()}
 This method constructs a square using the segment defined by the line as one of its sides. The resulting square shares the segment $[AB]$ as a base and constructs the remaining two vertices so that all angles are right angles and all sides are equal in length.
 
 \medskip
-\noindent
+
 By default, the square is built in the direct orientation from $A$ to $B$. If the optional argument \meta{"swap"} is provided, the square is built on the opposite side, reversing its orientation.
 
 \medskip
-\noindent
+
 The result is a \code{square} object, and its vertices can be accessed using the \code{get()} method.
 
 \vspace{1em}
@@ -2306,14 +1937,14 @@ This section presents geometric transformations whose result is a new geometric 
 This method projects one or more points orthogonally onto the line.
 
 \medskip
-\noindent
+
 The argument \code{obj} may be:
 \begin{itemize}
   \item a single point object (e.g., \code{z.P}),
   \item a list (Lua table) of point objects.
 \end{itemize}
 
-\noindent
+
 The result is either:
 \begin{itemize}
   \item a single projected point, if the input is a point,
@@ -2321,7 +1952,7 @@ The result is either:
 \end{itemize}
 
 \medskip
-\noindent
+
 This method is useful for constructing foots of perpendiculars or projecting configurations onto a supporting line.
 
 \vspace{1em}
@@ -2351,18 +1982,18 @@ This method is useful for constructing foots of perpendiculars or projecting con
 This method performs a projection of a point or a group of points onto a line that is parallel to another reference line.
 
 \medskip
-\noindent
+
 Unlike the standard orthogonal projection (using the line itself), this method projects onto a line that is parallel to the reference line \code{L}, and not necessarily coincident with it.
 
 \medskip
-\noindent
+
 The method accepts the following arguments:
 \begin{itemize}
   \item \code{L} — a \code{line} object that defines the direction of the projection,
   \item \code{obj} — a point or a list of points to be projected.
 \end{itemize}
 
-\noindent
+
 The projection is computed along lines parallel to \code{L}. The result is:
 \begin{itemize}
   \item a projected point, if the input is a single point,
@@ -2401,18 +2032,18 @@ The projection is computed along lines parallel to \code{L}. The result is:
 The introduction of parallel projection onto a given direction allows the definition of a new geometric transformation: \emph{affinity}.
 
 \medskip
-\noindent
+
 This method applies an affine transformation to a point or a group of points, using the line \code{L} to define the direction of the transformation. The points are projected onto the line associated with the current object along lines parallel to \code{L}.
 
 \medskip
-\noindent
+
 Accepted arguments:
 \begin{itemize}
   \item \code{L} — a \code{line} object defining the direction of the affinity,
   \item \code{obj} — a point or a list of points to transform.
 \end{itemize}
 
-\noindent
+
 This transformation preserves parallelism and the ratio of distances along lines parallel to the axis of affinity.
 
 \vspace{1em}
@@ -2450,7 +2081,7 @@ This transformation preserves parallelism and the ratio of distances along lines
 This method performs a translation based on the vector defined by the segment from \code{pa} to \code{pb}, the two endpoints of the line.
 
 \medskip
-\noindent
+
 The argument \code{obj} can be:
 \begin{itemize}
   \item a point,
@@ -2459,7 +2090,7 @@ The argument \code{obj} can be:
   \item a circle.
 \end{itemize}
 
-\noindent
+
 The method applies the same translation vector to all components of the object. Other object types may be supported in future versions.
 
 \vspace{1em}
@@ -2489,7 +2120,7 @@ The method applies the same translation vector to all components of the object. 
 This method performs an axial (orthogonal) reflection with respect to the line. It corresponds to a symmetry with respect to the axis defined by the segment from \code{pa} to \code{pb}.
 
 \medskip
-\noindent
+
 The argument \code{obj} can be:
 \begin{itemize}
   \item a point,
@@ -2498,7 +2129,7 @@ The argument \code{obj} can be:
   \item a circle.
 \end{itemize}
 
-\noindent
+
 The method returns the reflected object across the line. Support for additional geometric objects may be added in future versions.
 
 \vspace{1em}
@@ -2534,7 +2165,8 @@ A line object can be sampled into a sequence of two points using the method \tkz
 exists mainly for compatibility and association with other \tkzname{paths}.
 \medskip
 
-\paragraph{Note.}
+\textbf{Note.}
+
 By default, only the two endpoints are used to define the path. This is suitable for filling or clipping regions. For smooth curves, a larger number of subdivisions is recommended.
 
 \medskip
@@ -2554,7 +2186,9 @@ You can then draw the path using:
 \end{verbatim}
 \end{mybox}
 
-\paragraph{Examples} Given three points, let's look at how, using the \tkzname{path} method, we can draw the triangle defined by these three points. In this case, only the two ends of each side are required:
+\texttt{Examples}
+
+Given three points, let's look at how, using the \tkzname{path} method, we can draw the triangle defined by these three points. In this case, only the two ends of each side are required:
 
 \begin{tkzexample}[latex = .5\textwidth]
   \directlua{

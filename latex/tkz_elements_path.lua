@@ -171,11 +171,6 @@ function path:count()
 	return #self
 end
 
-function path:get_point(i)
-	local x, y = self:get_number_path(i)
-	return point(x, y)
-end
-
 local function parse_xy(entry)
 	if type(entry) == "table" then
 		-- au cas où tu ranges déjà sous forme table
@@ -192,14 +187,21 @@ end
 function path:get_number_path(i)
 	local item = self[i]
 	if not item then
-		error(("path:get_number_path: index %s hors limites (1..%d)"):format(tostring(i), #self))
+		error(("path:get_number_path: index %s out of bounds (1..%d)"):format(tostring(i), #self))
 	end
 	local x, y = parse_xy(item)
 	if not x or not y then
-		error(("path:get_number_path: impossible d’analyser l’entrée #%d"):format(i))
+		error(("path:get_number_path: Unable to analyze the input #%d"):format(i))
 	end
 	return x, y
 end
+
+
+function path:get_point(i)
+	local x, y = self:get_number_path(i)
+	return point(x, y)
+end
+path.get = path.get_point
 
 --  Practical iterator
 -- for i, x, y in PA.A:iter() do

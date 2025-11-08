@@ -220,11 +220,11 @@ You must follow standard Lua conventions when accessing attributes or invoking m
 \subsection{Miscellaneous}
 \label{sub:miscellanous}
 \begin{itemize}
-  \item \textbf{Units and coordinates:} As in \tkzNamePack{tkz-euclide}, the default unit is the centimeter. All points are placed in an orthonormal Cartesian coordinate system.
+  \item \texttt{Units and coordinates:} As in \tkzNamePack{tkz-euclide}, the default unit is the centimeter. All points are placed in an orthonormal Cartesian coordinate system.
 
-  \item \textbf{Numerical variables:} Real numbers follow the standard Lua conventions for notation.
+  \item \texttt{Numerical variables:} Real numbers follow the standard Lua conventions for notation.
 
-  \item \textbf{Complex numbers:} Similar to real numbers, but you must define them using the point constructor. For example:
+  \item \texttt{Complex numbers:} Similar to real numbers, but you must define them using the point constructor. For example:
   \begin{verbatim}
   za = point(1, 2)
   \end{verbatim}
@@ -233,7 +233,7 @@ You must follow standard Lua conventions when accessing attributes or invoking m
   tex.print(tostring(za))
   \end{verbatim}
 
-  \item \textbf{Boolean values:}
+  \item \texttt{Boolean values:}
   \begin{itemize}
     \item In Lua: \verb|bool = true| or \verb|bool = false|
     \item You can use the following \tkzname{Lua} code:
@@ -246,7 +246,7 @@ You must follow standard Lua conventions when accessing attributes or invoking m
     \end{verbatim}
   \end{itemize}
 
-  \item \textbf{Strings:}
+  \item \texttt{Strings:}
   \begin{itemize}
     \item Example in Lua: \verb|st = "Euler's formula"|
     \item In LaTeX: \verb|\tkzUseLua{st}| will display \texttt{Euler's formula}

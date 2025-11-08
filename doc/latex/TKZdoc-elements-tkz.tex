@@ -13,7 +13,8 @@ They allow:
 
 These tools follow the same convention as the rest of the package and accept either point objects or complex numbers (when appropriate). They are typically used in Lua code blocks when you want to keep your scripts minimal and avoid explicit variable declarations.
 
-\paragraph{Example.}
+\texttt{Example: }
+
 To compute the midpoint of a segment without defining the line:
 \begin{mybox}
 \begin{verbatim}
@@ -22,9 +23,7 @@ z.M = tkz.midpoint(z.A, z.B)
 \end{mybox}
 This avoids having to define \code{L.AB = line(z.A, z.B)} and then access \code{L.AB.mid}.
 
-\paragraph{Overview.}
-The table below summarizes the available functions:
-
+\texttt{Overview: } The table below summarizes the available functions:
 
 
 \bgroup
@@ -59,9 +58,8 @@ The table below summarizes the available functions:
   \tkzFct{tkz}{tkz.barycenter (\{z1,n1\},\{z2,n2\}, ...)} & [\ref{sub:misc_barycenter}]  \\
 
   \tkzFct{tkz}{tkz.dot\_product(z1, z2, z3)} & [\ref{sub:dot_or_scalar_product}] \\
-
-  % \tkzFct{tkz}{solve\_quadratic(a, b, c) }   & [\ref{ssub:function_solve_quadratic}; \ref{ssub:function_solve_quadratic}] \\
- \tkzFct{tkz}{tkz.parabola(pta, ptb, ptc)} & [\ref{tkz:parabola}] \\
+  \tkzFct{tkz}{tkz.nodes\_from\_paths} & \ref{ssub:tkz_nodes_from_paths}\\
+  \tkzFct{tkz}{tkz.parabola(pta, ptb, ptc)} & [\ref{tkz:parabola}] \\
   \bottomrule
   \end{tabular}
   \egroup
@@ -81,7 +79,8 @@ point.abs(z1 - z2)
 
 This shortcut allows you to compute the length of a segment without manipulating complex numbers explicitly.
 
-\paragraph{Alternative.}
+\texttt{Alternative: }
+
 If you need to define the segment as a \tkzClass{line} object for later use (e.g., to draw it or to access other attributes such as the midpoint or direction), you can use:
 
 \begin{mybox}
@@ -91,7 +90,8 @@ l = L.AB.length
 \end{verbatim}
 \end{mybox}
 
-\paragraph{Recommendation.}
+\texttt{Recommendation: }
+
 Use \code{tkz.length(z1, z2)} for simple distance computations, especially within calculations or conditions. If you're building a full construction and need more geometric attributes, prefer defining the segment explicitly as a line object.
 
 \subsection{Midpoint and midpoints}
@@ -114,7 +114,7 @@ z.M = L.AB.mid
 \end{verbatim}
 \end{mybox}
 
-\paragraph{Polygonal midpoints.}
+\texttt{Polygonal midpoints: }
 To compute the midpoints of a polygonal chain, use the function \tkzFct{tkz}{midpoints(z1, z2, ..., zn)}. This function returns the midpoints of each successive segment: $z_1z_2$, $z_2z_3$, ..., $z_{n-1}z_n$.
 
 \begin{mybox}
@@ -123,7 +123,7 @@ z.MA, z.MB, z.MC = tkz.midpoints(z.A, z.B, z.C, z.D)
 \end{verbatim}
 \end{mybox}
 
-\paragraph{Medial triangle.}
+\texttt{Medial triangle: }
 For triangles, it is often useful to compute the medial triangle — the triangle formed by the midpoints of the sides. After defining a triangle object:
 
 \begin{mybox}
@@ -151,7 +151,8 @@ z.mc, z.ma, z.mb = tkz.midpoints(T.ABC:get())
 
 This avoids the need to extract the triangle’s vertices manually, but |T.abc:medial()| is preferabe.
 
-\paragraph{Recommendation.}
+\texttt{Recommendation: }
+
 Use \tkzFct{tkz}{midpoint} or \tkzFct{tkz}{midpoints} for quick calculations when no object is needed. Prefer object methods like \tkzMeth{triangle}{medial()} when working within a structured construction.
 
 \subsection{Bisectors}
@@ -161,7 +162,7 @@ The functions \tkzFct{tkz}{tkz.bisector(z1, z2, z3)} and \tkzFct{tkz}{tkz.bisect
 
 These functions return a \tkzClass{line} object that represents the bisector of angle $\widehat{z_2 z_1 z_3}$, originating from point \code{z1}.
 
-\paragraph{Internal bisector.}
+\texttt{Internal bisector: }
  This defines the internal bisector of angle $ \widehat{BAC}$, starting at \code{z.A}. The resulting line is stored as \code{L.Aa}.
 
 \begin{mybox}
@@ -170,7 +171,8 @@ These functions return a \tkzClass{line} object that represents the bisector of 
 \end{verbatim}
 \end{mybox}
 
-\paragraph{External bisector.}
+\texttt{External bisector: }
+
 This defines the external bisector at vertex \code{z.A}. It is orthogonal to the internal one and also originates at \code{z.A}.
 
 \begin{mybox}
@@ -180,7 +182,7 @@ This defines the external bisector at vertex \code{z.A}. It is orthogonal to the
 \end{mybox}
 
 
-\paragraph{Recommendation.}
+\texttt{Recommendation: }
 Use these functions when you need the bisector explicitly as a \tkzClass{line} object (e.g., for intersection or drawing). If you are working within a triangle object, some methods may also provide access to bisectors directly.
 
 \subsection{Barycenter}
@@ -188,14 +190,15 @@ Use these functions when you need the bisector explicitly as a \tkzClass{line} o
 
 The function \tkzFct{tkz}{tkz.barycenter} computes the barycenter (or center of mass) of any number of weighted points. It is a general-purpose function that works independently of geometric objects.
 
-\paragraph{Syntax.}
+\texttt{Syntax: }
+
 The function takes a variable number of arguments. Each argument must be a table of the form:
 
 \begin{center}
 \code{\{point, weight\}}
 \end{center}
 
-\noindent
+
 Example with three equally weighted points:
 \begin{mybox}
 \begin{verbatim}
@@ -212,7 +215,8 @@ z.G = T.ABC.centroid
 \end{verbatim}
 \end{mybox}
 
-\paragraph{General case.}
+\textbf{General case.}
+
 The function can be applied to any number of points with arbitrary weights:
 
 \begin{mybox}
@@ -226,13 +230,15 @@ This computes:
 G = \frac{2A + 3B + C + 4D}{10}
 \]
 
-\paragraph{Use cases.}
+\textbf{Use cases.}
+
 \begin{itemize}
   \item Use \tkzFct{tkz}{tkz.barycenter} when dealing with arbitrary sets of weighted points.
   \item In triangle geometry, prefer \code{T.ABC.centroid}, which is automatically computed and stored.
 \end{itemize}
 
-\paragraph{Note.}
+\textbf{Note.}
+
 The result is returned as a \tkzClass{point} object and can be used in any subsequent construction.
 
 \subsection{Normalized angles: Slope of lines}
@@ -245,7 +251,8 @@ To ensure consistency, especially when comparing angles or sorting them, the fun
 
 \tkzFct{tkz}{tkz.angle\_normalize(an)} maps any angle to the interval $[0, 2\pi]$.
 
-\paragraph{Example.}
+\texttt{Example.}
+
 The following example computes and displays the slope (angle) of three vectors \code{(ab)}, \code{(ac)}, and \code{(ad)}. It shows both the raw angle and the normalized version.
 \begin{Verbatim}
 \directlua{%
@@ -303,7 +310,9 @@ tex.print('slope normalized of (ad) : '..tostring(tkz.angle_normalize(angle))..'
     \end{tikzpicture}
   \end{center}
 \end{minipage}
-\paragraph{Note.}
+
+\textbf{Note.}
+
 This technique is essential when working with angular comparisons, sorting directions (e.g., in convex hull algorithms), or standardizing outputs for further geometric processing.
 
 \subsection{Function \tkzFct{tkz}{tkz.get\_angle}}
@@ -314,15 +323,17 @@ The function \tkzFct{tkz}{tkz.get\_angle(z1, z2, z3)} returns the oriented angle
 \medskip
 This function is particularly useful when measuring internal or external angles at a vertex, or comparing the orientation between two segments.
 
-\paragraph{Syntax.}
+\texttt{Syntax: }
+
 \begin{center}
 \code{tkz.get\_angle(vertex, point1, point2)}
 \end{center}
 
-\noindent
+
 This returns the angle $(\text{vertex} \to \text{point1}, \text{vertex} \to \text{point2})$.
 
-\paragraph{Example.}
+\texttt{Example.}
+
 The following code computes both angles $ \widehat{CAB}$ and $ \widehat{CAB}$ using point \code{a} as the vertex, and formats them for display using \code{tkzround}:
 
 \begin{minipage}{0.58\textwidth}
@@ -366,7 +377,8 @@ The following code computes both angles $ \widehat{CAB}$ and $ \widehat{CAB}$ us
 \end{center}
 \end{minipage}
 
-\paragraph{Note.}
+\textbf{Note.}
+
 The result is a real number in radians between $0$ and $2\pi$. It does not depend on triangle orientation and can be rounded or converted to degrees using auxiliary functions.
 
 \subsection{Function \tkzFct{tkz}{tkz.dot\_product(z1, z2, z3)}}
@@ -377,21 +389,25 @@ The function  computes the dot (scalar) product of the vectors $\overrightarrow{
 (z_3 - z_1) \cdot (z_2 - z_1)
 \]
 
-\paragraph{Note} This is equivalent to \code{(z2 - z1)..(z3 - z1)} See also [\ref{ssub:attributes_vector_z}]
+\textbf{Note}
+
+ This is equivalent to \code{(z2 - z1)..(z3 - z1)} See also [\ref{ssub:attributes_vector_z}]
 \label{par:note_dot}
 
 % paragraph note (end)
-\noindent
+
 It is used to test orthogonality or to measure projection components. A result of zero indicates that the vectors are perpendicular.
 
-\paragraph{Syntax.}
+\texttt{Syntax: }
+
 \begin{center}
 \code{tkz.dot\_product(origin, point1, point2)}
 \end{center}
 %
 This returns the scalar product $\overrightarrow{z_1z_3} \cdot \overrightarrow{z_1z_2}$.
 
-\paragraph{Example.}
+\texttt{Example.}
+
 In the example below, the triangle $ABC$ is constructed along with its triangle of antiparallels. The dot product of $\overrightarrow{AC}$ and $\overrightarrow{AB}$ is computed:
 
 \begin{minipage}{0.5\textwidth}
@@ -440,7 +456,8 @@ In the example below, the triangle $ABC$ is constructed along with its triangle 
 \end{center}
 \end{minipage}
 
-\paragraph{Interpretation.}
+\textbf{Interpretation.}
+
 In this example, the dot product of vectors $\overrightarrow{AC}$ and $\overrightarrow{AB}$ is \tkzUseLua{x}. Since the result is zero, the vectors are orthogonal.
 
 %
@@ -450,8 +467,8 @@ In this example, the dot product of vectors $\overrightarrow{AC}$ and $\overrigh
 
 The functions \tkzFct{tkz}{tkz.is\_linear} and \tkzFct{tkz}{tkz.is\_ortho} are used to test the geometric relationships between three points, namely alignment and orthogonality.
 
-\paragraph{\tkzFct{tkz}{tkz.is\_linear(z1, z2, z3)}}
-This function returns \code{true} if the three points are aligned — that is, if the vectors $\\overrightarrow{z_1z_2}$ and $\\overrightarrow{z_1z_3}$ are colinear. Geometrically, this means the three points lie on the same straight line:
+\textbf{\tkzFct{tkz}{tkz.is\_linear(z1, z2, z3)}}
+This function returns \code{true} if the three points are aligned — that is, if the vectors $\\overrightarrow{z_1z_2}$ and $\\overrightarrow{z_1z_3}$ are collinear. Geometrically, this means the three points lie on the same straight line:
 \[
 (z_2 - z_1) \parallel (z_3 - z_1)
 \]
@@ -459,7 +476,7 @@ This function returns \code{true} if the three points are aligned — that is, i
 \begin{mybox}
 \begin{verbatim}
 if tkz.is_linear(z.A, z.B, z.C) then
-  -- the points are colinear
+  -- the points are collinear
 end
 \end{verbatim}
 \end{mybox}
@@ -471,12 +488,12 @@ This code replaces :
   L.AB = line(z.A, z.B)
   L.BC = line(z.B, z.C)
   if L.AB:is_parallel(L.BC) then
-  --  the points are colinear
+  --  the points are collinear
 end
 \end{verbatim}
 \end{mybox}
 
-\paragraph{\tkzFct{tkz}{tkz.is\_ortho(z1, z2, z3)}}
+\textbf{\tkzFct{tkz}{tkz.is\_ortho(z1, z2, z3)}}
 This function returns \code{true} if the vectors $\overrightarrow{z_1z_2}$ and $\overrightarrow{z_1z_3}$ are orthogonal — that is, the scalar product between them is zero:
 \[
 (z_2 - z_1) \cdot (z_3 - z_1) = 0
@@ -502,7 +519,8 @@ end
 \end{verbatim}
 \end{mybox}
 
-\paragraph{Use case.}
+\textbf{Use case.}
+
 These functions are particularly useful in decision structures or automated constructions (e.g., checking if a triangle is right-angled or degenerate). They return boolean values and do not create any geometric object.
 
 \subsection{Bisector and altitude}
@@ -510,13 +528,16 @@ These functions are particularly useful in decision structures or automated cons
 
 The functions \tkzFct{misc}{bisector}, \tkzFct{misc}{bisector\_ext}, and \tkzFct{misc}{altitude} return \tkzClass{line} objects corresponding to classical triangle constructions. They are useful when you don't need to create a full \tkzClass{triangle} object and simply want the desired line or foot point directly.
 
-\paragraph{Internal bisector.}
+\textbf{Internal bisector.}
+
 \code{tkz.bisector(z1, z2, z3)} returns the internal angle bisector at point \code{z1}, computed between vectors $\overrightarrow{z_1z_2}$ and $\overrightarrow{z_1z_3}$. The result is a \tkzClass{line} object; its foot (point \code{pb}) lies on the opposite side.
 
-\paragraph{External bisector.}
+\textbf{External bisector.}
+
 \code{tkz.bisector\_ext(z1, z2, z3)} returns the external angle bisector at \code{z1}. It is orthogonal to the internal bisector.
 
-\paragraph{Altitude.}
+\textbf{Altitude.}
+
 \code{tkz.altitude(vertex, foot1, foot2)} returns the perpendicular from \code{vertex} to the line passing through \code{foot1} and \code{foot2}. The result is also a \tkzClass{line} object; the foot is stored in its \code{pb} attribute.
 
 \begin{verbatim}
@@ -570,25 +591,29 @@ The functions \tkzFct{misc}{bisector}, \tkzFct{misc}{bisector\_ext}, and \tkzFct
      \tkzLabelAngle[font=\tiny,pos=.75](b,a,i){\tkzUseLua{angic}}
   \end{tikzpicture}
 \end{center}
-\paragraph{Note.}
+
+\textbf{Note.}
+
 These functions return full \tkzClass{line} objects, allowing access to their points and directions. This makes them ideal for flexible constructions where you do not need a structured \code{triangle} object.
 
 \subsection{Function \tkzFct{tkz}{tkz.is\_linear}}
 \label{sub:function_islinear}
 
-The function \tkzFct{tkz}{tkz.is\_linear(z1, z2, z3)}  checks whether three points are colinear. It returns \code{true} if the vectors $\overrightarrow{z_1z_2}$ and $\overrightarrow{z_1z_3}$ are parallel — i.e., if the points lie on the same line:
+The function \tkzFct{tkz}{tkz.is\_linear(z1, z2, z3)}  checks whether three points are collinear. It returns \code{true} if the vectors $\overrightarrow{z_1z_2}$ and $\overrightarrow{z_1z_3}$ are parallel — i.e., if the points lie on the same line:
 \[
 (z_2 - z_1) \parallel (z_3 - z_1)
 \]
 
 This is equivalent to testing whether the oriented area of triangle $(z_1, z_2, z_3)$ is zero.
 
-\paragraph{Syntax.}
+\texttt{Syntax: }
+
 \begin{center}
 \code{tkz.is\_linear(z1, z2, z3)} $\rightarrow$ \code{boolean}
 \end{center}
 
-\paragraph{Example.}
+\texttt{Example.}
+
 The following code tests whether the points $A$, $B$ and $C$ are aligned. If so, the new point $D$ is set to $(0, 0)$; otherwise it is set to $(-1, -1)$.
 
 \begin{minipage}{0.48\textwidth}
@@ -625,7 +650,8 @@ The following code tests whether the points $A$, $B$ and $C$ are aligned. If so,
 \end{center}
 \end{minipage}
 
-\paragraph{Note.}
+\textbf{Note.}
+
 The function does not create any geometric object. It is intended for use in conditionals or assertions to verify configurations before constructing further elements.
 
 \subsubsection{Function \tkzFct{tkz}{tkz.round(num, idp)}}
@@ -633,31 +659,33 @@ The function does not create any geometric object. It is intended for use in con
 
 This function performs rounding of a real number to a specified number of decimal places and returns the result as a numerical value.
 
-\paragraph{Syntax.}
+\texttt{Syntax: }
+
 \begin{center}
 \code{local r = tkz.round(3.14159, 2)} \hspace{4em} $\rightarrow$ \code{3.14}
 \end{center}
 
-\paragraph{Description.}
 
+\texttt{Arguments: }
 
-\paragraph{Arguments.}
 \begin{itemize}
 \item \code{num} – A real number to round.
 \item \code{idp} – Optional number of decimal digits (default: 0).
 \end{itemize}
 
-\paragraph{Returns.}
+\texttt{Returns: }
+
 A rounded number, of type \code{number}.
 
-\paragraph{Example.}
+\texttt{Example.}
+
 \begin{verbatim}
 tkz.round(3.14159, 0) --> 3
 tkz.round(3.14159, 2) --> 3.14
 tkz.round(-2.71828, 3) --> -2.718
 \end{verbatim}
 
-\paragraph{Related functions.}
+\textbf{Related functions.}
 
  \tkzFct{utils}{format\_number(x, decimals)} – Converts rounded number to string
 
@@ -671,16 +699,19 @@ This function computes the signed angle between two vectors in the complex plane
 \begin{tabular}{@{}ll@{}}
 \textbf{Module} & \tkzname{tkz} \\
 \textbf{Name} & \tkzname{angle\_between\_vectors} \\
-\textbf{Arguments} & \code{a}, \code{b}, \code{c}, \code{d} (points as complex numbers) \\
-\textbf{Returns} & Angle in radians (real number) \\
+\texttt{Arguments: } & \code{a}, \code{b}, \code{c}, \code{d} (points as complex numbers) \\
+\texttt{Returns: } & Angle in radians (real number) \\
 \end{tabular}
 
-\paragraph{Description.}
+\texttt{Purpose: }
+
 The function computes the angle between the oriented vector $\vec{AB}$ (from \code{a} to \code{b}) and the oriented vector $\vec{CD}$ (from \code{c} to \code{d}).
 
 This function is especially useful for computing turning angles or verifying geometric configurations such as orthogonality (angle = ±π/2), alignment (angle = 0 or π), and orientation.
 
-\paragraph{Example.} In this example, several methods are used to determine the angles for each vertex.
+\texttt{Example.}
+
+ In this example, several methods are used to determine the angles for each vertex.
 
 \medskip
 \begin{tkzexample}[vbox]
@@ -746,4 +777,60 @@ function \(y = Ax^2 + Bx + C\) that interpolates these points.
   \tkzDrawCoordinates[smooth,purple](PA.curve)
 \end{tikzpicture}
 \end{tkzexample}
+
+\subsubsection{Function \tkzFct{tkz}{tkz.nodes\_from\_paths}}
+\label{ssub:tkz_nodes_from_paths}
+
+\texttt{Syntax: }
+\verb|tkz.nodes_from_paths(PAcenters, PAthrough [, wbase, tbase, indice])|
+
+\texttt{Purpose: }
+This function transfers the points contained in two Lua paths — one representing the circle centers and the other the corresponding through points — into the global Lua table \tkzVar{z}.
+Each pair of points is assigned a name based on two prefixes (for instance ``w'' and ``t'') followed by an index number.
+
+\texttt{Arguments: }
+\begin{itemize}
+  \item \verb|PAcenters| – a path containing the centers of the circles.
+  \item \verb|PAthrough| – a path containing the corresponding through points.
+  \item \verb|wbase| (optional) – base name for the centers (default: \verb|"w"|).
+  \item \verb|tbase| (optional) – base name for the through points (default: \verb|"t"|).
+  \item \verb|indice| (optional) – starting index (default: \verb|1|).
+\end{itemize}
+
+\texttt{Returned values: }
+None.
+The function creates Lua entries in the global table \tkzVar{z} such as:
+
+\verb|z["w1"]=z.w1, z["t1"]=z.t1, z["w2"], z["t2"], ...|
+
+\texttt{Example: } The task here is to determine the two circles passing through point $P$ and tangent to the two lines $(AB)$ and $(CD)$.
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  z.A = point(0, 0)
+  z.B = point(5, 2)
+  z.C = point(0, 1)
+  z.D = point(4, 5)
+  z.P = point(2, 1.5)
+  L.AB = line(z.A, z.B)
+  L.CD = line(z.C, z.D)
+  pc, pt = L.AB:LLP(L.CD, z.P)
+  tkz.nodes_from_paths(pc, pt)}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawLines(A,B C,D)
+  \tkzDrawCircles[thick,red](w1,t1 w2,t2)
+  \tkzDrawPoints(A,B,C,D,P)
+  \tkzLabelPoints(A,B,C,D,P)
+\end{tikzpicture}
+ \end{tkzexample}
+
+\texttt{Remarks: }
+\begin{itemize}
+  \item Both paths must have the same number of points; otherwise, the error originates from the previous computation.
+  \item The optional \verb|indice| argument is useful when several sets of contact circles are created successively, avoiding overwriting previously defined nodes.
+  \item This function does not perform any drawing. It only defines the Lua variables for later use in TikZ constructions.
+\end{itemize}
+
+
 \endinput

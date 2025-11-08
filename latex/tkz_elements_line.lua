@@ -86,16 +86,19 @@ end
 line.on_segment = line.in_out_segment
 
 function line:is_parallel(L)
-  return math.abs(self.slope - L.slope) < tkz.epsilon
+  local pa, pb = self:get()
+  local pc, pd = L:get()
+  return is_parallel_(pa, pb, pc, pd)
 end
 
 function line:is_orthogonal(L)
-  local alpha = tkz_angle_between_vectors_(self.pa, self.pb, L.pa, L.pb)
-  return math.abs(alpha - math.pi / 2) < tkz.epsilon
+  local pa, pb = self:get()
+  local pc, pd = L:get()
+  return is_orthogonal_(pa, pb, pc, pd)
 end
 
 function line:is_equidistant(p)
-  return math.abs(point.mod(self.pa - p) - point.mod(self.pb - p)) < tkz.epsilon
+  return is_equidistant_(self.pa, self.pb, p)
 end
 
 -------------------
@@ -157,13 +160,14 @@ function line:normalize_inv()
   return normalize_(self.pb, self.pa)
 end
 
-function line:colinear_at(pt, k)
+function line:collinear_at(pt, k)
   if k == nil then
-    return colinear_at_(self.pa, self.pb, pt, 1)
+    return collinear_at_(self.pa, self.pb, pt, 1)
   else
-    return colinear_at_(self.pa, self.pb, pt, k)
+    return collinear_at_(self.pa, self.pb, pt, k)
   end
 end
+line.colinear_at = line.collinear_at
 
 function line:orthogonal_at(pt, k)
   if k == nil then
@@ -172,6 +176,7 @@ function line:orthogonal_at(pt, k)
     return orthogonal_at_(self.pa, self.pb, pt, k)
   end
 end
+
 
 function line:random()
   math.randomseed(os.time())
@@ -205,6 +210,17 @@ function line:swap_line()
   return line:new(self.pa, self.pb) -- Crée et retourne la ligne avec les points permutés
 end
 
+function line:collinear_at_distance(d)
+ local a, b = self.pa, self.pb
+ local u = orthogonal_at_(a, b, a, d / self.length)
+ local v = collinear_at_(a, b, u)
+ return line:new(u, v)
+end
+
+
+function line:equidistant_with(L2, choice)
+  return lines_equidistant_(self, L2, choice)
+end
 -------------------
 -- Result -> circle
 -------------------
@@ -235,169 +251,6 @@ function line:apollonius(k)
   return circle:new(c, z2)
 end
 
---===================================================
--- Circle tangent to a line passing through two points
--- In general, there are two solutions
---==================================================
-function line:c_l_pp(a, b) -- a and b on the same side
-  -- Initialisation
-  local lab = line:new(a, b) -- Line through a and b
-  local Cab = circle:diameter(a, b) -- Circle with a and b diameters
-  local i = intersection(lab, self) -- Intersection with current line
-
-  -- One point on the line  (a)
-  if self:in_out(a) and not self:in_out(b) then
-    local lmed = lab:mediator()
-    local laperp = self:ortho_from(a)
-    local o = intersection(lmed, laperp)
-    return circle:new(o, a),
-           circle:new(o, a)
-  end
-  -- One point on the line  (b)
-  if self:in_out(b) and not self:in_out(a) then
-    local lmed = lab:mediator()
-    local laperp = self:ortho_from(b)
-    local o = intersection(lmed, laperp)
-    return circle:new(o, b),
-           circle:new(o, b)
-  end
-  -- Check: if the intersection exists and lies on the segment [a, b].
-  if i and lab:in_out_segment(i) then
-    tex.error("No circle is possible")
-    return nil, nil -- No circle is possible
-  end
-
-  -- If the current line is orthogonal to lab
-  if self:is_orthogonal(lab) then
-    local lmed = lab:mediator()
-    local m = lab.mid
-    local r = length_(m, i)
-    local pt1 = lab:isosceles(r).pc
-    local pt2 = lab:isosceles(r, "swap").pc
-    return circle:new(pt1, a),
-           circle:new(pt2, a)
-  end
-
-  -- If the two lines are parallel
-  if lab:is_parallel(self) then
-    local mid = midpoint_(a, b) -- Midpoint of segment [a, b]
-    local proj = self:projection(mid) -- Mid projection on the running line
-
-    return circle:new(circum_center_(a, b, proj), proj),
-           circle:new(circum_center_(a, b, proj), proj)
-  end
-
-  -- General case
-  local t = Cab:tangent_from(i).pb
-  local x, y = intersection(self, circle:new(i, t))
-  return circle:new(intersection(self:ortho_from(x), lab:mediator()), x),
-         circle:new(intersection(self:ortho_from(y), lab:mediator()), y)
-end
---========= END of c_l_pp =====================
---=============================================
---===================== c_ll_p ================---
--- Circle tangent to two straight lines passing through a given point
---=============================================
-
-function line:c_ll_p(L, p)
-    if self:is_parallel(L) then
-      local x = self.pa
-  	  local d = L:distance(x)
-  	  local ds = self:distance(p)
-  	  local dl = L:distance(p)
-   	  if ds + dl > d then
-       	tex.error("The point must lie between the lines.")
-  	  elseif utils.almost_equal(ds, 0) then
-  	     local q = L:projection(p)
-         return circle(midpoint_(p,q), p), circle(midpoint_(p,q), p)
-  	  elseif utils.almost_equal(dl, 0) then
-  	  	 local q = self:projection(p)
-  	  	return circle(midpoint_(p,q), p), circle(midpoint_(p,q), p)
-  	  else
-		  	local u = self:projection(p)
-		    local v = L:projection(p)
-		    local ma, mb = mediator_(u, v)
-		    local ci = circle:new(through(p, d / 2))
-		    local c1, c2 = intersection_lc_(ma, mb, p, ci.through)
-		    return circle:new(c1, p), circle:new(c2, p)
-   	  end
-    else
-      local s = intersection_ll_(self.pa, self.pb, L.pa, L.pb)
-      local c = circle:new(through(s, 2))
-      local a, b = intersection_lc_(self.pa, self.pb, s, c.through)
-      local c, d = intersection_lc_(L.pa, L.pb, s, c.through)
-      local lbi = bisector(s, a, c)
-      local lbj = bisector(s, a, d)
-      -- ... après: lbi = bisector(s, a, c) ; lbj = bisector(s, a, d)
-
-      -- ======= CAS SPÉCIAUX : p sur une des droites =======
-      if self:on_line(p) or L:on_line(p) then
-        -- p sur les deux droites -> pas de solution non triviale
-        if self:on_line(p) and L:on_line(p) then
-          -- ici p ≈ s
-          tex.error("c_ll_p: point p is at the intersection of the lines (no circle through p tangent to both).")
-          return nil, nil
-        end
-
-        -- perpendiculaire en p à la droite sur laquelle se trouve p
-        local N
-        if self:on_line(p) then
-          N = self:ortho_from(p)
-        else
-          N = L:ortho_from(p)
-        end
-
-        -- intersections avec les deux bissectrices
-        local O1 = intersection_ll_(N.pa, N.pb, lbi.pa, lbi.pb)
-        local O2 = intersection_ll_(N.pa, N.pb, lbj.pa, lbj.pb)
-
-        local C1, C2 = nil, nil
-        if O1 then C1 = circle:new(O1, p) end
-        if O2 then
-          if (not O1) or (point.abs(O2 - O1) > tkz.epsilon) then
-            C2 = circle:new(O2, p)
-          else
-            -- O2 ≈ O1 : une seule solution
-            C2 = circle:new(O1, p)
-          end
-        end
-
-        if C1 and C2 then
-          return C1, C2
-        elseif C1 then
-          return C1, C1
-        elseif C2 then
-          return C2, C2
-        else
-          -- perpendiculaire parallèle aux deux bissectrices ? (cas limite)
-          return nil, nil
-        end
-      end
-      -- ======= FIN CAS SPÉCIAUX =======
-
-      local bis
-      if lbi:on_line(p) or lbj:on_line(p) then
-        if lbi:on_line(p) then bis = lbi else bis = lbj end
-       -- point on bisector
-         local lp = bis:ortho_from(p)
-         local pi = intersection_ll_(lp.pa, lp.pb, self.pa, self.pb)
-         local t1, t2 = intersection_lc_(self.pa, self.pb, pi, p)
-         local x = self:ortho_from(t1).pb
-         local y = self:ortho_from(t2).pb
-         local u = intersection_ll_(x, t1, s, p)
-         local v = intersection_ll_(y, t2, s, p)
-         return circle:new(u, t1), circle:new(v, t2)
-      else
-       local u = lbi:reflection(p)
-       local v = lbj:reflection(p)
-       local sp = self:side_line(p)
-       local su = self:side_line(u)
-       if sp == su then pt = u else pt = v end
-       local c1, c2 = self:c_l_pp(p, pt)
-       return c1, c2
-      end
-    end
-end
 
 ----------------------
 -- Result -> triangle
@@ -879,5 +732,355 @@ function line:path(nb)
   end
   return path:new(list)
 end
+
+---  =====   CONTACT PROBLEM APOLLONIUS ===---
+--- LLL   LLP   LPP
+
+-- which ∈ {"all","in","pa","pb","pc"}   -- comme triangle:c_lll
+-- "all" (défaut) : renvoie 4 cercles (inscrit + 3 exinscrits)
+-- line: LLL — circles tangent to three lines (self, L1, L2)
+-- Return value (like CLL): centers_path, through_path, n
+function line:LLL(L1, L2, which)
+  -- --- outputs (always returned)
+  local pa_center  = path:new()
+  local pa_through = path:new()
+  local n = 0
+
+  -- --- unpack
+  local a0, b0 = self:get()
+  local a1, b1 = L1:get()
+  local a2, b2 = L2:get()
+
+  -- --- small helper: push one solution (center o, through = tangency on self)
+  local function push(o)
+    if not o then return end
+    local t = projection_(a0, b0, o)  -- tangency on the receiver line (self)
+    if t then
+      pa_center:add_point(o)
+      pa_through:add_point(t)
+      n = n + 1
+    end
+  end
+
+  -- --- parallel flags
+  local p01 = is_parallel_(a0, b0, a1, b1)
+  local p12 = is_parallel_(a1, b1, a2, b2)
+  local p20 = is_parallel_(a2, b2, a0, b0)
+  local npar = (p01 and 1 or 0) + (p12 and 1 or 0) + (p20 and 1 or 0)
+
+  -- === Case 1: triangle (no parallel pairs) -> incircle + 3 excircles
+  if npar == 0 then
+    -- A = L1 ∩ L2 ; B = L2 ∩ self ; C = self ∩ L1
+    local A = intersection_ll_(a1, b1, a2, b2)
+    local B = intersection_ll_(a2, b2, a0, b0)
+    local C = intersection_ll_(a0, b0, a1, b1)
+    if not (A and B and C) then
+      return pa_center, pa_through, 0
+    end
+
+    local T = triangle:new(A, B, C)
+
+    -- which = "all" | "in" | "pa" | "pb" | "pc" | 1..4
+    local sel = which or "all"
+    local function normalize_selector(w)
+      if type(w) == "number" then
+        return (w == 1 and "in")
+            or (w == 2 and "pa")
+            or (w == 3 and "pb")
+            or (w == 4 and "pc")
+            or "all"
+      end
+      return w
+    end
+    sel = normalize_selector(sel)
+
+    if sel == "all" then
+      local c1, c2, c3, c4 = T:c_lll("all")  -- four circles
+      local list = {c1, c2, c3, c4}
+      for _, Ck in ipairs(list) do
+        if Ck and Ck.center then push(Ck.center) end
+      end
+      return pa_center, pa_through, n
+    elseif sel == "in" or sel == "pa" or sel == "pb" or sel == "pc" then
+      local Ck = T:c_lll(sel)  -- one circle
+      if Ck and Ck.center then push(Ck.center) end
+      return pa_center, pa_through, n
+    else
+      return pa_center, pa_through, 0
+    end
+  end
+
+  -- === Case 2: exactly one parallel pair -> 2 solutions
+  if npar == 1 then
+    -- Identify the parallel pair (P // Q) and the remaining line R
+    local P, Q, R
+    if p01 then P, Q, R = self, L1, L2
+    elseif p12 then P, Q, R = L1, L2, self
+    else              P, Q, R = L2, self, L1
+    end
+
+    -- distance between the parallels (P, Q)
+    local D = distance_(P.pa, P.pb, Q.pa)
+    if not D or D <= tkz.epsilon then
+      return pa_center, pa_through, 0
+    end
+    local r = 0.5 * D
+
+    -- Midline M between P and Q (same direction as P/Q)
+    local h     = Q.pa
+    local hproj = projection_(P.pa, P.pb, h)
+    if not hproj then
+      return pa_center, pa_through, 0
+    end
+    local mpt   = (h + hproj) * 0.5
+    local dir   = P.pb - P.pa
+    local M     = line:new(mpt, mpt + dir)
+
+    -- Offsets of R at ±r
+    local Rp = R:collinear_at_distance( r)
+    local Rm = R:collinear_at_distance(-r)
+
+    -- Centers are intersections of M with these offsets
+    local W1 = Rp and intersection_ll_(M.pa, M.pb, Rp.pa, Rp.pb) or nil
+    local W2 = Rm and intersection_ll_(M.pa, M.pb, Rm.pa, Rm.pb) or nil
+
+    -- Always push with respect to self (the receiver), not P/Q/R arbitrarily
+    push(W1)
+    push(W2)
+
+    return pa_center, pa_through, n
+  end
+
+  -- === Case 3: degenerate (≥ 2 parallel pairs) -> no unique circle
+  return pa_center, pa_through, 0
+end
+--- === END ===
+
+
+--===================================================
+-- LPP (paths) — Circle tangent to self (a line) and
+--               passing through two points a, b
+-- Sortie unifiée : PA.center, PA.through, n
+--===================================================
+function line:LPP(a, b)
+  -- Paths de sortie
+  local pa_center = path:new()
+  local pa_through = path:new()
+  local n = 0
+  local function push(o, t)
+    if o and t then
+      pa_center:add_point(o)
+      pa_through:add_point(t)
+      n = n + 1
+    end
+  end
+
+  -- Données de base
+  local lab  = line:new(a, b)              -- droite (a,b)
+  local Cab  = circle:diameter(a, b)       -- cercle de diamètre [a,b]
+  local i    = intersection(lab, self)     -- intersection (ab) ∩ self
+
+
+  -- 1) Un des points est sur la droite self (un seul cercle)
+  --    NB: on conserve ta logique avec in_out() telle quelle.
+  if (self:on_line(a)) and (not self:on_line(b) )then
+  local lmed = lab:mediator()
+  local laperp = self:ortho_from(a)
+  local o = intersection(lmed, laperp)
+    push(o, a)
+    return pa_center, pa_through, n
+  end
+  if (self:on_line(b)) and (not self:on_line(a) )then
+ local lmed = lab:mediator()
+ local laperp = self:ortho_from(b)
+ local o = intersection(lmed, laperp)
+    push(o, b)
+    return pa_center, pa_through, n
+  end
+
+  -- 2) (ab) ⟂ self
+  if self:is_orthogonal(lab) and i then
+    local m  = lab.mid
+    local r  = length_(m, i)
+    local t1 = lab:isosceles(r).pc
+    local t2 = lab:isosceles(r, "swap").pc
+    push(t1, a)
+    push(t2, a)
+    return pa_center, pa_through, n
+  end
+
+  -- 3) (ab) ∥ self
+  if lab:is_parallel(self) then
+    local mid  = midpoint_(a, b)
+    local proj = self:projection(mid)
+    local o    = circum_center_(a, b, proj)
+    push(o, proj)            -- une seule solution (centre sur médiatrice, rayon = proj→a)
+    return pa_center, pa_through, n
+  end
+
+  -- Cas dégénéré : i existe et est sur le segment [a,b] → aucune solution
+  if i and lab:in_out_segment(i) then
+    return pa_center, pa_through, n
+  end
+
+  -- 4) Cas général (deux solutions en général)
+  if i then
+    local tpt   = Cab:tangent_from(i).pb          -- point de tangence sur Cab
+    local circ  = circle:new(i, tpt)               -- cercle (i, tpt)
+    local x, y  = intersection(self, circ)         -- tangences sur self
+
+    if x then
+      local o1 = intersection(self:ortho_from(x), lab:mediator())
+      push(o1, x)
+    end
+    if y and (not x or (x.identity and not x:identity(y)) or (not x.identity and (x ~= y))) then
+      local o2 = intersection(self:ortho_from(y), lab:mediator())
+      push(o2, y)
+    end
+  end
+
+ return pa_center, pa_through, n
+end
+
+line.c_l_pp = line.LPP
+
+--========= END of LPP =====================
+--=============================================
+
+--===================== c_LLP (paths) =================--
+-- Cercles tangents à self et L, passant par p
+-- Retour : PA.center, PA.through, n
+-- (port fidèle de ton ancien code, sans changer l'algo)
+--=====================================================--
+function line:LLP(L, p)
+  -- Conteneurs de solutions (paths)
+  local pa_center  = path:new()
+  local pa_through = path:new()
+  local n = 0
+
+  -- ===== Helpers, version CLP =====
+  local function push(o, t)
+    if o and t then
+      pa_center:add_point(o)
+      pa_through:add_point(t)
+      n = n + 1
+    end
+  end
+
+  local function push_from_paths(centers, throughs, m)
+    if (not centers) or (not throughs) or (not m) then return end
+    for i = 1, m do
+      push(centers:get(i), throughs:get(i))
+    end
+  end
+  -- =================================
+
+  -- ======= CAS PARALLÈLES =======
+  if self:is_parallel(L) then
+    local x  = self.pa
+    local d  = L:distance(x)
+    local ds = self:distance(p)
+    local dl = L:distance(p)
+
+    if ds + dl > d then
+      return pa_center, pa_through, 0
+    elseif utils.almost_equal(ds, 0) then
+      local q = L:projection(p)
+      push(midpoint_(p, q), p)
+      return pa_center, pa_through, n
+    elseif utils.almost_equal(dl, 0) then
+      local q = self:projection(p)
+      push(midpoint_(p, q), p)
+      return pa_center, pa_through, n
+    else
+      local u  = self:projection(p)
+      local v  = L:projection(p)
+      local ma, mb = mediator_(u, v)
+      local ci = circle:new(through(p, d / 2))
+      local c1, c2 = intersection_lc_(ma, mb, p, ci.through)
+      push(c1, p)
+      push(c2, p)
+      return pa_center, pa_through, n
+    end
+  end
+  -- ======= FIN PARALLÈLES =======
+
+  -- ======= CAS SÉCANTS =======
+  local s    = intersection_ll_(self.pa, self.pb, L.pa, L.pb)
+  local caux = circle:new(through(s, 2))
+  local a, b = intersection_lc_(self.pa, self.pb, s, caux.through)
+  local c, d = intersection_lc_(L.pa,   L.pb,   s, caux.through)
+  local lbi  = bisector(s, a, c)
+  local lbj  = bisector(s, a, d)
+
+  -- ======= CAS SPÉCIAUX : p sur une des droites =======
+  if self:on_line(p) or L:on_line(p) then
+    if self:on_line(p) and L:on_line(p) then
+      return pa_center, pa_through, 0
+    end
+
+    local N = self:on_line(p) and self:ortho_from(p) or L:ortho_from(p)
+
+    local O1 = intersection_ll_(N.pa, N.pb, lbi.pa, lbi.pb)
+    local O2 = intersection_ll_(N.pa, N.pb, lbj.pa, lbj.pb)
+
+    if O1 and O2 then
+      if point.abs(O2 - O1) > tkz.epsilon then
+        push(O1, p)
+        push(O2, p)
+      else
+        push(O1, p)
+      end
+      return pa_center, pa_through, n
+    elseif O1 then
+      push(O1, p)
+      return pa_center, pa_through, n
+    elseif O2 then
+      push(O2, p)
+      return pa_center, pa_through, n
+    else
+      return pa_center, pa_through, n
+    end
+  end
+  -- ======= FIN CAS SPÉCIAUX =======
+
+  -- --- p sur une bissectrice ---
+  if lbi:on_line(p) or lbj:on_line(p) then
+    local bis = lbi:on_line(p) and lbi or lbj
+    local lp  = bis:ortho_from(p)
+    local pi  = intersection_ll_(lp.pa, lp.pb, self.pa, self.pb)
+
+    local t1, t2 = intersection_lc_(self.pa, self.pb, pi, p)
+    if t1 then
+      local x = self:ortho_from(t1).pb
+      local u = intersection_ll_(x, t1, s, p)
+      if u then push(u, t1) end
+    end
+    if t2 then
+      local y = self:ortho_from(t2).pb
+      local v = intersection_ll_(y, t2, s, p)
+      if v then push(v, t2) end
+    end
+    return pa_center, pa_through, n
+  end
+
+  -- --- cas général ---
+  local u = lbi:reflection(p)
+  local v = lbj:reflection(p)
+  local sp = self:side_line(p)
+  local su = self:side_line(u)
+  local pt = (sp == su) and u or v
+
+  local centers, throughs, m = self:c_l_pp(p, pt)
+  push_from_paths(centers, throughs, m)
+
+  return pa_center, pa_through, n
+  -- ======= FIN SÉCANTS =======
+end
+
+-- alias conservé
+line.c_ll_p = line.LLP
+
+
 
 return line

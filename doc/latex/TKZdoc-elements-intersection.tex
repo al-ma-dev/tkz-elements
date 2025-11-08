@@ -11,15 +11,15 @@ The \tkzFct{intersection} function is an essential geometric tool. It computes t
   \item \tkzClass{line} with \tkzClass{conic}.
 \end{itemize}
 
-\noindent
+
 Note that \tkzClass{circle} is a distinct class from \tkzClass{conic}. The \code{conic} class includes parabolas, hyperbolas, and ellipses.
 
 \medskip
-\noindent
+
 The function takes a pair of objects as arguments, regardless of their order. The result typically consists of one or two points, depending on the geometric configuration. If there is no intersection, the function may return \code{false} or \code{\_} (underscore), depending on the context.
 
 \medskip
-\noindent
+
 In cases where two intersection points exist, and you either:
 \begin{itemize}
   \item already know one of the solutions, or
@@ -55,7 +55,7 @@ The function \tkzFct{intersection(X, Y, opts)} computes the intersection points 
 If none of these options is specified, the intersection points are returned in the default order determined by the underlying geometric computation.
 
 \medskip
-\noindent
+
 \textbf{Note:} These options are only meaningful when the intersection returns multiple points. In the case of a single intersection (e.g., a tangent), the result is unaffected.
 
 \subsection{Line-line}

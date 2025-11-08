@@ -41,9 +41,63 @@ function midarc_(o, a, b) -- a -> b
     return rotation_(o, phi, b)
 end
 
+function is_tangent_(a, b, o, t)
+  local r = length_(o, t)
+  local d = distance_(a, b, o)
+  return math.abs(d - r) <= tkz.epsilon
+end
+
+-- p est SUR le cercle (bande de tolérance)
+function on_circle_(o, t, p)
+  local r = point.abs(t - o)
+  local d = point.abs(p - o)
+  return math.abs(d - r) <= tkz.epsilon
+end
+
+-- Inclusif : disque fermé (<=)
+function in_disk_(o, t, p)
+  local r = point.abs(t - o)
+  return point.abs(p - o) <= r + tkz.epsilon
+end
+
+-- Strict : disque ouvert (<)  — utile pour tes dispatchers
+function in_disk_strict_(o, t, p)
+  local r = point.abs(t - o)
+  return point.abs(p - o) < r - tkz.epsilon
+end
+
+-- Strict : extérieur pur (>)
+function out_disk_strict_(o, t, p)
+  local r = point.abs(t - o)
+  return point.abs(p - o) > r + tkz.epsilon
+end
+
+function point_circle_position_(o, t, p)
+  local d = point.abs(p - o)
+  local r = point.abs(t - o)
+  if math.abs(d - r) <= tkz.epsilon then
+    return "ON"
+  elseif d < r - tkz.epsilon then
+    return "IN"
+  else
+    return "OUT"
+  end
+end
+
+function act_(O1, T1, O2, T2)
+    local R1 = length_(O1, T1)
+    local R2 = length_(O2, T2)
+    local d = length_(O1, O2)
+    local max = R1 + R2
+    local min = math.abs(R1 - R2)
+ return (math.abs(d - max) < 0.00001) or  ( math.abs(d - min) < 0.00001)
+end
+-----------------------
+-- Result -> point
+-----------------------
+
 function tangent_from_(c, p, pt)
-    local o
-    o = midpoint_(c, pt)
+    local o = midpoint_(c, pt)
     return intersection_cc_(o, c, c, p)
 end
 
@@ -190,26 +244,73 @@ function circlepoint_(c, t, k)
     return rotation_(c, phi, t)
 end
 
-function midcircle_(C1, C2)
-    local state, r, s, t1, t2, T1, T2, p, a, b, c, d, Cx, Cy, i, j
-    state = circles_position_(C1.center, C1.radius, C2.center, C2.radius)
-    i = barycenter_({ C2.center, C1.radius }, { C1.center, -C2.radius })
-    j = barycenter_({ C2.center, C1.radius }, { C1.center, C2.radius })
-    t1, t2 = tangent_from_(C1.center, C1.through, i)
-    T1, T2 = tangent_from_(C2.center, C2.through, i)
+-- function midcircle_(C1, C2)
+    -- local state, r, s, t1, t2, T1, T2, p, a, b, c, d, Cx, Cy, i, j
+    -- state = circles_position_(C1.center, C1.radius, C2.center, C2.radius)
+    -- i = barycenter_({ C2.center, C1.radius }, { C1.center, -C2.radius })
+    -- j = barycenter_({ C2.center, C1.radius }, { C1.center, C2.radius })
+    -- t1, t2 = tangent_from_(C1.center, C1.through, i)
+    -- T1, T2 = tangent_from_(C2.center, C2.through, i)
+--
+    -- if (state == "outside") or (state == "outside tangent") then
+    --     p = math.sqrt(point.mod(i - t1) * point.mod(i - T1))
+    --     return circle:radius(i, p)
+    -- elseif state == "intersect" then
+    --     r, s = intersection(C1, C2)
+    --     return circle:radius(i, point.mod(r - i)), circle:radius(j, point.mod(r - j))
+    -- elseif (state == "inside") or (state == "inside tangent") then
+    --     a, b = intersection_lc_(C1.center, C2.center, C1.center, C1.through)
+    --     c, d = intersection_lc_(C1.center, C2.center, C2.center, C2.through)
+--
+    --     -- Ensure the smaller radius circle is used first
+    --     if C1.radius < C2.radius then
+    --         z.u, z.v, z.r, z.s = a, b, c, d
+    --     else
+    --         z.u, z.v, z.r, z.s = c, d, a, b
+    --     end
+--
+    --     -- Determine circle orientation and return orthogonal from j
+    --     if in_segment_(z.s, z.v, z.u) then
+    --         Cx = circle:diameter(z.r, z.v)
+    --         Cy = circle:diameter(z.u, z.s)
+    --     else
+    --         Cx = circle:diameter(z.s, z.v)
+    --         Cy = circle:diameter(z.u, z.r)
+    --     end
+--
+    --     -- Return the circle with the smaller radius orthogonal from j
+    --     if Cx.radius < Cy.radius then
+    --         return Cy:orthogonal_from(j)
+    --     else
+    --         return Cx:orthogonal_from(j)
+    --     end
+    -- end
+-- end
+--
+-- midcircle_cc = midcircle_
+
+function midcircle_cc_(o1, t1, o2, t2)
+    local state, r, s, tg1, TG1, p, a, b, c, d, Cx, Cy, i, j, r1, r2
+    r1 = length_(o1, t1)
+    r2 = length_(o2, t2)
+    state = circles_position_(o1, r1, o2, r2)
+    i = barycenter_({ o2, r1 }, { o1, -r2 })
+    j = barycenter_({ o2, r1 }, { o1, r2 })
+    tg1, _ = tangent_from_(o1, t1, i)
+    TG1, _ = tangent_from_(o2, t2, i)
 
     if (state == "outside") or (state == "outside tangent") then
-        p = math.sqrt(point.mod(i - t1) * point.mod(i - T1))
+        p = math.sqrt(point.mod(i - tg1) * point.mod(i - TG1))
         return circle:radius(i, p)
     elseif state == "intersect" then
-        r, s = intersection(C1, C2)
+        r, s = intersection_cc_(o1, t1, o2, t2)
         return circle:radius(i, point.mod(r - i)), circle:radius(j, point.mod(r - j))
     elseif (state == "inside") or (state == "inside tangent") then
-        a, b = intersection_lc_(C1.center, C2.center, C1.center, C1.through)
-        c, d = intersection_lc_(C1.center, C2.center, C2.center, C2.through)
+        a, b = intersection_lc_(o1, o2, o1, t1)
+        c, d = intersection_lc_(o1, o2, o2, t2)
 
         -- Ensure the smaller radius circle is used first
-        if C1.radius < C2.radius then
+        if r1 < r2 then
             z.u, z.v, z.r, z.s = a, b, c, d
         else
             z.u, z.v, z.r, z.s = c, d, a, b
@@ -233,7 +334,6 @@ function midcircle_(C1, C2)
     end
 end
 
-midcircle_cc = midcircle_
 -- Midcircle(s) between a line L and a circle C.
 -- Conventions used:
 -- - circle:new(center, through_point)
@@ -248,42 +348,50 @@ midcircle_cc = midcircle_
 --   * disjoint case: one (or two) circles of radius R = sqrt(2*r*d), with centers found
 --     geometrically as intersections of C with parallels to L at distance R.
 
-function midcircle_cl(C, L)
-    local O, T, r = C.center, C.through, C.radius
-    local x, y = L.pa, L.pb
-    -- Foot H of the perpendicular from O to line (x,y)
-    local H = projection_(x, y, O)
-    local A, B = intersection_lc_(O, H, O, T)
-    -- Stable ordering: make A the farther one from H
-    if length_(B, H) > length_(A, H) then
-        A, B = B, A
-    end
-    -- Intersections of L with C (nil if disjoint; doubled if tangent)
-    local S1, S2 = intersection_lc_(x, y, O, T)
-    local S = S1 or S2
+-- Midcircle between a circle C(O,r) and a line L
+-- Returns:
+--   - disjoint: two circles (centers A and B on OH)
+--   - tangent : one circle (center K = antipode of S on C)
+--   - secant  : two circles (centers A and B through an intersection S)
+function midcircle_cl_(O, T, x, y)
+  r = length_(T, O)
 
-    -- test tangence via d(O,D) ≈ r
-    local OL = distance_(L.pa, L.pb, O)
-    local is_tangent = math.abs(OL - r) <= tkz.epsilon
+  -- Foot H of the perpendicular from O to line (x,y)
+  local H = projection_(x, y, O)
 
-    -- Disjoint case: no intersection with the line
-    if not S then
-        -- Pole A of line L: R^2 = AL * AT = AL * (2r)
-        local AL = distance_(L.pa, L.pb, A)
-        local R = math.sqrt(2 * r * AL)
-        return circle:radius(A, R)
-    end
+  -- A,B = intersections of line (O,H) with circle C
+  local A, B = intersection_lc_(O, H, O, T)
+  -- Stable ordering: make A the farther from H
+  if length_(B, H) > length_(A, H) then A, B = B, A end
 
-    -- Tangent case
-    if is_tangent then
-        local K = antipode_(O, S)
-        return circle:new(K, S)
-    end
+  -- Intersections of L with C (nil if disjoint; doubled if tangent)
+  local S1, S2 = intersection_lc_(x, y, O, T)
+  local S      = S1 or S2
 
-    -- Secant case: return the two circles with centers A and B through S
-    return circle:new(A, S), circle:new(B, S)
+  -- test "tangent" via d(O, L) ≈ r
+  local OL         = distance_(x, y, O)
+  local is_tangent = math.abs(OL - r) <= tkz.epsilon
+
+  -- Disjoint case: TWO solutions (centers A and B)
+  if not S then
+    -- Power condition → R^2 = 2 r · d(center, L)
+    local AL = distance_(x, y, A)
+    local BL = distance_(x, y, B)
+    local R1 = math.sqrt(2 * r * AL)
+    local R2 = math.sqrt(2 * r * BL)
+    return circle:radius(A, R1), circle:radius(B, R2)
+  end
+
+  -- Tangent case: ONE solution
+  if is_tangent then
+    local K = antipode_(O, S1) -- S1==S2
+    return circle:new(K, S1)
+  end
+
+  -- Secant case: TWO solutions (pick either S1 or S2, both give same radii)
+  local Sref = S1
+  return circle:new(A, Sref), circle:new(B, Sref)
 end
-
 
 
 --- =========== Common tangents of two circles =======-----
@@ -403,4 +511,246 @@ function common_tangent_(C1, C2, mode)
 
   tex.error("common_tangent_: invalid configuration ('"..tostring(pos).."', mode='"..tostring(mode).."').")
   return nil, nil, nil, nil
+end
+
+-- nouvel ajout for CLL
+--====== CLL =-=====-
+
+-- ==== Helpers for CLL ==== ---
+
+function orient_ray_(i, a, b)
+  return (a - i) ^ (b - i)
+end
+
+function left_of_ray_(i, a, p)
+  return orient_ray_(i, a, p) > 0
+end
+
+function point_in_open_sector_(i, a, b, p)
+  return left_of_ray_(i, a, p) and not left_of_ray_(i, b, p)
+end
+
+function circle_single_sector_(i, u, up, v, vp, o, r)
+  local S = {
+    {u,  v},
+    {v,  up},
+    {up, vp},
+    {vp, u},
+  }
+  for k = 1, 4 do
+    local a, b = S[k][1], S[k][2]
+    if point_in_open_sector_(i, a, b, o) then
+      local dA = distance_(i, a, o)
+      local dB = distance_(i, b, o)
+      if dA >= r and dB >= r then
+        return k
+      end
+    end
+  end
+  return nil
+end
+
+
+function circle_touched_sectors_(i, u, up, v, vp, o, r)
+
+  if (o - i):mod() <= r + tkz.epsilon then
+    return {1, 2, 3, 4}
+  end
+
+  local adjacent = {
+    u  = {4, 1},
+    v  = {1, 2},
+    up = {2, 3},
+    vp = {3, 4},
+  }
+
+  local hit = { false, false, false, false }
+
+  local k0 = (function()
+    if     point_in_open_sector_(i, u,  v,  o) then return 1
+    elseif point_in_open_sector_(i, v,  up, o) then return 2
+    elseif point_in_open_sector_(i, up, vp, o) then return 3
+    elseif point_in_open_sector_(i, vp, u,  o) then return 4
+    else return nil end
+  end)()
+  if k0 then hit[k0] = true end
+
+function touch_border_(ray_label, a)
+    local d = distance_(i, a, o)
+    if d <= r + tkz.epsilon then
+      local s1, s2 = adjacent[ray_label][1], adjacent[ray_label][2]
+      hit[s1], hit[s2] = true, true
+    end
+  end
+
+  touch_border_('u',  u)
+  touch_border_('v',  v)
+  touch_border_('up', up)
+  touch_border_('vp', vp)
+
+  local out = {}
+  for k = 1, 4 do
+    if hit[k] then out[#out+1] = k end
+  end
+  return out
+end
+
+function classify_by_sector_(i, u, up, v, vp, circles)
+  local buckets = { [1]={}, [2]={}, [3]={}, [4]={} }
+  for _, C in ipairs(circles) do
+    local w = C.center
+    local k =
+      (point_in_open_sector_(i, u,  v,  w) and 1) or
+      (point_in_open_sector_(i, v,  up, w) and 2) or
+      (point_in_open_sector_(i, up, vp, w) and 3) or
+      (point_in_open_sector_(i, vp, u,  w) and 4) or
+      nil
+    if k then table.insert(buckets[k], C) end
+    -- (cas limites: si w est sur un bord, à traiter plus tard comme tu l’as noté)
+  end
+  return buckets
+end
+
+function circle_sector_signature_(i, u, up, v, vp, o, r)
+
+  -- 0) cercle contenant le sommet i -> 4 secteurs
+  if (o - i):mod() <= r + tkz.epsilon then
+    return {1, 2, 3, 4}
+  end
+
+  -- helper orientation strict / non-strict
+  local function in_open(i,a,b,p)
+    return ((a - i) ^ (p - i)) >  0 and
+           ((b - i) ^ (p - i)) <= 0
+  end
+
+  -- 1) secteur strict du centre (k0)
+  local k0 =
+    (in_open(i, u,  v,  o) and 1) or
+    (in_open(i, v,  up, o) and 2) or
+    (in_open(i, up, vp, o) and 3) or
+    (in_open(i, vp, u,  o) and 4) or
+    0  -- 0 = centre sur un bord (cas limite)
+
+  -- 2) distances aux DROITES sous-jacentes (pas aux 4 demi-droites)
+  --    L1 = (a,b) porte u/up ; L2 = (c,d) porte v/vp
+  --    IMPORTANT : une seule fois par droite.
+  local D1 = distance_(u, up, o)  -- équiv. distance à la droite de L1
+  local D2 = distance_(v, vp, o)  -- équiv. distance à la droite de L2
+  local T1 = D1 <= r + tkz.epsilon
+  local T2 = D2 <= r + tkz.epsilon
+
+  -- 3) si k0 connu : ne considérer que les deux bords qui bornent k0
+  if k0 == 1 then
+    if     T1 and not T2 then return {4, 1}   -- touche u
+    elseif T2 and not T1 then return {1, 2 }  -- touche v
+    elseif T1 and T2     then return {4, 1, 2} -- touche u et v (3 secteurs, cas réel)
+    else                      return {1}
+    end
+  elseif k0 == 2 then
+    if     T2 and not T1 then return {1, 2}   -- v
+    elseif T1 and not T2 then return {2, 3}   -- up
+    elseif T1 and T2     then return {1, 2, 3}
+    else                      return {2}
+    end
+  elseif k0 == 3 then
+    if     T1 and not T2 then return {2, 3}  -- up
+    elseif T2 and not T1 then return {3, 4}   -- vp
+    elseif T1 and T2     then return {2, 3, 4}
+    else                      return {3}
+    end
+  elseif k0 == 4 then
+    if     T2 and not T1 then return {3, 4}  -- vp
+    elseif T1 and not T2 then return {4, 1}  -- u
+    elseif T1 and T2     then return {3, 4, 1}
+    else                      return {4}
+    end
+  end
+
+  -- 4) cas limite : centre sur un bord.
+  --    Éviter le double-compte en regroupant par DROITE :
+  local Tu  = distance_(i, u,  o) <= r + tkz.epsilon
+  local Tv  = distance_(i, v,  o) <= r + tkz.epsilon
+  local Tup = distance_(i, up, o) <= r + tkz.epsilon
+  local Tvp = distance_(i, vp, o) <= r + tkz.epsilon
+  local L1_touched = (Tu or Tup)   -- une seule fois pour la droite L1
+  local L2_touched = (Tv or Tvp)   -- idem pour L2
+
+  if     L1_touched and not L2_touched then
+    -- tangence à la seule L1 -> exactement 2 secteurs,
+    -- choisir la paire adjacente qui correspond au côté où se trouve o.
+    -- On discrimine avec le secteur "à droite" du bord considéré.
+    -- Ici, renvoyer la paire la plus sûre : "4/1" (côté u)
+    return  {4, 1}
+  elseif L2_touched and not L1_touched then
+    return {1, 2}
+  elseif L1_touched and L2_touched then
+    -- tangence aux deux droites alors que le centre est sur un bord :
+    -- raisonnablement 3 secteurs (géométrie réelle)
+    return {4, 1, 2}
+  else
+    -- pas de tangence détectée → considérer 1 secteur voisin
+    return {1}
+  end
+end
+
+---- ==== end helpers for CLL ====-----
+
+function lines_secant_circle_(o, r, a, b, c, d)
+  local i = intersection_ll_(a, b, c, d)
+  if not i then
+    -- fallback (en théorie jamais atteint si la détection est faite au-dessus)
+    return lines_parallel_circle_(o, r, a, b, c, d)
+  end
+  local s = ((b - a) ^ (d - c)) >= 0 and 1 or -1
+  local u  = report_(a, b,  1,  i)
+  local up = report_(a, b, -1,  i)
+  local v  = report_(c, d,  s,  i)
+  local vp = report_(c, d, -s,  i)
+  return circle_sector_signature_(i, u, up, v, vp, o, r)
+end
+-- L1=(a,b), L2=(c,d), cercle=(o,r)
+-- Secteurs : 1=entre L1/L2, 2=outside L1, 3=outside L2
+function lines_parallel_circle_(o, r, a, b, c, d)
+  local d1 = distance_(a, b, o)           -- dist(o, L1)
+  local d2 = distance_(c, d, o)           -- dist(o, L2)
+  local D  = distance_(a, b, c)           -- écart des parallèles
+
+  local inside_strip  = tkz.approx(d1 + d2, D)            -- o entre L1 et L2
+  local outside_strip = tkz.approx(math.abs(d1 - d2), D)  -- o du même côté
+
+  local mn, mx = math.min(d1, d2), math.max(d1, d2)
+  local nearer_is_L1 = (d1 <= d2)         -- en cas d’égalité, côté L1
+  local OUT = nearer_is_L1 and 2 or 3     -- secteur extérieur du côté proche
+
+  if inside_strip then
+    if r < mn and not tkz.approx(r, mn) then return {1} end
+    if tkz.approx(r, mn)                  then return {1, OUT} end
+    if r > mn and r < mx                  then return {1, OUT} end
+    -- r ≥ mx  (tangence à la plus éloignée ou dépassement)
+    return {1,2,3}
+  end
+
+  if outside_strip then
+    if r < mn and not tkz.approx(r, mn)   then return {OUT} end
+    if tkz.approx(r, mn)                  then return {OUT,1} end
+    if r > mn and r < mx                  then return {OUT,1} end
+    -- r ≥ mx
+    return {1,2,3}
+  end
+
+  -- zone grise numérique : choisir le scénario le plus proche
+  if math.abs((d1 + d2) - D) <= math.abs(math.abs(d1 - d2) - D) then
+    -- traiter comme inside_strip
+    if r < mn and not tkz.approx(r, mn) then return {1} end
+    if tkz.approx(r, mn)                then return {1, OUT} end
+    if r > mn and r < mx                then return {1, OUT} end
+    return {1,2,3}
+  else
+    -- traiter comme outside_strip
+    if r < mn and not tkz.approx(r, mn) then return {OUT} end
+    if tkz.approx(r, mn)                then return {OUT,1} end
+    if r > mn and r < mx                then return {OUT,1} end
+    return {1,2,3}
+  end
 end

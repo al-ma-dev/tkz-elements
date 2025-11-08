@@ -2,26 +2,26 @@
 \label{sec:work_organization}
 
 
-Here is a sample organization for working with \tkzNamePack{tkz-euclide} and \tkzEngine{lua\LATEX}.
+Here is a sample organization for working with \tkzNamePack{tkz-euclide} and \tkzEngine{Lua\LATEX}.
 
 \begin{itemize}
-  \item \textbf{Compilation:} Add the line:
+  \item \texttt{Compilation:} Add the line:
   \begin{verbatim}
   % !TEX TS-program = lualatex
   \end{verbatim}
-  to ensure that your document compiles with \tkzEngine{lua\LATEX}.
+  to ensure that your document compiles with \tkzEngine{Lua\LATEX}.
 
-  \item \textbf{Document Class:} The \texttt{standalone} class is recommended when the goal is simply to create a figure, as it avoids unnecessary overhead.
+  \item \texttt{Document Class:} The \texttt{standalone} class is recommended when the goal is simply to create a figure, as it avoids unnecessary overhead.
 
-  \item \textbf{Package Loading:} You can load \tkzNamePack{tkz-euclide} in two ways:
+  \item \texttt{Package Loading:} You can load \tkzNamePack{tkz-euclide} in two ways:
   \begin{itemize}
     \item \tkzcname{usepackage\{tkz-euclide\} }gives you full access to the entire package.
     \item The recommended method is to use the \tkzPopt{tkz-euclide}{mini} option, which loads only the necessary modules for drawing. You still retain the ability to draw with \TIKZ{} if desired.
   \end{itemize}
 
-  \item \textbf{Conditionals:} The package \tkzNamePack{ifthen} is useful when you need to evaluate Boolean conditions within your document.
+  \item \texttt{Conditionals:} The package \tkzNamePack{ifthen} is useful when you need to evaluate Boolean conditions within your document.
 
-  \item \textbf{Lua Code Organization:} While you can embed Lua code directly with \verb|\directlua|, externalizing the code offers several advantages:
+  \item \texttt{Lua Code Organization:} While you can embed Lua code directly with \verb|\directlua|, externalizing the code offers several advantages:
   \begin{itemize}
     \item Better syntax highlighting and code presentation in editors that support \tkzname{Lua} and \LATEX{}.
     \item Simplified commenting: \tkzname{Lua} uses \verb|--|, while \LATEX{} uses \verb|%|. Keeping Lua in a separate file avoids confusion.
@@ -106,7 +106,7 @@ Since all geometric computations are handled in \tkzname{Lua}, applying scaling 
 These challenges prompted a review of several functions, during which some bugs related to Lua-side scaling were identified and resolved.
 
 \medskip
-\noindent
+
 \textbf{\textcolor{red}{New Recommendation:}} From now on, scaling should be applied exclusively in the \TIKZ{} part. The \tkzname{Lua} code should operate in an unscaled, consistent coordinate system to ensure the reliability of all geometric computations.
 
 The following documentation uses only scaling in the \tkzEnv{tikz}{tikzpicture} environment.

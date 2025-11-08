@@ -1,3 +1,45 @@
+## [2025/11/08 version 4.35c]
+
+### Added
+
+- **point**:
+   - `shift_collinear_to(B, dist)`,
+   `PPP` (circle through three points)
+- **line**:
+   - `collinear_at_distance(d)`
+   - `LLL` (circle tangent to three lines)
+- **circle**:
+   - `line_position(L)`,
+   - `lines_position(L1, L2, mode)`,
+   - `is_tangent(L)`, `is_secant(L)`, `is_disjoint(L)`
+   - `inversion_neg` (inversion then symmetry)
+   - `tangent_parallel`
+   - `CLL` or `c_c_ll`
+   - add mode in common_tangent by default internal external or both
+   - `are_circles_tangents(C)`
+   - `CCL` and `CCC` and `CCC_gergonne`
+- **path**
+   - `get(i)` to extract point of path
+- **triangle**
+   - modification class triangle : confused test points, collinearity test
+   - remove function triangle:c_ll_p
+- **tkz**
+   - `tkz.approx(x, y)`   comparison of two real numbers
+   - `tkz.nodes_from_paths`
+
+ ### Changed
+  - All methods relating to contact problems have been improved and supplemented in order to deal with specific cases.
+  - I added the following nomenclature for contact issues: `PPP`(new), `LLL`(new), `LPP`, `LLP`, `CPP`, `CCP`, `CLP`,  `CLL`(new), `CCL`(new) and `CCC`(new).
+  - `c_lc_p` has two aliases 'c_cl_p' and `CLP`
+  - `c_cc_p` has an alias `CCP`
+  - colinear is now collinear !
+  - tkz-elements-demo_5.lua has been adapted
+  - midcircle (amelioration): midcircle between two circles or between a circle and a line.
+### Docs
+   - typo: correction collinear instead of colinear
+   - Added descriptions and examples of new methods, plus a few corrections.
+
+
 ## [2025/10/04 version 4.30c]
 ### Added
 - **circle**:
@@ -111,7 +153,7 @@
 ## [4.00c]
 ### Added
 - New `path` class; short syntax for constructors (omit `.new`).
-- Metapost “mini” macro; options `known` and `near` for intersections; trilinear/barycentric rewrites; line methods `orthogonal_at(pt,k)` and `colinear_at(pt,k)`.
+- Metapost “mini” macro; options `known` and `near` for intersections; trilinear/barycentric rewrites; line methods `orthogonal_at(pt,k)` and `collinear_at(pt,k)`.
 
 ### Changed
 - Removed scaling within the Lua section (prefer TikZ‑level scaling).

@@ -40,18 +40,18 @@ Points are created by providing their coordinates in the current orthonormal Car
 where \code{x} and \code{y} are real numbers corresponding to the $x$ and $y$ coordinates of the point.
 
 \medskip
-\noindent
+
 Internally, this creates a complex number $x + i y$ and stores it in the table \tkzVar{point}{z} under the key \code{"A"}. The table \tkzVar{point}{z} is used to reference all points by their label.
 
 \medskip
-\noindent
+
 Alternatively, the more explicit syntax is also available:
 
 \begin{center}
   \code{z.A = point:new(x, y)}
 \end{center}
 
-\noindent
+
 Both forms are equivalent. The shorter syntax is available since version 4 and preferred for readability and consistency.
 \def\size{42mm}
 \begin{tikzpicture}[remember picture]
@@ -147,7 +147,7 @@ This is the creation of a fixed point with coordinates $1$ and $2$ and which is 
   \captionof{table}{Point attributes.}\label{point:attributes}
   \begin{tabular}{lll}
   \toprule
-  \textbf{Attributes}      & \textbf{Description}&   \textbf{Example / Reference} \\
+  \textbf{Attributes}      & \textbf{Description}&   \texttt{Example / Reference} \\
   \midrule
   \tkzAttr{point}{type}     &  Object type name, always \texttt{"point"}   & \\
   \tkzAttr{point}{re}       &  Real part (i.e., $x$-coordinate)      & [\ref{ssub:methods}] \\
@@ -313,7 +313,7 @@ This attribute allows the point to be used in conjunction with matrices.
 The methods listed in the following table are standard and commonly used throughout the examples at the end of this documentation. Each of these methods returns a \tkzNameObj{point} object.
 
 \medskip
-\noindent
+
 For more advanced operations using complex numbers and operator overloading, see  section~\ref{sub:complex_numbers}, which describes the available metamethods.
 
 
@@ -351,9 +351,9 @@ For more advanced operations using complex numbers and operator overloading, see
 \tkzMeth{point}{orthogonal(d)} & [\ref{ssub:orthogonal_method}]\\
 \tkzMeth{point}{at()} &   [\ref{ssub:_point_at_method}] \\
 \tkzMeth{point}{shift\_orthogonal\_to(pt, d)} &   [\ref{shift_orthogonal}] \\
-\tkzMeth{point}{shift\_colinear\_to(pt, d)} &   [\ref{shift_colinear}] \\
+\tkzMeth{point}{shift\_collinear\_to(pt, d)} &   [\ref{shift_collinear}] \\
+\tkzMeth{point}{PPP(a,b)} &[\ref{ssub:point_PPP}]\\
 \midrule
-
 \textbf{Transformations} & \\
 \midrule
 \tkzMeth{point}{symmetry(obj)} & [\ref{ssub:object_symmetry}] \\
@@ -363,6 +363,7 @@ For more advanced operations using complex numbers and operator overloading, see
 
 \textbf{Utilities} &\\
 \midrule
+\tkzMeth{point}{identity(pt)} & [\ref{ssub:identity} ]\\
 \tkzMeth{point}{print()} & [\ref{ssub:object_symmetry} ]\\
 \bottomrule %
 \end{tabular}
@@ -375,15 +376,15 @@ For more advanced operations using complex numbers and operator overloading, see
 This method creates a point in the plane using Cartesian coordinates. The \textbf{shorter syntax} \tkzMeth{point}{(r, r)} is available since version 4 and preferred for readability and consistency.
 
 \medskip
-\noindent
+
 It takes two real numbers as arguments: the first represents the \emph{abscissa} (real part), and the second the \emph{ordinate} (imaginary part). Internally, the point is treated as a complex number and stored in the global table \tkzname{z}.
 
 \medskip
-\noindent
+
 The resulting object is of type \tkzNameObj{point}, and can be used in further geometric constructions or displayed with \tkzNamePack{tkz-euclide}.
 
 \medskip
-\noindent
+
 \smallbf{Note:} The default unit is the centimeter, in accordance with the conventions of \tkzNamePack{tkz-euclide}. All coordinates are interpreted in an orthonormal Cartesian coordinate system.
 
 \vspace{1em}
@@ -406,7 +407,7 @@ The resulting object is of type \tkzNameObj{point}, and can be used in further g
 The \code{get} method is used to retrieve the Cartesian coordinates of a point.
 
 \medskip
-\noindent
+
 Let $I$ be the intersection point of two lines. You can obtain its coordinates in two equivalent ways:
 \begin{itemize}
   \item using the point’s attributes directly:
@@ -419,7 +420,7 @@ Let $I$ be the intersection point of two lines. You can obtain its coordinates i
     \end{center}
 \end{itemize}
 
-\noindent
+
 This method improves code readability and makes it easier to pass coordinates to functions that expect numerical values.
 
 \vspace{1em}
@@ -459,18 +460,18 @@ This method improves code readability and makes it easier to pass coordinates to
 This method creates a point in the plane using polar coordinates.
 
 \medskip
-\noindent
+
 It takes two arguments:
 \begin{itemize}
   \item \code{r} —> the modulus (distance from the origin),
   \item \code{an} —> the argument (angle in radians).
 \end{itemize}
 
-\noindent
+
 Internally, the point is represented as a complex number: \code{r * exp(i * an)}. This method is particularly useful for constructing points on circles or for defining points in terms of angle and distance.
 
 \medskip
-\noindent
+
 \textbf{Note:} The default unit is the centimeter, consistent with the conventions of \tkzNamePack{tkz-euclide}. All coordinates are interpreted in an orthonormal Cartesian coordinate system.
 
 \vspace{1em}
@@ -531,11 +532,11 @@ Identical to the previous one, except that the angle is given in degrees.
 This method creates a new point located at a vertical distance from the given point, along the line passing through it and directed upward (toward the north).
 
 \medskip
-\noindent
+
 It is particularly useful when you want to construct a point offset by a specific distance above a reference point—for example, to place a label or construct a geometric configuration with a known height.
 
 \medskip
-\noindent
+
 The optional argument \code{d} represents the vertical distance. If omitted, a default value of $1$ is used.
 
 \vspace{1em}
@@ -565,18 +566,18 @@ The optional argument \code{d} represents the vertical distance. If omitted, a d
 This method returns a new point located on the segment from the origin to the current point, at a distance of $1$ from the origin. It is typically used to extract the direction of a vector and normalize its length to one.
 
 \medskip
-\noindent
+
 You can also use this method to construct a point at a fixed distance from another point along a given direction. For example:
 
 \begin{center}
 \code{z.U = (z.C - z.B):normalize() + z.B}
 \end{center}
 
-\noindent
+
 Here, the vector $\overrightarrow{BU}$ has length $1$, and $U$ lies on the segment $[BC]$ in the direction from $B$ to $C$.
 
 \medskip
-\noindent
+
 There are two equivalent ways to achieve the same result:
 
 \begin{mybox}
@@ -586,7 +587,7 @@ There are two equivalent ways to achieve the same result:
 \end{verbatim}
 \end{mybox}
 
-\noindent
+
 The second approach requires prior creation of the line object \code{L.BC}.
 
 \vspace{1em}
@@ -620,11 +621,11 @@ Let $O$ be the origin of the plane, and let $A$ be a point distinct from $O$. Th
 \]
 
 \medskip
-\noindent
+
 By default, the point $B$ is chosen so that $|OB| = |OA|$. If the optional argument \code{d} is provided, then the point $B$ is constructed so that $|OB| = d$.
 
 \medskip
-\noindent
+
 This method is useful for constructing perpendicular vectors or generating points on circles orthogonal to given directions.
 
 \vspace{1em}
@@ -656,15 +657,14 @@ This method complements the \code{orthogonal} method. Instead of constructing a 
 \overrightarrow{AB} \perp \overrightarrow{OA}
 \]
 
-\noindent
+
 In this case, the reference direction remains $\overrightarrow{OA}$, but the orthogonal vector is constructed from point $A$, not the origin. The result is a point $B$ lying on a line orthogonal to $(OA)$ and passing through $A$.
 
 \medskip
-\noindent
+
 This method is useful when working with local orthogonal directions, such as when constructing altitudes in a triangle or defining perpendicular vectors anchored at a given point.
 
 \vspace{1em}
-
 
 \begin{tkzexample}[latex=7cm]
  \directlua{
@@ -685,24 +685,35 @@ This method is useful when working with local orthogonal directions, such as whe
  \end{center}
 \end{tkzexample}
 
+%====================================================================
+\subsubsection{Method \tkzMeth{point}{PPP(a,b)}}
+\label{ssub:point_PPP}
+%====================================================================
+This method is presented in the section \tkzname{Apollonius' problem} [\ref{sub:PPP}]
+
+
 \subsubsection{Method \tkzMeth{point}{rotation(obj)}} — First example
 \label{ssub:example_rotation_of_points}
 
 This method performs a rotation of one or more points around the current point, which serves as the center of rotation.
 
 \medskip
-\noindent
+\texttt{Arguments}
+
 The arguments are:
 \begin{itemize}
   \item the angle of rotation, expressed in radians;
   \item a point or a list of points to rotate.
 \end{itemize}
 
-\noindent
+\medskip
+\texttt{Return value}
+
 The result is a point (or a list of points) obtained by rotating each given point around the center by the specified angle.
 
 \medskip
-\noindent
+\texttt{Example usage}
+
 In the following example, a list of points is rotated about a given center.
 
 \vspace{1em}
@@ -730,13 +741,11 @@ In the following example, a list of points is rotated about a given center.
 
 \subsubsection{Method \tkzMeth{point}{shift\_orthogonal\_to(pt, dist)}}\label{shift_orthogonal}
 
-\paragraph*{Syntax}
-
-\begin{verbatim}
-z.P = z.A:shift_orthogonal_to(z.B, 2)
-\end{verbatim}
+\medskip
+\texttt{Syntax: } \verb|z.P = z.A:shift_orthogonal_to(z.B, 2)|
 
 \medskip
+\texttt{Return value}
 This method returns the point obtained by shifting the current point
 A in the direction orthogonal to the line (AB), at a signed distance dist.
 A positive distance corresponds to a rotation of the vector $\overrightarrow{AB}$
@@ -768,34 +777,35 @@ z.TB = z.B:shift_orthogonal_to(z.A, -C.A.radius)
 \end{tikzpicture}
 \end{tkzexample}
 
-\subsubsection{Method \tkzMeth{point}{shift\_colinear\_to(pt, dist)}}\label{shift_colinear}
+\subsubsection{Method \tkzMeth{point}{shift\_collinear\_to(pt, dist)}}
+\label{shift_collinear}
 This method returns the point obtained by shifting the current point
 A in the same direction  that line (AB), at a signed distance dist.
 
-\paragraph*{Syntax}\begin{verbatim}
-z.P = z.A:shift_colinear_to(z.B, 2)
-\end{verbatim}
+\medskip
+\texttt{Syntax: } \verb|z.P = z.A:shift_collinear_to(z.B, 2)|
+
+
 
 \subsubsection{Method \tkzMeth{point}{rotation(an, obj)}}
 \label{ssub:object_rotation}
 
-\paragraph{Purpose.}
+\medskip
+\texttt{Purpose:}
+
 This method rotates a geometric object by a given angle around a specified point.
 
-\medskip
-\noindent
 In this example, the triangle is rotated by an angle of~$\pi/3$ around the point~$O$, which serves as the center of rotation.
 
-\medskip
-\noindent
-\paragraph{Signature.}
-\begin{verbatim}
-  new_obj = z.I:rotation(an, obj)
-\end{verbatim}
 
 \medskip
-\noindent
-\paragraph{Arguments.}
+\texttt{Syntax: } \verb|new_obj = z.I:rotation(an, obj)|
+
+
+
+\medskip
+\texttt{Arguments:}
+
 The arguments are:
 \begin{itemize}
   \item \code{an} —> the angle of rotation, in radians;
@@ -803,9 +813,7 @@ The arguments are:
 \end{itemize}
 
 \medskip
-\noindent
-\paragraph{Returns.}
-The method returns a new object of the same type, rotated accordingly.
+\texttt{Returns:} The method returns a new object of the same type, rotated accordingly.
 
 \vspace{1em}
 \begin{tkzexample}[latex=7cm]
@@ -839,22 +847,62 @@ The method returns a new object of the same type, rotated accordingly.
 \end{center}
 \end{tkzexample}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%  Utilities %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{\tkzMeth{point}{identity}(pt)}
+\label{ssub:identity}
+
+\medskip
+\texttt{Syntax: } \verb|z.A:identity(z.B)|
+
+\medskip
+\texttt{Purpose: }Check whether two points are identical within the numerical precision defined by \tkzVar{tkz}{tkz.epsilon}.
+
+\medskip
+\texttt{Parameters: } The point to be compared with \textbf{self}.\\
+
+\medskip
+\texttt{Return value: } True if the two points are numerically identical, false otherwise.\\
+
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+ z.A = point(0, 0)
+ z.B = point(0.0000000001, 0)
+ tex.print(tostring(z.A:identity(z.B)))
+ tex.print('\\\\')
+ tex.print(tkz.epsilon)}
+ %% true if tkz.epsilon > 1e-10
+\end{tkzexample}
+
+\medskip
+\texttt{Remark: }
+
+This method compares two points by computing the Euclidean distance between them
+and checking if it is smaller than the global tolerance \textbf{tkz.epsilon}.
+It is useful to test equality of points in floating-point computations.
+
+
+
 \subsubsection{Method \tkzMeth{point}{symmetry(obj)}}
 \label{ssub:object_symmetry}
 
+\medskip
+\texttt{Description:}
 This method performs a central symmetry (point reflection) of a geometric object with respect to the given point.
 
 \medskip
-\noindent
+\texttt{Arguments}
+
 The argument \code{obj} can be a point, a line, a triangle, a circle, or any other supported geometric object. Each element of the object is reflected through the center point, producing a new object of the same type.
 
 \medskip
-\noindent
+\texttt{Example usage}
+
 The following example shows how to apply central symmetry to an object (e.g., a triangle) using a reference point as the center.
 
 \vspace{1em}
-
-
 
 \begin{tkzexample}[latex=7cm]
 \directlua{
@@ -880,11 +928,11 @@ The following example shows how to apply central symmetry to an object (e.g., a 
 \subsubsection{Method \tkzMeth{point}{homothety(k, obj)}}
 \label{ssub:method_point_homothety_k_obj}
 
-This method performs a homothety (dilation or contraction) of a geometric object with respect to the current point, which serves as the center of the transformation.
+\texttt{Purpose: } This method performs a homothety (dilation or contraction) of a geometric object with respect to the current point, which serves as the center of the transformation.
 
 \medskip
-\noindent
-The arguments are:
+
+\texttt{Arguments: }
 \begin{itemize}
   \item \code{k} — the homothety ratio (a real number),
   \item \code{obj} — the object to be transformed, which can be:
@@ -895,7 +943,7 @@ The arguments are:
   \end{enumerate}
 \end{itemize}
 
-\noindent
+
 A positive ratio \code{k} produces a scaling centered at the point, while a negative ratio also reflects the object through the center.
 
 \vspace{1em}
@@ -921,7 +969,7 @@ A positive ratio \code{k} produces a scaling centered at the point, while a nega
  This method converts the point’s coordinates to a formatted string that can be displayed directly in the text.
 
 \medskip
-\noindent
+
 The number of decimal places is controlled by the global variable \code{tkz\_dc}, which is set to $2$ by default in the \code{init\_elements()} function. You can override it by assigning a new value before calling \code{print()}:
 
 \begin{verbatim}
@@ -929,12 +977,11 @@ tkz_dc = 0
 \end{verbatim}
 
 \medskip
-\noindent
+
 This is particularly useful when displaying coordinates, sums, products, or intermediate results in mathematical expressions.
 
 \medskip
-\noindent
-Example:
+\texttt{Example usage:}
 
 \begin{verbatim}
 \directlua{
@@ -944,7 +991,7 @@ Example:
   z.a = z.A + z.B
   z.m = z.A * z.B
   tkz_dc = 0}
-The respective affixes of points $A$ and $B$ being
+  The respective affixes of points $A$ and $B$ being
    \tkzUseLua{z.A:print()} and \tkzUseLua{z.B:print()},
   their sum is \tkzUseLua{z.a:print()} and
   their product \tkzUseLua{z.m:print()}.

@@ -121,7 +121,8 @@ Depending on the value of the eccentricity:
 \end{itemize}
 
 \vspace{1em}
-\paragraph{Short form.}
+\textbf{Short form.}
+
 The class also supports a short form:
 \begin{mybox}
 \begin{verbatim}
@@ -129,7 +130,8 @@ CO = conic(z.F, L.dir, e)  -- equivalent to conic:new(...)
 \end{verbatim}
 \end{mybox}
 
-\paragraph{Other constructions.}
+\textbf{Other constructions.}
+
 Additional creation methods are also available:
 \begin{itemize}
   \item Bifocal construction using two foci and a constant sum or difference;
@@ -2049,12 +2051,12 @@ The results are stored in a table, indexed by the point names. You can retrieve 
  z.B = point(3, 1.5)
  z.E = point(2, 4)
  local coefficients = search_ellipse("A", "B", "C", "D", "E")
-
  local A, B, C, D, E, F =
      coefficients.A, coefficients.B,
      coefficients.C, coefficients.D,
      coefficients.E, coefficients.F
- tex.print("\\noindent A = "..A)
+
+ tex.print(" A = "..A)
  tex.print('\\\\')
  tex.print("B = "..B)
  tex.print('\\\\')
@@ -2064,8 +2066,7 @@ The results are stored in a table, indexed by the point names. You can retrieve 
  tex.print('\\\\')
  tex.print("E = "..E)
  tex.print('\\\\')
- tex.print("F = "..F)
- tex.print('\\\\')  }
+ tex.print("F = "..F)}
 \end{tkzexample}
 
 \subsubsection{Function \tkzFct{conic}{ellipse\_axes\_angle(t)}}
@@ -2223,19 +2224,18 @@ The \tkzClass{conic} class includes a method \tkzMeth{conic}{path} that creates 
 
 This method returns a path corresponding to a conic arc between two points \tkzname{zA} and \tkzname{zB} on the curve. The number of interpolation points is controlled by \code{nb} (default: 20). The method supports ellipses, hyperbolas, and parabolas.
 
-\paragraph{Syntax:}
-\begin{verbatim}
-PA.arc = CO.myconic:path(zA, zB, 40, "short")
-\end{verbatim}
+\texttt{Syntax: } \verb|PA.arc = CO.myconic:path(zA, zB, 40, "short")|
 
-\paragraph{Arguments:}
+\texttt{Arguments: }
+
 \begin{itemize}
 \item \code{za}, \code{zb} — points on the conic
 \item \code{nb} — number of interpolation steps (default: 20)
 \item \code{mode} — optional string ("short") to select the smaller arc for ellipses
 \end{itemize}
 
-\paragraph{Details:}
+\textbf{Details:}
+
 Internally, this method computes the conic parameter
 $t$ associated with each endpoint and performs linear interpolation. For ellipses, the interpolation is modulo 1 to ensure circularity. When the \code{mode} is set to \code{"short"}, the function selects the shorter arc between the two endpoints.
 
@@ -2265,7 +2265,8 @@ The resulting arc can be drawn with:
 \end{verbatim}
 \end{mybox}
 
-\paragraph{Example with ellipse}
+\texttt{Example with ellipse}
+
 The next example is a special case with an ellipse. If the conic is an ellipse, an optional fourth argument \code{mode} can be passed:\\
 
 "short" : trace the shortest arc,
@@ -2310,7 +2311,7 @@ The next example is a special case with an ellipse. If the conic is an ellipse, 
 \end{tkzexample}
 
 
-\paragraph{Example with parabola}
+\texttt{Example with parabola}
 
 This example shows the case of a parabola. It would be the same for a hyperbola ( the "swap" option is not yet authorized).
 

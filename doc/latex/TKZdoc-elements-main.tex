@@ -1,5 +1,5 @@
 % !TEX TS-program = lualatex
-% Documentation of tkz-elements v4.25c
+% Documentation of tkz-elements v4.35c
 % Copyright (c) 2023–2025 Alain Matthes
 % SPDX-License-Identifier: LPPL-1.3c
 % Maintainer: Alain Matthes
@@ -14,7 +14,7 @@
 ]{tkz-doc}
 %\overfullrule=5pt
 \gdef\tkznameofpack{tkz-elements}
-\gdef\tkzversionofpack{4.30c}
+\gdef\tkzversionofpack{4.35c}
 \gdef\tkzdateofpack{\today}
 \gdef\tkznameofdoc{tkz-elements.pdf}
 \let\tkzversionofdoc\tkzversionofpack
@@ -209,7 +209,7 @@
 
 
 \defoffile{
-	This document gathers notes on \tkzNamePack{\tkznameofpack}, an initial version of a \tkzname{Lua} library designed to handle all necessary computations for constructing objects in Euclidean geometry. The document must be compiled with lua\LATEX.\\
+	This document gathers notes on \tkzNamePack{\tkznameofpack}, an initial version of a \tkzname{Lua} library designed to handle all necessary computations for constructing objects in Euclidean geometry. The document must be compiled with Lua\LATEX.\\
 
 	With \tkzNamePack{tkz-elements}, all definitions and calculations are carried out exclusively in Lua, following an object-oriented programming model. Core geometric entities such as points, lines, triangles, and conics are implemented as object classes.\\
 	Once the computations are complete, graphical rendering is typically handled using \tkzNamePack{tkz-euclide}, although you may also use \TIKZ{} directly if desired.\\
@@ -221,7 +221,7 @@
 
 \vspace*{4em}
 
-\lefthand\ Acknowledgements : I received much valuable advices, remarks, corrections  from \\ \tkzimp{Nicolas Kisselhoff}, \tkzimp{David Carlisle}, \tkzimp{Roberto Giacomelli} and \tkzimp{Qrrbrbirlbel}.\\
+\lefthand\ Acknowledgements: I received much valuable advices, remarks, corrections  from \\ \tkzimp{Nicolas Kisselhoff}, \tkzimp{David Carlisle}, \tkzimp{Roberto Giacomelli} and \tkzimp{Qrrbrbirlbel}.\\
 Special thanks to \tkzimp{Wolfgang Büchel} for his invaluable contribution in correcting the examples.
 
 \vspace*{1em}
@@ -327,6 +327,7 @@ matrix & \hyperref[matrix:methods]{see table} \\
 \input{TKZdoc-elements-lua.tex}
 \input{TKZdoc-elements-indepthstudy.tex}
 \input{TKZdoc-elements-transfers.tex}
+\input{TKZdoc-elements-apollonius.tex}
 \input{TKZdoc-elements-theorems.tex}
 \input{TKZdoc-elements-examples.tex}
 \input{TKZdoc-elements-metapost.tex}

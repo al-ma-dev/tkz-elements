@@ -44,7 +44,7 @@ L.AB = line(z.A, z.B)
 \end{verbatim}
 \end{mybox}
 
-\noindent
+
 Here, \code{z.A} and \code{z.B} store points in table \code{z}, while the line defined by these points is stored as \code{L.AB} in table \code{L}.
 
 \vspace{1em}
@@ -75,7 +75,7 @@ init_elements()
 \end{verbatim}
 \end{mybox}
 
-\paragraph{Purpose.}
+\textbf{Purpose.}
 The function \code{init\_elements} clears global tables such as:
 \begin{itemize}
   \item \tkzname{z} — for storing points,
@@ -84,27 +84,32 @@ The function \code{init\_elements} clears global tables such as:
 \end{itemize}
 It also (re)sets default values for internal constants such as the number of decimal digits and the floating-point tolerance.
 
-\paragraph{When to use it.}
+\medskip
+\texttt{When to use it:}
+
 This function should be called:
 \begin{itemize}
   \item at the beginning of each new TikZ figure using Lua,
   \item or any time you need to reset the environment manually.
 \end{itemize}
 
-\paragraph{Example.}
+\medskip
+\texttt{Example usage.}
+
 Here is a typical usage:
 
-\begin{center}
-  \begin{tkzexample}[code only]
+  \begin{verbatim}
   \directlua{
     init_elements()
     z.A = point(0, 0)
     z.B = point(3, 4)
     L.AB = line(z.A, z.B)}
-  \end{tkzexample}
-\end{center}
+  \end{verbatim}
 
-\paragraph{Note.}
+
+\medskip
+\texttt{Note.}
+
 Calling \code{init\_elements} is optional if you manage object names carefully, but it is highly recommended in iterative workflows or automated figure generation to avoid unwanted data persistence.
 
 \subsubsection{Attributes}
@@ -113,8 +118,8 @@ Calling \code{init\_elements} is optional if you manage object names carefully, 
 Attributes are accessed using the standard method. For example, |T.pc| retrieves the third point of the triangle, and |C.OH.center| retrieves the center of the circle. Additionally, I have added a method \tkzMeth{obj}{get()} that returns the points of an object. This method applies to straight lines (pa and pc), triangles (pa, pb, and pc), and circles (center and through).
 
 \vspace{1em}
-\noindent
-  \textbf{Example}: |z.O, z.T = C.OT:get()| retrieves the center and a point of the circle.
+
+  \texttt{Example usage: }: |z.O, z.T = C.OT:get()| retrieves the center and a point of the circle.
 
 \subsubsection{Methods}
 \label{ssub:methods}

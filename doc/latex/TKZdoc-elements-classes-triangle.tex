@@ -5,11 +5,11 @@
 The variable \tkzVar{triangle}{T} holds a table used to store triangle objects. Its use is optional: you are free to choose another variable name, but using  \tkzVar{triangle}{T} is the recommended convention for clarity and consistency across examples and documentation.
 
 \medskip
-\noindent
+
 If you define your own table, you must initialize it manually. However, if you use the default variable  \tkzVar{triangle}{T}, the \code{init\_elements()} function will automatically clear and reset the  \tkzVar{triangle}{T} table when called.
 
 \medskip
-\noindent
+
 Each triangle object is created using the \tkzMeth{triangle}{new} method, which takes three points as input and generates all the associated geometric attributes.
 
 \vspace{1em}
@@ -25,7 +25,8 @@ T.ABC = triangle:new(z.A, z.B, z.C)
 \end{verbatim}
 \end{mybox}
 
-\paragraph{Short form.}
+\textbf{Short form.}
+
 The short form \code{triangle(z.A, z.B, z.C)} is equivalent and more commonly used:
 
 \begin{mybox}
@@ -123,21 +124,21 @@ These attributes define the essential geometric properties of the triangle and a
 Consider a triangle $ABC$. We want to construct a new triangle whose vertices are the reflections of $A$, $B$, and $C$ with respect to the midpoints of their opposite sides.
 
 \medskip
-\noindent
+
 To achieve this, we first need to determine the midpoints of the sides of triangle $ABC$. The most straightforward approach is to use the method \tkzMeth{triangle}{medial}, which returns the \textbf{medial triangle}, i.e., the triangle formed by the midpoints of $[BC]$, $[AC]$, and $[AB]$.
 
 \medskip
-\noindent
+
 Once this medial triangle is constructed, its vertices can be accessed through standard attributes:
 \begin{center}
 \code{T.medial.A}, \code{T.medial.B}, \code{T.medial.C}
 \end{center}
 
-\noindent
+
 Alternatively, from the last, the method \code{get()} retrieves all three vertices at once in a convenient Lua-compatible syntax.
 
 \medskip
-\noindent
+
 For a practical illustration of this method, see  the associated \code{tikzpicture} example in the documentation.
 
 \vspace{1em}
@@ -271,14 +272,14 @@ You can access different lengths, in particular side lengths with:
 Several attributes associated with triangle sides and lines simplify code writing and improve readability.
 
 \medskip
-\noindent
+
 Consider a triangle $ABC$. Suppose you want to use the midpoint of the side $[BC]$ (which can also be seen as the base of the median from $A$). There are multiple ways to construct this midpoint in Lua, but the most concise is:
 
 \begin{center}
 \code{T.bc.mid}
 \end{center}
 
-\noindent
+
 Here:
 \begin{itemize}
   \item \code{T.ABC.bc} is the attribute representing the line $(BC)$,
@@ -290,7 +291,7 @@ Here:
 \end{itemize}
 
 \medskip
-\noindent
+
 This approach saves time and space in scripts involving medians, altitudes, bisectors, or projections based on triangle sides.
 
 \vspace{1em}
@@ -527,9 +528,8 @@ See [ \ref{ssub:method_triangle_orthic}; \ref{ssub:method_triangle_orthic_axis_p
 
   \tkzMeth{triangle}{kenmotu\_circle()}  & [\ref{ssub:kenmotu_circle}]\\
 
-  \tkzMeth{triangle}{c\_ll\_p(pt)}  &  [\ref{ssub:method_triangle_c_ll_p}]\\
 
-  \tkzMeth{triangle}{c\_c(pt)}  &  [\ref{ssub:method_triangle_c_ll_p}]\\
+  \tkzMeth{triangle}{c\_c(pt)}  &  [\ref{ssub:method_triangle_c_c}]\\
 
   \tkzMeth{triangle}{thebault(pt)}  &  [\ref{ssub:method_triangle_c_c}]\\
 
@@ -627,14 +627,14 @@ See [ \ref{ssub:method_triangle_orthic}; \ref{ssub:method_triangle_orthic_axis_p
 This method creates a triangle object from three given points, which will serve as its vertices.
 
 \medskip
-\noindent
+
 It is widely used and appears in most examples. The syntax is:
 
 \begin{center}
 \code{T.ABC = triangle(z.A, z.B, z.C)}
 \end{center}
 
-\noindent
+
 The resulting object includes many precomputed attributes such as:
 \begin{itemize}
   \item \code{T.ABC.A}, \code{T.ABC.B}, \code{T.ABC.C} — the vertices,
@@ -644,7 +644,7 @@ The resulting object includes many precomputed attributes such as:
   \item as well as key points like the centroid, incenter, orthocenter, circumcenter, etc.
 \end{itemize}
 
-\noindent
+
 These are available as attributes, not as methods.
 
 \vspace{1em}
@@ -663,7 +663,7 @@ These are available as attributes, not as methods.
 This method performs the inverse of triangle creation: it returns the points that define the triangle object.
 
 \medskip
-\noindent
+
 From the last version, the method also accepts an optional argument~\code{i} to retrieve a specific point:
 \begin{itemize}
   \item \code{T.ABC:get()} returns all three vertices in order: \code{pa}, \code{pb}, \code{pc};
@@ -673,7 +673,7 @@ From the last version, the method also accepts an optional argument~\code{i} to 
 \end{itemize}
 
 \medskip
-\noindent
+
 Each of these points is also accessible directly as an attribute:
 \begin{center}
 \code{T.ABC.pa}, \code{T.ABC.pb}, \code{T.ABC.pc}
@@ -684,7 +684,7 @@ For example:
 \end{center}
 
 \medskip
-\noindent
+
 This method belongs to a general mechanism shared by all geometric objects. Its goal is to return the minimal data required to reconstruct the object.
 
 \vspace{1em}
@@ -739,7 +739,7 @@ This method belongs to a general mechanism shared by all geometric objects. Its 
 This method tests whether a given point lies \emph{inside} the triangle.
 
 \medskip
-\noindent
+
 It takes a single argument \code{pt}, which must be a point object. The method returns a boolean:
 \begin{itemize}
   \item \code{true} if the point lies strictly inside or on the boundary of the triangle;
@@ -747,7 +747,7 @@ It takes a single argument \code{pt}, which must be a point object. The method r
 \end{itemize}
 
 \medskip
-\noindent
+
 This function is useful for geometric conditions, filtering, or region-based constructions.
 
 \vspace{1em}
@@ -803,14 +803,14 @@ This function is useful for geometric conditions, filtering, or region-based con
 This method checks whether the triangle is equilateral, i.e., whether its three sides are of equal length within a numerical tolerance.
 
 \medskip
-\noindent
+
 It returns a boolean:
 \begin{itemize}
   \item \code{true} if the triangle is equilateral,
   \item \code{false} otherwise.
 \end{itemize}
 
-\noindent
+
 This check takes into account floating-point rounding and uses an internal tolerance parameter.
 
 
@@ -830,7 +830,7 @@ end
 Boolean. This method tests whether the triangle is \textbf{acutangle}, i.e., if all three of its interior angles are strictly less than $90^\circ$.
 
 \medskip
-\noindent
+
 An \emph{acutangle triangle} is a triangle where:
 \[
 \alpha < 90^\circ, \quad \beta < 90^\circ, \quad \gamma < 90^\circ
@@ -864,14 +864,14 @@ This method returns the \textbf{normalized barycentric coordinates} of a point r
 \end{mybox}
 
 \medskip
-\noindent
+
 The result is a triple \code{x, y, z} such that:
 \[
 x + y + z = 1
 \]
 
 \medskip
-\noindent
+
 If the point lies on a side or at a vertex, one or more coordinates will be zero accordingly. This method is especially useful for checking point location, computing weighted centers, or constructing affine invariants.
 
 \vspace{1em}
@@ -913,7 +913,7 @@ If the point lies on a side or at a vertex, one or more coordinates will be zero
 This method returns the \textbf{trilinear coordinates} of a point relative to the reference triangle.
 
 \medskip
-\noindent
+
 Trilinear coordinates represent a point $P$ by its (signed) distances to the sides of the triangle. The triple \code{x, y, z} corresponds to the directed distances from $P$ to the sides $BC$, $AC$, and $AB$, respectively.
 
 \begin{mybox}
@@ -921,7 +921,7 @@ Trilinear coordinates represent a point $P$ by its (signed) distances to the sid
 \end{mybox}
 
 \medskip
-\noindent
+
 Unlike barycentric coordinates, trilinear coordinates are homogeneous, i.e., they are defined up to a nonzero scalar multiple:
 \[
 P = x : y : z
@@ -933,11 +933,11 @@ P = x : y : z
 This method returns one of the three internal angles of the triangle, based on a cyclic permutation index \code{n}.
 
 \medskip
-\noindent
+
 It must not be confused with the function \code{get\_angle(pta, ptb, ptc)}, which computes the angle at a vertex formed by any three given points.
 
 \medskip
-\noindent
+
 The triangle's vertices are assumed to be ordered in the direct (counter-clockwise) orientation. The value of \code{n} determines which angle is computed, by applying cyclic permutations to the vertex list $(A, B, C)$:
 
 \begin{itemize}
@@ -988,7 +988,7 @@ The triangle's vertices are assumed to be ordered in the direct (counter-clockwi
 This method is common to most classes. It places a point along the contour of the triangle, proportionally to its perimeter.
 
 \medskip
-\noindent
+
 The parameter \code{r} must be a real number between \code{0} and \code{1}, representing the fraction of the total perimeter to travel starting from the first vertex (\code{pa}) along the oriented boundary.
 
 \begin{itemize}
@@ -997,15 +997,13 @@ The parameter \code{r} must be a real number between \code{0} and \code{1}, repr
 \end{itemize}
 
 \medskip
-\noindent
-\textbf{Example:} The point $M$ divides the perimeter into two equal arcs:
+
+\texttt{Example: } The point $M$ divides the perimeter into two equal arcs:
 \begin{center}
 \code{z.M = T.ABC:point(0.5)}
 \end{center}
 
 \vspace{1em}
-
-
 \begin{tkzexample}[latex=.5\textwidth]
   \directlua{
     z.A = point(1, 0)
@@ -1050,7 +1048,7 @@ This method determines either a random point on one of the sides, or an interior
 This method, also available under the alias \code{barycenter}, returns the point with barycentric coordinates $(ka : kb : kc)$ with respect to the triangle.
 
 \medskip
-\noindent
+
 These coordinates are \emph{homogeneous}, meaning only the ratio between the weights matters. The computed point $P$ satisfies:
 \[
 P = \frac{ka \cdot A + kb \cdot B + kc \cdot C}{ka + kb + kc}
@@ -1058,7 +1056,7 @@ P = \frac{ka \cdot A + kb \cdot B + kc \cdot C}{ka + kb + kc}
 where $A$, $B$, and $C$ are the triangle's vertices.
 
 \medskip
-\noindent
+
 This method is widely used internally, notably by the \code{kimberling()} method to define classical triangle centers such as the centroid, incenter, symmedian point, etc.
 
 
@@ -1086,15 +1084,15 @@ This method is widely used internally, notably by the \code{kimberling()} method
 This method determines a point $P$ given its trilinear coordinates relative to a reference triangle $ABC$.
 
 \medskip
-\noindent
+
 Trilinear coordinates are defined as an ordered triple $(x, y, z)$ that is proportional to the directed distances from the point $P$ to the sides $BC$, $AC$, and $AB$ respectively.
 
 \medskip
-\noindent
+
 These coordinates are \textbf{homogeneous}, meaning they are only defined up to a nonzero scalar multiple. The point $P$ lies at the intersection of the cevians corresponding to these ratios.
 
 \medskip
-\noindent
+
 Trilinear coordinates were introduced by Plücker in 1835 and remain a fundamental tool in triangle geometry.
 \begin{flushright}
 \small
@@ -1131,7 +1129,7 @@ Trilinear coordinates were introduced by Plücker in 1835 and remain a fundament
 This method computes a point defined as a linear combination of two sides of the triangle, based at the first vertex.
 
 \medskip
-\noindent
+
 Given a triangle $ABC$, the method defines a point $D$ by:
 \[
 \overrightarrow{AD} = \lambda \cdot \overrightarrow{AB} + \mu \cdot \overrightarrow{AC}
@@ -1139,8 +1137,8 @@ Given a triangle $ABC$, the method defines a point $D$ by:
 where $\lambda$ and $\mu$ are real coefficients passed as arguments.
 
 \medskip
-\noindent
-\textbf{Example:} If both coefficients are \code{1}, then:
+
+\texttt{Example:} If both coefficients are \code{1}, then:
 \[
 \overrightarrow{AD} = \overrightarrow{AB} + \overrightarrow{AC}
 \]
@@ -1179,17 +1177,17 @@ This yields a point located "beyond" $A$ in the direction formed by adding the t
 This method returns the triangle center corresponding to the Kimberling number~\code{n}.
 
 \medskip
-\noindent
+
 The enumeration of triangle centers was established by American mathematician Clark Kimberling in his \textit{Encyclopedia of Triangle Centers}, available online from the University of Evansville:
 \begin{center}
 \href{http://faculty.evansville.edu/ck6/encyclopedia/ETC.html}{faculty.evansville.edu/ck6/encyclopedia/ETC.html}
 \end{center}
 
-\noindent
+
 Each remarkable triangle center is assigned a unique index $X_{(n)}$. For example, the centroid is $X_{(2)}$, and the orthocenter is $X_{(4)}$.
 
 \medskip
-\noindent
+
 Only a selection of centers is currently implemented in this method. The accessible Kimberling numbers are:
 \begin{multicols}{2}
 \begin{itemize}
@@ -1213,8 +1211,8 @@ Only a selection of centers is currently implemented in this method. The accessi
 \end{itemize}
 \end{multicols}
 
-\noindent
-\textbf{Example:}
+
+\texttt{Example:}
 \begin{mybox}
 \code{z.G = T.ABC:kimberling(2)} \quad --> the centroid $X_{(2)}$
 \end{mybox}
@@ -1255,11 +1253,11 @@ Only a selection of centers is currently implemented in this method. The accessi
 This method returns the \textbf{isogonal conjugate} of a point~\code{pt} with respect to a triangle~$ABC$.
 
 \medskip
-\noindent
+
 The isogonal conjugate $Y$ of a point $X$ is defined as the common point of the three lines obtained by reflecting the lines $AX$, $BX$, and $CX$ across the respective internal angle bisectors at $A$, $B$, and $C$.
 
 \medskip
-\noindent
+
 An alternative but equivalent construction — and the one used in this method — consists in:
 \begin{itemize}
   \item reflecting point $X$ across each side of the triangle,
@@ -1268,11 +1266,11 @@ An alternative but equivalent construction — and the one used in this method �
 \end{itemize}
 
 \medskip
-\noindent
+
 \textbf{Validation:} Using this method, you can verify that the isogonal conjugate of the orthocenter is indeed the circumcenter of triangle $ABC$.
 
 \medskip
-\noindent
+
 \textbf{Geometric remark:} If a point $M$ lies on the circumcircle, then the isogonal conjugates of the points on the tangent line at $M$ trace a parabola that passes through the three vertices of the triangle. This elegant but subtle configuration highlights the dynamic complexity of isogonal mappings:
 \begin{itemize}
   \item the vertices of the triangle are the conjugates of the tangent's intersection points with the triangle’s sides;
@@ -1280,7 +1278,7 @@ An alternative but equivalent construction — and the one used in this method �
 \end{itemize}
 
 \medskip
-\noindent
+
 In the accompanying example, $x$ is the intersection of the tangent with side $AC$, and $x'$ is a nearby point chosen to observe the behavior of its isogonal conjugate $y'$.
 
 \vspace{1em}
@@ -1363,11 +1361,11 @@ Since the argument is one of the triangle's vertices, this method returns the ce
 This method returns the three orthogonal projections of a point onto the sides of the triangle.
 
 \medskip
-\noindent
+
 Given a triangle $ABC$ and a point $P$, the method computes the feet of the perpendiculars dropped from $P$ to each of the sides $[BC]$, $[AC]$, and $[AB]$.
 
 \medskip
-\noindent
+
 The result consists of three points, which can be retrieved as follows:
 \begin{mybox}
 \code{z.D, z.E, z.F = T.ABC:projection(z.P)}
@@ -1380,7 +1378,7 @@ where:
 \end{itemize}
 
 \medskip
-\noindent
+
 This method is useful, for example, in constructing the pedal triangle of a point with respect to a triangle.
 
 \vspace{1em}
@@ -1432,11 +1430,11 @@ Complete a triangle as a parallelogram. If \code{z.D = T.ABC:parallelogram()} th
 This method returns the \textbf{Mittenpunkt} of the triangle, also known as the \emph{middlespoint}.
 
 \medskip
-\noindent
+
 The Mittenpunkt is defined as the \emph{symmedian point of the excentral triangle}, i.e., the point of intersection of the lines joining each excenter to the midpoint of the corresponding side of the original triangle.
 
 \medskip
-\noindent
+
 It is a notable triangle center, designated as $X_{(9)}$ in Kimberling’s classification.
 \begin{flushright}
 \small
@@ -1503,11 +1501,11 @@ It is a notable triangle center, designated as $X_{(9)}$ in Kimberling’s class
 This method returns the \textbf{Gergonne point} of the triangle, denoted $X_{(7)}$ in Kimberling’s classification.
 
 \medskip
-\noindent
+
 The Gergonne point is the common point of the lines connecting each vertex of the triangle to the point of contact of the incircle with the opposite side.
 
 \medskip
-\noindent
+
 In this example, the method is often combined with:
 \begin{itemize}
   \item \tkzMeth{triangle}{intouch} – to get the contact triangle (also called the intouch triangle),
@@ -1515,7 +1513,7 @@ In this example, the method is often combined with:
 \end{itemize}
 
 \medskip
-\noindent
+
 These contact points are the feet of the perpendiculars from the incenter to each side, i.e., the tangency points of the incircle with the triangle’s sides.
 \begin{flushright}
 \small
@@ -1620,15 +1618,15 @@ Let $E_a$ be the point at which the $J_a$-excircle meets the side $(BC)$ of a tr
 This method returns the \textbf{Feuerbach point} of the triangle, designated as $X_{(11)}$ in Kimberling’s classification.
 
 \medskip
-\noindent
+
 The Feuerbach point $F$ is the unique point where the triangle’s \emph{incircle} and \emph{nine-point circle} are tangent to each other.
 
 \medskip
-\noindent
+
 In addition, the three \emph{excircles} of the triangle are each tangent to the nine-point circle. These three points of tangency define what is called the \textbf{Feuerbach triangle}, whose vertices are often denoted $F_a$, $F_b$, and $F_c$.
 
 \medskip
-\noindent
+
 This construction reveals a remarkable configuration of internal and external circle tangency with the nine-point circle.
 \begin{flushright}
 \small
@@ -1690,15 +1688,15 @@ This construction reveals a remarkable configuration of internal and external ci
 This method returns the \textbf{symmedian point} $K$ of the triangle, also known as the \emph{Lemoine point} (in English and French literature) or the \emph{Grebe point} (in German).
 
 \medskip
-\noindent
+
 The symmedian point is the point of concurrence of the triangle’s three \textbf{symmedians}, which are the isogonal conjugates of the medians. In other words, $K$ is the \textbf{isogonal conjugate} of the centroid $G$.
 
 \medskip
-\noindent
+
 You can also use the aliases \code{lemoine\_point} or \code{grebe\_point} to call this method.
 
 \medskip
-\noindent
+
 A beautiful geometric property of the Lemoine point is the following:
 \textit{The antiparallels to the triangle’s sides passing through the symmedian point intersect the sides in six points that all lie on a same circle} — this is known as the \textbf{first Lemoine circle}.
 \begin{flushright}
@@ -1758,11 +1756,11 @@ A beautiful geometric property of the Lemoine point is the following:
 This method returns the \textbf{Spieker center} of the triangle, denoted $X_{(10)}$ in Kimberling’s classification.
 
 \medskip
-\noindent
+
 The Spieker center $S_p$ is the \textbf{incenter of the medial triangle} of the reference triangle $ABC$. It is also the center of the \emph{Spieker circle}, which is the incircle of that medial triangle.
 
 \medskip
-\noindent
+
 An important property is that the Spieker center is also the \textbf{center of the radical circle} of the triangle’s three \emph{excircles}. This makes it a key point in both classical triangle geometry and circle configurations.
 \begin{flushright}
 \small
@@ -1853,7 +1851,7 @@ The points $a$, $b$ and $c$ are the Euler points. They are the midpoints of the 
 This method returns the \textbf{nine classical points} that lie on the Euler circle (also called the nine-point circle) of a triangle.
 
 \medskip
-\noindent
+
 The returned points, in order, are:
 \begin{itemize}
   \item the three midpoints of the sides of the triangle,
@@ -1862,11 +1860,11 @@ The returned points, in order, are:
 \end{itemize}
 
 \medskip
-\noindent
+
 These nine points lie on the same circle, whose center is the midpoint of the segment joining the orthocenter to the circumcenter.
 
 \medskip
-\noindent
+
 In the next example, we also compute the centroid (center of gravity) in two different ways:
 \begin{itemize}
   \item using the \code{trilinear} method with coordinates $(1:1:1)$,
@@ -1930,15 +1928,15 @@ In the next example, we also compute the centroid (center of gravity) in two dif
 This method returns the \textbf{Soddy center} of the triangle.
 
 \medskip
-\noindent
+
 Given three mutually tangent circles (typically the triangle’s three \emph{inner Apollonius circles} centered at each vertex), there exist exactly two non-intersecting circles that are tangent to all three. These are called the \emph{inner} and \emph{outer Soddy circles}, and their respective centers are called the \textbf{inner} and \textbf{outer Soddy centers}.
 
 \medskip
-\noindent
+
 By default, the method returns the \emph{inner} Soddy center. A keyword option such as \code{"outer"} may be used to retrieve the second one, if implemented.
 
 \medskip
-\noindent
+
 See  section~\ref{ssub:method_triangle_euler_circle} for details about the associated Soddy circles.
 
 \vspace{1em}
@@ -1979,7 +1977,7 @@ See  section~\ref{ssub:method_triangle_euler_circle} for details about the assoc
 This method returns the six points defined in \textbf{Conway’s circle theorem}.
 
 \medskip
-\noindent
+
 The Conway circle theorem states the following:
 
 \begin{quote}
@@ -1987,11 +1985,11 @@ If the sides meeting at each vertex of a triangle are extended by the length of 
 \end{quote}
 
 \medskip
-\noindent
+
 The six returned points can then be used to draw this Conway circle and to verify its geometric properties.
 
 \medskip
-\noindent
+
 See  the corresponding figure in section~\ref{ssub:method_triangle_conway} for a complete illustration.
 \begin{flushright}
 \small
@@ -2047,15 +2045,15 @@ See  [\ref{ssub:method_triangle_fermat__axis}]
 This method returns the \textbf{Kenmotu point} of the triangle, also known as the \emph{congruent squares point}. It is listed as $X_{(371)}$ in Kimberling’s classification.
 
 \medskip
-\noindent
+
 The Kenmotu point is the unique point where three equal squares, each inscribed in the triangle and touching two sides, intersect at a single common point. Each square is constructed so that it fits snugly between two adjacent triangle sides.
 
 \medskip
-\noindent
+
 This triangle center is remarkable for its connection to equal-area geometric constructions and is defined purely by square congruence and tangency conditions.
 
 \medskip
-\noindent
+
 See  the illustration in section~\ref{ssub:kenmotu_circle} for a visual representation of the configuration.
 \begin{flushright}
 \small
@@ -2171,15 +2169,15 @@ See the following example for the link between orthopole and Simson line: [\ref{
 This method returns one of the \textbf{symmedians} of the triangle.
 
 \medskip
-\noindent
+
 The lines $AL_a$, $BL_b$, and $CL_c$, which are the isogonal conjugates of the medians $AM_a$, $BM_b$, and $CM_c$, are called the triangle’s \textbf{symmedians}. These lines concur at a point $L$, known as the \textbf{Lemoine point} or \textbf{symmedian point}. It is the isogonal conjugate of the centroid $G$.
 
 \medskip
-\noindent
+
 The triangle $L_aL_bL_c$, formed by the intersections of the symmedians with the sides of the triangle $ABC$, is called the \textbf{symmedial triangle}. The circle circumscribed about this triangle is known as the \textbf{symmedial circle}.
 
 \medskip
-\noindent
+
 To obtain:
 \begin{itemize}
   \item all three symmedians, use the method \code{symmedian()};
@@ -2188,7 +2186,7 @@ To obtain:
 \end{itemize}
 
 \medskip
-\noindent
+
 In the following example, the point $L$ is the Lemoine point, and the triangle $L_aL_bL_c$ is the symmedial triangle.
 \begin{flushright}
 \small
@@ -2259,7 +2257,7 @@ In the following example, the point $L$ is the Lemoine point, and the triangle $
 This method returns one of the \textbf{altitudes} of a triangle.
 
 \medskip
-\noindent
+
 There are multiple ways to access altitudes:
 \begin{itemize}
   \item \tkzMeth{triangle}{orthic} returns the \textbf{orthic triangle}, whose vertices are the feet of the three altitudes.
@@ -2267,7 +2265,7 @@ There are multiple ways to access altitudes:
 \end{itemize}
 
 \medskip
-\noindent
+
 The optional argument \code{arg} determines from which vertex the altitude is dropped. It may be:
 \begin{itemize}
   \item \code{nil} or \code{0} (default): returns the altitude from vertex $A$;
@@ -2277,7 +2275,7 @@ The optional argument \code{arg} determines from which vertex the altitude is dr
 \end{itemize}
 
 \medskip
-\noindent
+
 This interface matches that of other methods such as \tkzMeth{triangle}{bisector} and \tkzMeth{triangle}{symmedian\_line}.
 
 \vspace{1em}
@@ -2333,21 +2331,21 @@ This interface matches that of other methods such as \tkzMeth{triangle}{bisector
 This method returns one of the three \textbf{internal angle bisectors} of a triangle.
 
 \medskip
-\noindent
+
 In many cases, it may be sufficient to compute the incenter and connect it to the triangle’s vertices, since all bisectors pass through the incenter. For example:
 \begin{mybox}
 \code{z.I = T.ABC.incenter}
 \end{mybox}
 
-\noindent
+
 However, the method \code{bisector(arg)} explicitly computes the intersection of the bisector with the opposite side. This is useful for constructing the \emph{incentral triangle} or other derived figures.
 
 \medskip
-\noindent
+
 If all three bisectors are needed, use the method \tkzMeth{triangle}{incentral}, which returns the \textbf{incentral triangle}, whose vertices are the feet of the internal bisectors.
 
 \medskip
-\noindent
+
 The optional argument \code{arg} controls from which vertex the bisector originates. It can be:
 \begin{itemize}
   \item \code{nil} or \code{0} (default): bisector from vertex $A$;
@@ -2356,7 +2354,7 @@ The optional argument \code{arg} controls from which vertex the bisector origina
   \item a point equal to one of the triangle’s vertices, such as \code{z.A}, \code{z.B}, or \code{z.C}.
 \end{itemize}
 
-\noindent
+
 This behavior is consistent with other methods like \code{altitude}, \code{symmedian\_line}, and \code{mediator}.
 
 \vspace{1em}
@@ -2410,7 +2408,7 @@ This behavior is consistent with other methods like \code{altitude}, \code{symme
 This method returns an \textbf{external angle bisector} of the triangle, from a specified vertex.
 
 \medskip
-\noindent
+
 Its interface is identical to \tkzMeth{triangle}{bisector}, accepting either an index \code{n} or a vertex point (\code{z.A}, \code{z.B}, \code{z.C}). See Section~\ref{ssub:method_triangle_bisector} for usage details.
 
 \subsubsection{Method \tkzMeth{triangle}{mediator(...)}}
@@ -2418,14 +2416,15 @@ Its interface is identical to \tkzMeth{triangle}{bisector}, accepting either an 
 
 This method returns the perpendicular bisector of one side of a triangle.
 
-\paragraph{Syntax.}
+\texttt{Syntax: }
+
 \begin{verbatim}
 L = triangle:mediator()
 L = triangle:mediator(n) n = 0, 1 or 2
 L = triangle:mediator(pt) pt vertex of the triangle
 \end{verbatim}
 
-\paragraph{Arguments.}
+\texttt{Arguments: }
 
 \begin{itemize}
   \item If no argument or \texttt{n = 0} is given, the bisector of side \tkzname{AB} is returned.
@@ -2434,11 +2433,11 @@ L = triangle:mediator(pt) pt vertex of the triangle
   \item If a point (\tkzname{pa}, \tkzname{pb}, \tkzname{pc}) is passed, the method returns the bisector of the side opposite to that vertex.
 \end{itemize}
 
-\paragraph{Return value.}
+\textbf{Return value.}
 
 Returns a \tkzname{line} object representing the perpendicular bisector of the selected side.
 
-\paragraph{Examples.}\mbox{}\\
+\texttt{Examples.}
 
 \begin{mybox}
 \begin{verbatim}
@@ -2475,19 +2474,16 @@ L3 = T:mediator(z.C)     -- bisector of AB (since C is opposite AB)
 \end{tkzexample}
 
 
-\paragraph{See also.} \tkzFct{line}{mediator}, \tkzFct{triangle}{altitude}, \tkzFct{triangle}{bisector}
+\textbf{See also.} \tkzFct{line}{mediator}, \tkzFct{triangle}{altitude}, \tkzFct{triangle}{bisector}
 
 \subsubsection{Method \tkzMeth{triangle}{antiparallel(arg)}}
 \label{antiparallel}
 
 This method returns an \textbf{antiparallel line} associated with a triangle and one of its angles.
 
-\medskip
-\noindent
 Two lines, such as $(PQ)$ and $(BC)$, are said to be \textbf{antiparallel} with respect to an angle (e.g., $\angle A$) if they form equal angles (in opposite directions) with the bisector of that angle.
 
-\medskip
-\noindent
+
 Useful properties of antiparallel lines:
 \begin{itemize}
   \item If $(PQ)$ and $(BC)$ are antiparallel with respect to $\angle A$, then the four points $P$, $Q$, $B$, and $C$ are \textbf{concyclic}.
@@ -2495,14 +2491,14 @@ Useful properties of antiparallel lines:
 \end{itemize}
 
 \medskip
-\noindent
+
 This method takes two arguments:
 \begin{itemize}
   \item \code{pt} (mandatory): a point through which the antiparallel line will pass;
   \item \code{arg} (optional): specifies the vertex of the triangle that defines the reference angle.
 \end{itemize}
 
-\noindent
+
 The second argument \code{arg} can be:
 \begin{itemize}
   \item \code{nil} or \code{0} (default): antiparallel to $BC$ w.r.t.\ angle $\widehat{A}$;
@@ -2512,7 +2508,7 @@ The second argument \code{arg} can be:
 \end{itemize}
 
 \medskip
-\noindent
+
 This method is used, for example, in the construction of the symmedian point (see section~\ref{ssub:method_triangle_lemoine_point}).
 
 \vspace{1em}
@@ -2561,16 +2557,16 @@ This method is used, for example, in the construction of the symmedian point (se
 Let $H_AH_BH_C$ be the \textbf{orthic triangle} of a reference triangle $ABC$ (i.e., the triangle formed by the feet of the altitudes from each vertex).
 
 \medskip
-\noindent
+
 Each side of triangle $ABC$ intersects each side of triangle $H_AH_BH_C$, and the three points of intersection all lie on a common straight line. This line is known as the \textbf{orthic axis} of the triangle.
 
 \medskip
-\noindent
+
 The method \tkzMeth{triangle}{orthic\_axis()} returns this line as an object of class \code{line}.
 The method \tkzMeth{triangle}{orthic\_axis\_points()} returns the three intersection points between corresponding sides of the reference triangle and the orthic triangle. These are the points $O_A$, $O_B$, and $O_C$ aligned on the orthic axis.
 
 \medskip
-\noindent
+
 This remarkable line is a classical geometric construction, often overlooked despite its elegance.
 
 \vspace{1em}
@@ -2626,7 +2622,7 @@ This remarkable line is a classical geometric construction, often overlooked des
 These two methods return two fundamental lines associated with triangle geometry: the \textbf{Euler line} and the \textbf{orthic axis}.
 
 \medskip
-\noindent
+
 \textbf{Euler line} — The line on which lie several remarkable triangle centers:
 \begin{itemize}
   \item the orthocenter $H$,
@@ -2636,7 +2632,7 @@ These two methods return two fundamental lines associated with triangle geometry
   \item and many others.
 \end{itemize}
 
-\noindent
+
 This line is returned by the method \tkzMeth{triangle}{euler\_line()} as an object of type \code{line}.
 \begin{flushright}
 \small
@@ -2644,7 +2640,7 @@ This line is returned by the method \tkzMeth{triangle}{euler\_line()} as an obje
 \end{flushright}
 
 \medskip
-\noindent
+
 \textbf{Orthic axis} — Let $h_a$, $h_b$, and $h_c$ be the vertices of the orthic triangle of triangle $ABC$. Each side of triangle $ABC$ intersects each side of the orthic triangle. The three points of intersection lie on a line called the \textbf{orthic axis}.
 
 \begin{itemize}
@@ -2721,22 +2717,22 @@ This line is returned by the method \tkzMeth{triangle}{euler\_line()} as an obje
 Let $ABC$ be a triangle with orthocenter $H$, and let $M$ be a point on the circumcircle of triangle $ABC$.
 
 \medskip
-\noindent
+
 Define the following:
 \begin{itemize}
   \item $H_A$, $H_B$, and $H_C$ are the reflections of point $M$ across the sides $BC$, $AC$, and $AB$ respectively.
   \item The points $H_A$, $H_B$, $H_C$, and the orthocenter $H$ are collinear.
 \end{itemize}
 
-\noindent
+
 The line passing through these four points is called the \textbf{Steiner line} of point $M$ with respect to triangle $ABC$.
 
 \medskip
-\noindent
+
 The method \tkzMeth{triangle}{steiner\_line(pt)} returns this line as a \code{line} object, provided that the point \code{pt} lies on the circumcircle of the triangle. The Steiner line always passes through the orthocenter $H$.
 
 \medskip
-\noindent
+
 A necessary and sufficient condition for the points $H_A$, $H_B$, and $H_C$ to be collinear (and for the Steiner line to exist) is that $M$ lies on the circumcircle of triangle $ABC$.
 
 \vspace{1em}
@@ -2780,7 +2776,7 @@ A necessary and sufficient condition for the points $H_A$, $H_B$, and $H_C$ to b
 This method returns the \textbf{Lemoine axis} of the triangle.
 
 \medskip
-\noindent
+
 The Lemoine axis is a classical and remarkable line associated with triangle geometry. It is defined in several equivalent ways:
 \begin{itemize}
   \item It is the \textbf{polar} of the \textbf{Lemoine point} (or symmedian point) with respect to the circumcircle of the triangle.
@@ -2791,7 +2787,7 @@ The Lemoine axis is a classical and remarkable line associated with triangle geo
   \]
 \end{itemize}
 
-\noindent
+
 The method \tkzMeth{triangle}{lemoine\_axis()} returns the line as an object of type \code{line}.
 
 \vspace{1em}
@@ -2897,14 +2893,14 @@ The Fermat axis is the  line connecting the first and second Fermat points.
 The \textbf{Brocard axis} is the straight line passing through the \textbf{symmedian point} $K$ and the \textbf{circumcenter} $O$ of a triangle. The segment $[KO]$ is referred to as the \emph{Brocard diameter} (see Kimberling, 1998, p.~150).
 
 \medskip
-\noindent
+
 This line has several remarkable properties:
 \begin{itemize}
-  \item It is \textbf{perpendicular} to the \textbf{Lemoine axis} (see section~\ref{ssub:method_triangle_lemoine__line}).
-  \item It is the \textbf{isogonal conjugate} of the \textbf{Kiepert hyperbola}.
+  \item It is \texttt{perpendicular} to the \texttt{Lemoine axis} (see section~\ref{ssub:method_triangle_lemoine__line}).
+  \item It is the \texttt{isogonal conjugate} of the \texttt{Kiepert hyperbola}.
 \end{itemize}
 
-\noindent
+
 The method \tkzMeth{triangle}{brocard\_axis()} returns this line as an object of type \code{line}.
 \begin{flushright}
 \small
@@ -2919,11 +2915,11 @@ The method \tkzMeth{triangle}{brocard\_axis()} returns this line as an object of
 The \textbf{Simson line} of a point $M$ with respect to triangle $ABC$ is the line that passes through the feet of the perpendiculars dropped from $M$ to the sides (or their extensions) of the triangle.
 
 \medskip
-\noindent
+
 Let $P$, $Q$, and $R$ be the feet of the perpendiculars from $M$ to sides $BC$, $CA$, and $AB$ respectively. If $M$ lies on the \textbf{circumcircle} of triangle $ABC$, then the points $P$, $Q$, and $R$ are \textbf{collinear}. The line through them is called the \emph{Simson line} of $M$.
 
 \medskip
-\noindent
+
 The method \tkzMeth{triangle}{simson\_line(pt)} returns this line (as a \code{line} object), assuming the point \code{pt} lies on the circumcircle of the triangle.
 \begin{flushright}
 \small
@@ -2979,7 +2975,7 @@ The method \tkzMeth{triangle}{simson\_line(pt)} returns this line (as a \code{li
 The \textbf{nine-point circle}, also called the \textbf{Euler circle} or \textbf{Feuerbach circle}, is a fundamental circle in triangle geometry.
 
 \medskip
-\noindent
+
 It passes through the following nine notable points of any triangle $ABC$:
 \begin{itemize}
   \item The feet $H_A$, $H_B$, $H_C$ of the altitudes from each vertex to the opposite side;
@@ -2987,11 +2983,11 @@ It passes through the following nine notable points of any triangle $ABC$:
   \item The midpoints $E_A$, $E_B$, $E_C$ of the segments joining each vertex to the orthocenter $H$ (called the \emph{Euler points}).
 \end{itemize}
 
-\noindent
+
 This circle was described by \textbf{Euler} in 1765 and further studied by \textbf{Feuerbach}, who proved that it is tangent to the triangle’s incircle and excircles.
 
 \medskip
-\noindent
+
 There are two ways to define this circle in the package:
 \begin{itemize}
   \item By computing its center using the attribute \code{T.eulercenter}, then using a midpoint to define the radius;
@@ -3030,14 +3026,14 @@ There are two ways to define this circle in the package:
 The \textbf{circumscribed circle} (or \textbf{circumcircle}) of a triangle is the unique circle that passes through its three vertices.
 
 \medskip
-\noindent
+
 There are two ways to obtain it:
 \begin{itemize}
   \item If you only need the \emph{center}, use the attribute \code{T.circumcenter}.
   \item If you need the \emph{entire circle object} (center and a point on the circle), use the method \tkzMeth{triangle}{circum\_circle()}, which returns a \code{circle}.
 \end{itemize}
 
-\noindent
+
 This method is useful if the circle needs to be reused in further constructions, such as drawing or testing tangency.
 
 \vspace{1em}
@@ -3070,7 +3066,7 @@ init_elements()
 The \textbf{incircle} of a triangle is the unique circle that is \emph{tangent to all three sides} of the triangle and lies entirely within it. This circle is also known as the \emph{inscribed circle}.
 
 \medskip
-\noindent
+
 Its properties are as follows:
 \begin{itemize}
   \item The \textbf{center} $I$ of the incircle, called the \emph{incenter}, is the point of intersection of the three internal \textbf{angle bisectors}.
@@ -3078,11 +3074,11 @@ Its properties are as follows:
   \item The points of tangency $M_A$, $M_B$, and $M_C$ of the incircle with the triangle's sides form the so-called \textbf{contact triangle}.
 \end{itemize}
 
-\noindent
+
 Geometrically, the contact triangle can also be seen as the \textbf{pedal triangle} of the incenter (see section~\ref{ssub:method_triangle_pedal}) or as the \textbf{tangential triangle} (see section~\ref{ssub:method_triangle_medial}).
 
 \medskip
-\noindent
+
 The method \tkzMeth{triangle}{in\_circle()} returns a \code{circle} object representing the incircle.
 \begin{flushright}
 \small
@@ -3186,14 +3182,14 @@ init_elements()
 An \textbf{excircle} (or \emph{escribed circle}) of a triangle is a circle that lies outside the triangle and is tangent to one side and to the extensions of the two others.
 
 \medskip
-\noindent
+
 For each vertex of the triangle, there exists one such circle:
 \begin{itemize}
   \item The excircle opposite vertex $A$ is tangent to side $BC$ and the extensions of sides $AB$ and $AC$;
   \item The corresponding \textbf{excenter} lies at the intersection of two \emph{external} angle bisectors and one \emph{internal} bisector.
 \end{itemize}
 
-\noindent
+
 The method \tkzMeth{triangle}{ex\_circle(arg)} returns the excircle
 associated with the first vertex of the list obtained by performing
 a cyclic permutation of $(A,B,C)$ \verb|arg| times.
@@ -3275,18 +3271,18 @@ z.Zj = T.ABC:projection(z.J)}
 In triangle geometry, the \textbf{Spieker circle} is defined as the \textbf{incircle of the medial triangle} of a reference triangle $ABC$.
 
 \medskip
-\noindent
+
 Its center is known as the \textbf{Spieker center}, which is also the center of the \emph{radical circle} of the three \emph{excircles} of triangle $ABC$.
 
 \medskip
-\noindent
+
 To construct the Spieker circle:
 \begin{itemize}
   \item First form the \emph{medial triangle} whose vertices are the midpoints of the sides of $ABC$;
   \item Then construct the incircle of this medial triangle.
 \end{itemize}
 
-\noindent
+
 The method \tkzMeth{triangle}{spieker\_circle()} returns a \code{circle} object representing this circle.
 \begin{flushright}
 \small
@@ -3871,75 +3867,6 @@ The Kenmotu circle contains all six points of tangency between the triangle side
 \end{center}
 \end{tkzexample}
 
-\subsubsection{Method \tkzMeth{triangle}{c\_ll\_p}}
-\label{ssub:method_triangle_c_ll_p}
-
-\paragraph{Purpose.}
-This method constructs the circle(s) tangent to the two sides issuing from a vertex of the triangle and passing through a given point~\(p\).
-
-\medskip
-\noindent
-The chosen vertex is \code{self.pa}, and the two lines are \((AB)\) and \((AC)\).
-The centers of the solution circles lie on the internal bisector of the angle at \(A\).
-
-\medskip
-\noindent
-The method name \code{c\_ll\_p} stands for:
-\emph{circle tangent to two straight lines and passing through a point.}
-
-\paragraph{Signature.}
-\verb|function triangle:c_ll_p(p) -> circle, circle|
-
-\medskip
-\noindent
-\paragraph{Arguments.}
-\begin{itemize}
-  \item \code{p} — a point in the plane.
-\end{itemize}
-
-\medskip
-\noindent
-\paragraph{Returns.}
-Up to two circles:
-\begin{itemize}
-  \item If two distinct solutions exist, both circles are returned.
-  \item If the point lies on one of the triangle sides, the two circles may coincide.
-  \item If the configuration is degenerate (for example \(p=A\)), an error should be raised.
-\end{itemize}
-
-\medskip
-\noindent
-\paragraph{Example.}\mbox{}\\
-
-\vspace{1em}
-
-
-\begin{tkzexample}[latex=.5\textwidth]
-\directlua{
-init_elements()
-  z.A = point(0, 0)
-  z.B = point(8, 0)
-  L.AB = line(z.A, z.B)
-  z.C = point(6,  4)
-  L.AC = line(z.A, z.C)
-  T.ABC = triangle(z.A, z.B, z.C)
-  z.P = point(3, 1)
-  C1,C2 = T.ABC:c_ll_p(z.P)
-  z.O1 = C1.center
-  z.T1 = C1.through
-  z.O2 = C2.center
-  z.T2 = C2.through}
-\begin{center}
-\begin{tikzpicture}[scale =.75]
-\tkzGetNodes
- \tkzDrawPolygon[thick](A,B,C)
- \tkzDrawCircles[red](O1,T1 O2,T2)
- \tkzDrawPoints(A,B,C,P)
- \tkzLabelPoints(A,B,P)
- \tkzLabelPoints[above](C)
-\end{tikzpicture}
-\end{center}
-\end{tkzexample}
 
 
 \subsubsection{Method \tkzMeth{triangle}{thebault} or \tkzMeth{triangle}{c\_c} }
@@ -3948,52 +3875,53 @@ init_elements()
 The |c_c| (or |thebault|) method constructs a circle tangent to two sides of a triangle at a chosen vertex, and tangent to a given circle passing through the two remaining vertices.
 
 
-\paragraph*{Name and purpose}
+\textbf{Name and purpose}
+
 Circle tangent to the two sides issuing from a vertex $p$ and tangent to the circle centered at $C$ passing through the other two vertices of the triangle.
 Alias: \code{triangle.thebault = triangle.c\_c}.
 
-\medskip
-\noindent
 Given a non-degenerate triangle $ABC$ and a chosen vertex $p\in\{A,B,C\}$, this method constructs the unique circle $\mathcal{T}$ that
 \begin{itemize}
   \item is tangent to the two sides adjacent to $p$ (i.e.\ the lines through $p$ that contain the two incident edges of the triangle), and
   \item is tangent to the circle with center $C$ and radius equal to the distance from \(C\) to each of the two vertices \emph{other than} $p$.
 \end{itemize}
 
-\paragraph*{Signature}
+\textbf{Signature}
+
 \begin{verbatim}
   circle triangle:c_c(p, C)
 \end{verbatim}
 
-\paragraph*{Parameters}
+\texttt{Parameters: }
+
 \begin{description}
   \item[\code{p}] The chosen vertex of the triangle (\code{triangle.pa}, \code{.pb} or \code{.pc}). The method internally detects which vertex you passed.
   \item[\code{C}] The center of the reference circle through the other two vertices (i.e.\ if \(p=A\), then \(|CB|=|CC|=|C\!B|\) and the circle \(\mathcal{C}(C,|CB|)\) passes through \(B\) and \(C\)). In practice, \(C\) must lie on the perpendicular bisector of the segment joining those two vertices.
 \end{description}
 
-\paragraph*{Return value}
+\textbf{Return value}
+
 A \code{circle} object $\mathcal{T}$ tangent to the two sides adjacent to \(p\) and tangent to the circle $\mathcal{C}(C,\cdot)$ through the other two vertices.
 
 
-\paragraph*{Preconditions \& diagnostics}
+\textbf{Preconditions \& diagnostics}
+
 \begin{itemize}
   \item The triangle must be non-degenerate (three non-collinear points).
   \item The point \code{p} must coincide with one of the triangle’s vertices; otherwise the internal index resolution will be inconsistent.
   \item The point \code{C} must be equidistant from the two vertices other than \(p\) (i.e.\ it lies on their perpendicular bisector). If not, the “reference circle” is ill-defined for this problem and the construction may fail or produce an irrelevant circle.
 \end{itemize}
 
-\paragraph*{Notes}
+\textbf{Notes}
+
 \begin{itemize}
   \item This configuration is a classical variant often linked to Thébault-type constructions; for convenience an alias \code{triangle.thebault} is provided.
   \item The circle returned is tangent to the \emph{lines} supporting the two sides adjacent to \(p\). If you need the segment contact points explicitly, intersect the result with those lines and/or use orthogonal projections.
 \end{itemize}
 
-\medskip
-\noindent
-\paragraph*{Example}\mbox{}\\
 
-\medskip
-\noindent
+\texttt{Example usage: }
+
 \begin{tkzexample}[latex=.5\textwidth]
 \directlua{
  init_elements()
@@ -4087,15 +4015,14 @@ The method \tkzname{three\_tangent\_circles()} implements this geometric constru
   \item and constructs the three outer circles, each passing through one vertex and tangent to the incircle.
 \end{itemize}
 
-\medskip
-\noindent
-\paragraph*{Return value} Three circle objects tangent to one another and to the triangle’s sides.
 
-\medskip
-\noindent
-\paragraph*{Example}\mbox{}\\
+\textbf{Return value}
 
-\medskip
+Three circle objects tangent to one another and to the triangle’s sides.
+
+
+\texttt{Example usage: }
+
 \begin{tkzexample}[latex=.45\textwidth]
 \directlua{
   init_elements()
@@ -4818,11 +4745,11 @@ The \emph{anticomplementary triangle} of a reference triangle $ABC$ is the trian
 \end{flushright}
 
 \medskip
-\noindent
+
 This method constructs a new triangle whose sides are parallel to the sides of the original triangle and which pass through its vertices.
 
 \medskip
-\noindent
+
 This triangle can be obtained using any of the following method names: \code{anti}, \code{anticomplementary}, or \code{similar}.
 
 \vspace{1em}
@@ -4882,7 +4809,7 @@ You have several method names for obtaining this triangle: either  \code{anticom
 The \emph{Lemoine triangle} of a reference triangle $ABC$ is the Cevian triangle associated with the Kimberling center $X_{(598)}$. Its vertices are the points of tangency between the \emph{Lemoine inellipse} and the sides of triangle $ABC$.
 
 \medskip
-\noindent
+
 This triangle provides an elegant construction linked to the geometry of the Lemoine point and highlights interesting affine properties. The method returns the triangle formed by these three tangency points.
 
 \vspace{1em}
@@ -4956,7 +4883,7 @@ The most important point is to trace the conics, which is done with the help of 
 Among all parabolas tangent to the sides of a triangle, the \emph{Kiepert parabola} is distinguished by its geometric properties. Its directrix coincides with the Euler line of the triangle, and it is also tangent to the \emph{Lemoine axis}.
 
 \medskip
-\noindent
+
 This parabola encapsulates rich affine and projective structures and arises in various advanced triangle geometry contexts.
 
 \begin{minipage}{.5\textwidth}
@@ -5019,7 +4946,7 @@ This parabola encapsulates rich affine and projective structures and arises in v
 The \emph{Kiepert hyperbola} is a remarkable triangle conic that arises from Lemoine’s problem and its extension involving isosceles triangles constructed externally on the sides of a given triangle.
 
 \medskip
-\noindent
+
 This hyperbola possesses several notable geometric properties: it passes through the three vertices of the triangle, its centroid, and its orthocenter.
 \begin{flushright}
   \small
@@ -5092,11 +5019,11 @@ This hyperbola possesses several notable geometric properties: it passes through
 The \emph{Euler ellipse} is a conic section associated with a triangle. It is tangent to the three sides of the triangle and has two notable triangle centers as its foci: the orthocenter and the circumcenter.
 
 \medskip
-\noindent
+
 This ellipse can be seen as a generalization of the Euler circle (nine-point circle), which is obtained when the conic becomes a circle. The method \code{euler\_ellipse()} computes this conic based on the triangle geometry.
 
 \medskip
-\noindent
+
 An example combining both the Euler circle and the Euler ellipse is provided in the documentation to illustrate their relationship.
 
 \vspace{1em}
@@ -5158,15 +5085,15 @@ An example combining both the Euler circle and the Euler ellipse is provided in 
 These methods return the inner and outer Steiner ellipses associated with a triangle.
 
 \medskip
-\noindent
+
 The \emph{Steiner inellipse} is the unique ellipse inscribed in a triangle and tangent to the midpoints of its sides. Its center is the centroid of the triangle. It minimizes the sum of the squared distances from any point on the ellipse to the triangle’s sides.
 
 \medskip
-\noindent
+
 The \emph{Steiner circumellipse}, or outer ellipse, is the unique ellipse circumscribed about the triangle, passing through the three vertices and centered at the centroid. It minimizes the sum of the squared distances from the vertices to the ellipse.
 
 \medskip
-\noindent
+
 These constructions are valid for acute triangles. The orthoptic circle, i.e., the locus of points from which chords of the ellipse are seen under right angles, is also shown in the associated example.
 \begin{flushright}
 \small
@@ -5247,7 +5174,7 @@ These constructions are valid for acute triangles. The orthoptic circle, i.e., t
 The \emph{Lemoine inellipse} is the unique inconic (an inscribed conic) of a triangle that has the centroid $G$ and the symmedian point $K$ as its foci.
 
 \medskip
-\noindent
+
 This ellipse is always an actual ellipse and reflects key symmetries of the triangle. It is intimately connected with the triangle’s geometry and often appears in advanced triangle center constructions.
 \begin{flushright}
 \small
@@ -5321,7 +5248,7 @@ This ellipse is always an actual ellipse and reflects key symmetries of the tria
 The \emph{Brocard inellipse} is the unique inconic of a triangle whose foci are the Brocard points and whose center is the Brocard midpoint.
 
 \medskip
-\noindent
+
 This ellipse is tangent to the sides of the reference triangle, and the triangle formed by its points of tangency is the \emph{symmedial triangle} of the reference triangle.
 \begin{flushright}
 \small
@@ -5397,7 +5324,7 @@ This ellipse is tangent to the sides of the reference triangle, and the triangle
 The \emph{MacBeath inconic} of a triangle is an ellipse tangent to the sides of the reference triangle.
 
 \medskip
-\noindent
+
 Its foci are the circumcenter $O$ and the orthocenter $H$, which implies that its center is the nine-point center $N$. The triangle formed by the points of tangency of the MacBeath ellipse with the triangle's sides is called the \emph{MacBeath triangle}.
 \begin{flushright}
   \small
@@ -5434,7 +5361,7 @@ Its foci are the circumcenter $O$ and the orthocenter $H$, which implies that it
 The \emph{Mandart ellipse} is the inconic that touches the sides of the reference triangle at the vertices of the \emph{extouch triangle}, which is also its polar triangle.
 
 \medskip
-\noindent
+
 Its center is the \emph{mittenpunkt} $M$ of the triangle.
 
 \vspace{1em}
@@ -5475,7 +5402,7 @@ Its center is the \emph{mittenpunkt} $M$ of the triangle.
 The \emph{orthic inellipse} is an inconic defined for acute triangles. It is tangent to the sides of the triangle at the vertices of the \emph{orthic triangle}, which also serves as its polar triangle.
 
 \medskip
-\noindent
+
 Its center is the \emph{symmedian point} $K$ of the reference triangle.
 
 \vspace{1em}
@@ -5519,7 +5446,7 @@ Its center is the \emph{symmedian point} $K$ of the reference triangle.
 This method constructs a square inscribed in the triangle.
 
 \medskip
-\noindent
+
 The optional argument \code{n} (an integer) determines which side of the triangle serves as the base of the square. The vertices of the triangle are cyclically ordered.
 
 \begin{itemize}
@@ -5528,7 +5455,7 @@ The optional argument \code{n} (an integer) determines which side of the triangl
   \item If \code{n = 2}, the base is $(pc, pa)$.
 \end{itemize}
 
-\noindent
+
 The constructed square lies entirely within the triangle and shares one side with the chosen base.
 
 \vspace{1em}
@@ -5559,17 +5486,17 @@ z.a1,z.a2,z.a3,z.a4 = S:get()}
 
 This method builds a \tkzClass{path} object that follows the boundary of a triangle from point $p_1$ to point $p_2$, walking in counterclockwise (direct) orientation along the triangle's perimeter.
 
-\paragraph{Syntax:}
-\begin{verbatim}
-PA.edge = T.ABC:path(zA, zC)
-\end{verbatim}
+\texttt{Syntax: } \verb|PA.edge = T.ABC:path(zA, zC)|
 
-\paragraph{Arguments:}
+\texttt{Arguments: }
+
 \begin{itemize}
 \item \code{p1}, \code{p2} — two points located on the triangle’s sides
 \end{itemize}
 
-\paragraph{Details:}
+\textbf{Details:}
+
+
 The method checks that both points lie on the triangle’s boundary using the segment method \tkzMeth{line}{in\_out\_segment}. If they belong to the same side, the resulting path is direct. Otherwise, the method follows the triangle in counterclockwise order, adding intermediate vertices as needed.
 
 This function is useful for tracing polygonal arcs or combining triangle edges with other curves to build filled shapes.

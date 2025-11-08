@@ -364,6 +364,36 @@ function point:shift_collinear_to(B, dist)
 	local v = (B - self):normalized()
 	return self + v*dist
 end
+-- =====================
+-- the result is a circle
+-- =====================
+-- Circle through three points: self, a, b
+-- point:PPP — cercle passant par trois points (circonscrit)
+-- Retourne :
+--   PA_center : path des centres
+--   PA_through: path des points "through"
+--   n         : nombre de cercles trouvés (0 si dégénéré, 1 sinon)
+function point:PPP(a, b)
+	-- paths de sortie (toujours créés, même si n = 0)
+	local PA_center = path()
+	local PA_through = path()
+
+	-- cas dégénéré : points alignés ou deux points confondus
+	if tkz.aligned(self, a, b)
+		 or self:identity(a) or self:identity(b) or a:identity(b) then
+		return PA_center, PA_through, 0
+	end
+
+	-- centre du cercle circonscrit
+	local o = circum_center_(self, a, b)
+
+	-- on choisit "self" comme point-through (n'importe lequel des 3 convient)
+	PA_center:add_point(o)
+	PA_through:add_point(self)
+
+	return PA_center, PA_through, 1
+end
+
 -- ----------------------------------------------------------------
 -- transformations
 -- ----------------------------------------------------------------
@@ -458,5 +488,4 @@ function point:homothety(coeff, ...)
 		return table.unpack(t) -- Return the results as separate values
 	end
 end
-
 

@@ -1,0 +1,1669 @@
+\newpage
+\section{Apollonius' problem}
+\label{sec:apollonius}
+
+\subsection*{Overview}
+
+The classical \texttt{Apollonius’ problem} asks for one or several circles tangent to three given geometric objects, each of which may be a circle (\tkzname{C}), a line (\tkzname{L}) or a point (\tkzname{P}).
+Each case is denoted by a three-letter code such as \tkzname{CCP}, \tkzname{LLL}, or \tkzname{PLC}, according to the type of the three given objects.
+
+Historically, there are ten distinct configurations:
+\[
+\text{PPP},\; \text{LPP},\; \text{CPP},\; \text{LLP},\; \text{LLL}
+,\; \text{CLP},\;\text{CLL},\; \text{CCP},\; \text{CCL},\; \text{CCC}.
+\]
+Viète solved all ten cases using only compass and straightedge constructions, building complex solutions from simpler ones.
+
+\medskip
+\texttt{Note (work in progress): } This section is under active development. Some \emph{degenerate} or \emph{very special} configurations may not be fully handled yet.
+
+
+\subsection*{Unified API (paths everywhere)}
+
+Each case is implemented as a method attached to the class of the \emph{first} object (e.g. \verb|point:PPP|, \verb|line:LLL|, \verb|circle:CLL|).
+All methods are being unified to return \emph{paths} so that drawing and node extraction are consistent across cases.
+
+\medskip
+\texttt{Syntax:} \verb|PA.center, PA.through, n = <obj>:XYZ(args)|
+
+\medskip
+\texttt{Returned values:}
+\begin{itemize}
+  \item \verb|PA.center| : a \texttt{path} collecting the centers of the solution circles;
+  \item \verb|PA.through| : a \texttt{path} collecting the corresponding through-points;
+  \item \verb|n| : the number of valid solutions (can be \verb|0|).
+\end{itemize}
+
+\medskip
+\texttt{Remarks: }
+\begin{itemize}
+  \item All results can be directly drawn using
+    \verb|\tkzDrawCirclesFromPaths(PA.center, PA.through)|. See [\ref{sub:macro_tkzDrawCirclesFromPaths}]
+  \item Nodes can be exported to TikZ with
+    \verb|tkz.nodes_from_paths(PA.center, PA.through)|. See [\ref{ssub:tkz_nodes_from_paths}]
+  \item Empty paths correspond to degenerate configurations.
+  \item Some older methods still return \verb|paths, n|; they will be progressively updated to the unified format.
+\end{itemize}
+
+\subsection*{Using \tkzname{tkz.nodes\_from\_paths} instead of \textbackslash tkzDrawCirclesFromPaths}
+
+If you wish to draw \emph{all} the solution circles at once, the macro
+\verb|\tkzDrawCirclesFromPaths(PA.ce, PA.th)|
+is the most convenient approach.
+
+However, if you need to highlight or draw \emph{only one specific circle}, it is often preferable to use the Lua helper
+\verb|tkz.nodes_from_paths|. In this case, you may keep the solutions in local variables to avoid polluting the global table:
+
+\begin{verbatim}
+local pc, pt, n = C.OC:CPP(z.A, z.B)
+tkz.nodes_from_paths(pc, pt)   -- creates z.w1, z.t1, z.w2, z.t2,...
+\end{verbatim}
+
+By default, this generates nodes \verb|(w1,t1), (w2,t2), ...| in the table \verb|z|, which can then be used to draw individual circles or to label / style them differently.
+
+\medskip
+\texttt{Combining both approaches: }
+You can also combine the two techniques: first use \verb|\tkzDrawCirclesFromPaths| to display all solution circles, and then use \verb|tkz.nodes_from_paths| to extract the corresponding nodes and emphasize only some of them (change colour, add labels, draw radii, etc.). This is particularly useful in demonstrations or pedagogical figures.
+
+\medskip
+\texttt{Example idea:}
+\begin{itemize}
+  \item Compute the solutions: \verb|PA.center, PA.through, n = C.OC:CPP(z.A, z.B)|.
+  \item Draw all circles with \verb|\tkzDrawCirclesFromPaths|.
+  \item Call \verb|tkz.nodes_from_paths(PA.center, PA.through)|.
+  \item Then, for instance: \verb|\draw[red,thick] (z.w1) circle[radius];| to highlight only the first one.
+\end{itemize}
+
+Thus, the macro gives a quick visual result, while \verb|tkz.nodes_from_paths| offers fine control over individual solutions.
+
+\medskip
+\texttt{Global \texttt{PA.xxx} vs Local Variables: }
+
+When using contact methods such as:
+\begin{verbatim}
+PA.center, PA.through, n = C.OC:CPP(z.A, z.B)
+\end{verbatim}
+the two paths \verb|PA.center| and \verb|PA.through| are stored as \emph{global} variables in the
+\texttt{z}/\texttt{PA} namespace.
+This has two important advantages:
+
+\begin{itemize}
+  \item They can be used directly in TikZ with macros such as:
+
+        \verb|\tkzDrawCirclesFromPaths(PA.center, PA.through)|.
+  \item They are automatically cleared when calling \verb|init_elements()|, which avoids
+        name conflicts between different figures or compilations.
+\end{itemize}
+
+Since TikZ macros work purely on the TeX side, the paths must exist globally to be accessible
+outside the \verb|\directlua| block.
+
+\medskip
+\texttt{Using Local Paths with \texttt{tkz.nodes\_from\_paths}: }
+
+If you do not want to pollute the global namespace, you may store the results locally:
+
+\begin{verbatim}
+local pc, pt, n = C.OC:CPP(z.A, z.B)
+tkz.nodes_from_paths(pc, pt)  -- creates z.w1, z.t1,...
+\end{verbatim}
+
+Here, \verb|pc| and \verb|pt| remain Lua-local, but the function
+\verb|tkz.nodes_from_paths| exports the corresponding nodes (\verb|w1,t1,w2,t2,...|)
+into the global table \verb|z| so they can be used in TikZ.
+
+\medskip
+\texttt{Which One to Use?}
+
+\begin{itemize}
+  \item Use \verb|PA.center, PA.through| (global) if you plan to call:
+        \begin{verbatim}
+        \tkzDrawCirclesFromPaths(PA.center, PA.through)
+        \end{verbatim}
+        because this macro expects global paths accessible from TeX.
+  \item Use \verb|tkz.nodes_from_paths| if you want to select or highlight only some of
+        the solution circles. It also works with either global or local paths.
+  \item A combined approach is often the most flexible: draw all circles with the macro,
+        then export nodes to highlight specific ones.
+\end{itemize}
+
+\medskip
+\texttt{Example Workflow:}
+
+\begin{enumerate}
+  \item Compute solutions globally:
+        \verb|PA.center, PA.through, n = C.OC:CPP(z.A, z.B)|
+  \item Draw all circles:
+        \verb|\tkzDrawCirclesFromPaths(PA.center, PA.through)|
+  \item Export the same centers and points to nodes:
+
+        \verb|\directlua{ tkz.nodes_from_paths(PA.center, PA.through) }|
+  \item Now highlight one circle, for instance:
+        \verb|\draw[red,thick] (z.w1) -- (z.t1);|
+\end{enumerate}
+
+\medskip
+In summary, \verb|PA.xxx| must be \emph{global} for TikZ macros,
+while \verb|tkz.nodes_from_paths| lets you create node names (\verb|w1,t1,...|) from
+either global or local paths depending on how much control you need.
+
+
+
+\subsection{Case: \tkzMeth{point}{PPP}(p, p)}
+\label{sub:PPP}
+
+\texttt{Purpose: }
+
+The method \tkzname{PPP} constructs the \emph{circumcircle} passing through
+three distinct points: the current point (\tkzname{self}) and the two given
+points \tkzname{a} and \tkzname{b}.
+
+If the three points are collinear or not distinct, no circle can be defined and
+the method returns empty paths with a counter equal to~0.
+
+\medskip
+\texttt{Syntax: } \verb|PA.center, PA.through, n = z.A:PPP(z.B, z.C)|
+
+\medskip
+\texttt{Returns: }
+
+\begin{itemize}
+  \item \tkzname{PA.center}: a \tkzname{path} containing the center(s) of the circumcircle(s);
+  \item \tkzname{PA.through}: a \tkzname{path} containing the corresponding point(s) on each circle;
+  \item \tkzname{n}: the number of valid circles (1 if a circumcircle exists, 0 otherwise).
+\end{itemize}
+
+\medskip
+\texttt{Example usage: }
+
+\begin{tkzexample}[latex=.45\textwidth]
+\directlua{
+  z.A = point(0, 0)
+  z.B = point(4, 0)
+  z.C = point(3, 4)
+  PA = {}
+  PA.center, PA.through, _ = z.A:PPP(z.B, z.C)
+  tkz.nodes_from_paths(PA.center, PA.through)
+  % w and t by default
+}
+\begin{center}
+  \begin{tikzpicture}
+    \tkzGetNodes
+    \tkzDrawPolygon(A,B,C)
+    \tkzDrawCircles(w1,t1)
+    \tkzDrawPoints(A,B,C)
+  \end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+\medskip
+\texttt{Remarks: }
+This is the simplest case of the Apollonius family.
+If \tkzname{n = 0}, the three points are collinear and no circle is drawn.
+
+%
+% ---
+
+\subsection{Case: \tkzMeth{line}{LPP}(p, p)}
+\label{sub:LPP}
+
+\medskip
+\texttt{Purpose: } Given a running line~$L$ (the current object \code{self}) and two points \code{a} and \code{b} lying on the \emph{same side} of~$L$, this method constructs the circle(s) tangent to~$L$ and passing through both \code{a} and \code{b}.
+
+\medskip
+
+\texttt{Syntax: }
+\verb|local PA.center, PA.through, n = L:LPP(a, b)|
+
+\medskip
+\texttt{Parameters: }
+
+\begin{itemize}
+  \item \code{a}, \code{b} : two distinct points.
+  \item \emph{Precondition:} \code{a} and \code{b} are on the same side of the running line \code{self}.%
+\end{itemize}
+
+\medskip
+The method is designed to handle a variety of geometric configurations, including the following special cases:
+
+\begin{itemize}
+  \item The segment $[MN]$ is perpendicular to the line $(AB)$;
+  \item The segment $[MN]$ is parallel to the line $(AB)$;
+  \item The points $M$ and $N$ lie on opposite sides of the line $(AB)$;
+  \item One of the points (either $M$ or $N$) lies on the line $(AB)$.
+\end{itemize}
+
+This construction is useful in problems involving constrained circle placements or Apollonius-type configurations.
+
+\texttt{Returns: }
+
+\begin{itemize}
+  \item \texttt{PA.center} and \texttt{PA.through} : two paths containing respectively the centers and the points of tangency of the solution circles.
+  \item \texttt{n} : the number of existing solutions (\verb|0|, \verb|1| or \verb|2|).
+\end{itemize}
+
+\medskip
+\texttt{Remarks: }
+
+\begin{itemize}
+  \item If \code{n = 0}, both paths are empty and no circle can be drawn.
+  \item In degenerate cases with a single solution, the same circle is recorded once (\code{n = 1}).
+  \item No \verb|tex.error| is raised; the method always returns valid paths.
+  \item The results can be transferred and drawn using the macros:
+
+   \verb|\tkzNodesFromPaths| and \verb|\tkzDrawCirclesFromPaths|.
+\end{itemize}
+
+\medskip
+
+\texttt{Existence \& number of solutions}
+\begin{itemize}
+  \item \texttt{No solution (0).} If the intersection point $i=L\cap (ab)$ exists and lies on the segment $[a,b]$, then no circle tangent to $L$ can pass through $a$ and $b$.
+  \item \texttt{Single solution (1).}
+    \begin{itemize}
+      \item If exactly one of the points \code{a} or \code{b} belongs to $L$ (point of tangency), the unique solution has its center at the intersection of the mediator of $[a,b]$ with the perpendicular to $L$ at that point.
+      \item If $L \parallel (ab)$, the unique solution has its center at the circumcenter of the triangle $(a,b,p)$ where $p$ is the orthogonal projection of $\mathrm{mid}(a,b)$ on $L$.
+    \end{itemize}
+  \item \texttt{Two solutions (2).}
+    \begin{itemize}
+      \item If $L \perp (ab)$ and $i=L\cap (ab)$ is defined (and not on $[a,b]$), two symmetric solutions exist.
+      \item In the general oblique case (neither parallel nor orthogonal), two solutions exist.
+    \end{itemize}
+\end{itemize}
+
+\medskip
+
+\texttt{Example usage: }
+
+\vspace{1em}
+
+\begin{tkzexample}[latex=.45\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(6, 0)
+  z.M = point(1, 1)
+  z.N = point(2, 5)
+  L.AB = line(z.A, z.B)
+  PA.center, PA.through, n = L.AB:LPP(z.M, z.N)
+  tkz.nodes_from_paths(PA.center,
+                          PA.through, "O", "T")
+}
+
+\begin{tikzpicture}[scale = .5]
+  \tkzGetNodes
+  \tkzDrawLines(A,B M,N)
+  \tkzDrawCircles(O1,T1 O2,T2)
+  \tkzDrawPoints(A,B,M,N)
+  \tkzLabelPoints(A,B,M,N)
+\end{tikzpicture}
+\end{tkzexample}
+
+\vspace{1em}
+Let's look at the case where the line $(MN)$ is parallel to the initial line.
+
+\vspace{1em}
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(6, 0)
+  z.M = point(0, 3)
+  z.N = point(5, 3)
+  L.AB = line(z.A, z.B)
+  PA.center, PA.through,
+          n = L.AB:LPP(z.M, z.N)}
+\begin{center}
+\begin{tikzpicture}
+ \tkzGetNodes
+ \tkzDrawCirclesFromPaths[draw,
+          red](PA.center,PA.through)
+ \tkzDrawSegments(A,B M,N)
+ \tkzDrawPoints(A,B,M,N)
+ \tkzLabelPoints(A,B,M,N)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+\vspace{1em}
+Where the line is perpendicular to the initial line.
+
+\vspace{1em}
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(6, 0)
+ z.M = point(1,  1)
+ z.N = point(1, 5)
+ L.AB = line(z.A, z.B)
+ PA.center, PA.through, n = L.AB:LPP(z.M, z.N)}
+\begin{tikzpicture}[scale =.6]
+  \tkzGetNodes
+  \tkzDrawLines(A,B M,N)
+  \tkzDrawCirclesFromPaths[draw,
+     orange](PA.center,PA.through)
+  \tkzDrawPoints(A,B,M,N)
+  \tkzLabelPoints(A,B,M,N)
+\end{tikzpicture}
+\end{tkzexample}
+
+\vspace{1em}
+The last special case is when one of the points is on the initial line. In this case, there's only one solution.
+
+\vspace{1em}
+
+\begin{tkzexample}[latex=.4\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(5, 0)
+  z.M = point(1, 0)
+  z.N = point(3, 5)
+  L.AB = line(z.A, z.B)
+  PA.center,
+  PA.through, n =L.AB:LPP(z.M, z.N)
+  PA.center, PA.through,
+  n = L.AB:LPP(z.M, z.N)}
+
+\begin{tikzpicture}[scale =.6]
+  \tkzGetNodes
+  \tkzDrawCirclesFromPaths[draw,
+    orange](PA.center,PA.through)
+  \tkzDrawLines(A,B)
+  \tkzDrawPoints(A,B,M,N)
+  \tkzLabelPoints(A,B,M,N)
+\end{tikzpicture}
+\end{tkzexample}
+
+
+\subsection{Case: \tkzMeth{line}{LLP}(L, p)}
+\label{sub:LLP}
+
+\texttt{Purpose: }
+Given the running line~$D$ (\code{self}), another line~\code{L}, and a point~\code{p}, this method constructs the circle(s) passing through \code{p} and tangent to \emph{both} lines~$D$ and~$L$.
+
+\medskip
+\texttt{Syntax: }
+\verb|PA.center, PA.through, n = L.AB:LLP(L, p)|
+
+\medskip
+Let us consider two straight lines, $(AB)$ and $(CD)$, and a point~$P$ not lying on either line.
+The problem is to determine whether there exists a circle passing through~$P$ and tangent to both lines.
+
+\texttt{Parameters: }
+\begin{itemize}
+  \item \code{L}: a line distinct from the running line~\code{self} (they may be parallel or intersecting).
+  \item \code{p}: a point in the plane.
+\end{itemize}
+
+\texttt{Returns: }
+\begin{itemize}
+  \item \code{PA.center}, \code{PA.through}: two paths containing the centers and tangent points of the solution circles.
+  \item \code{n}: the number of solutions (0, 1, or 2).
+  \item If no solution exists, \code{n = 0} and both paths are empty.
+\end{itemize}
+
+\texttt{Remarks: }
+This method generalizes Apollonius' problem in the case of two lines and one point.
+It handles both parallel and intersecting lines, as well as special configurations where the point lies on a bisector or one of the lines.
+
+\vspace{1em}
+ \texttt{General case}
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(-1, 2)
+  z.B = point(2, -3)
+  z.C = point(-1, -3)
+  z.D = point(2, 1)
+  L.AB = line(z.A, z.B)
+  L.CD = line(z.C, z.D)
+  z.S = intersection(L.AB, L.CD)
+  L.SI = bisector(z.S, z.A, z.D)
+  z.P = L.SI:point(-1)
+  local centers, throughs, n = L.AB:LLP(L.CD, z.P)
+  tkz.nodes_from_paths(centers, throughs)
+}
+\begin{center}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawLines[red](A,B C,D)
+  \tkzDrawCircles[blue](w1,t1 w2,t2)
+  \tkzDrawPoints(A,B,C,D,P,w1,t1,w2,t2)
+  \tkzLabelPoints(A,B,C,D,P)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+
+\vspace{1em}
+ \texttt{Point inside the angle}
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(6, 0)
+  L.AB = line(z.A, z.B)
+  z.C = point(6, 4)
+  L.AC = line(z.A, z.C)
+  z.P = point(3, 1.5)
+  local centers, throughs,
+                  n = L.AB:LLP(L.AC, z.P)
+  tkz.nodes_from_paths(centers, throughs)
+}
+\begin{center}
+\begin{tikzpicture}[scale=.75]
+  \tkzGetNodes
+  \tkzDrawLines[thick](A,B A,C)
+  \tkzDrawCircles[red](w1,t1 w2,t2)
+  \tkzDrawPoints(A,B,C,P,w1,t1,w2,t2)
+  \tkzLabelPoints(A,B,C,P)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+\vspace{1em}
+\texttt{Point on a bisector}
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(6, 0)
+  L.AB  = line(z.A, z.B)
+  z.C = point(6, 4)
+  L.AC  = line(z.A, z.C)
+  L.bi  = bisector(z.A, z.B, z.C)
+  z.P = L.bi:point(0.4)
+  local centers,
+        throughs, n = L.AB:LLP(L.AC, z.P)
+  tkz.nodes_from_paths(centers, throughs)
+}
+\begin{center}
+\begin{tikzpicture}[scale=.75]
+  \tkzGetNodes
+  \tkzDrawLines(A,B A,C A,P)
+  \tkzDrawCircles(w1,t1 w2,t2)
+  \tkzDrawPoints(A,B,C,P)
+  \tkzLabelPoints(A,B,C,P)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+\vspace{1em}
+ \texttt{Point on one of the lines}
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(4, -3)
+  L.AB  = line(z.A, z.B)
+  z.C = point(6, 4)
+  L.AC  = line(z.A, z.C)
+  z.P = L.AC:point(.3)
+  local centers,
+        throughs, n = L.AB:LLP(L.AC, z.P)
+  tkz.nodes_from_paths(centers, throughs)
+}
+\begin{center}
+\begin{tikzpicture}[scale=.6]
+  \tkzGetNodes
+  \tkzDrawLines(A,B A,C)
+  \tkzDrawCircles(w1,t1 w2,t2)
+  \tkzDrawPoints(A,B,C,P)
+  \tkzLabelPoints(A,B,C,P)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+
+\vspace{1em}
+\texttt{Parallel lines}
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(-2, 2)
+  z.B = point(1, -1)
+  z.C = point(-2, 6)
+  z.D = point(1, 3)
+  L.AB = line(z.A, z.B)
+  L.CD = line(z.C, z.D)
+  z.P = point(-1, 2.5)
+  local centers,
+        throughs, n = L.AB:LLP(L.CD, z.P)
+  tkz.nodes_from_paths(centers, throughs)
+}
+\begin{center}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawLines[red](A,B C,D)
+  \tkzDrawCircles[blue](w1,t1 w2,t2)
+  \tkzDrawPoints(A,B,C,D,P,w1,t1,w2,t2)
+  \tkzLabelPoints(A,B,C,D,P)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+
+\subsection{Case \tkzname{LLL}: \tkzMeth{line}{LLL}(L, L)}
+\label{sub:LLL}
+
+
+This method completes the family of contact configurations.
+It handles the case of a circle tangent to three lines.
+
+
+\texttt{Syntax: }
+
+\begin{verbatim}
+C_in = L.AB:LLL(L.BC, L.CA, "in")
+C_exA = L.AB:LLL(L.BC, L.CA, "pa")
+C_in, C_ea, C_eb, C_ec = L.AB:LLL(L.BC, L.CA)
+\end{verbatim}
+
+
+\texttt{Purpose: }
+
+The method \tkzname{LLL} constructs the circles tangent to three lines.
+
+\begin{itemize}
+  \item If the three lines are \emph{non-parallel}, they define a triangle,
+  and \tkzname{LLL} returns the \emph{incircle} and the three \emph{excircles},
+  equivalent to \tkzname{triangle:c\_lll("all")}.
+  \item If exactly two lines are parallel and the third one is transversal,
+  two circles are tangent to the three lines; these two solutions are returned.
+\end{itemize}
+
+
+\texttt{Returns: }
+
+\begin{itemize}
+  \item In the triangle case:
+    \begin{itemize}
+      \item \texttt{"all"} → four circles (incircle and three excircles),
+      \item \texttt{"in"} → incircle only,
+      \item \texttt{"pa"}, \texttt{"pb"}, \texttt{"pc"} → the corresponding excircle.
+    \end{itemize}
+  \item In the parallel case: two circles tangent to the three lines.
+\end{itemize}
+
+\textbf{Errors}
+
+If at least two pairs of lines are parallel, the configuration is degenerate.
+
+\texttt{Example usage: }
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(6, 0)
+  z.C = point(4.5, 6)
+  T.ABC = triangle(z.A, z.B, z.C)
+  L.AB = line(z.A,z.B)
+  L.AC = line(z.A,z.C)
+  L.med = L.AB : mediator ()
+  z.M = L.AB.mid
+  z.x, z.y = get_points(L.med)
+  z.H = L.AB:projection(z.C)
+  L.ortho = L.AB:orthogonal_from(z.C)
+  PA.center,
+  PA.through = L.AC:LLL(L.med, L.ortho)
+  z.w = PA.center:get(1)
+  z.t = PA.through:get(1)
+  PA.center,
+  PA.through = L.AB:LLL(L.AC, T.ABC.bc)
+  z.o = PA.center:get(1)
+  z.h = PA.through:get(1)}
+\begin{center}
+  \begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawLines(A,B A,C B,C x,y H,C)
+\tkzDrawCircles(w,t o,h)
+\tkzDrawPoints(A,B,C,M,H)
+\tkzLabelPoints(A,B,C,M,H)
+\end{tikzpicture}
+  \end{center}
+\end{tkzexample}
+
+\subsection{Case: \tkzMeth{circle}{CLL}(L, L)}
+\label{sub:CLL}
+
+\texttt{Alias: } \verb|c_cll|
+
+\medskip
+\texttt{Syntax:}
+
+\verb|PA.center, PA.through, n = circle:CLL(L1, L2, choice, inside)|
+
+\medskip
+\texttt{Purpose:}
+
+Constructs the circles that are tangent to:
+\begin{itemize}
+  \item the current circle (\verb|self|),
+  \item and the two lines \verb|L1| and \verb|L2|.
+\end{itemize}
+
+The method returns two \tkzname{path} objects containing all the solutions found:
+\begin{itemize}
+  \item \verb|PA.center| – centers of the solution circles,
+  \item \verb|PA.through| – corresponding through-points (point of tangency),
+  \item \verb|n| – number of solutions.
+\end{itemize}
+
+\medskip
+\texttt{Options:}
+
+\begin{itemize}
+  \item \verb|choice| – Optional. Integer from \verb|1| to \verb|4| selecting one of the angular sectors formed by the two lines at their intersection.
+  By default, \verb|choice = "all"| which means all sectors are explored and all valid solutions are returned.
+  \item \verb|inside| – Optional. If set to \verb|"inside"|, the circle is tangent internally to the reference circle (its radius is considered negative in the auxiliary construction). If omitted, tangency is external.
+\end{itemize}
+
+\medskip
+\texttt{Explanation:}
+
+\begin{itemize}
+  \item The intersection of \verb|L1| and \verb|L2| defines four sectors numbered from \verb|1| to \verb|4| in the direct (counterclockwise) order starting from \verb|L1|.
+  \item For each chosen sector, up to two circles can be tangent to the two lines and to the reference circle.
+  \item With the default option \verb|choice = "all"|, the method tries all four sectors and appends every valid solution to the paths.
+\end{itemize}
+
+\medskip
+\texttt{Remarks:}
+
+\begin{itemize}
+  \item If the lines are parallel, this method does not apply.
+  \item The user can draw the resulting circles using
+        \verb|\tkzDrawCirclesFromPaths(PA.center, PA.through)|.
+  \item The value of \verb|n| gives the total number of circles stored in the paths.
+\end{itemize}
+
+\vspace{1em}
+\texttt{Examples usage: }
+
+\vspace{1em}
+\begin{tkzexample}[vbox]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(6, -2)
+  L.AB  = line(z.A, z.B)
+  z.C = point(-3, -4)
+  z.D = point(3, 1)
+  L.CD  = line(z.C, z.D)
+  z.O = z.D + point(-3,1)
+  z.X = z.O + point(0,1)
+  C.OX = circle(z.O, z.X)
+  PA.center, PA.through = C.OX:CLL(L.AB, L.CD,"all")
+  tkz.nodes_from_paths(PA.center, PA.through)}
+\begin{center}
+\begin{tikzpicture}[scale=.75]
+ \tkzGetNodes
+ \tkzInit[xmin=-5,xmax=10,ymin=-1,ymax=5]
+ \tkzClip
+ \tkzDrawX\tkzDrawY
+ \tkzDrawLines[blue,add =1 and .25](A,B)
+ \tkzDrawLines[blue,add =.25 and 1](C,D)
+ \tkzDrawPoints[blue,size=3](O)
+ \tkzDrawCirclesFromPaths[draw,red,thick](PA.center,PA.through)
+ \tkzDrawCircles[thick,blue](O,X)
+ \tkzDrawPoints[red,size=3](w1)
+ \tkzLabelPoints[red](O)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+\medskip
+\texttt{Some explanations: } The given circle lies within sectors 1 and 2.
+In this case, we are looking for the solution circles located in these two sectors.
+There is a method that determines how a circle is positioned with respect to two lines: \verb|circle:lines_position(L1, L2)|.
+If you do not know how many solutions exist, the following example shows how to proceed.
+
+
+\vspace{1em}
+\texttt{A special case: } The intersection point of the two lines belongs to the given circle. In this example, the \verb|CLL_all| method determines all solutions. The points that define the solution circles are stored in objects of type \texttt{path}.
+
+\vspace{1em}
+\begin{tkzexample}[vbox]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(6, -2)
+  L.AB  = line(z.A, z.B)
+  z.C = point(-3, -4)
+  z.D = point(3, 1)
+  L.CD  = line(z.C, z.D)
+  z.I = intersection(L.AB, L.CD)
+  z.O = z.I + point(1,1)
+  z.X = z.I
+  C.OX = circle(z.O, z.X)
+  PA.center, PA.through = C.OX:CLL_all(L.AB, L.CD)
+  z.w1 = PA.center:get(1)
+  z.t1 = PA.through:get(1)}
+
+\begin{tikzpicture}[scale=1]
+ \tkzGetNodes
+ \tkzInit[xmin=-5,xmax=8,ymin=-5,ymax=5]
+ \tkzClip
+ \tkzDrawLines[cyan,add = .25 and 1](A,B C,D)
+ \tkzDrawCircles[thick,cyan](O,X)
+ \tkzDrawCirclesFromPaths[draw,orange,thick](PA.center,PA.through)
+ \tkzDrawCircles[black,thick](w1,t1)
+ \tkzLabelPoints[red](I)
+\end{tikzpicture}
+\end{tkzexample}
+
+
+\vspace{1em}
+\texttt{Another example}
+
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(6, -2)
+  L.AB  = line(z.A, z.B)
+  z.C = point(-3, -4)
+  z.D = point(3, 1)
+  L.CD  = line(z.C, z.D)
+  z.O = z.D + point(3,1)
+  z.X = z.O + point(0,1)
+  C.OX = circle(z.O, z.X)
+  PA.center, PA.through = C.OX:CLL_all(L.AB, L.CD)
+  z.w1 = PA.center:get(2)
+  z.t1 = PA.through:get(2)}
+
+\begin{tikzpicture}
+ \tkzGetNodes
+ \tkzInit[xmin=-.25,xmax=12,ymin=-8,ymax=8]
+ \tkzClip
+ \tkzDrawLines[blue,add = 1 and 4](A,B C,D)
+ \tkzDrawCircles[thick,cyan](O,X)
+ \tkzDrawCirclesFromPaths[draw,orange,thick](PA.center,PA.through)
+ \tkzDrawCircles[thick,purple](w1,t1)
+\end{tikzpicture}
+
+
+\subsection{Case: \tkzMeth{circle}{CPP}(p, p)}
+\label{sub:CPP}
+
+\texttt{Circle tangent to a given circle and passing through two points.}
+
+\medskip
+\texttt{Purpose: }
+
+Construct the circle(s) tangent to a given circle (the receiver \verb|self|) and passing through two given points~\verb|a| and~\verb|b|.
+
+The name \verb|CPP| stands for: \emph{circle tangent to one \underline{c}ircle and passing through two \underline{p}oints}.
+
+\medskip
+\texttt{Remarks: }
+This method returns one or two solution circles, depending on the configuration.
+A valid solution exists only if both points are on the \emph{same side} of the given circle (both inside or both outside).
+
+\medskip
+\texttt{Parameters: }
+
+\begin{itemize}
+  \item \verb|a|, \verb|b| — two distinct points through which the solution circles must pass.
+\end{itemize}
+
+\medskip
+\texttt{Syntax: }
+\verb|local PA.center, PA.through, n = C.OC:CPP(a, b)|
+
+\medskip
+\texttt{Returns: }
+
+\begin{itemize}
+  \item \verb|PA.center| — a \tkzname{path} containing the centers of the solution circles;
+  \item \verb|PA.through| — a \tkzname{path} containing the corresponding points on each circle;
+  \item \verb|n| — the number of solutions (0, 1, or 2).
+\end{itemize}
+
+\medskip
+\texttt{Usage: }
+After calling this method, the Lua function \verb|tkz.nodes_from_paths(PA_center, PA_through)|
+creates the corresponding nodes \verb|z.w1, z.w2, ...| and \verb|z.t1, z.t2, ...| for TeX drawing.
+You can then draw all circles within a \verb|tikzpicture| environment using:
+
+\verb|\tkzDrawCirclesFromPaths(PA.center, PA.through)|.
+
+\medskip
+\texttt{Existence condition: }
+A solution exists only if both points \verb|a| and \verb|b| are on the same side of the given circle (either both inside or both outside its disk).
+If one point lies inside and the other outside, no solution is returned (\verb|n = 0|).
+
+\vspace{1em}
+\begin{minipage}{.6\textwidth}
+\directlua{
+  init_elements()
+  z.A = point(5,4)
+  z.B = point(3,0)
+  z.O = point(0,0)
+  z.C = point(1,0)
+  C.OC = circle(z.O, z.C)
+  PA.center, PA.through,
+  n = C.OC:CPP(z.A, z.B)
+}
+\begin{center}
+\begin{tikzpicture}[scale=.6]
+  \tkzGetNodes
+  \tkzDrawCircle[blue](O,C)
+  \tkzDrawPoints(A,B,C,O)
+  \tkzDrawCirclesFromPaths[draw,
+  red](PA.center,PA.through)
+  \tkzLabelPoints(O,C,A,B)
+\end{tikzpicture}
+\end{center}
+\end{minipage}
+\begin{minipage}{.4\textwidth}
+\begin{tkzexample}[code only]
+\directlua{
+  init_elements()
+  z.A = point(5,4)
+  z.B = point(3,0)
+  z.O = point(0,0)
+  z.C = point(1,0)
+  C.OC = circle(z.O, z.C)
+  PA.center,
+    PA.through, n = C.OC:CPP(z.A, z.B)
+}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawCircle[blue](O,C)
+  \tkzDrawPoints(A,B,C,O)
+  \tkzDrawCirclesFromPaths[draw,
+      red](PA.center,PA.through)
+\end{tikzpicture}
+\end{tkzexample}
+\end{minipage}
+
+\vspace{1em}
+\texttt{Special cases: }
+
+\texttt{Equidistant points from the center: }
+
+\begin{minipage}{.5\textwidth}
+\directlua{
+  init_elements()
+  z.A = point(2,3)
+  z.B = point(2,-3)
+  z.O = point(0,0)
+  z.C = point(1,0)
+  C.OC = circle(z.O, z.C)
+  PA.center, PA.through, n = C.OC:CPP(z.A, z.B)
+}
+\begin{tikzpicture}[scale=.5]
+  \tkzGetNodes
+  \tkzDrawCircle[blue](O,C)
+  \tkzDrawPoints(A,B,C,O)
+  \tkzDrawCirclesFromPaths[draw,red](PA.center,PA.through)
+  \tkzLabelPoints(O,C,A,B)
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\begin{tkzexample}[code only]
+\directlua{
+  init_elements()
+  z.A = point(2,3)
+  z.B = point(2,-3)
+  z.O = point(0,0)
+  z.C = point(1,0)
+  C.OC = circle(z.O, z.C)
+  PA.center, PA.through,
+   n = C.OC:CPP(z.A, z.B)
+}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawCircle[blue](O,C)
+  \tkzDrawPoints(A,B,C,O)
+  \tkzDrawCirclesFromPaths[draw,
+  red](PA.center,PA.through)
+\end{tikzpicture}
+\end{tkzexample}
+\end{minipage}
+
+\texttt{Tangent case: }
+When the line $(AB)$ is tangent to the initial circle, there may be a single (degenerate) solution.
+It can even happen that $(AB)$ is tangent and both points are equidistant from the center.
+
+\begin{minipage}{.5\textwidth}
+\directlua{
+  init_elements()
+  z.A = point(1,3)
+  z.B = point(1,-3)
+  z.O = point(0,0)
+  z.C = point(1,0)
+  C.OC = circle(z.O, z.C)
+  PA.center, PA.through,
+  n = C.OC:CPP(z.A, z.B)
+}
+\begin{center}
+\begin{tikzpicture}[scale=.75]
+  \tkzGetNodes
+  \tkzDrawCircle[blue](O,C)
+  \tkzDrawPoints(A,B,C,O)
+  \tkzDrawCirclesFromPaths[draw,
+  red](PA.center,PA.through)
+  \tkzLabelPoints(O,C,A,B)
+\end{tikzpicture}
+\end{center}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\begin{tkzexample}[code only]
+\directlua{
+  init_elements()
+  z.A = point(1,3)
+  z.B = point(1,-3)
+  z.O = point(0,0)
+  z.C = point(1,0)
+  C.OC = circle(z.O, z.C)
+  PA.center,
+  PA.through, n = C.OC:CPP(z.A, z.B)
+}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawCircle[blue](O,C)
+  \tkzDrawPoints(A,B,C,O)
+  \tkzDrawCirclesFromPaths[draw,
+  red](PA.center,PA.through)
+\end{tikzpicture}
+\end{tkzexample}
+\end{minipage}
+
+
+\subsection{Case \tkzname{CLP}: \tkzMeth{circle}{CLP}(L, p, mode)}
+\label{sub:CLP}
+
+\texttt{Purpose: } Circle tangent to a given line and to the current circle, passing through a given point.
+
+\medskip
+
+\texttt{Syntax: } \verb|PA.center, PA.through, n = circle:CLP(L, p [, mode])|
+
+\begin{itemize}
+  \item \code{L} — a line object.
+  \item \code{p} — a point through which the solution circle(s) must pass.
+  \item \code{mode} — optional string in \code{"all"}, \code{"external"}, \code{"internal"}. Default is "all".
+
+\end{itemize}
+
+\texttt{Returns: } three values:
+\begin{enumerate}
+  \item \code{PA.center} — path of centers,
+  \item \code{PA.through} — path of through-points,
+  \item \code{n} — number of solutions ($0\dots4$).
+\end{enumerate}
+
+These paths can be drawn directly with:
+\verb|\tkzDrawCirclesFromPaths(PA.center, PA.through)|.
+
+%-------------------------------------------------
+\texttt{Existence and number of solutions}
+
+\begin{itemize}
+  \item \emph{Generic case} (point not on line nor circle): up to \textbf{4} circles.
+  \item \emph{Special cases} (only 2 or 0 solutions):
+    \begin{itemize}
+      \item $p$ on the circle → 2 solutions,
+      \item $p$ on the line → 2 solutions,
+      \item line tangent to the circle → one family may collapse,
+      \item $p$ at line–circle intersection → no non-trivial solution.
+    \end{itemize}
+\end{itemize}
+
+\texttt{Options}
+
+\begin{itemize}
+  \item \code{"all"} (default) — internal and external families (up to 4),
+  \item \code{"external"} — only externally tangent solutions,
+  \item \code{"internal"} — only internally tangent solutions (\code{"inside"} accepted).
+\end{itemize}
+
+
+\vspace{1em}
+\texttt{Examples usage}
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(4, 0)
+  L.AB = line (z.A, z.B)
+  z.O = point(3, 3)
+  z.T = point(3, 2)
+  z.P = point(2, .25)
+  C.OT = circle(z.O, z.T)
+  PA.center, PA.through = C.OT:CLP(L.AB, z.P)
+  z.O1 =  PA.center:get(1)
+  z.O2 =  PA.center:get(2)
+  PA.center,
+  PA.through = C.OT:CLP(L.AB, z.P,'internal')
+  z.O3 = PA.center:get(1)
+  z.O4 = PA.center:get(2)}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawCircles[thick](O,T)
+  \tkzDrawCircles[red](O1,P O2,P)
+  \tkzDrawCircles[cyan](O3,P O4,P)
+  \tkzDrawLines[thick](A,B)
+  \tkzDrawPoints[size = 2](P)
+  \tkzDrawPoints(A,B,O,O1,O2,O3,O4)
+\end{tikzpicture}
+\end{tkzexample}
+
+\vspace{1em}
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(4, 0)
+ L.AB = line (z.A, z.B)
+ z.O = point(3, 2)
+ z.T = point(3, 1)
+ C.OT = circle(z.O, z.T)
+ PA.center,
+ PA.through = C.OT:CLP(L.AB, z.A, "internal")
+ z.O1 = PA.center:get(1)
+ z.O2 = PA.center:get(2)}
+\begin{center}
+\begin{tikzpicture}[scale=.5]
+  \tkzGetNodes
+  \tkzDrawCircles[thick](O,T)
+  \tkzDrawCircles[red](O1,A O2,A)
+  \tkzDrawLines[thick](A,B)
+  \tkzDrawPoints[size = 3](A)
+  \tkzDrawPoints(B,O,O1,O2)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+\vspace{1em}
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(4, 0)
+ L.AB = line(z.A, z.B)
+ z.O = point(3, 2)
+ z.T = point(2, 2)
+ C.OT = circle(z.O, z.T)
+ z.P = C.OT:point(0.1)
+ C.OT  = circle (z.O , z.T)
+ PA.center,
+ PA.through = C.OT:CLP(L.AB, z.P)}
+\begin{center}
+\begin{tikzpicture}[scale=.6]
+  \tkzGetNodes
+  \tkzDrawCircles[thick](O,T)
+  \tkzDrawCirclesFromPaths[draw,
+     red,thick](PA.center,PA.through)
+  \tkzDrawLines[thick](A,B)
+  \tkzDrawPoints[size = 3](P)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+%% ====================
+%% END of CLP
+%% ====================
+
+\subsection{Case \tkzname{CCP}}
+\label{sub:CCP}
+
+\texttt{Purpose: } Circle tangent to two given circles and passing through a point.
+
+This method constructs 0, 2, or 4 circles depending on the configuration, passing through a given point $p$ and tangent to two given circles.
+
+
+\medskip
+
+The name \code{CCP} stands for:
+
+\begin{center}
+\texttt{c}ircle tangent to two \texttt{c}ircles and passing through a \texttt{p}oint.
+\end{center}
+
+medskip
+\texttt{Syntax: } \verb|C1, C2 = C.A:CCP(C.B, p)        -- external solutions|
+
+\verb|C3, C4 = C.A:CCP(C.B, p, "internal")  -- internal solutions|
+
+\medskip
+
+The general problem may admit up to four solutions: two circles tangent along the \emph{external} common tangents, and two circles tangent along the \emph{internal} common tangents.
+For convenience, the method accepts an option:
+
+\begin{itemize}
+  \item \code{"external"} (default): returns the two solutions associated with the external tangents,
+  \item \code{"internal"}: returns the two solutions associated with the internal tangents.
+\end{itemize}
+
+
+\medskip
+
+\texttt{Special cases: }
+\begin{itemize}
+  \item If the point $p$ lies strictly inside or outside both disks, up to four solutions exist in total (two external, two internal).
+  \item If $p$ lies on the circumference of one of the given circles, then $p$ is already a contact point; only two solutions remain.
+  \item If $p$ lies simultaneously on both circles (intersection points), the configuration is degenerate and usually no non-trivial solution exists.
+\end{itemize}
+
+
+
+\medskip
+\texttt{Examples usage:}
+
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.TA = point(3, 0)
+  z.B = point(6, 2)
+  z.TB = point(6, 1)
+  z.P = point(3, 6)
+  C.A = circle(z.A, z.TA)
+  C.B = circle(z.B, z.TB)
+  PA.center, PA.through  = C.A:CCP(C.B,
+    z.P,"external")
+  z.O1 = PA.center:get(1)
+  z.O2 = PA.center:get(2)
+  z.T1 = PA.through:get(1)
+  z.T2 = PA.through:get(2)
+  PA.center, PA.through = C.A:CCP(C.B,
+    z.P,"internal")
+  z.O3 = PA.center:get(1)
+  z.O4 = PA.center:get(2)
+  z.T3 = PA.through:get(1)
+  z.T4 = PA.through:get(2)}
+\begin{center}
+  \begin{tikzpicture}[scale =.5]
+ \tkzGetNodes
+ \tkzDrawCircles[thick](A,TA B,TB)
+ \tkzDrawCircles[red](O1,T1 O2,T2)
+ \tkzDrawCircles[blue](O3,T3 O4,T4)
+ \tkzDrawPoints[size=3](P)
+ \tkzLabelPoints[above](P)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+\vspace{1em}
+\texttt{The point is inside a circle}
+
+\begin{tkzexample}[latex = .5\textwidth]
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.TA = point(3, 0)
+ z.B = point(4, 0)
+ L.AB = line(z.A, z.B)
+ z.TB = point(6, 0)
+ C.A = circle(z.A, z.TA)
+ C.B = circle(z.B, z.TB)
+ z.P = point(3.45, 0.5)
+ z.X, z.Y = intersection(C.A,C.B)
+ PA.center, PA.through = C.A:CCP(C.B, z.P)
+ tkz.nodes_from_paths(PA.center, PA.through)}
+\begin{center}
+\begin{tikzpicture}[scale=.5]
+ \tkzGetNodes
+ \tkzDrawCircles(A,TA B,TB)
+ \tkzDrawCircles[red](w1,t1 w2,t2)
+ \tkzDrawPoints(P)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+\vspace{1em}
+\texttt{The point is on a circle}
+
+\begin{tkzexample}[latex = .5\textwidth]
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.a = point(3, 0)
+ z.B = point(4, 0)
+ z.b = z.B + point(0,2)
+ L.AB = line(z.A, z.B)
+ C.Aa = circle(z.A, z.a)
+ C.Bb = circle(z.B, z.b)
+ z.P = C.Bb:point(0.3)
+ PA.center,
+ PA.through,n = C.Aa:CCP(C.Bb, z.P)
+}
+
+\begin{center}
+\begin{tikzpicture}[scale =.6]
+ \tkzInit[xmin=-7,xmax=9,ymin=-9,ymax=8]
+ \tkzClip \tkzGetNodes
+ \tkzDrawCircles[thick,blue](A,a B,b)
+ \tkzDrawPoints(A,B,P)
+ \tkzDrawCirclesFromPaths[draw,
+ purple,thick](PA.center, PA.through)
+ \tkzLabelPoints(A,B,P)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+\subsection{Case: \tkzMeth{circle}{CCL}(C2, L)}
+\label{sub:CCL}
+
+\texttt{Purpose: } Find all circles that are tangent to:
+\begin{itemize}
+  \item the current circle \code{self} (called \code{C1}),
+  \item another circle \code{C2},
+  \item and a line \code{L}.
+\end{itemize}
+
+This method returns all possible solution circles (up to four).
+\medskip
+\texttt{Syntax:}
+\begin{verbatim}
+PA.center, PA.through, n = C1:CCL(C2, L)
+\end{verbatim}
+
+\begin{itemize}
+  \item \code{C1} — the circle on which the method is applied (\code{self}),
+  \item \code{C2} — another circle to which the solution circle must be tangent,
+  \item \code{L} — a line object.
+\end{itemize}
+
+\medskip
+\texttt{Returns:}
+\begin{itemize}
+  \item \code{pc} — a \code{path} containing the centers of the solution circles,
+  \item \code{pt} — a \code{path} containing the corresponding tangency points on \code{C1},
+  \item \code{n} — the number of solutions (from 0 to 4).
+\end{itemize}
+
+\medskip
+\texttt{Construction principle.}
+\begin{enumerate}
+  \item Tangency to the line \code{L} is transformed into a distance constraint by reflecting the center of \code{C1} (or \code{C2}) with respect to \code{L}.
+  \item The problem is reduced to a circle--circle tangency problem (\texttt{CCC} or \texttt{CCP} type) between the reflected circle and the other ones.
+  \item Each valid solution is then mapped back to the original configuration to recover tangency to \code{L}.
+  \item All solution centers and their corresponding tangency points on \code{C1} are added to \code{pc} and \code{pt}.
+\end{enumerate}
+
+\medskip
+\texttt{Special cases.}
+\begin{itemize}
+  \item If one of the circles is already tangent to \code{L} at a point \code{p}, any solution circle must also pass through \code{p}.
+  \item If the line \code{L} intersects \code{C1}, no circle can be tangent to both \code{C1} and \code{L} on that side.
+  \item If all three objects are mutually tangent, the configuration is degenerate and may admit a single or no solution.
+\end{itemize}
+
+\medskip
+\texttt{Example.}
+
+\begin{verbatim}
+-- Lua side
+ PA.center, PA.through, n = C.A:CCL(C.B, L.DF)
+\end{verbatim}
+
+\begin{verbatim}
+\begin{tikzpicture}
+  \tkzDrawLine(D,F)
+  \tkzDrawCirclesFromPaths(pc, pt)
+\end{tikzpicture}
+\end{verbatim}
+
+\medskip
+This method works with:
+\begin{itemize}
+  \item \verb|tkz.nodes_from_paths(pc, pt)| to name the solution points \code{(w1,t1)}, \code{(w2,t2)}, etc.,
+  \item \code{\textbackslash tkzDrawCirclesFromPaths(pc, pt)} to draw all the solution circles.
+\end{itemize}
+
+\vspace{1em}
+\begin{tkzexample}[vbox]
+\directlua{
+  z.A = point(-4, 4)
+  z.B = z.A + point(3, 0)
+  C.AB  = circle(z.A, z.B)
+  z.C = point(3,2)
+  z.D = z.C + point(1,0)
+  C.CD = circle(z.C, z.D)
+  z.E = point(-3, 0)
+  z.F = point(5, 0)
+  L.EF  = line(z.E, z.F)
+  PA.center, PA.through,n = C.AB:CCL(C.CD, L.EF)
+  tkz.nodes_from_paths(PA.center, PA.through)
+  }
+\begin{center}
+  \begin{tikzpicture}[scale=.5]
+\tkzGetNodes
+ \tkzInit[xmin=-8,xmax=8,ymin=-8,ymax=8]
+ \tkzClip
+ \tkzDrawLines[thick,blue](E,F)
+ \tkzDrawCircles[thick,blue](A,B C,D)
+ \tkzDrawCirclesFromPaths[draw,purple,thick](PA.center, PA.through)
+\end{tikzpicture}
+  \end{center}
+\end{tkzexample}
+
+
+\subsection{Case: \tkzMeth{circle}{CCC}(C2, C3 [, opts])}
+\label{sub:CCC}
+
+\texttt{Purpose: } Circles tangent to three given circles \(C_1=\) \verb|self|, \(C_2\), \(C_3\) (up to 8 solutions). Implementation follows Viète’s reduction.
+
+\medskip
+\texttt{Syntax: }\verb|pc, pt, n = C1:CCC(C2, C3 [, opts])|
+
+\begin{itemize}
+  \item \code{C1} — the current circle (\verb|self|).
+  \item \code{C2}, \code{C3} — other circle objects.
+  \item \code{opts} — optional table of tolerances:
+    \begin{itemize}
+      \item \verb|opts.abs| (default \verb|1e-4|) — absolute tolerance.
+      \item \verb|opts.rel| (default \verb|1e-6|) — relative tolerance.
+    \end{itemize}
+\end{itemize}
+
+\texttt{Returns:}
+\begin{enumerate}
+  \item \verb|pc| — path of solution centers,
+  \item \verb|pt| — path of corresponding “through” points,
+  \item \verb|n| — number of solutions found (0 to 8).
+\end{enumerate}
+
+
+\texttt{Result use in TikZ.}
+
+\begin{itemize}
+  \item With global paths: store \verb|PA.center, PA.through|, then draw all circles using:
+
+        \verb|\tkzDrawCirclesFromPaths(PA.center, PA.through)|.
+  \item With local paths: use \verb|\tkz.nodes_from_paths(pc, pt)| to create nodes \verb|w1,t1|, \verb|w2,t2|, ...
+\end{itemize}
+
+\subsubsection*{Example A — Using global paths}
+\begin{verbatim}
+\directlua{
+  PA.center, PA.through, tkzNbCircles = C.A:CCC(C.B, C.C)
+}
+\tkzDrawCirclesFromPaths(PA.center, PA.through)
+\end{verbatim}
+
+\subsubsection*{Example B — Using local paths}
+\begin{verbatim}
+\directlua{
+  local pc, pt, n = C.A:CCC(C.B, C.C)
+  tkz.nodes_from_paths(pc, pt)
+}
+% circles are now (w1,t1), (w2,t2), ...
+\end{verbatim}
+
+\vspace{1em}
+\texttt{Example C}
+\begin{tkzexample}[vbox]
+\directlua{
+init_elements()
+z.A = point(0, 0)
+z.B = point(6, 0)
+z.C = point(2, 5)
+z.a = z.A + point(3, 0)
+z.b = z.B + point(2, 0)
+z.c = z.C + point(1, 0)
+C.Aa = circle(z.A, z.a)
+C.Bb = circle(z.B, z.b)
+C.Cc = circle(z.C, z.c)
+PA.center, PA.through, n = C.Aa:CCC(C.Bb, C.Cc)
+}
+\begin{center}
+\begin{tikzpicture}[ scale = .5,gridded]
+  \tkzInit[xmin=-8,xmax=12,ymin=-8,ymax=10]
+  \tkzClip
+  \tkzGetNodes
+  \tkzDrawCircles[thick,blue](A,a B,b C,c)
+  \tkzDrawCirclesFromPaths[draw,
+    purple,thick](PA.center, PA.through)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+\vspace{1em}
+\texttt{Example D}
+\begin{tkzexample}[vbox]
+\directlua{
+init_elements()
+z.A = point(0, 0)
+z.B = point(6, 0)
+z.C = point(4, 5)
+z.a = z.A + point(4, 0)
+z.b = z.B + point(2, 0)
+z.c = z.C + point(1, 0)
+C.Aa = circle(z.A, z.a)
+C.Bb = circle(z.B, z.b)
+C.Cc = circle(z.C, z.c)
+pcenter, pthrough, n = C.Aa:CCC(C.Bb, C.Cc)
+tkz.nodes_from_paths(pcenter, pthrough)
+}
+\begin{center}
+\begin{tikzpicture}[ scale = .5,gridded]
+  \tkzInit[xmin=-8,xmax=12,ymin=-8,ymax=10]
+  \tkzClip
+  \tkzGetNodes
+  \tkzDrawCircles[thick,blue](A,a B,b C,c)
+  \tkzDrawCirclesFromPaths[draw,
+  purple,thick](pcenter, pthrough)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+\vspace{1em}
+\texttt{Example E}
+\begin{tkzexample}[vbox]
+\directlua{
+init_elements()
+z.A = point(0, 0)
+z.B = point(5, 0)
+z.C = point(4, 5)
+z.a = z.A + point(4, 0)
+z.b = z.B + point(2, 0)
+z.c = z.C + point(1, 0)
+C.Aa = circle(z.A, z.a)
+C.Bb = circle(z.B, z.b)
+C.Cc = circle(z.C, z.c)
+PA.center, PA.through, n = C.Aa:CCC(C.Bb, C.Cc)
+}
+\begin{center}
+\begin{tikzpicture}[ scale = .5,gridded]
+  \tkzInit[xmin=-8,xmax=12,ymin=-8,ymax=10]
+  \tkzClip
+  \tkzGetNodes
+  \tkzDrawCircles[thick,blue](A,a B,b C,c)
+  \tkzDrawCirclesFromPaths[draw,purple,thick](PA.center, PA.through)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+\vspace{1em}
+\texttt{Example F}
+\begin{tkzexample}[vbox]
+\directlua{
+init_elements()
+z.A = point(0, 0)
+z.B = point(5, 0)
+z.C = point(1, 0)
+z.a = z.A + point(8, 0)
+z.b = z.B + point(2, 0)
+z.c = z.C + point(1, 0)
+C.Aa = circle(z.A, z.a)
+C.Bb = circle(z.B, z.b)
+C.Cc = circle(z.C, z.c)
+PA.center, PA.through, n = C.Aa:CCC(C.Bb, C.Cc)
+tex.print(n)
+}
+\begin{center}
+
+\begin{tikzpicture}[ scale = .5,gridded]
+  \tkzInit[xmin=-8,xmax=12,ymin=-8,ymax=10]
+  \tkzClip
+  \tkzGetNodes
+  \tkzDrawCircles[thick,blue](A,a B,b C,c)
+  \tkzDrawCirclesFromPaths[draw,purple,thick](PA.center, PA.through)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+\subsection{Case: \tkzMeth{circle}{CCC\_gergonne}(C\_2, C\_3)}
+\label{sub:CCC_gergonne}
+
+\texttt{Purpose: }
+Construct all circles tangent to three given circles using the classical
+Gergonne construction: centers of similitude, radical axis, poles, and
+contact points. This method is only valid for circles that are disjoint in pairs.
+
+\medskip
+\texttt{Syntax: }
+\begin{verbatim}
+PA.center, PA.through, n = C1:CCC_gergonne(C2, C3 [, opts])
+\end{verbatim}
+
+\texttt{Arguments: }
+\begin{itemize}
+  \item \code{C1} — the calling circle (self).
+  \item \code{C2}, \code{C3} — two other circles.
+  \item \code{opts.abs} — optional absolute tolerance for tangency tests
+        (default = \code{tkz.epsilon}).
+\end{itemize}
+
+\texttt{Returns: }
+\begin{itemize}
+  \item \code{PA.center} — a \texttt{path} storing the centers of all solution circles,
+  \item \code{PA.through} — a \texttt{path} storing one contact point on each solution circle,
+  \item \code{n} — the number of solutions found (may range from 0 to 8).
+\end{itemize}
+Each circle solution is represented by the pair:
+\[
+(\,PA.center[i],\; PA.through[i]\,), \quad i = 1,\dots,n.
+\]
+It can be drawn using
+\verb|\tkzDrawCirclesFromPaths(PA.center, PA.through)|.
+
+\medskip
+\texttt{Geometric principle:}
+The construction follows Gergonne:
+\begin{enumerate}
+  \item Compute the external and internal centers of similitude of the three circles:
+        \(J_{12}, J_{13}, J_{23}\) (external),
+        \(I_{12}, I_{13}, I_{23}\) (internal).
+  \item These six points are aligned on four special lines:
+        one line through the three external centers
+        (``JJJ''), and three lines passing through one external
+        and the two internal centers (``JII'').
+  \item The radical center \(R\) of the three circles is computed
+        (intersection of two radical axes).
+  \item For each of the four lines, compute its pole with respect to each circle.
+        From \(R\), draw lines to these poles; each such line intersects each circle
+        (in general) in two points: these are candidate contact points.
+  \item For each triple of contact points (one on each circle),
+        compute the circumcenter. This is a potential solution.
+        Keep it only if it is tangent to all three circles
+        (checked by \code{circle:act}).
+\end{enumerate}
+
+\medskip
+\texttt{Remarks: }
+\begin{itemize}
+  \item This method is purely geometric and works well when the circles
+        are disjoint or only tangent. If the three circles intersect
+        (secant configuration), some poles or intersections may be undefined,
+        and no solution is returned.
+  \item The method complements more robust algebraic approaches
+        (Viète-based solvers).
+  \item The returned paths can be directly used in a TikZ picture.
+\end{itemize}
+
+\texttt{Example: }
+
+\begin{tkzexample}[vbox]
+\directlua{
+   z.A = point(0, 0)
+   z.a = z.A + point (1, 0)
+   z.B = point (4, 1)
+   z.b = z.B + point (2, 0)
+   z.C = point (2, 6)
+   z.c = z.C + point (3, 0)
+   C.Aa = circle(z.A, z.a)
+   C.Bb = circle(z.B, z.b)
+   C.Cc = circle(z.C,z.c)
+   PA.center, PA.through = C.Aa:CCC_gergonne(C.Bb, C.Cc)
+}
+\begin{center}
+\begin{tikzpicture}[scale = 0.8]
+  \tkzInit[xmin=-8,xmax=12,ymin=-8,ymax=10]
+  \tkzClip
+  \tkzGetNodes
+  \tkzDrawCircles[fill=blue!15](A,a B,b C,c)
+  \tkzDrawCirclesFromPaths[draw,purple,thick](PA.center, PA.through)
+  \tkzDrawLines[cyan](w,P w,Q w,R)
+  \tkzDrawLines[black](I,K)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+\vspace{1em}
+
+\texttt{Explanations: }
+
+\begin{tkzexample}[vbox]
+\directlua{
+   z.A = point(0, 0)
+   z.a = z.A + point (1, 0)
+   z.B = point (4, 1)
+   z.b = z.B + point (2, 0)
+   z.C = point (2, 6)
+   z.c = z.C + point (3, 0)
+   C.Aa = circle(z.A, z.a)
+   C.Bb = circle(z.B, z.b)
+   C.Cc = circle(z.C,z.c)
+   L.rAB = C.Aa: radical_axis (C.Bb)
+   L.rAC = C.Aa: radical_axis (C.Cc)
+   L.rBC = C.Bb: radical_axis (C.Cc)
+   z.w = C.Aa :radical_center(C.Bb, C.Cc)
+   z.x1, z.y1 = L.rAB:get()
+   z.x2, z.y2 = L.rAC:get()
+   z.x3, z.y3 = L.rBC:get()
+   z.t = C.Aa:radical_circle(C.Bb,C.Cc).through
+   z.I = C.Aa:external_similitude(C.Bb)
+   z.J = C.Aa:external_similitude(C.Cc)
+   z.K = C.Bb:external_similitude(C.Cc)
+   L.IK = line(z.I, z.K)
+   z.P = C.Aa:pole(L.IK)
+   z.Q = C.Bb:pole(L.IK)
+   z.R = C.Cc:pole(L.IK)
+   z.a1, z.a2 = intersection_lc_(z.w, z.P, z.A, z.a)
+   z.b1, z.b2 = intersection_lc_(z.w, z.Q, z.B, z.b)
+   z.c1, z.c2 = intersection_lc_(z.w, z.R, z.C, z.c)
+   z.w1 = circum_center_(z.a1, z.b1, z.c2)
+   z.w2 = circum_center_(z.a2, z.b2, z.c1)
+}
+\begin{center}
+\begin{tikzpicture}[scale = 0.8]
+   \tkzInit[xmin=-8,xmax=12,ymin=-8,ymax=10]
+   \tkzClip
+   \tkzGetNodes
+   \tkzDrawCircles[blue](A,a B,b C,c)
+   \tkzDrawCircles[purple](w,t w1,a1 w2,a2)
+   \tkzDrawLines[red](x1,y1 x2,y2 x3,y3)
+   \tkzDrawLines[cyan](w,P w,Q w,R)
+   \tkzDrawLines[black](I,K)
+   \tkzDrawPoints(A,B,C,w,I,J,K,P,Q,R,a1,a2,b1,b2,c1,c2)
+   \tkzLabelPoints[below right](A,B,C,w,I,J,K,P,Q,R,a1,a2,b1,b2,c1,c2)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+\endinput

@@ -3,16 +3,20 @@
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
 
-
 -- tkz-settings and math
 
-tkz = {}
+tkz = tkz or {}
 tkz.nb_dec = 10
 tkz.epsilon = 0.1 ^ tkz.nb_dec
 tkz.dc = 2
 tkz.phi = (1 + math.sqrt(5)) / 2 -- golden number φ
 tkz.invphi = (math.sqrt(5) - 1) / 2
 tkz.sqrtphi = math.sqrt(tkz.phi)
+
+-- real
+function tkz.approx(x, y)
+	return math.abs(x - y) <= tkz.epsilon
+end
 
 function tkz.midpoint(a, b)
 	return (a + b) / 2
@@ -263,6 +267,7 @@ end
 function tkz.is_linear(z1, z2, z3)
 	return math.abs((z2 - z1) ^ (z3 - z1)) < tkz.epsilon
 end
+tkz.aligned = tkz.is_linear
 
 function tkz.is_ortho(z1, z2, z3)
 	return math.abs((z2 - z1) .. (z3 - z1)) < tkz.epsilon
@@ -322,7 +327,6 @@ function tkz.display(z)
 	return tkz_display_(z)
 end
 
-
 function tkz.poncelet_point(a, b, c, d)
 	local e1 = euler_center_(a, b, c)
 	local e2 = euler_center_(a, c, d)
@@ -340,7 +344,6 @@ function tkz.poncelet_point(a, b, c, d)
 	end
 end
 
-
 function tkz.orthopole(a, b, c, l)
 	local ap, bp, cp = l:projection(a, b, c)
 	local bpp = self.ca:projection(bp)
@@ -348,6 +351,19 @@ function tkz.orthopole(a, b, c, l)
 	local la = line:new(ap, app)
 	local lb = line:new(bp, bpp)
 	return intersection(la, lb)
+end
+
+function tkz.nodes_from_paths(PAcenters, PAthrough, wbase, tbase, indice)
+	wbase  = wbase  or "w"
+	tbase  = tbase  or "t"
+	local n = #PAcenters
+	local k0 = (indice or 1) - 1   -- offset d’indice
+
+	for k = 1, n do
+		local i = k0 + k
+		z[wbase .. i] = PAcenters:get(k)
+		z[tbase .. i] = PAthrough:get(k)
+	end
 end
 
 return tkz

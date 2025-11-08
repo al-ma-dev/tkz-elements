@@ -68,12 +68,13 @@ end
     (z2 - z1) ^ (z3 - z1)
   where zi = xi + i*yi
 --]]
-function orient2d_(x1, y1, x2, y2, x3, y3)
+function oriented_area2_(x1, y1, x2, y2, x3, y3)
 	return (x2 - x1) * (y3 - y1) - (x3 - x1) * (y2 - y1)
 end
 
+
 function det3pt_(z1, z2, z3)
-	return orient2d_(z1.re, z1.im, z2.re, z2.im, z3.re, z3.im)
+	return oriented_area2_(z1.re, z1.im, z2.re, z2.im, z3.re, z3.im)
 end
 --orient2d or det3pt determinant de 3 pts
 
