@@ -161,19 +161,37 @@ function line:normalize_inv()
 end
 
 function line:collinear_at(pt, k)
-  if k == nil then
-    return collinear_at_(self.pa, self.pb, pt, 1)
+  if type(k) == "table" then
+    local L = k.length or k.len
+    if not L then
+       -- pas de longueur fournie : on retombe sur le comportement par défaut
+       return collinear_at_(self.pa, self.pb, pt, 1)
+     end
+     return collinear_at_(self.pa, self.pb, pt, L / self.length)
   else
-    return collinear_at_(self.pa, self.pb, pt, k)
+    if k == nil then
+      return collinear_at_(self.pa, self.pb, pt, 1)
+    else
+      return collinear_at_(self.pa, self.pb, pt, k)
+    end
   end
 end
 line.colinear_at = line.collinear_at
 
 function line:orthogonal_at(pt, k)
-  if k == nil then
-    return orthogonal_at_(self.pa, self.pb, pt, 1)
+  if type(k) == "table" then
+     local L = k.length or k.len
+     if not L then
+       -- pas de longueur fournie : on retombe sur le comportement par défaut
+       return orthogonal_at_(self.pa, self.pb, pt, 1)
+     end
+     return orthogonal_at_(self.pa, self.pb, pt, L / self.length)
   else
-    return orthogonal_at_(self.pa, self.pb, pt, k)
+    if k == nil then
+      return orthogonal_at_(self.pa, self.pb, pt, 1)
+    else
+      return orthogonal_at_(self.pa, self.pb, pt, k)
+    end
   end
 end
 
@@ -1010,8 +1028,8 @@ function line:LLP(L, p)
   local caux = circle:new(through(s, 2))
   local a, b = intersection_lc_(self.pa, self.pb, s, caux.through)
   local c, d = intersection_lc_(L.pa,   L.pb,   s, caux.through)
-  local lbi  = bisector(s, a, c)
-  local lbj  = bisector(s, a, d)
+  local lbi  = tkz.bisector(s, a, c)
+  local lbj  = tkz.bisector(s, a, d)
 
   -- ======= CAS SPÉCIAUX : p sur une des droites =======
   if self:on_line(p) or L:on_line(p) then

@@ -42,7 +42,7 @@ require("tkz_elements_functions_regular.lua")
 require("tkz_elements_functions_matrices.lua")
 require("tkz_elements_functions_conics.lua")
 require("tkz_elements_functions_vectors.lua")
-require("tkz_elements_functions_path.lua")
+--require("tkz_elements_functions_path.lua")
 require("tkz_elements_tkz.lua")
 
 -- Initialize elements

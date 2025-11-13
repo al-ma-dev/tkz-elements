@@ -11,6 +11,7 @@ function through(c, r, an)
         return c, c + point(r, 0)
     end
 end
+from_radius = through
 
 function diameter(a, b, option)
     local center = midpoint_(a, b)
@@ -24,15 +25,15 @@ function diameter(a, b, option)
         return center, b
     end
 end
-
+from_diameter = diameter
 -----------------------
 -- Result -> boolean
 -----------------------
-function circle:in_out_(a, b, pt)
+function in_out_(a, b, pt)
     return math.abs(point.abs(pt - a) - point.abs(b - a)) < tkz.epsilon
 end
 
-function circle:in_out_disk_(a, b, pt)
+function in_out_disk_(a, b, pt)
     return point.abs(pt - a) <= point.abs(b - a)
 end
 
@@ -84,13 +85,14 @@ function point_circle_position_(o, t, p)
   end
 end
 
-function act_(O1, T1, O2, T2)
-    local R1 = length_(O1, T1)
-    local R2 = length_(O2, T2)
-    local d = length_(O1, O2)
-    local max = R1 + R2
-    local min = math.abs(R1 - R2)
- return (math.abs(d - max) < 0.00001) or  ( math.abs(d - min) < 0.00001)
+function act_(O1, T1, O2, T2, EPS)
+  local EPS = EPS or 1e-5
+  local R1 = length_(O1, T1)
+  local R2 = length_(O2, T2)
+  local d = length_(O1, O2)
+  local max = R1 + R2
+  local min = math.abs(R1 - R2)
+  return (math.abs(d - max) < EPS) or  ( math.abs(d - min) < EPS)
 end
 -----------------------
 -- Result -> point
@@ -474,13 +476,36 @@ function common_tangent_(C1, C2, mode)
     end
   end
 
-  local function outside_tangent_proc()
-    -- Un seul point de contact → 1 tangente commune (doublée par compat)
-    return one_tangent_proc()
+local function outside_tangent_proc()
+    -- Cercles tangents extérieurement.
+    if mode == "internal" or mode == "both" then
+      -- La famille "interne" dégénère : une seule tangente commune (au point de contact).
+      return one_tangent_proc()
+    elseif mode == "external" then
+      -- Les deux tangentes externes existent toujours.
+      if equal_radii() then
+        return externals_equal_radii()      -- deux parallèles si rA == rB
+      else
+        return externals_via_S(S_ext)       -- deux tangentes via le centre de similitude externe
+      end
+    else
+      -- Par défaut, on suit le comportement "external".
+      if equal_radii() then
+        return externals_equal_radii()
+      else
+        return externals_via_S(S_ext)
+      end
+    end
   end
 
-  local function inside_tangent_proc()
-    -- Tangence interne → 1 tangente commune (doublée)
+
+local function inside_tangent_proc()
+    -- Cercles tangents intérieurement.
+    if mode == "external" then
+      tex.error("external tangents non-existent (inside tangent)")
+      return nil, nil, nil, nil
+    end
+    -- La famille "interne" dégénère : une seule tangente au point de contact.
     return one_tangent_proc()
   end
 

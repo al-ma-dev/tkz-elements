@@ -54,13 +54,13 @@ function area_(pa, pb, pc)
 	return point.mod(pa - projection_(pb, pc, pa)) * point.mod(pb - pc) / 2
 end
 
-function area_heron(a, b, c)
+function area_heron_(a, b, c)
 	local s = (a + b + c) / 2
 	return math.sqrt(s * (s - a) * (s - b) * (s - c))
 end
 
 function trilinear_to_d_(x, y, z, a, b, c)
-	local k = area_heron(a, b, c)
+	local k = area_heron_(a, b, c)
 	-- Calculating side distances
 	local p = k * x / a
 	local q = k * y / b

@@ -5,11 +5,9 @@
 The variable \tkzVar{triangle}{T} holds a table used to store triangle objects. Its use is optional: you are free to choose another variable name, but using  \tkzVar{triangle}{T} is the recommended convention for clarity and consistency across examples and documentation.
 
 \medskip
-
 If you define your own table, you must initialize it manually. However, if you use the default variable  \tkzVar{triangle}{T}, the \code{init\_elements()} function will automatically clear and reset the  \tkzVar{triangle}{T} table when called.
 
 \medskip
-
 Each triangle object is created using the \tkzMeth{triangle}{new} method, which takes three points as input and generates all the associated geometric attributes.
 
 \vspace{1em}
@@ -347,8 +345,10 @@ This approach saves time and space in scripts involving medians, altitudes, bise
   \tkzMeth{triangle}{trilinear\_coordinates(pt)} & [\ref{ssub:triangle_trilinear_coordinates_pt}]\\
 
   \tkzMeth{triangle}{get\_angle(arg)} & [\ref{ssub:method_triangle_get_angle}] \\
-   \midrule
 
+
+  \tkzMeth{triangle}{trilinear\_to\_d} & \ref{ssub:triangle_trilinear_to_d}\\
+   \midrule
    \textbf{Points} &\\
   \midrule
   \tkzMeth{triangle}{get(arg)} & [\ref{ssub:method_triangle_get}]\\
@@ -447,7 +447,7 @@ See [ \ref{ssub:method_triangle_orthic}; \ref{ssub:method_triangle_orthic_axis_p
 
   \tkzMeth{triangle}{bisector(arg) }  & Note  \footnote{|_, z.b = L.Bb:get()| recovers the common point of the opposite side and bisector. If you don't need to use the triangle object several times, you can obtain a bisector  with the function |tkz.bisector(z.A, z.B, z.C)|  [\ref{misc}]};  [\ref{ssub:method_triangle_bisector}]\\
 
-  \tkzMeth{triangle}{bisector\_ext(arg) } & [\ref{ssub:method_triangle_bisector_ext}; \ref{ssub:harmonic_division_and_bisector}]\\
+  \tkzMeth{triangle}{bisector\_ext(arg) } & [\ref{ssub:method_triangle_bisector_ext}; \ref{sub:harmonic_division_and_bisector}]\\
 
 \tkzMeth{triangle}{mediator(arg)} & [\ref{ssub:triangle_mediator}]\\
 
@@ -973,6 +973,59 @@ The triangle's vertices are assumed to be ordered in the direct (counter-clockwi
  \end{tikzpicture}
 \end{center}
 \end{tkzexample}
+
+\subsubsection{Method \tkzMeth{triangle}{trilinear\_to\_d}}
+\label{ssub:triangle_trilinear_to_d}
+
+\texttt{Purpose:}
+Convert a trilinear triple \((x:y:z)\) into a proportional triple \((p,q,r)\) related to the perpendicular distances from a point to the triangle sides \(BC,CA,AB\).
+The method uses the current triangle side lengths \(a,b,c\) and area \(\Delta\).
+
+\medskip
+\texttt{Interest:}
+Trilinear coordinates are a natural system for locating points defined by geometric relations involving the sides of a triangle
+(e.g., incenters, excenters, Gergonne or Nagel points, centers of conics, etc.).
+Many formulas in triangle geometry are expressed in trilinears, but practical geometric constructions often require
+distances to the sides or to be converted into Cartesian coordinates.
+The method \tkzname{trilinear\_to\_d} provides this essential step:
+\[
+(x:y:z) \quad \longrightarrow \quad (p,q,r) \propto \left(\frac{x}{a}, \frac{y}{b}, \frac{z}{c}\right)
+\]
+This allows the use of trilinear relations directly within the computational framework of \texttt{tkz-elements}.
+
+\medskip
+\texttt{Syntax: }
+\verb|p, q, r = T:trilinear_to_d(x, y, z)|
+
+\medskip
+\texttt{Arguments: }
+\begin{itemize}
+  \item \code{x}, \code{y}, \code{z} — real numbers representing the trilinear coordinates.
+\end{itemize}
+
+\texttt{Returns: }
+\begin{itemize}
+  \item \code{p}, \code{q}, \code{r} — real numbers proportional to the distances to the triangle sides.
+\end{itemize}
+
+\texttt{Definition: }
+\[
+p = \Delta\,\frac{x}{a}, \qquad
+q = \Delta\,\frac{y}{b}, \qquad
+r = \Delta\,\frac{z}{c},
+\]
+where \(\Delta\) is the area of the triangle computed with Heron’s formula.
+
+\medskip
+\texttt{Remarks: }
+\begin{itemize}
+  \item The returned values \((p,q,r)\) are proportional to the distances, not normalized.
+  \item For actual distances \((d_a,d_b,d_c)\) one can use:
+  \[
+    \lambda = \frac{2\Delta}{ax + by + cz}, \qquad
+    d_a = \lambda x,\quad d_b = \lambda y,\quad d_c = \lambda z.
+  \]
+\end{itemize}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2131,7 +2184,7 @@ For the definition and some properties, please refer to:
 \href{ https://mathworld.wolfram.com/Orthopole.html}{Weisstein, Eric W. "Orthopole." From MathWorld--A Wolfram Web Resource.}
 \end{flushright}
 
-See the following example for the link between orthopole and Simson line: [\ref{ssub:orthopole_and_simson_line}]
+See the following example for the link between orthopole and Simson line: [\ref{sub:orthopole_and_simson_line}]
 
 \begin{tkzexample}[latex=.5\textwidth]
 \directlua{
@@ -2257,7 +2310,6 @@ In the following example, the point $L$ is the Lemoine point, and the triangle $
 This method returns one of the \textbf{altitudes} of a triangle.
 
 \medskip
-
 There are multiple ways to access altitudes:
 \begin{itemize}
   \item \tkzMeth{triangle}{orthic} returns the \textbf{orthic triangle}, whose vertices are the feet of the three altitudes.
@@ -2265,7 +2317,6 @@ There are multiple ways to access altitudes:
 \end{itemize}
 
 \medskip
-
 The optional argument \code{arg} determines from which vertex the altitude is dropped. It may be:
 \begin{itemize}
   \item \code{nil} or \code{0} (default): returns the altitude from vertex $A$;
@@ -2433,7 +2484,7 @@ L = triangle:mediator(pt) pt vertex of the triangle
   \item If a point (\tkzname{pa}, \tkzname{pb}, \tkzname{pc}) is passed, the method returns the bisector of the side opposite to that vertex.
 \end{itemize}
 
-\textbf{Return value.}
+\texttt{Return value: }
 
 Returns a \tkzname{line} object representing the perpendicular bisector of the selected side.
 
@@ -2571,7 +2622,7 @@ This remarkable line is a classical geometric construction, often overlooked des
 
 \vspace{1em}
 
-\begin{minipage}{.5\textwidth}
+\begin{tkzexample}[latex=.5\textwidth]
 \directlua{
   z.B = point(0, 0)
   z.C = point(5, 0)
@@ -2582,14 +2633,16 @@ This remarkable line is a classical geometric construction, often overlooked des
   z.H_C  = T.ABC:orthic():get()
   L.orthic  = T.ABC:orthic_axis()
   z.Q_A, z.Q_B,
-  z.Q_C = T.ABC:orthic_axis_points()
-}
+  z.Q_C = T.ABC:orthic_axis_points()}
+\begin{center}
 \begin{tikzpicture}
  \tkzGetNodes
  \tkzDrawPolygons[cyan](A,B,C)
  \tkzDrawLines[red](Q_C,Q_B)
- \tkzDrawSegments(A,Q_C B,Q_A A,H_A B,H_B C,H_C C,Q_B)
- \tkzDrawSegments[dashed](H_B,Q_C H_B,Q_A H_A,Q_B)
+ \tkzDrawSegments(A,Q_C B,Q_A A,H_A)
+ \tkzDrawSegments(B,H_B C,H_C C,Q_B)
+ \tkzDrawSegments[dashed](H_B,Q_C H_B,Q_A)
+ \tkzDrawSegments[dashed](H_A,Q_B)
  \tkzDrawPoints(A,B,C,H_A,H_B,H_C)
  \tkzDrawPoints(H,Q_A,Q_B,Q_C)
  \tkzLabelPoints(H)
@@ -2597,24 +2650,9 @@ This remarkable line is a classical geometric construction, often overlooked des
  \tkzLabelPoints[above right](A,H_B)
  \tkzLabelPoints[left](H_C,Q_A,Q_B,Q_C)
 \end{tikzpicture}
-
-\end{minipage}
-\begin{minipage}{.5\textwidth}
-\begin{tkzexample}[code only]
-\directlua{
- init_elements()
- z.B = point(0, 0)
- z.C = point(5, 0)
- z.A = point(0.6, 3)
- T.ABC = triangle(z.A, z.B, z.C)
- z.H = T.ABC.orthocenter
- z.H_A, z.H_B,
- z.H_C = T.ABC:orthic():get()
- L.orthic = T.ABC:orthic_axis()
- z.Q_A, z.Q_B,
- z.Q_C = T.ABC:orthic_axis_points()}
+\end{center}
 \end{tkzexample}
-\end{minipage}
+
 
 \subsubsection{Methods \tkzMeth{triangle}{euler\_line()} and \tkzMeth{triangle}{orthic\_axis()}} %(fold)
 \label{ssub:euler_line}
@@ -2633,11 +2671,6 @@ These two methods return two fundamental lines associated with triangle geometry
 \end{itemize}
 
 
-This line is returned by the method \tkzMeth{triangle}{euler\_line()} as an object of type \code{line}.
-\begin{flushright}
-\small
-\href{https://mathworld.wolfram.com/EulerLine.html}{Weisstein, Eric W. "Euler Line." MathWorld}
-\end{flushright}
 
 \medskip
 
@@ -3875,7 +3908,7 @@ The Kenmotu circle contains all six points of tangency between the triangle side
 The |c_c| (or |thebault|) method constructs a circle tangent to two sides of a triangle at a chosen vertex, and tangent to a given circle passing through the two remaining vertices.
 
 
-\textbf{Name and purpose}
+\texttt{Name and purpose: }
 
 Circle tangent to the two sides issuing from a vertex $p$ and tangent to the circle centered at $C$ passing through the other two vertices of the triangle.
 Alias: \code{triangle.thebault = triangle.c\_c}.
@@ -3886,7 +3919,7 @@ Given a non-degenerate triangle $ABC$ and a chosen vertex $p\in\{A,B,C\}$, this 
   \item is tangent to the circle with center $C$ and radius equal to the distance from \(C\) to each of the two vertices \emph{other than} $p$.
 \end{itemize}
 
-\textbf{Signature}
+\texttt{Signature: }
 
 \begin{verbatim}
   circle triangle:c_c(p, C)
@@ -3899,12 +3932,12 @@ Given a non-degenerate triangle $ABC$ and a chosen vertex $p\in\{A,B,C\}$, this 
   \item[\code{C}] The center of the reference circle through the other two vertices (i.e.\ if \(p=A\), then \(|CB|=|CC|=|C\!B|\) and the circle \(\mathcal{C}(C,|CB|)\) passes through \(B\) and \(C\)). In practice, \(C\) must lie on the perpendicular bisector of the segment joining those two vertices.
 \end{description}
 
-\textbf{Return value}
+\texttt{Return value: }
 
 A \code{circle} object $\mathcal{T}$ tangent to the two sides adjacent to \(p\) and tangent to the circle $\mathcal{C}(C,\cdot)$ through the other two vertices.
 
 
-\textbf{Preconditions \& diagnostics}
+\texttt{Preconditions \& diagnostics :}
 
 \begin{itemize}
   \item The triangle must be non-degenerate (three non-collinear points).
@@ -3912,7 +3945,7 @@ A \code{circle} object $\mathcal{T}$ tangent to the two sides adjacent to \(p\) 
   \item The point \code{C} must be equidistant from the two vertices other than \(p\) (i.e.\ it lies on their perpendicular bisector). If not, the “reference circle” is ill-defined for this problem and the construction may fail or produce an irrelevant circle.
 \end{itemize}
 
-\textbf{Notes}
+\texttt{Notes: }
 
 \begin{itemize}
   \item This configuration is a classical variant often linked to Thébault-type constructions; for convenience an alias \code{triangle.thebault} is provided.
@@ -4016,7 +4049,7 @@ The method \tkzname{three\_tangent\_circles()} implements this geometric constru
 \end{itemize}
 
 
-\textbf{Return value}
+\texttt{Return value: }
 
 Three circle objects tangent to one another and to the triangle’s sides.
 
@@ -5494,7 +5527,7 @@ This method builds a \tkzClass{path} object that follows the boundary of a trian
 \item \code{p1}, \code{p2} — two points located on the triangle’s sides
 \end{itemize}
 
-\textbf{Details:}
+\texttt{Details: }
 
 
 The method checks that both points lie on the triangle’s boundary using the segment method \tkzMeth{line}{in\_out\_segment}. If they belong to the same side, the resulting path is direct. Otherwise, the method follows the triangle in counterclockwise order, adding intermediate vertices as needed.

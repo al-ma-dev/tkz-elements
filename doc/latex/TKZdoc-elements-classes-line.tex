@@ -165,7 +165,7 @@ Here's the list of methods for the \tkzNameObj{line} object. The results can be 
 \tkzMeth{line}{midpoint()}    & [\ref{ssub:method_line_midpoint}]  \\
 \tkzMeth{line}{harmonic\_int(pt)}   &  [\ref{ssub:method_line_harmonic_int};  \ref{sub:bankoff_circle}] \\
 \tkzMeth{line}{harmonic\_ext(pt)}  & [ \ref{sub:bankoff_circle}] \\
-\tkzMeth{line}{harmonic\_both(r)}  & [\ref{ssub:harmonic_both}; \ref{ssub:harmonic_division_with_tkzphi}] \\
+\tkzMeth{line}{harmonic\_both(r)}  & [\ref{ssub:harmonic_both}; \ref{sub:harmonic_division_with_tkzphi}] \\
 
 \tkzMeth{line}{report(d,pt)}    &[\ref{ssub:method_report}]\\
 
@@ -576,7 +576,7 @@ A new \tkzname{point} object corresponding to the computed location.
 \end{center}
 \end{tkzexample}
 
-\subsubsection{Method \tkzMeth{line}{barycenter(r,r)}} %(fold)
+\subsubsection{Method \tkzMeth{line}{barycenter(ka, kb)}} %(fold)
 \label{ssub:barycenter_with_a_line}
 
 This method returns the barycenter of the two points that define the line, weighted by the coefficients \code{ka} and \code{kb}.
@@ -652,14 +652,16 @@ This method is implemented for all objects that are defined by at least two poin
 
 This method has been replaced by \code{tkz.midpoint} [See \ref{sub:midpoint_and_midpoints}].
 
+You can obtain the midpoint of a segment using an attribute of the \code{line} object.
+
+\begin{center}
+  \code{z.M = L.AB.mid}
+\end{center}
+
 \medskip
 
 However, when the line object has not been created and its creation is unnecessary, the standalone function \code{tkz.midpoint(z.A, z.B)} remains convenient and efficient.
 
-
-\begin{center}
-  \code{z.M = L.Ab.mid}
-\end{center}
 
 \subsubsection{Method \tkzMeth{line}{harmonic\_int(pt)}}
 \label{ssub:method_line_harmonic_int}
@@ -822,64 +824,65 @@ $bd = 1$ and $d\in [ab]$
 \subsubsection{Method \tkzMeth{line}{collinear\_at(pt,<r>)}} %(fold)
 \label{ssub:method_line_collinear__at}
 
-This method returns a point located on a line parallel to $(AB)$ and passing through a given point. The resulting point is placed at a distance proportional to the length of $AB$, in the same direction.
-
-\medskip
-
-If the second argument \meta{r} is omitted, it defaults to $1$. In that case, the method produces a segment of the same length and direction as $[AB]$.
-
-\medskip
-
-\smallbf{Example interpretations:}
-\begin{itemize}
-  \item If \code{L.AB:collinear\_at(z.C)} produces point $E$, then $CE = AB$ and $(AB) \parallel (CE)$.
-  \item If \code{L.AB:collinear\_at(z.C, 0.5)} produces point $D$, then $CD = 0.5 \cdot AB$ and $(AB) \parallel (CD)$.
-\end{itemize}
-
-
-This is particularly useful for replicating a vector or projecting a direction onto another position in the plane.
-
-\vspace{1em}
-\begin{minipage}{.5\textwidth}
-\directlua{
-  init_elements()
-  z.A = point(0, 0)
-  z.B = point(4, 0)
-  z.C = point(1, 3)
-  L.AB = line(z.A, z.B)
-  z.D = L.AB:collinear_at(z.C, .5)
-  z.E = L.AB:collinear_at(z.C)}
-\begin{center}
-\begin{tikzpicture}
- \tkzGetNodes
- \tkzDrawSegments(A,B C,E)
- \tkzDrawPoints(A,B,C,D,E)
- \tkzLabelPoints(A,B,C,D,E)
-\end{tikzpicture}
-\end{center}
-\end{minipage}
-\begin{minipage}{.5\textwidth}
-\begin{tkzexample}[code only]
-\directlua{
-  init_elements()
-  z.A = point(0, 0)
-  z.B = point(4, 0)
-  z.C = point(1, 3)
-  L.AB = line(z.A, z.B)
-  z.D = L.AB:collinear_at(z.C, .5)
-  z.E = L.AB:collinear_at(z.C)}
-\end{tkzexample}
-\end{minipage}
-
-\subsubsection{Method \tkzMeth{line}{orthogonal\_at(pt,<r>)}} %(fold)
-\label{ssub:method_line_orthogonal__at}
-This method returns a point located on a line \textbf{perpendicular} to the line $(AB)$, passing through a given point.
-
-The resulting point is placed at a distance proportional to the length of $AB$, in a direction orthogonal to it.
+This method returns a point located on a line parallel to $(AB)$ and passing through a given point.
+The resulting point is placed at a distance proportional to the length of $AB$, in the same direction.
 
 \medskip
 
 If the second argument \meta{r} is omitted, it defaults to $1$.
+In that case, the method produces a segment of the same length and direction as $[AB]$.
+
+\medskip
+
+In addition to the scale-factor form, this method also accepts an option table
+\code{\{length =~$\ell$\}}, allowing the distance $CD$ to be specified
+\emph{absolutely}, independently of~$AB$.
+
+\medskip
+
+\textbf{Example interpretations:}
+\begin{itemize}
+  \item If \code{L.AB:collinear\_at(z.C)} produces point $E$, then $CE = AB$ and $(AB) \parallel (CE)$.
+  \item If \code{L.AB:collinear\_at(z.C, 0.5)} produces point $D$, then $CD = 0.5 \cdot AB$ and $(AB) \parallel (CD)$.
+  \item If \code{L.AB:collinear\_at(z.C, \{length = 2\})} produces point $F$, then $CF = 2$ (in the current unit) and $(AB) \parallel (CF)$. It is also possible to use a negative value.
+\end{itemize}
+
+This is particularly useful for replicating a vector or projecting a direction onto another position in the plane.
+
+\vspace{1em}
+\begin{tkzexample}[latex =.5\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(4, 0)
+  z.C = point(1, 3)
+  L.AB = line(z.A, z.B)
+  z.D = L.AB:collinear_at(z.C, .5)
+  z.E = L.AB:collinear_at(z.C)
+  z.F = L.AB:collinear_at(z.C, {length = -3})}
+\begin{center}
+\begin{tikzpicture}
+ \tkzGetNodes
+ \tkzDrawSegments(A,B C,E C,F)
+ \tkzDrawPoints(A,B,C,D,E,F)
+ \tkzLabelPoints(A,B,C,D,E,F)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+
+\subsubsection{Method \tkzMeth{line}{orthogonal\_at(pt,<r>)}} %(fold)
+\label{ssub:method_line_orthogonal__at}
+
+This method returns a point located on a line \textbf{perpendicular} to the line $(AB)$, passing through a given point.
+
+The resulting point is placed at a distance proportional to the length of $AB$, in a direction orthogonal to it.
+By default, if the second argument is omitted, the factor is $1$.
+
+\medskip
+In addition to the scale factor form, this method also accepts an option table
+\code{\{length =~$\ell$\}}, allowing the distance $CD$ to be specified
+\emph{absolutely}, independently of~$AB$.
 
 \medskip
 
@@ -887,13 +890,13 @@ If the second argument \meta{r} is omitted, it defaults to $1$.
 \begin{itemize}
   \item If \code{L.AB:orthogonal\_at(z.C)} gives point $E$, then $CE = AB$ and $(AB) \perp (CE)$.
   \item If \code{L.AB:orthogonal\_at(z.C, 0.5)} gives point $D$, then $CD = 0.5 \cdot AB$ and $(AB) \perp (CD)$.
+  \item If \code{L.AB:orthogonal\_at(z.C, \{length = 2\})} gives point $F$, then $CF = 2$ (in the current unit) and $(AB) \perp (CF)$. It is also possible to use a negative value.
 \end{itemize}
-
 
 This method is useful for constructing perpendicular vectors or building geometric figures such as rectangles or perpendicular bisectors.
 
 \vspace{1em}
-\begin{minipage}{.5\textwidth}
+\begin{tkzexample}[latex =.5\textwidth]
 \directlua{
   init_elements()
   z.A = point(0, 0)
@@ -901,28 +904,19 @@ This method is useful for constructing perpendicular vectors or building geometr
   z.C = point(1, 1)
   L.AB = line(z.A, z.B)
   z.D = L.AB:orthogonal_at(z.C, .5)
-  z.E = L.AB:orthogonal_at(z.C)}
+  z.E = L.AB:orthogonal_at(z.C)
+  z.F = L.AB:orthogonal_at(z.C, {length = -3})}
 \begin{center}
   \begin{tikzpicture}
     \tkzGetNodes
-    \tkzDrawSegments(A,B C,E)
-    \tkzDrawPoints(A,B,C,D,E)
-    \tkzLabelPoints(A,B,C,D,E)
+    \tkzDrawSegments(A,B C,E C,F)
+    \tkzDrawPoints(A,B,C,D,E,F)
+    \tkzLabelPoints(A,B,C,D,E,F)
   \end{tikzpicture}
 \end{center}
-\end{minipage}
-\begin{minipage}{.5\textwidth}
-\begin{tkzexample}[code only]
-\directlua{
-  init_elements()
-  z.A = point(0, 0)
-  z.B = point(2, 0)
-  z.C = point(1, 1)
-  L.AB = line(z.A, z.B)
-  z.D = L.AB:orthogonal_at(z.C, .5)
-  z.E = L.AB:orthogonal_at(z.C)}
 \end{tkzexample}
-\end{minipage}
+
+
 
 \subsubsection{Method \tkzMeth{line}{random()}}
 \label{ssub:method_line_random}
@@ -2165,7 +2159,7 @@ A line object can be sampled into a sequence of two points using the method \tkz
 exists mainly for compatibility and association with other \tkzname{paths}.
 \medskip
 
-\textbf{Note.}
+\texttt{Note: }
 
 By default, only the two endpoints are used to define the path. This is suitable for filling or clipping regions. For smooth curves, a larger number of subdivisions is recommended.
 

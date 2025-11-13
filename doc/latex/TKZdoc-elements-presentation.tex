@@ -145,6 +145,7 @@ z.O_3 = T.P.circumcenter
 \subsubsection{The code}
 \label{ssub:the_code}
 
+\begin{mybox}{}
 \begin{verbatim}
 % !TEX TS-program = lualatex
 \documentclass{article}
@@ -177,6 +178,7 @@ z.O_3 = T.P.circumcenter
   z.O_3 = T.P.circumcenter  % circumcenter attribute of “triangle”
 }
 \end{verbatim}
+\end{mybox}
 
 \begin{verbatim}
 \begin{tikzpicture}
@@ -196,6 +198,7 @@ z.O_3 = T.P.circumcenter
 \subsection{Another example with comments: South Pole}
 Here's another example with comments
 
+\begin{mybox}{}
 \begin{verbatim}
 % !TEX TS-program = lualatex
 \documentclass{standalone}
@@ -220,6 +223,7 @@ Here's another example with comments
  z.I_A = intersection(L.AO, L.BC)    % we search the intersection of the last lines
 }
 \end{verbatim}
+\end{mybox}
 
 \directlua{
  init_elements()

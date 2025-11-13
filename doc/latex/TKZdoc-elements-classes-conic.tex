@@ -30,8 +30,8 @@ PA.through = path()
        L.PA = line (z.P, a)
        local c = intersection (L.OI, L.PA)
        L.tgt = C.PM : tangent_at (a)
-       local x = intersection (L.tgt, L.OI)
-       local o = bisector (x, a, c).pb
+       local x = intersection(L.tgt, L.OI)
+       local o = tkz.bisector(x, a, c).pb
        PA.center:add_point(o)
        PA.through:add_point(a)
     end
@@ -61,13 +61,13 @@ PA.center = path()
 PA.through = path()
  for t = -0.24, 0.24, 0.004 do
    if (t > - 0.002 and t < 0.002) then else
-       local a = C.PM : point (t)
+       local a = C.PM:point(t)
        L.OI = line (z.O, z.I)
        L.PA = line (z.P, a)
        local c = intersection (L.OI, L.PA)
-       L.tgt = C.PM : tangent_at (a)
-       local x = intersection (L.tgt, L.OI)
-       local o = bisector (x, a, c).pb
+       L.tgt = C.PM:tangent_at (a)
+       local x = intersection(L.tgt, L.OI)
+       local o = tkz.bisector(x, a, c).pb
        PA.center:add_point(o)
        PA.through:add_point(a)
     end
@@ -868,9 +868,10 @@ The most natural creation method is now the one based on a focus, a directrix, a
   \tkzMeth{conic}{point (t)}         & \\
   \tkzMeth{conic}{in\_out (pt)}      & [\ref{ssub:method_conic_in_out}] \\
   \tkzMeth{conic}{tangent\_at (pt)}  & [\ref{ssub:method_conic_tangent_at}]  \\
-  \tkzMeth{conic}{tangent\_from (pt)}& [\ref{ssub:method_conic_tangent__from}] \\
+  \tkzMeth{conic}{tangent\_from (pt)}& [\ref{ssub:method_conic_tangent_from}] \\
   \tkzMeth{conic}{orthoptic\_curve()}& [\ref{ssub:method_conic_orthoptic}] \\
-   \tkzMeth{conic}{path(pt, pt, nb, swap)  } &  [\ref{ssub:conic_path}]   \\ \bottomrule
+  \tkzMeth{conic}{path(pt, pt, nb, swap)} &  [\ref{ssub:conic_path}]   \\
+  \bottomrule
   \end{tabular}
   \egroup
 
@@ -1198,7 +1199,7 @@ See also: Sections~\ref{ssub:method_conic_tangent_at}, \ref{ssub:parabola_constr
 \end{verbatim}
 
 \subsubsection{Method \tkzMeth{conic}{tangent\_from}}
-\label{ssub:method_conic_tangent__from}
+\label{ssub:method_conic_tangent_from}
 
 This method computes the two tangents drawn from a given point to the conic.
 It returns the contact points of the tangents on the curve as two distinct points.
@@ -2217,59 +2218,91 @@ The center is obtained by solving the system of equations corresponding to the p
 \end{tkzexample}
 \end{minipage}
 
-\subsubsection{Creating a path}
+\subsubsection{Method \tkzMeth{conic}{path(pt, pt, nb, mode, dir)}}
 \label{ssub:conic_path}
 
-The \tkzClass{conic} class includes a method \tkzMeth{conic}{path} that creates a \tkzClass{path} object representing a segment of the conic between two given points (arc of conic).
+The \tkzClass{conic} class provides a method \tkzMeth{conic}{path} that creates a
+\tkzClass{path} object representing a portion of the conic between two given
+points (an arc of conic).
 
-This method returns a path corresponding to a conic arc between two points \tkzname{zA} and \tkzname{zB} on the curve. The number of interpolation points is controlled by \code{nb} (default: 20). The method supports ellipses, hyperbolas, and parabolas.
+\medskip
+\texttt{Syntax:}
+\verb|PA.arc = CO.myconic:path(zA, zB, 40, "swap")|
 
-\texttt{Syntax: } \verb|PA.arc = CO.myconic:path(zA, zB, 40, "short")|
-
-\texttt{Arguments: }
+\texttt{Arguments:}
 
 \begin{itemize}
-\item \code{za}, \code{zb} — points on the conic
-\item \code{nb} — number of interpolation steps (default: 20)
-\item \code{mode} — optional string ("short") to select the smaller arc for ellipses
+  \item \code{za}, \code{zb} — two points lying on the conic.
+  \item \code{nb} — number of interpolation steps (default: 20).
+  \item \code{mode} — optional string:
+  \begin{itemize}
+      \item omitted or \code{"direct"} (default): traces the shortest arc (for ellipses).
+      \item \code{"swap"}: selects the complementary arc (other part of the ellipse).
+  \end{itemize}
+  \item \code{dir} — optional orientation for ambiguous cases
+
+        In most cases, the points \code{za} and \code{zb} determine a unique arc of the conic.
+        However, when the two points are \emph{opposite} with respect to the center (for instance, on an ellipse),
+        two different arcs of equal length exist.
+        In such cases, the optional argument can be used to select the desired direction:
+
+        \begin{itemize}
+          \item \code{"ccw"} (\emph{counterclockwise}) — the arc is traced in the direct, or positive, direction.
+          \item \code{"cw"} (\emph{clockwise}) — the arc is traced in the opposite, or negative, direction.
+        \end{itemize}
+
+   In general use, this parameter can be omitted.
 \end{itemize}
 
-\textbf{Details:}
+\medskip
+\texttt{Details:}
 
-Internally, this method computes the conic parameter
-$t$ associated with each endpoint and performs linear interpolation. For ellipses, the interpolation is modulo 1 to ensure circularity. When the \code{mode} is set to \code{"short"}, the function selects the shorter arc between the two endpoints.
+Internally, the method computes the conic parameter $t$ at \code{za} and \code{zb}
+using \tkzMeth{conic}{get\_t\_from\_point(z)}. For ellipses, this parameter is normalized in
+$[0,1)$ (one turn). For parabolas and hyperbolas, it is not periodic.
 
-The method calls \tkzMeth{conic}{get\_t\_from\_point(z)} to determine the normalized arc parameter, which delegates to a conic-specific routine depending on the eccentricity:
+A linear interpolation of $t$ produces intermediate points on the conic:
+\[
+t_i = t_a + \frac{i}{nb}(t_b - t_a)
+\]
 
+For ellipses specifically:
 \begin{itemize}
-\item ellipse: angle normalized
-\item hyperbola or parabola: signed distance to a construction point
+  \item the angle/parameter is taken modulo $1$;
+  \item in \code{"direct"} mode, the interpolation follows the shortest arc
+        between the two points;
+  \item in \code{"swap"} mode, the complementary arc is used
+        (the same endpoints, but the other part of the ellipse);
+  \item if the points are exactly opposite ($\Delta t = \pm 0.5$), the option
+        \code{dir = "cw"} or \code{"ccw"} can be used to choose the direction.
 \end{itemize}
 
 \medskip
 
-This method takes two points \code{za} and \code{zb} that lie on the conic and generates a sequence of points along the conic between them.
-
 \begin{mybox}
 \begin{verbatim}
-C = conic(z.F, L.directrix, 1) -- a parabola
+-- Example: parabola
+C = conic(z.F, L.directrix, 1)
 PA.arc = C:path(z.A, z.B, 100)
 \end{verbatim}
 \end{mybox}
 
-The resulting arc can be drawn with:
-
 \begin{mybox}
 \begin{verbatim}
-\tkzDrawCoordinatessmooth
+-- Example: ellipse, complementary arc
+E = conic(z.F1, z.F2, 0.6) -- an ellipse
+PA.arc1 = E:path(z.A, z.B, 80, "direct") -- shortest arc
+PA.arc2 = E:path(z.A, z.B, 80, "swap")   -- other arc
 \end{verbatim}
 \end{mybox}
 
-\texttt{Example with ellipse}
+To draw the resulting path with TikZ:
+\begin{mybox}
+\begin{verbatim}
+\tkzDrawCoordinates[smooth]
+\end{verbatim}
+\end{mybox}
 
-The next example is a special case with an ellipse. If the conic is an ellipse, an optional fourth argument \code{mode} can be passed:\\
-
-"short" : trace the shortest arc,
 
 \begin{tkzexample}[latex=.35\textwidth]
   \directlua{
@@ -2284,7 +2317,7 @@ The next example is a special case with an ellipse. If the conic is an ellipse, 
   z.N = CO.EL:point(0.15)
   z.P = CO.EL:point(0.4)
   z.Q = CO.EL:point(0.7)
-  PA.parta = CO.EL:path(z.M, z.N, 100, "short")
+  PA.parta = CO.EL:path(z.M, z.N, 100, "swap")
   PA.partb = CO.EL:path(z.P, z.Q, 100)
   L.PM = line(z.P, z.M)
   L.QN = line(z.Q, z.N)
@@ -2293,9 +2326,9 @@ The next example is a special case with an ellipse. If the conic is an ellipse, 
   L.IM = line(z.I, z.M)
   L.IP = line(z.I, z.P)
   L.QI = line(z.Q, z.I)
-  PA.zone1 = CO.EL:path(z.M, z.N, 50, "short")
+  PA.zone1 = CO.EL:path(z.M, z.N, 50, "swap")
      + L.NI:path(2) + L.IM:path(2)
-  PA.zone2 = CO.EL:path(z.P, z.Q, 50, "short")
+  PA.zone2 = CO.EL:path(z.P, z.Q, 50, "swap")
      + L.QI:path(2) + L.IP:path(2)
   }
   \begin{tikzpicture}[ scale = 1.2]

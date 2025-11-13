@@ -69,21 +69,21 @@ function equilateral_tr_(a, b)
 	return rotation_(a, math.pi / 3, b)
 end
 
-function isosceles_right_tr(a, b)
+function isosceles_right_tr_(a, b)
 	local pt = rotation_(a, math.pi / 4, b)
 	return a + (pt - a) * math.sin(math.pi / 4)
 end
 
-function gold_tr(a, b)
+function gold_tr_(a, b)
 	local pt = rotation_(a, math.pi / 2, b)
 	return a + (pt - a) * tkz.invphi
 end
 
-function euclide_tr(a, b)
+function euclide_tr_(a, b)
 	return rotation_(a, math.pi / 5, b)
 end
 
-function golden_tr(a, b)
+function golden_tr_(a, b)
 	local pt = rotation_(a, 2 * math.pi / 5, b)
 	return a + (pt - a) * tkz.phi
 end
@@ -106,9 +106,9 @@ function golden_ratio_(a, b)
 	return a + (b - a) * tkz.invphi
 end
 -- projection
-function projection(Dt, pt)
-	return projection_(Dt.pa, Dt.pb, pt)
-end
+-- function projection(Dt, pt)
+	-- return projection_(Dt.pa, Dt.pb, pt)
+-- end
 
 function projection_(pa, pb, pt)
 	if islinear_(pa, pb, pt) then
@@ -187,47 +187,13 @@ function orthogonal_at_(za, zb, pt, k)
 	end
 end
 
+
 function collinear_at_distance_(za, zb, d)
 	 local len = point.mod(zb - za)
 	 local x = orthogonal_at_(za, zb, za, d / len)
 	 return x, collinear_at_(za, zb, x, 1)
 end
 
-
-function bisector(a, b, c)
-	local i = in_center_(a, b, c)
-	return line:new(a, intersection_ll_(a, i, b, c))
-end
-
-function altitude(a, b, c)
-	local o, p
-	-- Get the orthocenter (which is the point of concurrency of the altitudes)
-	o = ortho_center_(a, b, c)
-
-	-- Get the perpendicular projection of point 'a' onto the line defined by 'b' and 'c'
-	p = projection_(b, c, a)
-
-	-- Return the altitude, which is the line from point 'a' to the point 'p'
-	return line:new(a, p)
-end
-
-function bisector_ext(a, b, c) -- n=1 swap n=2 swap 2
-	local i, p
-	-- Get the incenter of the triangle
-	i = in_center_(a, b, c)
-
-	-- Rotate the incenter by 90 degrees around point 'a' to compute the external bisector
-	p = rotation_(a, math.pi / 2, i)
-
-	-- Return the external bisector as the line passing through points 'a' and 'p'
-	return line:new(a, p)
-end
--- orthonormal cartesian coordinate system
--- function occs_(p,za,zb)
---   local x = report_(za,zb,1,p)
---   local y = ortho_from_(p,p,x)
---   return x,y
--- end
 
 -- Lignes équidistantes de deux droites L1 et L2
 -- Cas parallèles : retourne la parallèle "milieu" (unique)

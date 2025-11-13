@@ -316,6 +316,10 @@ function point:west(d)
 	return self + polar_(d, math.pi)
 end
 
+function point:length(p)
+	return length_(self, p)
+end
+
 function point:normalize()
 	local d = point.abs(self)
 	return point(self.re / d, self.im / d)

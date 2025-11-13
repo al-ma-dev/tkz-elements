@@ -58,8 +58,8 @@ Use of |north and east| functions linked to points, to transfer lengths, See  (\
 \end{minipage}
 
 
-\subsubsection{Harmonic\_division and ethod \tkzMeth{triangle}{bisector(n)}} %(fold)
-\label{ssub:harmonic_division_and_bisector}
+\subsection{Harmonic\_division and method \tkzMeth{triangle}{bisector(n)}} %(fold)
+\label{sub:harmonic_division_and_bisector}
 
 Let four points $A$, $C$, $B$ and $D$, in this order, lying on the straight line $(d)$ and $M$ un point pris hors de $(d)$. Then, if two of the following three propositions are true, then the third is also true:
    \begin{enumerate}
@@ -152,8 +152,8 @@ Let four points $A$, $C$, $B$ and $D$, in this order, lying on the straight line
 \end{verbatim}
 \end{minipage}
 
-\subsubsection{Harmonic division with tkzphi }
-\label{ssub:harmonic_division_with_tkzphi}
+\subsection{Harmonic division with tkzphi }
+\label{sub:harmonic_division_with_tkzphi}
 
 \begin{Verbatim}
 \directlua{%
@@ -1550,8 +1550,8 @@ In this example, $K$ is the projection of the focus $F$ on the directrix.
 \end{center}
 \end{minipage}
 
-\subsubsection{Parabola with Focus, Axis of Symmetry, and a Point on the Curve}
-\label{ssub:parabola_with_focus_axis_of_symmetry_and_curve_point}
+\subsection{Parabola with Focus, Axis of Symmetry, and a Point on the Curve}
+\label{sub:parabola_with_focus_axis_of_symmetry_and_curve_point}
 
 This construction illustrates how to define a parabola from its focus, its axis of symmetry, and a single point on the curve.
 The axis is determined as the line orthogonal to the segment joining the focus to the given point, passing through a specific intersection derived from a circle construction.
@@ -1614,7 +1614,7 @@ This method is particularly useful when the directrix is not known explicitly.
 \end{minipage}
 
 
-\subsubsection{Ellipse with Center, Vertex, and Covertex}
+\subsection{Ellipse with Center, Vertex, and Covertex}
 
 This construction defines an ellipse from its center, a vertex, and a covertex.
 From these three points, the semi-axes lengths \( a \) and \( b \) are computed, allowing the eccentricity \( e \) to be derived.
@@ -1689,7 +1689,7 @@ The foci and the direction of the directrix are then constructed accordingly, ma
 \end{verbatim}
 
 
-\subsubsection{Ellipse with Foci and a Point}
+\subsection{Ellipse with Foci and a Point}
 
 This construction defines an ellipse given its two foci and a single point on the curve.
 The fundamental property \( MF + MG = 2a \), where \( F \) and \( G \) are the foci and \( M \) a point on the ellipse, allows the computation of the semi-major axis \( a \).
@@ -1762,7 +1762,7 @@ From this, the eccentricity and the direction of the directrix can be derived.
   \end{verbatim}
 
 
-\subsubsection{Orthic\_inellipse with \texttt{search\_ellipse} }
+\subsection{Orthic\_inellipse with \texttt{search\_ellipse} }
 
 \directlua{
  init_elements()
@@ -1822,7 +1822,7 @@ From this, the eccentricity and the direction of the directrix can be derived.
 \end{tkzexample}
 
 
-\subsubsection{Kiepert hyperbola}
+\subsection{Kiepert hyperbola}
 \label{ssub:kiepert_hyperbola}
 
 In triangle geometry, the Kiepert conics are two special conics associated with the reference triangle. One of them is a hyperbola, called the Kiepert hyperbola and the other is a parabola, called the Kiepert parabola
@@ -1903,7 +1903,7 @@ It has been proved that the Kiepert hyperbola is the hyperbola passing through t
 \end{center}
 
 
-\subsubsection{Kierpert parabola}
+\subsection{Kierpert parabola}
 
 The Euler line of a triangle is the conic section directrix of the Kiepert parabola. In fact, the directrices of all parabolas inscribed in a triangle pass through the orthocenter. The  triangle  formed by the points of contact is called the Steiner triangle.
 
@@ -2154,7 +2154,7 @@ The Kiepert parabola is tangent to the sides of the triangle (or their extension
 \end{center}
 \end{minipage}
 
-\subsubsection{Morley triangle}
+\subsection{Morley triangle}
 
 \begin{tkzexample}[latex = .5\textwidth]
 \directlua{
@@ -2613,8 +2613,8 @@ The Kiepert parabola is tangent to the sides of the triangle (or their extension
 
 \end{minipage}
 
-\subsubsection{Orthopole and Simson line}
-\label{ssub:orthopole_and_simson_line}
+\subsection{Orthopole and Simson line}
+\label{sub:orthopole_and_simson_line}
 
 \begin{tkzexample}[latex=.5\textwidth]
   \directlua{
@@ -4494,7 +4494,7 @@ end}
 
 \subsection{Three Circles}
 
-Construct a circle tangent to two circles tangent to each other and to a straight line.
+Construct a circle tangent to two circles tangent to each other and to a straight line. See section [\ref{sub:CCL}] for a better method.
 
 \begin{verbatim}
 \directlua{
@@ -5149,7 +5149,7 @@ The Yiu circles of a reference triangle is the circles passing through one verte
 }
 
   \begin{center}
-    \begin{tikzpicture}[scale = 1.5]
+    \begin{tikzpicture}[scale = 2]
     \tkzGetNodes
     \tkzDrawPolygon(A,B,C)
     \tkzDrawPolygon[orange](wa,wb,wc)
@@ -5197,8 +5197,9 @@ The Yiu circles of a reference triangle is the circles passing through one verte
     end
   end
 }
+
 \begin{center}
-  \begin{tikzpicture}[scale=1.75]
+  \begin{tikzpicture}[scale=2]
   \tkzGetNodes
   \tkzDrawPolygon(A,B,C)
   \tkzDrawCircles[purple](wc,Y wb,Y wa,Y)

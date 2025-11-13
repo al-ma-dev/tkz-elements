@@ -135,13 +135,10 @@ function circle:lines_position(L1, L2, mode)
   end
 end
 
-function circle:are_circles_tangents(C)
-    local d = point.mod(self.center - C.center)
-    local max = self.radius + C.radius
-    local min = math.abs(self.radius - C.radius)
- return (math.abs(d - max) < tkz.epsilon) or  ( math.abs(d - min) < tkz.epsilon)
+function circle:are_circles_tangents(C, EPS)
+  return act_(self.center, self.through, C.center, C.through, EPS)
 end
-circle.act = circle.are_circles_tangents
+
 ------------------------
 -- string --------------
 ------------------------
@@ -670,7 +667,7 @@ end
 -- ===================================================
 
 -- Cercle tangent à self et C, passant par p (cas général)
-function solve_intersect(Cself, C, p, mode)
+local function solve_intersect(Cself, C, p, mode)
   if Cself:on_circle(p) then
     local tA, tB = tangent_at_(Cself.center, p)
     local T = line:new(tA, tB)
@@ -709,7 +706,7 @@ end
 -- CCP : deux cercles tangents intérieurement, cercle solution passant par p
 -- (Uniformisation push/paths, logique intacte)
 --------------------------------------------------------
-function solve_inside_tangent(Cself, C, p, mode)
+local function solve_inside_tangent(Cself, C, p, mode)
   if Cself:on_circle(p) then
     local tA, tB = tangent_at_(Cself.center, p)
     local T = line:new(tA, tB)
@@ -759,7 +756,7 @@ end
 -- CCP : cas "inside"
 --------------------------------------------------------
 
-function solve_inside(Cself, C, p, mode)
+local function solve_inside(Cself, C, p, mode)
   local a = Cself:point_position(p)
   local b = C:point_position(p)
 
@@ -862,7 +859,7 @@ end
 -- ================== FIN CAS r1 == r2 ==================
 
 
-function solve_outside(Cself, C, p, mode)
+local function solve_outside(Cself, C, p, mode)
   local o1, t1, r1 = Cself.center, Cself.through, Cself.radius
   local o2, t2, r2 = C.center,   C.through,   C.radius
   local pos1 = Cself:point_position(p)  -- "IN", "ON", "OUT"
@@ -1707,11 +1704,6 @@ function circle:CCL(C2, D)
     return circle:new(C.center, Tp)
   end
 
-  function circle_distance_(c, t, p)
-    local r = length_(c, t)
-    local d = length_(c, p)
-    return d - r
-  end
 
   local C1, O1, R1 = self, self.center, self.radius
   local O2, R2     = C2.center, C2.radius

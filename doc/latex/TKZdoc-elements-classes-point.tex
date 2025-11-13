@@ -18,6 +18,7 @@ Thus, a point such as $A$ is stored as the object \code{z.A}, with its coordinat
 
 \vspace{1em}
 The \code{point} object possesses several attributes:
+\begin{mybox}{}
 \begin{itemize}
   \item \code{re} --> the real part (abscissa),
   \item \code{im} --> the imaginary part (ordinate),
@@ -25,6 +26,7 @@ The \code{point} object possesses several attributes:
   \item \code{arg} --> the argument of the complex number (angle with respect to the x-axis),
   \item \code{mod} --> the modulus of the complex number (distance from the origin).
 \end{itemize}
+\end{mybox}
 
 
 
@@ -454,7 +456,7 @@ This method improves code readability and makes it easier to pass coordinates to
 \end{tkzexample}
 \end{minipage}
 
-\subsubsection{Method \tkzMeth{point}{polar(r, an)}}
+\subsubsection{Function \tkzFct{point}{polar(r, an)}}
 \label{ssub:method_point_polar}
 
 This method creates a point in the plane using polar coordinates.
@@ -478,9 +480,9 @@ Internally, the point is represented as a complex number: \code{r * exp(i * an)}
 
 \begin{mybox}
 \begin{verbatim}
+  z.B = polar(2, math.pi / 4)
+  or
   z.B = point:polar(2, math.pi / 4)
-  better
-  z.B = point(polar(2, math.pi / 4))
 \end{verbatim}
 \end{mybox}
 
@@ -489,7 +491,7 @@ Internally, the point is represented as a complex number: \code{r * exp(i * an)}
  init_elements()
  z.O = point(0, 0)
  z.A = point(3, 0)
- z.F = point(polar(3, math.pi / 3))}
+ z.F = polar(3, math.pi / 3)}
 \begin{center}
 \begin{tikzpicture}[scale=.75]
    \tkzGetNodes
@@ -513,8 +515,8 @@ Identical to the previous one, except that the angle is given in degrees.
 \directlua{
  init_elements()
  z.A = point(0, 0)
- z.B = point(polar_deg(3, 60))
- z.C = point(polar_deg(3, 0))}
+ z.B = polar_deg(3, 60)
+ z.C = polar_deg(3, 0)}
 \begin{center}
   \begin{tikzpicture}[gridded]
   \tkzGetNodes

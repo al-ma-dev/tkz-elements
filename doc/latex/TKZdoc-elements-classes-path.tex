@@ -282,12 +282,7 @@ tostring(p) --> path: { (x1,y1) , (x2,y2) , ... }
 
 \tkzMeth{path}{add\_pair\_to\_path(z1, z2, n)} & or add\_pair  See [\ref{ssub:subsubsection_name}] \\
 
-\tkzFct{path}{path\_from\_pairs(pt, pt, n)} & See [\ref{ssub:subsubsection_name}; \ref{ssub:method_tkzmeth_path_path_from_pairs}] \\
-
-\tkzFct{path}{stock\_paths(...}  & See [\ref{ssub:method_tkzmeth_path_stock__paths}
-; \ref{ssub:subsubsection_name}] \\
-
-\tkzMeth{path}{concat(sep)}       & See [\ref{ssub:method_tkzmeth_path_concat}]\\
+\tkzMeth{path}{concat(sep)}  & See [\ref{ssub:path_concat}]\\
 \bottomrule
 \end{tabular}
 \egroup
@@ -324,11 +319,13 @@ transfer from Lua to \TeX.
 When \code{get(i)} is called, these coordinates are automatically converted back
 into a proper Lua point object.
 
-\textbf{Return value}
+\medskip
+\texttt{Return value: }
 
 A point object corresponding to the i-th element of the path.
 
-\textbf{Errors}
+\medskip
+\texttt{Errors: }
 
 If the index is outside the valid range, an error is raised:
 
@@ -454,14 +451,14 @@ or equivalently:
  path:add_pair_to_path(z1, z2, decimals)
 \end{verbatim}
 
+\medskip
 \texttt{Purpose: }
 
  The coordinates of \code{z1} and \code{z2} are extracted, formatted with a fixed number of decimals $n$, and combined into a string \code{"x1/y1/x2/y2"} appended to the path.
 This string is then inserted into the current path table.This method appends to a \tkzname{path} object. a formatted point pair.
 It is mainly used to store segments, by keeping together the coordinates of two points.
 
-
-
+\medskip
 \texttt{Arguments: }
 
 \begin{itemize}
@@ -469,11 +466,12 @@ It is mainly used to store segments, by keeping together the coordinates of two 
   \item \code{decimals} (optional) – number of decimals (default: \code{5}).
 \end{itemize}
 
+\medskip
 \texttt{Returns: }
 
 Nothing (modifies the path in place).
 
-
+\medskip
 \texttt{Example usage: }
 
 \begin{verbatim}
@@ -485,78 +483,61 @@ Nothing (modifies the path in place).
 \end{verbatim}
 
 
-\subsubsection{Function \tkzFct{path}{path\_from\_pairs(p, p, n)}}
-\label{ssub:method_tkzmeth_path_path_from_pairs}
+\subsubsection{Method \tkzMeth{path}{concat(sep)}}
+\label{ssub:path_concat}
 
-Creates a new \tkzname{path} object by combining pairs of points taken from two parallel paths. Each resulting entry is a string \code{"x1/y1/x2/y2"}.
+This method returns a string obtained by concatenating all the coordinates stored
+in a \tkzClass{path} object. The coordinates are joined in order using a
+separator.
 
-\texttt{Arguments: }
+\medskip
+Internally, a \tkzClass{path} contains an ordered Lua table of points written in
+TikZ syntax, such as \verb|(x,y)|. The \tkzMeth{path}{concat} method simply
+joins these entries into a single textual path.
 
-\begin{itemize}
-  \item \code{p1}, \code{p2} – tables of point strings \code{"(x,y)"}.
-  \item \code{decimals} (optional) – number of decimals to retain (default: \code{5}).
-\end{itemize}
-
-\texttt{Returns: }
-
-A new \tkzname{path} object.
-
-\textbf{Errors}
-
-Raises an error if the paths do not have the same length.
-
-\texttt{Example usage: }
-
+\medskip
+\texttt{Syntax: }
 \begin{verbatim}
-local PA.p1 = {point(0,0), point(1,1)}
-local PA.p2 = {point(1,0), point(2,1)}
-local PA.result = path_from_pairs(PA.p1, PA.p2, 1)
--- PA.result = {"0.0/0.0/1.0/0.0", "1.0/1.0/2.0/1.0"}
+S = PA.myPath:concat(sep)
 \end{verbatim}
 
-
-
-\subsubsection{Function \tkzFct{path}{stock\_paths(...)}}
-\label{ssub:method_tkzmeth_path_stock__paths}
-
-Combines an arbitrary number of paths into a single \tkzname{path}. Each entry contains the concatenated coordinates of corresponding points from all input paths, formatted as \code{"x1/y1/x2/y2/..."}.
-
+\medskip
 \texttt{Arguments: }
-
 \begin{itemize}
-  \item \code{...} – one or more tables of TikZ-style points \code{"(x,y)"}. An optional final argument may specify the number of decimals.
+  \item \code{sep} — optional string used to separate the coordinates
+        (default: a single space \verb|" "|).
 \end{itemize}
 
+\medskip
 \texttt{Returns: }
+A Lua string containing all points of the path, separated by \code{sep}.
+The resulting string is suitable for direct insertion into a TikZ path.
 
-A new \tkzname{path} object.
+\texttt{Example: }
 
-\texttt{Example usage: }
-
-\begin{verbatim}
-local PA.A = {point(1,2), point(2,2)}
-local PA.B = {point(1,3), point(2,3)}
-local PA.path = stock_paths(PA.A, PA.B, 2)
--- PA.path = {"1.00/2.00/1.00/3.00", "2.00/2.00/2.00/3.00"}
-\end{verbatim}
-
-\textbf{Errors}
-
- All paths must have the same number of points.
-
-\subsubsection{Method \tkzMeth{path}{concat(<'sep'>)}}
-\label{ssub:method_tkzmeth_path_concat}
-
-Concatenates the path into a string (default sep: space)
-
-\begin{tkzexample}[latex=.3\textwidth]
+\begin{tkzexample}[code only]
 \directlua{
- PA.p = path({ "(0,0)", "(1,0)", "(1,1)" })
- PA.p:concat(" -- ")}
-\begin{tikzpicture}
-  \tkzDrawCoordinates(PA.p)
-\end{tikzpicture}
+init_elements()
+local A = point(0, 0)
+local B = point(2, 1)
+local C = point(3, 0)
+local P = path:new()
+P:add_point(A)
+P:add_point(B)
+P:add_point(C)
+local S = P:concat(" -- ")
+}
 \end{tkzexample}
+
+
+\texttt{Usefulness: }
+
+This method is useful when:
+\begin{itemize}
+  \item building TikZ paths dynamically from Lua;
+  \item exporting or combining geometric paths;
+  \item generating the argument of macros such as \verb|\tkzDrawPath|.
+\end{itemize}
 
 
 \subsubsection{Example : Director circle }

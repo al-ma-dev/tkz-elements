@@ -12,7 +12,9 @@ tkz.dc = 2
 tkz.phi = (1 + math.sqrt(5)) / 2 -- golden number φ
 tkz.invphi = (math.sqrt(5) - 1) / 2
 tkz.sqrtphi = math.sqrt(tkz.phi)
-
+tkz.rad = 180/math.pi
+tkz.deg = math.pi/180
+tkz.pt = 254/7227
 -- real
 function tkz.approx(x, y)
 	return math.abs(x - y) <= tkz.epsilon
@@ -67,8 +69,7 @@ function tkz.is_direct(pa, pb, pc)
 end
 
 function tkz.round(num, idp)
-	idp = idp or 0
-	local mult = 10 ^ idp
+	local mult = 10 ^ (idp or 0)
 	return math.floor(num * mult + 0.5) / mult
 end
 
@@ -285,6 +286,21 @@ function tkz.residue(x)
 	return residue_(x)
 end
 
+-- internal utility: test for NaN
+function tkz.is_NaN(x)
+	return x ~= x
+end
+
+-- internal utility: test for Infinity
+function tkz.is_Inf(x)
+	return (x == math.huge) or (x == -math.huge)
+end
+
+-- internal utility: detect invalid numeric results (NaN or ±Inf)
+function tkz.notDef(x)
+	return tkz.is_NaN(x) or tkz.is_Inf(x)
+end
+
 function tkz.is_integer(x)
 	return type(x) == "number"
 		and x == x -- exclude NaN
@@ -364,6 +380,129 @@ function tkz.nodes_from_paths(PAcenters, PAthrough, wbase, tbase, indice)
 		z[wbase .. i] = PAcenters:get(k)
 		z[tbase .. i] = PAthrough:get(k)
 	end
+end
+
+-- tkz.fsolve
+-- Cherche des racines de f sur [a,b] en découpant l'intervalle en n sous-intervales
+-- et en raffinant par une itération de type Newton avec dérivée numérique.
+-- Arguments :
+--   f : function(x) -> number
+--   a, b : bornes (numbers)
+--   n : nombre de sous-intervalles (par défaut 25)
+--   opts (optionnel, table) :
+--       tol       : tolérance sur |f(r)| (déf. 1e-8)
+--       step_tol  : tolérance sur le déplacement de Newton (déf. 1e-10)
+--       h         : pas pour la dérivée finie (déf. 1e-6)
+--       max_iter  : itérations max par graine (déf. 8)
+--       merge_eps : distance pour fusionner deux racines proches (déf. 1e-5)
+function tkz.fsolve(f, a, b, n, opts)
+	if type(f) ~= "function" or type(a) ~= "number" or type(b) ~= "number" then return end
+	if a == b then return end
+	if a > b then a, b = b, a end
+
+	n = n or 25
+	opts = opts or {}
+	local tol       = opts.tol       or 1e-8
+	local step_tol  = opts.step_tol  or 1e-10
+	local h         = opts.h         or 1e-6
+	local max_iter  = opts.max_iter  or 8
+	local merge_eps = opts.merge_eps or 1e-5
+
+	local function isfinite(x)
+		return (x == x) and (x ~= math.huge) and (x ~= -math.huge)
+	end
+
+	local function safe_f(x)
+		local ok, y = pcall(f, x)
+		if not ok or not isfinite(y) then return nil end
+		return y
+	end
+
+	local function push_unique(S, r)
+		for i = 1, #S do
+			if math.abs(S[i] - r) <= merge_eps then
+				-- remplace par la moyenne pour stabiliser
+				S[i] = 0.5 * (S[i] + r)
+				return
+			end
+		end
+		S[#S+1] = r
+	end
+
+	local S = {}
+	local delta = (b - a) / n
+	local x = a
+	local fin = x + delta
+
+	while x < b do
+		-- Graine : milieu de [x, fin]
+		local r = 0.5 * (x + fin)
+
+		-- Optionnel : si f(x) et f(fin) existent et n'encadrent rien,
+		-- on tente quand même (peut attraper un zéro au sommet).
+		local fr = safe_f(r)
+		if fr ~= nil then
+			for _ = 1, max_iter do
+				local frh = safe_f(r + h)
+				if frh == nil then break end
+				local denom = frh - fr
+				if denom == 0 then break end
+
+				local step = fr * h / denom
+				if not isfinite(step) then break end
+
+				local r_next = r - step
+				if not isfinite(r_next) then break end
+
+				-- Arrêt sur petit déplacement
+				if math.abs(step) <= step_tol * (1 + math.abs(r)) then
+					r = r_next
+					break
+				end
+
+				r = r_next
+				fr = safe_f(r)
+				if fr == nil then break end
+				-- Arrêt sur résidu
+				if math.abs(fr) <= tol then break end
+			end
+
+			-- Valide si : dans [x, fin) et résidu petit
+			local fr_ok = fr ~= nil and math.abs(fr) <= tol
+			if fr_ok and (r >= x) and (r < fin) then
+				push_unique(S, r)
+			end
+		end
+
+		x = fin
+		fin = x + delta
+	end
+
+	if #S > 0 then return S end
+end
+
+-- tkz.derivative
+-- Compute the numerical derivative f'(x0)
+-- using the central difference formula.
+-- Optional parameter 'accuracy' controls precision (default = 1e-6).
+function tkz.derivative(f, x0, accuracy)
+	if type(f) ~= "function" or type(x0) ~= "number" then return nil end
+	accuracy = accuracy or 1e-6
+	local f1, f2 = f(x0 + accuracy), f(x0 - accuracy)
+	if (f1 == nil) or (f2 == nil) then return nil end
+	return (f1 - f2) / (2 * accuracy)
+end
+
+function tkz.range(a, b, step)
+	step = step or 1
+	if step == 0 then error("step must not be zero") end
+	local tbl = {}
+	if (a <= b and step > 0) or (a >= b and step < 0) then
+		for k = a, b, step do
+			table.insert(tbl, k)
+		end
+	end
+	return tbl
 end
 
 return tkz

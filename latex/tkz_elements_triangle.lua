@@ -134,6 +134,7 @@ function triangle:area() -- obsolete
 	return area_(self.pa, self.pb, self.pc)
 end
 
+
 function triangle:barycentric_coordinates(pt)
 	local xA, yA = self.pa:get()
 	local xB, yB = self.pb:get()
@@ -1118,7 +1119,7 @@ function triangle:kiepert_hyperbola()
 	-- simson lines
 	local Lsa = self:simson_line(M)
 	local Lsb = self:simson_line(N)
-	local axis = bisector(center, Lsa.pa, Lsb.pa)
+	local axis = tkz.bisector(center, Lsa.pa, Lsb.pa)
 	-- new frame system
 	local minor = axis:ortho_from(center)
 	local sys = occs:new(minor, center)

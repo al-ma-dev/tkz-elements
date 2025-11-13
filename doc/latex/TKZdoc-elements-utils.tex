@@ -75,7 +75,7 @@ local x, y = utils.parse_point("(3.5, -2)")
 -- x = 3.5, y = -2.0
 \end{verbatim}
 
-\textbf{Related functions.}
+\texttt{Related functions: }
 
 \begin{itemize}
 \item \tkzFct{utils}{format\_point(z, decimals)}
@@ -128,7 +128,7 @@ local b = utils.format_number("2.718281828", 2)
 
 An error is raised if \code{x} is not a valid number or numeric string.
 
-\textbf{Related functions: }
+\texttt{Related functions: }
 
 \begin{itemize}
 \item \tkzFct{utils}{to\_decimal\_string(x, decimals)}
@@ -153,17 +153,20 @@ This function formats a numerical value into a string with a fixed number of dec
 \item \code{decimals} – Optional number of decimal places (default: 5).
 \end{itemize}
 
+\medskip
 \texttt{Returns: }
 
 A string with fixed decimal formatting.
 
-\textbf{Notes.}
+\medskip
+\texttt{Notes: }
 
 This function is used internally by \tkzFct{path}{add\_pair\_to\_path} and other path-building methods.
 
 Unlike \tkzFct{utils}{format\_number}, it does not perform input validation and should only be used with known numeric inputs.
 
-\textbf{Related functions.}
+\medskip
+\texttt{Related functions: }
 
 \begin{itemize}
 \item \tkzFct{utils}{format\_number(x, decimals)} – safer alternative with validation
@@ -174,6 +177,7 @@ Unlike \tkzFct{utils}{format\_number}, it does not perform input validation and 
 
 Validates and converts a number or numeric string into a fixed-format decimal string.
 
+\medskip
 \texttt{Syntax: }
 
 \begin{center}
@@ -187,14 +191,17 @@ Validates and converts a number or numeric string into a fixed-format decimal st
 \item \code{decimals} – Optional number of decimal digits (default: 5).
 \end{itemize}
 
+\medskip
 \texttt{Returns: }
 
 A formatted string representing the value rounded to the specified number of decimal places.
 
+\medskip
 \texttt{Remarks: }
 
 Used internally to validate input before formatting. Returns an error if the input is not convertible.
 
+\medskip
 \texttt{Related functions: }
 
 \begin{itemize}
@@ -212,6 +219,7 @@ Converts a complex point into a string representation suitable for coordinate ou
 \code{local s = utils.format\_point(z, 4)} \hfill $\rightarrow$ \code{"(1.0000,2.0000)"}
 \end{center}
 
+\medskip
 \texttt{Arguments: }
 
 \begin{itemize}
@@ -219,15 +227,18 @@ Converts a complex point into a string representation suitable for coordinate ou
 \item \code{decimals} – Optional precision (default: 5).
 \end{itemize}
 
+\medskip
 \texttt{Returns: }
 
 A string representing the point as \code{"(x,y)"}.
 
-\textbf{Error handling.}
+\medskip
+\texttt{Error handling.}
 
 Raises an error if \code{z} does not have numeric \code{re} and \code{im} components.
 
-\textbf{Related functions.}
+\medskip
+\texttt{Related functions: }
 
 \begin{itemize}
 \item \tkzFct{utils}{format\_coord}
@@ -238,12 +249,14 @@ Raises an error if \code{z} does not have numeric \code{re} and \code{im} compon
 
 Returns \code{true} if two numbers are approximately equal within a given tolerance.
 
+\medskip
 \texttt{Syntax: }
 
 \begin{center}
 \code{if utils.almost\_equal(x, y) then ... end}
 \end{center}
 
+\medskip
 \texttt{Arguments: }
 
 \begin{itemize}
@@ -251,6 +264,7 @@ Returns \code{true} if two numbers are approximately equal within a given tolera
 \item \code{epsilon} – Optional tolerance (default: \code{tkz\_epsilon}).
 \end{itemize}
 
+\medskip
 \texttt{Returns: }
 
 A boolean: \code{true} if the values differ by less than the tolerance.
@@ -262,12 +276,14 @@ A boolean: \code{true} if the values differ by less than the tolerance.
 
 Logs a formatted message to the .log file only, with a \code{[tkz-elements]} prefix.
 
+\medskip
 \texttt{Syntax: }
 
 \begin{center}
 \code{utils.wlog("Internal value: \%s", tostring(value))}
 \end{center}
 
+\medskip
 \texttt{Returns: }
 
 No return value. Logging only.

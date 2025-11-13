@@ -40,7 +40,7 @@ All methods are being unified to return \emph{paths} so that drawing and node ex
   \item All results can be directly drawn using
     \verb|\tkzDrawCirclesFromPaths(PA.center, PA.through)|. See [\ref{sub:macro_tkzDrawCirclesFromPaths}]
   \item Nodes can be exported to TikZ with
-    \verb|tkz.nodes_from_paths(PA.center, PA.through)|. See [\ref{ssub:tkz_nodes_from_paths}]
+    \verb|tkz.nodes_from_paths(PA.center, PA.through)|. See [\ref{sub:tkz_nodes_from_paths}]
   \item Empty paths correspond to degenerate configurations.
   \item Some older methods still return \verb|paths, n|; they will be progressively updated to the unified format.
 \end{itemize}
@@ -63,7 +63,9 @@ By default, this generates nodes \verb|(w1,t1), (w2,t2), ...| in the table \verb
 
 \medskip
 \texttt{Combining both approaches: }
-You can also combine the two techniques: first use \verb|\tkzDrawCirclesFromPaths| to display all solution circles, and then use \verb|tkz.nodes_from_paths| to extract the corresponding nodes and emphasize only some of them (change colour, add labels, draw radii, etc.). This is particularly useful in demonstrations or pedagogical figures.
+You can also combine the two techniques:
+
+first use \verb|\tkzDrawCirclesFromPaths| to display all solution circles, and then use \verb|tkz.nodes_from_paths| to extract the corresponding nodes and emphasize only some of them (change colour, add labels, draw radii, etc.). This is particularly useful in demonstrations or pedagogical figures.
 
 \medskip
 \texttt{Example idea:}
@@ -277,7 +279,7 @@ This construction is useful in problems involving constrained circle placements 
 
 \vspace{1em}
 
-\begin{tkzexample}[latex=.45\textwidth]
+\begin{tkzexample}[latex=.4\textwidth]
 \directlua{
   init_elements()
   z.A = point(0, 0)
@@ -285,12 +287,13 @@ This construction is useful in problems involving constrained circle placements 
   z.M = point(1, 1)
   z.N = point(2, 5)
   L.AB = line(z.A, z.B)
-  PA.center, PA.through, n = L.AB:LPP(z.M, z.N)
+  PA.center,
+  PA.through, n = L.AB:LPP(z.M, z.N)
   tkz.nodes_from_paths(PA.center,
-                          PA.through, "O", "T")
+                       PA.through, "O", "T")
 }
 
-\begin{tikzpicture}[scale = .5]
+\begin{tikzpicture}[scale = .4]
   \tkzGetNodes
   \tkzDrawLines(A,B M,N)
   \tkzDrawCircles(O1,T1 O2,T2)
@@ -303,7 +306,7 @@ This construction is useful in problems involving constrained circle placements 
 Let's look at the case where the line $(MN)$ is parallel to the initial line.
 
 \vspace{1em}
-\begin{tkzexample}[latex=.5\textwidth]
+\begin{tkzexample}[latex=.4\textwidth]
 \directlua{
   init_elements()
   z.A = point(0, 0)
@@ -314,7 +317,7 @@ Let's look at the case where the line $(MN)$ is parallel to the initial line.
   PA.center, PA.through,
           n = L.AB:LPP(z.M, z.N)}
 \begin{center}
-\begin{tikzpicture}
+\begin{tikzpicture}[scale = .75]
  \tkzGetNodes
  \tkzDrawCirclesFromPaths[draw,
           red](PA.center,PA.through)
@@ -338,7 +341,8 @@ Where the line is perpendicular to the initial line.
  z.M = point(1,  1)
  z.N = point(1, 5)
  L.AB = line(z.A, z.B)
- PA.center, PA.through, n = L.AB:LPP(z.M, z.N)}
+ PA.center,
+ PA.through, n = L.AB:LPP(z.M, z.N)}
 \begin{tikzpicture}[scale =.6]
   \tkzGetNodes
   \tkzDrawLines(A,B M,N)
@@ -422,9 +426,10 @@ It handles both parallel and intersecting lines, as well as special configuratio
   L.AB = line(z.A, z.B)
   L.CD = line(z.C, z.D)
   z.S = intersection(L.AB, L.CD)
-  L.SI = bisector(z.S, z.A, z.D)
+  L.SI = tkz.bisector(z.S, z.A, z.D)
   z.P = L.SI:point(-1)
-  local centers, throughs, n = L.AB:LLP(L.CD, z.P)
+  local centers,
+   throughs, n = L.AB:LLP(L.CD, z.P)
   tkz.nodes_from_paths(centers, throughs)
 }
 \begin{center}
@@ -451,8 +456,8 @@ It handles both parallel and intersecting lines, as well as special configuratio
   z.C = point(6, 4)
   L.AC = line(z.A, z.C)
   z.P = point(3, 1.5)
-  local centers, throughs,
-                  n = L.AB:LLP(L.AC, z.P)
+  local centers,
+  throughs, n = L.AB:LLP(L.AC, z.P)
   tkz.nodes_from_paths(centers, throughs)
 }
 \begin{center}
@@ -466,7 +471,7 @@ It handles both parallel and intersecting lines, as well as special configuratio
 \end{center}
 \end{tkzexample}
 
-\vspace{1em}
+\medskip
 \texttt{Point on a bisector}
 
 \begin{tkzexample}[latex=.5\textwidth]
@@ -477,10 +482,10 @@ It handles both parallel and intersecting lines, as well as special configuratio
   L.AB  = line(z.A, z.B)
   z.C = point(6, 4)
   L.AC  = line(z.A, z.C)
-  L.bi  = bisector(z.A, z.B, z.C)
+  L.bi  = tkz.bisector(z.A, z.B, z.C)
   z.P = L.bi:point(0.4)
   local centers,
-        throughs, n = L.AB:LLP(L.AC, z.P)
+    throughs, n = L.AB:LLP(L.AC, z.P)
   tkz.nodes_from_paths(centers, throughs)
 }
 \begin{center}
@@ -494,7 +499,7 @@ It handles both parallel and intersecting lines, as well as special configuratio
 \end{center}
 \end{tkzexample}
 
-\vspace{1em}
+\medskip
  \texttt{Point on one of the lines}
 
 \begin{tkzexample}[latex=.5\textwidth]
@@ -507,7 +512,7 @@ It handles both parallel and intersecting lines, as well as special configuratio
   L.AC  = line(z.A, z.C)
   z.P = L.AC:point(.3)
   local centers,
-        throughs, n = L.AB:LLP(L.AC, z.P)
+    throughs, n = L.AB:LLP(L.AC, z.P)
   tkz.nodes_from_paths(centers, throughs)
 }
 \begin{center}
@@ -536,7 +541,7 @@ It handles both parallel and intersecting lines, as well as special configuratio
   L.CD = line(z.C, z.D)
   z.P = point(-1, 2.5)
   local centers,
-        throughs, n = L.AB:LLP(L.CD, z.P)
+    throughs, n = L.AB:LLP(L.CD, z.P)
   tkz.nodes_from_paths(centers, throughs)
 }
 \begin{center}
@@ -551,14 +556,14 @@ It handles both parallel and intersecting lines, as well as special configuratio
 \end{tkzexample}
 
 
-\subsection{Case \tkzname{LLL}: \tkzMeth{line}{LLL}(L, L)}
+\subsection{Case: \tkzMeth{line}{LLL}(L, L)}
 \label{sub:LLL}
 
 
 This method completes the family of contact configurations.
 It handles the case of a circle tangent to three lines.
 
-
+\medskip
 \texttt{Syntax: }
 
 \begin{verbatim}
@@ -567,7 +572,7 @@ C_exA = L.AB:LLL(L.BC, L.CA, "pa")
 C_in, C_ea, C_eb, C_ec = L.AB:LLL(L.BC, L.CA)
 \end{verbatim}
 
-
+\medskip
 \texttt{Purpose: }
 
 The method \tkzname{LLL} constructs the circles tangent to three lines.
@@ -580,7 +585,7 @@ The method \tkzname{LLL} constructs the circles tangent to three lines.
   two circles are tangent to the three lines; these two solutions are returned.
 \end{itemize}
 
-
+\medskip
 \texttt{Returns: }
 
 \begin{itemize}
@@ -593,10 +598,12 @@ The method \tkzname{LLL} constructs the circles tangent to three lines.
   \item In the parallel case: two circles tangent to the three lines.
 \end{itemize}
 
-\textbf{Errors}
+\medskip
+\texttt{Errors: }
 
 If at least two pairs of lines are parallel, the configuration is degenerate.
 
+\medskip
 \texttt{Example usage: }
 
 \begin{tkzexample}[latex=.5\textwidth]
@@ -624,10 +631,10 @@ If at least two pairs of lines are parallel, the configuration is degenerate.
 \begin{center}
   \begin{tikzpicture}
 \tkzGetNodes
-\tkzDrawLines(A,B A,C B,C x,y H,C)
+\tkzDrawLines(A,B A,C B,C)
 \tkzDrawCircles(w,t o,h)
-\tkzDrawPoints(A,B,C,M,H)
-\tkzLabelPoints(A,B,C,M,H)
+\tkzDrawPoints(A,B,C)
+\tkzLabelPoints(A,B,C)
 \end{tikzpicture}
   \end{center}
 \end{tkzexample}
@@ -709,7 +716,6 @@ The method returns two \tkzname{path} objects containing all the solutions found
  \tkzGetNodes
  \tkzInit[xmin=-5,xmax=10,ymin=-1,ymax=5]
  \tkzClip
- \tkzDrawX\tkzDrawY
  \tkzDrawLines[blue,add =1 and .25](A,B)
  \tkzDrawLines[blue,add =.25 and 1](C,D)
  \tkzDrawPoints[blue,size=3](O)
@@ -874,7 +880,8 @@ If one point lies inside and the other outside, no solution is returned (\verb|n
   z.C = point(1,0)
   C.OC = circle(z.O, z.C)
   PA.center,
-    PA.through, n = C.OC:CPP(z.A, z.B)
+  PA.through,
+  n = C.OC:CPP(z.A, z.B)
 }
 \begin{tikzpicture}
   \tkzGetNodes
@@ -891,7 +898,7 @@ If one point lies inside and the other outside, no solution is returned (\verb|n
 
 \texttt{Equidistant points from the center: }
 
-\begin{minipage}{.5\textwidth}
+\begin{tkzexample}[latex=.5\textwidth]
 \directlua{
   init_elements()
   z.A = point(2,3)
@@ -899,43 +906,27 @@ If one point lies inside and the other outside, no solution is returned (\verb|n
   z.O = point(0,0)
   z.C = point(1,0)
   C.OC = circle(z.O, z.C)
-  PA.center, PA.through, n = C.OC:CPP(z.A, z.B)
-}
+  PA.center,
+  PA.through,
+  n = C.OC:CPP(z.A, z.B)}
+\begin{center}
 \begin{tikzpicture}[scale=.5]
-  \tkzGetNodes
-  \tkzDrawCircle[blue](O,C)
-  \tkzDrawPoints(A,B,C,O)
-  \tkzDrawCirclesFromPaths[draw,red](PA.center,PA.through)
-  \tkzLabelPoints(O,C,A,B)
-\end{tikzpicture}
-\end{minipage}
-\begin{minipage}{.5\textwidth}
-\begin{tkzexample}[code only]
-\directlua{
-  init_elements()
-  z.A = point(2,3)
-  z.B = point(2,-3)
-  z.O = point(0,0)
-  z.C = point(1,0)
-  C.OC = circle(z.O, z.C)
-  PA.center, PA.through,
-   n = C.OC:CPP(z.A, z.B)
-}
-\begin{tikzpicture}
   \tkzGetNodes
   \tkzDrawCircle[blue](O,C)
   \tkzDrawPoints(A,B,C,O)
   \tkzDrawCirclesFromPaths[draw,
   red](PA.center,PA.through)
+  \tkzLabelPoints(O,C,A,B)
 \end{tikzpicture}
+\end{center}
 \end{tkzexample}
-\end{minipage}
+
 
 \texttt{Tangent case: }
 When the line $(AB)$ is tangent to the initial circle, there may be a single (degenerate) solution.
 It can even happen that $(AB)$ is tangent and both points are equidistant from the center.
 
-\begin{minipage}{.5\textwidth}
+\begin{tkzexample}[latex=.5\textwidth]
 \directlua{
   init_elements()
   z.A = point(1,3)
@@ -944,8 +935,7 @@ It can even happen that $(AB)$ is tangent and both points are equidistant from t
   z.C = point(1,0)
   C.OC = circle(z.O, z.C)
   PA.center, PA.through,
-  n = C.OC:CPP(z.A, z.B)
-}
+  n = C.OC:CPP(z.A, z.B)}
 \begin{center}
 \begin{tikzpicture}[scale=.75]
   \tkzGetNodes
@@ -956,31 +946,10 @@ It can even happen that $(AB)$ is tangent and both points are equidistant from t
   \tkzLabelPoints(O,C,A,B)
 \end{tikzpicture}
 \end{center}
-\end{minipage}
-\begin{minipage}{.5\textwidth}
-\begin{tkzexample}[code only]
-\directlua{
-  init_elements()
-  z.A = point(1,3)
-  z.B = point(1,-3)
-  z.O = point(0,0)
-  z.C = point(1,0)
-  C.OC = circle(z.O, z.C)
-  PA.center,
-  PA.through, n = C.OC:CPP(z.A, z.B)
-}
-\begin{tikzpicture}
-  \tkzGetNodes
-  \tkzDrawCircle[blue](O,C)
-  \tkzDrawPoints(A,B,C,O)
-  \tkzDrawCirclesFromPaths[draw,
-  red](PA.center,PA.through)
-\end{tikzpicture}
 \end{tkzexample}
-\end{minipage}
 
 
-\subsection{Case \tkzname{CLP}: \tkzMeth{circle}{CLP}(L, p, mode)}
+\subsection{Case: \tkzMeth{circle}{CLP}(L, p, mode)}
 \label{sub:CLP}
 
 \texttt{Purpose: } Circle tangent to a given line and to the current circle, passing through a given point.
@@ -1116,7 +1085,7 @@ These paths can be drawn directly with:
 %% END of CLP
 %% ====================
 
-\subsection{Case \tkzname{CCP}}
+\subsection{Case: \tkzMeth{circle}{CCP}(C, p, mode)}
 \label{sub:CCP}
 
 \texttt{Purpose: } Circle tangent to two given circles and passing through a point.
@@ -1286,14 +1255,6 @@ PA.center, PA.through, n = C1:CCL(C2, L)
   \item \code{n} — the number of solutions (from 0 to 4).
 \end{itemize}
 
-\medskip
-\texttt{Construction principle.}
-\begin{enumerate}
-  \item Tangency to the line \code{L} is transformed into a distance constraint by reflecting the center of \code{C1} (or \code{C2}) with respect to \code{L}.
-  \item The problem is reduced to a circle--circle tangency problem (\texttt{CCC} or \texttt{CCP} type) between the reflected circle and the other ones.
-  \item Each valid solution is then mapped back to the original configuration to recover tangency to \code{L}.
-  \item All solution centers and their corresponding tangency points on \code{C1} are added to \code{pc} and \code{pt}.
-\end{enumerate}
 
 \medskip
 \texttt{Special cases.}
@@ -1303,20 +1264,6 @@ PA.center, PA.through, n = C1:CCL(C2, L)
   \item If all three objects are mutually tangent, the configuration is degenerate and may admit a single or no solution.
 \end{itemize}
 
-\medskip
-\texttt{Example.}
-
-\begin{verbatim}
--- Lua side
- PA.center, PA.through, n = C.A:CCL(C.B, L.DF)
-\end{verbatim}
-
-\begin{verbatim}
-\begin{tikzpicture}
-  \tkzDrawLine(D,F)
-  \tkzDrawCirclesFromPaths(pc, pt)
-\end{tikzpicture}
-\end{verbatim}
 
 \medskip
 This method works with:
@@ -1326,6 +1273,8 @@ This method works with:
 \end{itemize}
 
 \vspace{1em}
+\texttt{Example A: }
+
 \begin{tkzexample}[vbox]
 \directlua{
   z.A = point(-4, 4)
@@ -1352,6 +1301,69 @@ This method works with:
   \end{center}
 \end{tkzexample}
 
+\vspace{1em}
+\texttt{Example B: }
+
+\begin{tkzexample}[vbox]
+\directlua{
+ z.A = point(1, 5)
+ z.B = point(6, 2)
+ C.A = circle(from_radius(z.A, 4))
+ L.AB = line(z.A, z.B)
+ z.T = intersection(L.AB, C.A, {near = z.B})
+ C.B = circle(z.B, z.T)
+ L.TG1, L.TG2 = C.A:common_tangent(C.B,"external")
+ z.E, z.F = L.TG2:get()
+ PA.center, _, _ = C.A:CCL(C.B, L.TG2)
+ z.C = PA.center:get(1)
+ z.G = L.TG2:projection(z.C)}
+\begin{center}
+ \begin{tikzpicture}[scale = 1]
+  \tkzInit[xmin=-3,xmax=8,ymin=-1,ymax=10]
+ \tkzClip
+ \tkzGetNodes
+ \tkzFillCircle[red!20](A,E)
+ \tkzFillCircle[green!20](C,G)
+ \tkzFillCircle[yellow!20](B,F)
+ \tkzDrawCircles[thick](A,E B,F C,G)
+ \tkzDrawLines(E,F)
+  \tkzDrawPoints[red](A,B,C,T,E,F,G)
+ \tkzLabelPoints[red](A,B,C,T,E,F,G)
+\end{tikzpicture}
+ \end{center}
+\end{tkzexample}
+
+\vspace{1em}
+\texttt{Example C: }
+
+\begin{tkzexample}[vbox]
+\directlua{
+ z.A = point(1, 5)
+ z.B = point(6, 2)
+ C.A = circle(from_radius(z.A, 4))
+ L.AB = line(z.A, z.B)
+ z.T = intersection(L.AB, C.A, {near = z.B})
+ C.B = circle(z.B, z.T)
+ L.TG1, L.TG2 = C.A:common_tangent(C.B,"external")
+ z.E, z.F = L.TG2:get()
+ PA.center, _, _ = C.A:CCL(C.B, L.TG2)
+ z.C = PA.center:get(2)
+ z.G = L.TG2:projection(z.C)}
+\begin{center}
+\begin{tikzpicture}[scale =.5]
+  \tkzInit[xmin=-5,xmax=25,ymin=-4,ymax=16]
+ \tkzClip
+ \tkzGetNodes
+ \tkzFillCircle[red!20](A,E)
+ \tkzFillCircle[green!20](C,G)
+ \tkzFillCircle[purple!20](B,F)
+ \tkzDrawCircles[thick](A,E B,F C,G)
+ \tkzDrawLines(E,G)
+  \tkzDrawPoints[red](A,B,C,T,E,F,G)
+ \tkzLabelPoints[red](A,B,C,T,E,F,G)
+\end{tikzpicture}
+ \end{center}
+\end{tkzexample}
 
 \subsection{Case: \tkzMeth{circle}{CCC}(C2, C3 [, opts])}
 \label{sub:CCC}
@@ -1609,8 +1621,6 @@ The construction follows Gergonne:
   \tkzGetNodes
   \tkzDrawCircles[fill=blue!15](A,a B,b C,c)
   \tkzDrawCirclesFromPaths[draw,purple,thick](PA.center, PA.through)
-  \tkzDrawLines[cyan](w,P w,Q w,R)
-  \tkzDrawLines[black](I,K)
 \end{tikzpicture}
 \end{center}
 \end{tkzexample}

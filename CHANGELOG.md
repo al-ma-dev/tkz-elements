@@ -1,3 +1,29 @@
+## [2025/11/13 version 4.40c]
+
+### Added
+- **points**:
+   - `length(p)`:  `z.A:length(z.B)` equiv. `tkz.length(z.A, z.B)`
+-**line**:
+   - improvement of `orthogonal_at` and `collinear_at`
+- **circle**:
+  - `from_radius` equiv. `through` and `from_diameter` equiv. `diameter`
+  - modification of `common_tangent`
+- **triangle**:
+  - `trilinear_to_d`
+- **tkz**:
+  - `tkz.range`, `tkz.deg`, `tkz.rad` and `tkz.pt`
+  - `tkz.is_NaN`, `tkz.is_Inf`, `tkz.notDef`
+  - `tkz.fsolve(f, a, b, n [, opts])`
+  - `tkz.derivative(f, x0 [, accuracy])`
+- **conic**
+  - adding `common_tangent`
+### Changed
+- **conic**:
+   -  modification of `path` for an ellipse: new options with "swap" and "ccw" or "cw"
+### Docs
+   - `\tkzDrawCoordinates[smooth]` instead of `\tkzDrawCoordinatessmooth` in class "conic"
+   - adding examples for CCL
+
 ## [2025/11/08 version 4.35c]
 
 ### Added

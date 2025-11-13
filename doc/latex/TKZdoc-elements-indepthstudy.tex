@@ -548,7 +548,7 @@ f(x) = x\cdot e^{-x^2} + 1
 
 The list of points computed from this function will be stored in a \tkzNameObj{path} object named \tkzname{PA.curve}.
 
-\textbf{Function definition.}
+\texttt{Function definition: }
 
 In the \LaTeX{} part of the code, we define the mathematical expression using:
 
@@ -558,7 +558,7 @@ In the \LaTeX{} part of the code, we define the mathematical expression using:
 
 This expression will later be passed to Lua for numerical evaluation.
 
-\textbf{Generating the path.}
+\texttt{Generating the path: }
 
 The macro \tkzname{tkzGetPath} takes five arguments:
 \begin{itemize}
@@ -571,15 +571,15 @@ The macro \tkzname{tkzGetPath} takes five arguments:
 
 The macro internally evaluates the function for each value of $x$ in the interval, and stores the corresponding points in a \code{path} object.
 
-\textbf{Percent character.}
+\texttt{Percent character: }
 
 In LuaTeX, the percent symbol \code{\%} is treated as a comment initiator within Lua code. To avoid syntax errors when formatting a string that contains a percent character (used in \code{string.format}), we define a control sequence \tkzMacro{latex}{percentchar} to refer to \verb|\@percentchar|. This ensures compatibility when embedding Lua code via \tkzMacro{lualatex}{directlua}.
 
-\textbf{Evaluating single values.}
+\texttt{Evaluating single values: }
 
 To retrieve the value of the function at a given point, the macro \tkzname{tkzval} can be used. It evaluates the Lua function with the input value and returns the result, which can then be used as a coordinate or label in the diagram.
 
-\textbf{Complete Example.}
+\texttt{Complete Example: }
 
 The following example shows how to compute and draw the curve using the methods described above.
 
@@ -626,7 +626,7 @@ The following example shows how to compute and draw the curve using the methods 
 \end{tikzpicture}
 \end{center}
 
-\textbf{Code definitions.}
+\texttt{Code definitions: }
 
 Below are the definitions of the macros used in this example:
 
@@ -883,7 +883,7 @@ The following code illustrates how to use the \code{point} method with a line, a
 \end{center}
 \end{minipage}
 
-\textbf{Remarks.}
+\texttt{Remarks: }
 \begin{itemize}
   \item For a line segment, \code{object:point(0.5)} returns the midpoint.
   \item For a circle, the parameter corresponds to the angle \( 2\pi t \) starting from the origin point.
@@ -958,7 +958,7 @@ end
 \end{itemize}
 
 \vspace{1em}
-\textbf{Summary.}
+\texttt{Summary: }
 
 The primary functions (whose names end with an underscore, such as \code{midpoint\_}, or \code{intersection\_lc\_}) are internal and are not part of the official API. They are not documented separately, as they serve only as internal building blocks for object methods. Users are encouraged to interact exclusively with object-oriented methods for clarity, stability, and forward compatibility.
 \endinput

@@ -1,6 +1,6 @@
 # tkz-elements — Euclidean geometry with LuaLaTeX
 
-_Current release: [2025/11/08 version 4.35c]_
+_Current release: [2025/11/13 version 4.40c]_
 
 `tkz-elements` is a Lua library that performs the computations needed to define the objects of a Euclidean geometry figure (points, lines, circles, conics, triangles, paths, …). All numerical work happens in **Lua**; drawing is done with **tkz‑euclide** (recommended) or **TikZ**.
 

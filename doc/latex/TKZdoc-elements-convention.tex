@@ -46,7 +46,7 @@ However, the recommended approach is to define the segment first with:
 |z.m = line(z.A, z.B).mid|. If you don't reuse the line, a one-liner like |z.m = line(z.A, z.B).mid| is acceptable.
 
 \vspace{12pt}
-Similarly, it may have been tempting to write |L.bi = bisector(z.A, z.B, z.C)| to obtain the angle bisector at vertex $A$. As in the previous example, this is no longer valid. You must now use:
+Similarly, it may have been tempting to write |L.bi = tkz.bisector(z.A, z.B, z.C)| to obtain the angle bisector at vertex $A$. As in the previous example, this is no longer valid. You must now use:
 
 |L.bi = tkz.bisector(z.A, z.B, z.C)|, as all standalone functions have been grouped under the |tkz| module.
 
@@ -64,6 +64,7 @@ A better practice is to define the triangle $ABC$ using:
 \tkzRHand{\textcolor{red}{Second Warning}}: Let's examine the consequences of incorrect assignments. The following example is very simple: we define two points, the line passing through them, and a line orthogonal to the first at one of the points. To define these objects, we use two tables (or classes): \tkzname{z} and \tkzname{L}.
 
 Here is the correct code:
+\begin{mybox}{}
 \begin{tkzexample}[latex=.5\textwidth]
 \directlua{
   z.A = point(1, 2)
@@ -79,6 +80,7 @@ Here is the correct code:
   \tkzDrawPoints(A,B)
 \end{tikzpicture}
 \end{tkzexample}
+\end{mybox}
 
 \begin{itemize}
   \item \textbf{First blunder:} \tkzname{z = nil} or \tkzname{z = 4}. You've reassigned the \tkzname{z} variable. It no longer refers to a table, but to a number. Its type has changed, and the system can no longer access the points.

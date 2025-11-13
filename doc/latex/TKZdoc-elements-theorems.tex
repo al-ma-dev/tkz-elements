@@ -172,9 +172,9 @@ Given any triangle ABC, and any point M on BC, construct the incircle and circum
  z.Q = intersection(L.ll, L.CM)
  C.QI = circle(z.Q, z.I)
  z.R, z.S = intersection(C.QI, L.CM)
- L.BMC = bisector(z.M, z.B, z.C)
+ L.BMC = tkz.bisector(z.M, z.B, z.C)
  z.x = L.BMC.pb
- L.CMA = bisector(z.M, z.C, z.A)
+ L.CMA = tkz.bisector(z.M, z.C, z.A)
  z.y = L.CMA.pb
  L.pS = L.CM:ortho_from(z.S)
  L.pR = L.CM:ortho_from(z.R)
@@ -209,9 +209,9 @@ Given any triangle ABC, and any point M on BC, construct the incircle and circum
  z.Q = intersection(L.ll, L.CM)
  C.QI = circle(z.Q, z.I)
  z.R, z.S = intersection(C.QI, L.CM)
- L.BMC = bisector(z.M, z.B, z.C)
+ L.BMC = tkz.bisector(z.M, z.B, z.C)
  z.x = L.BMC.pb
- L.CMA = bisector(z.M, z.C, z.A)
+ L.CMA = tkz.bisector(z.M, z.C, z.A)
  z.y = L.CMA.pb
  L.pS = L.CM:ortho_from(z.S)
  L.pR = L.CM:ortho_from(z.R)

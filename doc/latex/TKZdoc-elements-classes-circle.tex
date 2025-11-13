@@ -259,7 +259,7 @@ This method creates a new circle object defined by two points:
 The radius is computed as the Euclidean distance between the two points. Internally, the circle object stores both the center and the defining point, and computes several useful attributes for further geometric constructions.
 
 \vspace{1em}
-\textbf{Short form.}
+\texttt{Short form: }
 
 The function \code{circle(center, through)} is equivalent to \code{circle:new(center, through)} and is recommended for ease of use.
 \begin{mybox}
@@ -270,7 +270,7 @@ C.OA = circle:new(z.O, z.A)
 \end{verbatim}
 \end{mybox}
 
-\textbf{Derived attributes.}
+\texttt{Derived attributes: }
 
 
 Once created, the circle object contains:
@@ -375,6 +375,7 @@ We define a circle with its centre and radius.
   z.O = point(0, 0)
   z.A = point(2, 1)
   C.T = circle:radius(z.A, math.sqrt(5))
+  % better C.T = circle(from_radius(z.A, math.sqrt(5)))
   z.T = C.T.through }
 \begin{center}
   \begin{tikzpicture}[gridded]
@@ -385,6 +386,7 @@ We define a circle with its centre and radius.
 \end{tikzpicture}
 \end{center}
 \end{tkzexample}
+
 
 \subsubsection{Method \tkzMeth{circle}{diameter(pt,pt)}}
 \label{ssub:method_circle_diameter}
@@ -402,6 +404,7 @@ A circle is defined by two points at the ends of one of its diameters.
   z.A = point(0, 0)
   z.B = point(2, 1)
   C.T = circle:diameter(z.A, z.B)
+  % better C.T = from_diameter(z.A, z.B)
   z.O = C.T.center
   z.T = C.T.through}
 \begin{center}
@@ -658,15 +661,16 @@ BDp = C.OA:in_out_disk(z.P)}
 This method classifies the relative position of a line with respect to a circle.
 It returns whether the line is \texttt{disjoint}, \texttt{tangent} or \texttt{secant}.
 
+\medskip
 \texttt{Syntax: } \verb|pos = C.AB:line_position(L.CD)|
 
-
+\medskip
 \texttt{Arguments: }
 
  \texttt{L} — a \tkzname{line} object to be tested against the circle.
 
-
-\textbf{Return value}
+\medskip
+\texttt{Return value: }
 
 A string describing the relative position of the line:
 \begin{itemize}
@@ -675,6 +679,7 @@ A string describing the relative position of the line:
   \item \texttt{"secant"} — line intersecting the circle at two points.
 \end{itemize}
 
+\medskip
 \texttt{Remarks: }
 
 \begin{itemize}
@@ -683,6 +688,7 @@ A string describing the relative position of the line:
   \item The tolerance \tkzVar{tkz}{tkz.epsilon} is used to handle rounding errors near tangency.
 \end{itemize}
 
+\medskip
 \texttt{Example usage: }
 
 \begin{tkzexample}[latex=.5\textwidth]
@@ -723,7 +729,7 @@ The result is returned as a list of integers corresponding to the sectors inters
     \end{itemize}
 \end{itemize}
 
-\textbf{Return value: }
+\texttt{Return value: }
 
 A Lua table (list of integers) representing the indices of the sectors touched by the circle.
 
@@ -1544,7 +1550,7 @@ Notes and conventions:
 \end{tkzexample}
 
 
-\textbf{Application}
+\texttt{Application: }
 \medskip
 
 Let $T$ and $T'$ be the points of tangency of a common external tangent to two circles, chosen such that $T$ lies on the first circle and $T'$ on the second, both on the same side. Consider a secant parallel to this tangent passing through a fixed point $C$ (typically the center of one of the circles).
@@ -2064,7 +2070,7 @@ In all other situations, there is a unique solution.
 \subsubsection{Method \tkzMeth{circle}{radical\_circle(C,C)}}
 \label{ssub:radical_circle}
 
-\textbf{Radical circle of three given circles.}
+\texttt{Radical circle of three given circles.}
 
 \medskip
 
@@ -2569,7 +2575,7 @@ Three cases can be distinguished:
 
 Let's look at each case:
 
-\textbf{Note} It should be noted that in each case, inversion allows us to verify that the two objects are inverses of each other.
+\texttt{Note: } It should be noted that in each case, inversion allows us to verify that the two objects are inverses of each other.
 
 
 \begin{enumerate}

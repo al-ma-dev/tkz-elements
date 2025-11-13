@@ -303,28 +303,64 @@ function conic:asymptotes()
 	end
 end
 
-function conic:path(za, zb, nb, mode)
-	nb = nb or 20
+-- conic:path(za, zb, nb, mode, dir)
+-- mode : nil/"direct" (défaut) → arc direct (court)
+--        "swap"                → arc complémentaire (l'autre partie)
+-- dir  : "ccw" | "cw" (optionnel, utilisé pour lever l'ambiguïté à dt=±0.5
+--                      ou quand za==zb → tour complet)
+function conic:path(za, zb, nb, mode, dir)
+	nb   = nb or 20
+	mode = (mode or "direct"):lower()
+
 	local ta = self:get_t_from_point(za)
 	local tb = self:get_t_from_point(zb)
 	local dt = tb - ta
 
-	-- Correction pour ellipse uniquement en mode "short"
-	if self.e < 1 and mode == "short" then
-		if dt > 0.5 then
-			dt = dt - 1
-		end
-		if dt < -0.5 then
-			dt = dt + 1
-		end
+	local function sgn(x) return (x < 0) and -1 or 1 end
+	local function frac1(x)
+		x = x % 1
+		if x < 0 then x = x + 1 end
+		return x
 	end
 
+	-- Ellipse uniquement : paramètre périodique sur [0,1)
+	if self.e and self.e < 1 then
+		ta = frac1(ta)
+
+		-- Normaliser dt dans (-0.5, 0.5]
+		local eps = 1e-12
+		dt = ((dt + 0.5) % 1) - 0.5
+
+		-- Antipodes : trancher proprement
+		if math.abs(math.abs(dt) - 0.5) < eps then
+			-- choix déterministe selon dir (par défaut "cw")
+			dt = (dir == "ccw") and  0.5 or -0.5
+		end
+
+		if mode == "swap" then
+			-- Prendre l'autre partie (arc complémentaire)
+			if math.abs(dt) < eps then
+				-- mêmes points : faire un tour complet
+				dt = (dir == "cw") and -1 or 1
+			else
+				-- décale de ±1 pour obtenir l'arc > 0.5 en valeur absolue
+				dt = dt - sgn(dt)
+			end
+		else
+			-- "direct" (défaut) : on garde dt dans (-0.5, 0.5]
+		end
+	else
+		-- Parabole/hyperbole : pas de périodicité ; on ne modifie pas dt
+	end
+
+	-- Échantillonnage
 	local P = path()
 	for i = 0, nb do
 		local t = i / nb
 		local t_interp
-		if self.e < 1 then
+		if self.e and self.e < 1 then
 			t_interp = (ta + t * dt) % 1
+			if t_interp < 0 then t_interp = t_interp + 1 end
 		else
 			t_interp = ta + t * dt
 		end
@@ -334,9 +370,9 @@ function conic:path(za, zb, nb, mode)
 		end
 		P:add_point(pt)
 	end
-
 	return P
 end
+
 
 function conic:get_t_from_point(z)
 	local e = self.e
@@ -382,6 +418,275 @@ function conic:get_t_ellipse(z)
 		a = a + 2 * math.pi
 	end
 	return a / (2 * math.pi)
+end
+
+-- Tangentes communes externes ellipse–ellipse.
+-- Retour : L1, L2
+function conic:common_tangent(E2, which)
+which = which or "external"  -- "external" (défaut) ou "internal"
+	if self.subtype ~= "ellipse" or E2.subtype ~= "ellipse" then
+		return nil, nil
+	end
+
+	local E1 = self
+  local E2 = CO.E2
+	local C1 = E1.center
+	local C2 = E2.center
+	local A1 = E1.a
+	local B1 = E1.b
+
+	local a, b  = E1.directrix:get()
+	local ll    = line(b, a)
+	local sys   = occs(ll, C1)
+	local X2, Y2 = sys:coordinates(E2.center)
+	local c2_loc = point(X2, Y2)
+	local u2_loc, v2_loc
+	do
+		local vx, vy = sys:coordinates(E2.vertex)
+		local cvx, cvy = vx - c2_loc.re, vy - c2_loc.im
+		local nv = math.sqrt(cvx * cvx + cvy * cvy)
+		if nv > 0 then cvx, cvy = cvx / nv, cvy / nv end
+		u2_loc = point(cvx, cvy)
+
+		local wx, wy = sys:coordinates(E2.covertex)
+		local cwx, cwy = wx - c2_loc.re, wy - c2_loc.im
+		local nw = math.sqrt(cwx * cwx + cwy * cwy)
+		if nw > 0 then cwx, cwy = cwx / nw, cwy / nw end
+		v2_loc = point(cwx, cwy)
+	end
+
+	local A2 = E2.a
+	local B2 = E2.b
+
+	-- paramétrisation locale de E2 (dans le repère sys)
+	local function pE2_loc(t)
+		return {
+			x = c2_loc.re + A2 * math.cos(t) * u2_loc.re + B2 * math.sin(t) * v2_loc.re,
+			y = c2_loc.im + A2 * math.cos(t) * u2_loc.im + B2 * math.sin(t) * v2_loc.im
+		}
+	end
+	local function dE2_loc(t)
+		return {
+			x = -A2 * math.sin(t) * u2_loc.re + B2 * math.cos(t) * v2_loc.re,
+			y = -A2 * math.sin(t) * u2_loc.im + B2 * math.cos(t) * v2_loc.im
+		}
+	end
+
+	-- produit scalaire elliptique (E1) & normes associées
+	local function ps_loc(z1, z2)
+		return (z1.x * z2.x) / (A1 * A1) + (z1.y * z2.y) / (B1 * B1)
+	end
+	local function N2_loc(z)
+		return ps_loc(z, z)
+	end
+
+	-- discriminant de tangence
+	local function D_of_t(t)
+		local p  = pE2_loc(t)
+		local dp = dE2_loc(t)
+		return ps_loc(p, dp) ^ 2 - N2_loc(dp) * (N2_loc(p) - 1)
+	end
+
+	local function is_external(A, u)
+		local px, py = -u.y, u.x
+		local s1 = A.x * px + A.y * py
+		local dx, dy = A.x - c2_loc.re, A.y - c2_loc.im
+		local s2 = dx * px + dy * py
+		return s1 * s2 >= 0
+	end
+
+local function is_internal(A, u)
+		local px, py = -u.y, u.x
+		local s1 = A.x * px + A.y * py
+		local dx, dy = A.x - c2_loc.re, A.y - c2_loc.im
+		local s2 = dx * px + dy * py
+		return s1 * s2 <= 0
+	end
+
+	local function to_global(O, origin, a, b)
+		local ox, oy = origin.re, origin.im
+		local ux, uy = O.x.re - ox, O.x.im - oy
+		local vx, vy = O.y.re - ox, O.y.im - oy
+		return point(ox + a * ux + b * vx, oy + a * uy + b * vy)
+	end
+
+	local function almost_eq(P, Q, eps)
+		if (not P) or (not Q) then return false end
+		eps = eps or 1e-4
+		return (math.abs(P.x - Q.x) < eps) and (math.abs(P.y - Q.y) < eps)
+	end
+	-- ===== Fin du bloc “préambule/repère” adapté =====
+
+	local E1_raw, E2_raw = {}, {}
+	local T = tkz.fsolve(D_of_t, -math.pi, math.pi, 720)
+	if T == nil then T = {} end
+	if type(T) ~= "table" then T = { T } end
+
+	for _, t in ipairs(T) do
+		local A = pE2_loc(t)
+		local u = dE2_loc(t)
+		if A and u then
+			local uu = ps_loc(u, u)
+			if uu and uu > 0 then
+				local lam = -ps_loc(A, u) / uu
+				local B = { x = A.x + lam * u.x, y = A.y + lam * u.y }
+				if which == "external" then
+					is_which=is_external
+				else
+					is_which=is_internal
+				end
+				if is_which(A, u) then
+					local n = utils.table_getn(E1_raw)
+					local dup = false
+					for i = 1, n do
+						if almost_eq(B, E1_raw[i]) and almost_eq(A, E2_raw[i]) then
+							dup = true
+							break
+						end
+					end
+					if not dup then
+						E1_raw[n + 1] = B
+						E2_raw[n + 1] = A
+						if n + 1 >= 2 then break end
+					end
+				end
+			end
+		end
+	end
+
+	-- projection finale en global via le repère sys centré en C1
+	local a = E1_raw[1] and to_global(sys, C1, E1_raw[1].x, E1_raw[1].y) or nil
+	local b = E1_raw[2] and to_global(sys, C1, E1_raw[2].x, E1_raw[2].y) or nil
+	local c = E2_raw[1] and to_global(sys, C1, E2_raw[1].x, E2_raw[1].y) or nil
+	local d = E2_raw[2] and to_global(sys, C1, E2_raw[2].x, E2_raw[2].y) or nil
+	return line:new(a, b), line:new(c, d)
+end
+
+function conic:common_tangent_internal(E2)
+
+	if self.subtype ~= "ellipse" or E2.subtype ~= "ellipse" then
+		return nil, nil
+	end
+
+	local E1 = self
+	local E2 = CO.E2
+	local C1 = E1.center
+	local C2 = E2.center
+	local A1 = E1.a
+	local B1 = E1.b
+
+	local a, b  = E1.directrix:get()
+	local ll    = line(b, a)
+	local sys   = occs(ll, C1)
+	local X2, Y2 = sys:coordinates(E2.center)
+	local c2_loc = point(X2, Y2)
+	local u2_loc, v2_loc
+	do
+		local vx, vy = sys:coordinates(E2.vertex)
+		local cvx, cvy = vx - c2_loc.re, vy - c2_loc.im
+		local nv = math.sqrt(cvx * cvx + cvy * cvy)
+		if nv > 0 then cvx, cvy = cvx / nv, cvy / nv end
+		u2_loc = point(cvx, cvy)
+
+		local wx, wy = sys:coordinates(E2.covertex)
+		local cwx, cwy = wx - c2_loc.re, wy - c2_loc.im
+		local nw = math.sqrt(cwx * cwx + cwy * cwy)
+		if nw > 0 then cwx, cwy = cwx / nw, cwy / nw end
+		v2_loc = point(cwx, cwy)
+	end
+
+	local A2 = E2.a
+	local B2 = E2.b
+
+	-- paramétrisation locale de E2 (dans le repère sys)
+	local function pE2_loc(t)
+		return {
+			x = c2_loc.re + A2 * math.cos(t) * u2_loc.re + B2 * math.sin(t) * v2_loc.re,
+			y = c2_loc.im + A2 * math.cos(t) * u2_loc.im + B2 * math.sin(t) * v2_loc.im
+		}
+	end
+	local function dE2_loc(t)
+		return {
+			x = -A2 * math.sin(t) * u2_loc.re + B2 * math.cos(t) * v2_loc.re,
+			y = -A2 * math.sin(t) * u2_loc.im + B2 * math.cos(t) * v2_loc.im
+		}
+	end
+
+	-- produit scalaire elliptique (E1) & normes associées
+	local function ps_loc(z1, z2)
+		return (z1.x * z2.x) / (A1 * A1) + (z1.y * z2.y) / (B1 * B1)
+	end
+	local function N2_loc(z)
+		return ps_loc(z, z)
+	end
+
+	-- discriminant de tangence
+	local function D_of_t(t)
+		local p  = pE2_loc(t)
+		local dp = dE2_loc(t)
+		return ps_loc(p, dp) ^ 2 - N2_loc(dp) * (N2_loc(p) - 1)
+	end
+
+local function is_internal(A, u)
+		local px, py = -u.y, u.x
+		local s1 = A.x * px + A.y * py
+		local dx, dy = A.x - c2_loc.re, A.y - c2_loc.im
+		local s2 = dx * px + dy * py
+		return s1 * s2 <= 0
+	end
+
+	local function to_global(O, origin, a, b)
+		local ox, oy = origin.re, origin.im
+		local ux, uy = O.x.re - ox, O.x.im - oy
+		local vx, vy = O.y.re - ox, O.y.im - oy
+		return point(ox + a * ux + b * vx, oy + a * uy + b * vy)
+	end
+
+	local function almost_eq(P, Q, eps)
+		if (not P) or (not Q) then return false end
+		eps = eps or 1e-4
+		return (math.abs(P.x - Q.x) < eps) and (math.abs(P.y - Q.y) < eps)
+	end
+	-- ===== Fin du bloc “préambule/repère” adapté =====
+
+	local E1_raw, E2_raw = {}, {}
+	local T = solve(D_of_t, -math.pi, math.pi, 720)
+	if T == nil then T = {} end
+	if type(T) ~= "table" then T = { T } end
+
+	for _, t in ipairs(T) do
+		local A = pE2_loc(t)
+		local u = dE2_loc(t)
+		if A and u then
+			local uu = ps_loc(u, u)
+			if uu and uu > 0 then
+				local lam = -ps_loc(A, u) / uu
+				local B = { x = A.x + lam * u.x, y = A.y + lam * u.y }
+				if is_internal(A, u) then
+					local n = utils.table_getn(E1_raw)
+					local dup = false
+					for i = 1, n do
+						if almost_eq(B, E1_raw[i]) and almost_eq(A, E2_raw[i]) then
+							dup = true
+							break
+						end
+					end
+					if not dup then
+						E1_raw[n + 1] = B
+						E2_raw[n + 1] = A
+						if n + 1 >= 2 then break end
+					end
+				end
+			end
+		end
+	end
+
+	-- projection finale en global via le repère sys centré en C1
+	local a = E1_raw[1] and to_global(sys, C1, E1_raw[1].x, E1_raw[1].y) or nil
+	local b = E1_raw[2] and to_global(sys, C1, E1_raw[2].x, E1_raw[2].y) or nil
+	local c = E2_raw[1] and to_global(sys, C1, E2_raw[1].x, E2_raw[1].y) or nil
+	local d = E2_raw[2] and to_global(sys, C1, E2_raw[2].x, E2_raw[2].y) or nil
+	return line:new(a, b), line:new(c, d)
 end
 
 return conic
