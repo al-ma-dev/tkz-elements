@@ -9,28 +9,64 @@
 ----------------------------
 ---- boolean ---------------
 ----------------------------
-function in_out_(a, b, c, pt, strict)-- nil (absent or fals or true)
-	local x, y, z = barycentric_coordinates_(a, b, c, pt)
-	local eps = tkz.epsilon
-	if strict then
-		return (x > eps and y > eps and z > eps)
-	else
-		return (x >= -eps and y >= -eps and z >= -eps)
-	end
+function in_out_(a, b, c, pt, EPS)-- nil (absent or fals or true)
+	EPS  = EPS or tkz.epsilon
+  local x, y, z = barycentric_coordinates_(a, b, c, pt)
+		return (x >= -EPS and y >= -EPS and z >= -EPS)
 end
 
+function in_out_strict_(a, b, c, pt, EPS)-- nil (absent or fals or true)
+	EPS  = EPS or tkz.epsilon
+	local x, y, z = barycentric_coordinates_(a, b, c, pt)
+	return (x > EPS and y > EPS and z > EPS)
+end
 
-function check_equilateral_(A, B, C)
+function check_equilateral_(A, B, C, EPS)
+	EPS = EPS or tkz.epsilon
 	local a, b, c = length_(B, C), length_(A, C), length_(A, B)
 
 	-- Vérifie que les trois longueurs sont égales à epsilon près
-	if math.abs(a - b) < tkz.epsilon and math.abs(a - c) < tkz.epsilon and math.abs(b - c) < tkz.epsilon then
+	if math.abs(a - b) < EPS and math.abs(a - c) < EPS and math.abs(b - c) < EPS then
 		return true
 	else
 		return false
 	end
 end
 
+-- acutangle : triangle with three acute angles.
+function check_acutangle_(A, B, C, EPS)
+	EPS = EPS or tkz.epsilon
+	local a, b, c = length_(B, C), length_(A, C), length_(A, B)
+
+	local asq = a * a
+	local bsq = b * b
+	local csq = c * c
+	if asq + bsq > csq and bsq + csq > asq and csq + asq > bsq then
+		return true
+	else
+		return false
+	end
+end
+
+function check_isosceles_(A, B, C, EPS)
+	EPS = EPS or tkz.epsilon
+  local a, b, c = length_(B, C), length_(A, C), length_(A, B)
+
+		-- si déjà équilatéral
+		if check_equilateral_(A, B, C, EPS) then
+				return true
+		end
+
+		if math.abs(a - b) <= EPS then
+				return true      -- sommet C au-dessus de AB
+		elseif math.abs(b - c) <= EPS then
+				return true      -- sommet A au-dessus de BC
+		elseif math.abs(c - a) <= EPS then
+				return true      -- sommet B au-dessus de CA
+		else
+				return false
+		end
+end
 ------------------------
 ----  string ------------
 -------------------------
@@ -480,3 +516,4 @@ function resolve_triangle_index(self, arg)
 		tex.error("Invalid argument for triangle index")
 	end
 end
+

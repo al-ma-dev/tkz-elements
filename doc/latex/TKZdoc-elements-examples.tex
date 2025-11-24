@@ -876,7 +876,7 @@ Same result than the previous example using the function |T.ABC.ab : apollonius 
  z.O_1 = point(0, 0)
  z.O_2 = point(0, 1)
  z.A = point(0, 3)
- z.F = point:polar(3, math.pi / 6)
+ z.F = point:polar(3, -math.pi / 6)
  L.FO1 = line(z.F, z.O_1)
  C.O1A = circle(z.O_1, z.A)
  z.E = intersection(L.FO1, C.O1A)
@@ -901,7 +901,7 @@ Same result than the previous example using the function |T.ABC.ab : apollonius 
  z.O_1 = point(0, 0)
  z.O_2 = point(0, 1)
  z.A = point(0, 3)
- z.F = point:polar(3, math.pi / 6)
+ z.F = point:polar(3, -math.pi / 6)
  L.FO1 = line(z.F, z.O_1)
  C.O1A = circle(z.O_1, z.A)
  z.E = intersection(L.FO1, C.O1A)
@@ -909,7 +909,7 @@ Same result than the previous example using the function |T.ABC.ab : apollonius 
  z.x = T.ABC:parallelogram()
   L.FO2 = line(z.x, z.O_2)
  C.O2A = circle(z.O_2, z.A)
- z.C, z.D = intersection( L.FO2, C.O2A)}
+ z.C, z.D = intersection(L.FO2, C.O2A)}
 \begin{center}
   \begin{tikzpicture}
   \tkzGetNodes

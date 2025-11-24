@@ -1,16 +1,18 @@
 # tkz-elements — Euclidean geometry with LuaLaTeX
 
-_Current release: [2025/11/13 version 4.40c]_
+_Current release: **[2025/11/24 version 4.42c]**_
 
-`tkz-elements` is a Lua library that performs the computations needed to define the objects of a Euclidean geometry figure (points, lines, circles, conics, triangles, paths, …). All numerical work happens in **Lua**; drawing is done with **tkz‑euclide** (recommended) or **TikZ**.
+`tkz-elements` is a Lua library that performs the computations needed to define the objects of a Euclidean geometry figure (points, lines, circles, conics, triangles, paths, …).
+All numerical work happens in **Lua**; drawing is done with **tkz-euclide** (recommended) or **TikZ**.
 
 ---
 
 ## Features
 - **Object-oriented design**: classes `point`, `line`, `circle`, `conic`, `triangle`, `path`, …
-- **Rich geometry toolbox**: bisectors, altitudes, tangents, radical axis/center, Poncelet point, orthopole, Kimberling points, mixtilinear circle, Morley/Soddy/Napoleon constructions, Apollonius and more
-- **Utilities module**: helpers for formatting numbers/points, solving equations, trigonometry/angles, barycentric & trilinear coordinates, comparisons, rounding, etc.
-- **Smooth Lua → TikZ transfer**: transfer computed objects from Lua to TikZ/`tkz-euclide` with simple macros
+- **Rich geometry toolbox**: bisectors, altitudes, tangents, radical axis/center, Poncelet point, orthopole, Kimberling points, mixtilinear circle, Morley/Soddy/Napoleon constructions, Apollonius problems and more.
+- **Utilities module**: helpers for formatting, solving equations, trigonometry/angles, barycentric & trilinear coordinates, comparisons, rounding, etc.
+- **Smooth Lua → TikZ transfer**: send computed objects from Lua to TikZ/`tkz-euclide` via simple macros.
+
 
 ## Requirements
 - **LuaLaTeX** (Lua 5.3)

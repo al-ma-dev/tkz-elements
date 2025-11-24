@@ -181,8 +181,11 @@ The circle class offers a wide range of methods, which can be grouped according 
   \tkzMeth{circle}{random\_pt(<'inside'>)}  & [\ref{ssub:method_imeth_circle_random_inside}]\\
   \tkzMeth{circle}{inversion(obj)} & [\ref{ssub:inversion}; \ref{par:inversion_circle}; \ref{par:inversion_line}]\\
   \tkzMeth{circle}{inversion\_neg(obj)} & [\ref{ssub:inversion_neg}]\\
+
   \tkzMeth{circle}{internal\_similitude(C)}  &  [\ref{ssub:method_circle_internal__similitude}]\\
   \tkzMeth{circle}{external\_similitude(C)} &  [\ref{ssub:method_circle_external__similitude}] \\
+  \tkzMeth{circle}{similitude(mode, C)} &  [\ref{ssub:similitude}] \\
+
   \tkzMeth{circle}{radical\_center(C1<,C2>)} & [\ref{ssub:radical_center} ]  \\
  \tkzMeth{circle}{pole(L)} & [\ref{ssub:method_circle_pole}]\\
  \midrule
@@ -544,7 +547,7 @@ see the example above
 \subsubsection{Method \tkzMeth{circle}{in\_out} for circle and disk}
 \label{ssub:in_out_for_circle_and_disk}
 
-These two methods determine the position of a point relative to a circle or the closed disk it defines.
+These two methods determine the position of a point relative to a circle or the closed disk it defines. Si nécessaire, pour toutes les fonctions suivantes, vous pouvez ajuster la précision pour déterminer les résultats à l'aide d'un argument optionnel. Par défaut cette précision est liée à la variable globale \verb|tkz.epsilon = 1e-8|
 
 \medskip
 
@@ -1197,6 +1200,24 @@ This construction is essential in many geometric transformations (e.g., inversio
 \end{center}
 \end{tkzexample}
 
+\subsubsection{Method \tkzMeth{circle}{similitude(C,mode)}}
+\label{ssub:similitude}
+
+This method unifies the two similitude-center functions.
+
+\begin{itemize}
+  \item \code{mode = "internal"} returns the internal center of similitude.
+  \item \code{mode = "external"} returns the external center of similitude.
+\end{itemize}
+
+\medskip
+\noindent\texttt{Example: }
+\begin{verbatim}
+S  = C1:similitude(C2, "internal")
+Se = C1:similitude(C2, "external")
+\end{verbatim}
+
+
 \subsubsection{Method \tkzMeth{circle}{radical\_center(C1, C2)}}
 \label{ssub:radical_center}
 
@@ -1566,7 +1587,7 @@ This elegant geometric relationship is used in the construction of tangents and 
 \vspace{1em}
 
 
-\begin{minipage}{.5\textwidth}
+\begin{minipage}{.55\textwidth}
 \directlua{
 init_elements()
 z.A = point(0 , 0 )
@@ -1602,7 +1623,7 @@ _, z.D = intersection(C.AC,C.BC)}
 \end{tikzpicture}
 \end{center}
 \end{minipage}
-\begin{minipage}{.5\textwidth}
+\begin{minipage}{.4\textwidth}
 \begin{tkzexample}[code only]
 \directlua{
 init_elements()

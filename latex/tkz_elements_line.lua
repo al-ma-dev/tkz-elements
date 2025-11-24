@@ -145,6 +145,37 @@ function line:harmonic_both(k)
   return div_harmonic_both_(self.pa, self.pb, k)
 end
 
+-- Unified harmonic division interface
+-- Usage:
+--   L:harmonic(k)                --> "both" mode, ratio k (internal, external)
+--   L:harmonic("both", k)        --> idem
+--   L:harmonic("int",  pt)       --> internal harmonic conjugate of pt
+--   L:harmonic("ext",  pt)       --> external harmonic conjugate of pt
+function line:harmonic(mode, arg)
+  -- si le premier argument n'est pas une chaîne, on suppose mode = "both"
+  if type(mode) ~= "string" then
+    arg  = mode
+    mode = "both"
+  end
+
+  if mode == "internal" then
+    return div_harmonic_int_(self.pa, self.pb, arg)
+
+  elseif mode == "external" then
+    return div_harmonic_ext_(self.pa, self.pb, arg)
+
+  elseif mode == "both" then
+    return div_harmonic_both_(self.pa, self.pb, arg)
+
+  else
+    tex.error("line:harmonic -> invalid mode: use 'internal', 'external' or 'both'")
+    return
+  end
+end
+
+
+
+
 -- Returns the point corresponding to the gold ratio on the line
 function line:gold_ratio()
   return self.pa + (self.pb - self.pa) * tkz.invphi
@@ -222,6 +253,7 @@ function line:mediator()
   return line:new(rotation_(m, -math.pi / 2, self.pb), rotation_(m, math.pi / 2, self.pb))
 end
 line.perpendicular_bisector = line.mediator
+line.bisector = line.mediator
 
 function line:swap_line()
   self.pa, self.pb = self.pb, self.pa -- Inverse les points pa et pb
@@ -480,7 +512,7 @@ end
 function line:golden(swap)
   local pta, ptb, pt
   swap = (swap == "swap")
-  local angle = 2 * math.pi / 5
+  local angle = tkz.tau / 5
 
   if swap then
     pta = rotation_(self.pa, -angle, self.pb)

@@ -84,7 +84,7 @@ function euclide_tr_(a, b)
 end
 
 function golden_tr_(a, b)
-	local pt = rotation_(a, 2 * math.pi / 5, b)
+	local pt = rotation_(a, tkz.tau / 5, b)
 	return a + (pt - a) * tkz.phi
 end
 

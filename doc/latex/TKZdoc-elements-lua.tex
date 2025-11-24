@@ -475,6 +475,12 @@ tex.sprint(string.format("The quotient of ".. pc.. "d divided by".. pc.."
 tex.sprint(string.format("The remainder is: "..pc.."d\\par", r))
 }
 
+Another solution is to use a local variable, for example:
+
+\verb|local format = string.char(37) .. ".2f"|
+
+and then \verb| tex.print(string.format(format , ...))|
+
 Let's examine the version of the function if it is defined in the macro \tkzMacro{lualatex}{directlua}.
 
 The problem is the use of l'operator \% (Modulus Operator and remainder of after an integer division). The same problem occurs when using the string.format function and the \%d or \%i: placeholder for an integer.

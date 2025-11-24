@@ -143,7 +143,7 @@ z.G = Q.ABCD.g}
  init_elements()
  z.A = point(0, 0)
  z.B = point(4, 0)
- z.D = point:polar(4, 2 * math.pi / 3)
+ z.D = point:polar(4, tkz.tau / 3)
  L.DB = line(z.D, z.B)
  T.equ = L.DB:equilateral()
  z.C = T.equ.pc
@@ -171,7 +171,7 @@ z.G = Q.ABCD.g}
 init_elements()
 z.A = point(0, 0)
 z.B = point(4, 0)
-z.D = point:polar(4, 2 * math.pi / 3)
+z.D = point:polar(4, tkz.tau / 3)
 L.DB = line(z.D, z.B)
 T.equ = L.DB:equilateral()
 z.C = T.equ.pc

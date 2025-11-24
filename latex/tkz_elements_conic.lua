@@ -415,9 +415,9 @@ function conic:get_t_ellipse(z)
 	local M = inverse_affinity_ellipse(self, z)
 	local a = get_angle_normalize_(self.center, self.vertex, M)
 	if a < 0 then
-		a = a + 2 * math.pi
+		a = a + tkz.tau
 	end
-	return a / (2 * math.pi)
+	return a / tkz.tau
 end
 
 -- Tangentes communes externes ellipse–ellipse.

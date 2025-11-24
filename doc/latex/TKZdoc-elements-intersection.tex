@@ -2,7 +2,7 @@
 \section{Intersections}
 \label{sec:intersections}
 
-The \tkzFct{intersection} function is an essential geometric tool. It computes the intersection of two geometric objects, which may belong to the following classes:
+The \tkzFct{tkz-elements}{intersection} function is an essential geometric tool. It computes the intersection of two geometric objects, which may belong to the following classes:
 
 \begin{itemize}
   \item \tkzClass{line} with \tkzClass{line},
@@ -11,52 +11,100 @@ The \tkzFct{intersection} function is an essential geometric tool. It computes t
   \item \tkzClass{line} with \tkzClass{conic}.
 \end{itemize}
 
-
-Note that \tkzClass{circle} is a distinct class from \tkzClass{conic}. The \code{conic} class includes parabolas, hyperbolas, and ellipses.
-
-\medskip
-
-The function takes a pair of objects as arguments, regardless of their order. The result typically consists of one or two points, depending on the geometric configuration. If there is no intersection, the function may return \code{false} or \code{\_} (underscore), depending on the context.
+Note that \tkzClass{circle} is a distinct class from \tkzClass{conic}.
+The \code{conic} class includes parabolas, hyperbolas, and ellipses.
 
 \medskip
 
-In cases where two intersection points exist, and you either:
+The function takes a pair of objects as arguments, regardless of order.
+The result typically consists of one or two points, depending on the geometric configuration.
+If there is no intersection, the function may return \code{false} or \code{\_}, depending on the context.
+
+\medskip
+
+When two intersection points exist and you either:
 \begin{itemize}
-  \item already know one of the solutions, or
-  \item wish to select the point closest to a given location,
+  \item already know one of them, or
+  \item want to select the one closest to a reference point,
 \end{itemize}
-you can make use of optional keys described in the next section.
+you may use optional keys in the \code{opts} table.
 
+In addition, numerical robustness can be controlled through an optional tolerance parameter \code{eps}, also stored in \code{opts}.
 
-\subsection{Optional arguments: \code{known} and \code{near}}
+\subsection{Optional arguments: \code{known}, \code{near}, and \code{EPS}}
 
-The function \tkzFct{intersection(X, Y, opts)} computes the intersection points between two geometric objects \code{X} and \code{Y} (such as circles, lines, or conics). In some cases, the order of the returned solutions can be important, especially when assigning names or selecting a specific point in a figure. To address this, the \code{opts} table can include optional keys:
+The function \tkzFct{tkz-elements}{intersection(X, Y, opts)} computes the intersection between two geometric objects \code{X} and \code{Y}.
+The optional table \code{opts} may contain the following keys:
 
 \begin{itemize}
   \item \tkzKey{known} \tkzOptArg{point} \\
-  This option assumes that one of the two solutions is already known. The function will return the \emph{other} solution as the first value. This is particularly useful in constructions where one intersection is already defined and the second must be isolated:
+  This option is used when one of the two intersection points is already known.
+  The function will return the \emph{other} solution as the first value.
+  This is particularly useful in constructions where one intersection is already defined:
+
   \begin{mybox}
   \begin{verbatim}
   z.X, z.Y = intersection(C1, C2, {known = z.Y})
   \end{verbatim}
   \end{mybox}
-  In this example, if \code{z.Y} is one of the two points of intersection, the function ensures that \code{z.X} receives the other.
+
+  If \code{z.Y} is one of the intersection points, the function ensures that \code{z.X} receives the other.
 
   \item \tkzKey{near} \tkzOptArg{point} \\
-  With this option, the function returns first the solution closest to the given reference point. This is useful in disambiguating symmetric solutions:
+  With this option, the function returns first the solution closest to the given reference point:
+
   \begin{mybox}
   \begin{verbatim}
   z.A, z.B = intersection(C1, L, {near = z.O})
   \end{verbatim}
   \end{mybox}
-  Here, \code{z.A} will be the intersection point closest to \code{z.O}, and \code{z.B} will be the other one.
+
+  Here, \code{z.A} will be the intersection point closest to \code{z.O}.
+
+  \item \tkzKey{EPS} \tkzOptArg{number} \\
+  This optional key sets the numerical tolerance used internally when determining
+  whether objects intersect, touch, or are tangential.
+  If omitted, the global value \code{tkz.epsilon} is used:
+
+  \begin{mybox}
+  \begin{verbatim}
+  z.A, z.B = intersection(C1, C2, {eps = 1e-6})
+  \end{verbatim}
+  \end{mybox}
+
+  This option improves robustness in configurations involving near-tangency or
+  small numerical uncertainties.
+
 \end{itemize}
 
-If none of these options is specified, the intersection points are returned in the default order determined by the underlying geometric computation.
+If none of these options is supplied, the intersection points are returned in the default order determined by the geometric computation, and the global tolerance \code{tkz.epsilon} is used.
 
 \medskip
 
-\textbf{Note:} These options are only meaningful when the intersection returns multiple points. In the case of a single intersection (e.g., a tangent), the result is unaffected.
+\texttt{Note: } These options only affect cases where the intersection returns multiple points.
+For single-point intersections (e.g., tangency), the result is unaffected.
+The \code{eps} option however always controls the numerical tolerance used internally.
+
+\medskip
+\texttt{Compatibility note: }
+For convenience and backward compatibility, the third argument of
+\code{intersection} may also be a numerical tolerance:
+\begin{mybox}
+\begin{verbatim}
+z.A, z.B = intersection(C1, C2, 1e-5)
+\end{verbatim}
+\end{mybox}
+In this case, the number is interpreted as the value of \code{eps},
+and no other option is provided.
+The recommended modern form is:
+\begin{mybox}
+\begin{verbatim}
+z.A, z.B = intersection(C1, C2, {eps = 1e-5})
+\end{verbatim}
+\end{mybox}
+
+
+
 
 \subsection{Line-line}
 \label{sub:line_line}

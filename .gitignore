@@ -13,10 +13,12 @@
 *.ind
 *.bbl
 *.blg
+*.zip
 
 # builds locaux
 /build/
 doc/latex/build
+doc/build/
 .DS_Store
 __MACOSX/
 

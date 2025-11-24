@@ -4,15 +4,22 @@
 -- Maintainer: Alain Matthes
 
 -- ----------------------------------------------------------------------------
-function print_matrix(m, mstyle)
-	local mstyle = (mstyle or "bmatrix")
-	local m = (m.type == "matrix" and m.set or m)
+function print_matrix(m, mstyle, fmt)
+	mstyle = mstyle or "bmatrix"
+	fmt    = fmt    or 0
+
+	-- si on reçoit un objet matrix, on récupère son set
+	if m.type == "matrix" then
+		m = m.set
+	end
+
 	tex.sprint("$")
 	tex.sprint("\\begin{" .. mstyle .. "}")
 	for i = 1, #m do
 		for j = 1, #m[1] do
 			local x = m[i][j]
-			local st = tkz_display_(x)
+			-- si tkz_display_ accepte un format, on lui passe fmt
+			local st = tkz_display_(x, fmt)
 			tex.sprint(st)
 			if j < #m[1] then
 				tex.sprint(" & ")

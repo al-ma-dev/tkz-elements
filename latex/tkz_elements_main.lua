@@ -6,6 +6,7 @@
 tkz_reserved_names = {} -- liste des noms à ne pas utiliser
 
 local modules = {
+	"angle",
 	"circle",
 	"conic",
 	"line",
@@ -42,13 +43,13 @@ require("tkz_elements_functions_regular.lua")
 require("tkz_elements_functions_matrices.lua")
 require("tkz_elements_functions_conics.lua")
 require("tkz_elements_functions_vectors.lua")
---require("tkz_elements_functions_path.lua")
 require("tkz_elements_tkz.lua")
 
 -- Initialize elements
 
 function init_elements()
 	local tables_to_clear = {
+		"A",
 		"C",
 		"CO",
 		"L",

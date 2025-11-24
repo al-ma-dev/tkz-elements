@@ -48,13 +48,19 @@ This avoids having to define \code{L.AB = line(z.A, z.B)} and then access \code{
   \tkzFct{tkz}{tkz.bisector\_ext(z1, z2, z3)} &  [\ref{sub:bisector_and_altitude}] \\
 
   \tkzFct{tkz}{tkz.altitude(z1, z2, z3)} & [\ref{sub:bisector_and_altitude}] \\
-  %parabola (a,b,c)   & to get   \\
+
+
+
   \tkzFct{tkz}{tkz.get\_angle(z1, z2, z3)} &  [\ref{sub:tkz.get_angle}] \\
 
-  \tkzFct{tkz}{tkz.angle\_normalize(an) }   & [\ref{sub:normalized_angles}
-] \\
+ \tkzFct{tkz}{tkz.inner\_angle(z1, z2, z3)} & [\ref{sub:tkz_inner_angle}] \\
 
-  \tkzFct{tkz}{angle\_between\_vectors(a,b,c,d)}   & [\ref{sub:angle_between_vectors}] \\
+  \tkzFct{tkz}{tkz.angle\_normalize(an) }  & [\ref{sub:tkz_angle_normalize}] \\
+
+\tkzFct{tkz}{tkz.get\_angle\_normalize} & [\ref{sub:tkz.get_angle_normalize}] \\
+
+\tkzFct{tkz}{tkz.angle\_between\_vectors} & [\ref{sub:angle_between_vectors}]\\
+
 
   \tkzFct{tkz}{tkz.barycenter (\{z1,n1\},\{z2,n2\}, ...)} & [\ref{sub:misc_barycenter}]  \\
 
@@ -258,8 +264,174 @@ G = \frac{2A + 3B + C + 4D}{10}
 
 The result is returned as a \tkzClass{point} object and can be used in any subsequent construction.
 
-\subsection{Normalized angles: Slope of lines}
-\label{sub:normalized_angles}
+
+
+%%%----------------------------------------------------
+%%%----------------- ANGLES ----------------------
+%%%----------------------------------------------------
+
+
+\subsection{Angles and the constant \code{tkz.tau}}
+
+Most trigonometric and geometric computations in \tkzname{tkz-elements}
+are expressed in radians.  A full turn is therefore represented by the
+constant
+\[
+\tau = 2\pi.
+\]
+
+For convenience, the value of~$\tau$ is available to the user as
+
+\begin{quote}
+\code{tkz.tau = 2 * math.pi}
+\end{quote}
+
+This constant is particularly useful when dealing with normalized or
+periodic angles.  For instance:
+
+\begin{itemize}
+  \item \code{tkz.tau / 4} corresponds to a right angle ($90^\circ$),
+  \item \code{tkz.tau / 2} corresponds to $180^\circ$,
+  \item \code{3 * tkz.tau / 2} corresponds to $270^\circ$,
+  \item \code{a \% tkz.tau} normalizes any angle \code{a} to the interval $[0,\tau)$.
+\end{itemize}
+
+Using~$\tau$ avoids the explicit appearance of $2\pi$ in numerical code
+and improves readability in geometric computations.
+
+%%----------------------------------------------------
+%%----------------- GET_ANGLE  base ----------------------
+%%----------------------------------------------------
+
+\subsection{Function \tkzFct{tkz}{tkz.get\_angle(pa, pb, pc)}}
+\label{sub:tkz.get_angle}
+
+The function \tkzFct{tkz}{tkz.get\_angle} returns the oriented angle at a point,
+given three points \tkzname{A}, \tkzname{B}, \tkzname{C}.
+
+It computes the oriented angle $\widehat{BAC}$ at vertex $A$, corresponding to the
+rotation from vector $\overrightarrow{AB}$ to vector $\overrightarrow{AC}$, in radians.
+
+\medskip
+\texttt{Syntax: }
+
+\begin{mybox}
+\verb|an = tkz.get_angle(pa, pb, pc)|
+\end{mybox}
+
+
+\texttt{Arguments: }
+\begin{itemize}
+  \item \code{pa}, \code{pb}, \code{pc} — three points (Lua complex numbers).
+\end{itemize}
+
+\texttt{Return value:}
+\begin{itemize}
+  \item an oriented angle (Lua number) in radians, in the interval $(-\pi, \pi]$.
+\end{itemize}
+
+\medskip
+
+\texttt{Example: }
+
+The following code computes both angles $ \widehat{CAB}$ and $ \widehat{CAB}$ using point \code{a} as the vertex, and formats them for display using \code{tkzround}:
+
+
+\begin{tkzexample}[latex = .5\textwidth]
+\directlua{
+  init_elements()
+  z.a = point(0, 0)
+  z.b = point(-2, -2)
+  z.c = point(0, 3)
+  ang_cb = tkz.round(
+    tkz.get_angle(z.a, z.c, z.b), 3)
+  ang_bc = tkz.round(
+    tkz.get_angle(z.a, z.b, z.c), 3)
+}
+\begin{center}
+\begin{tikzpicture}[scale = 1.2]
+  \tkzGetNodes
+  \tkzDrawLines[red](a,b a,c)
+  \tkzDrawPoints(a,b,c)
+  \tkzLabelPoints(a,b,c)
+  \tkzMarkAngle[->](c,a,b)
+  \tkzLabelAngle(c,a,b){%
+      \tkzUseLua{ang_cb}}
+  \tkzMarkAngle[->](b,a,c)
+  \tkzLabelAngle(b,a,c){%
+     \tkzUseLua{ang_bc}}
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+%%----------------------------------------------------
+%%----------------- INNER_ANGLE  ----------------------
+%%----------------------------------------------------
+
+
+\subsection{Function \tkzFct{tkz}{tkz.inner\_angle(pa, pb, pc)}}
+\label{sub:tkz_inner_angle}
+
+The function \verb|\tkzFct{tkz}{tkz.inner_angle}| returns the interior (non-oriented) angle
+at a point, given three points \tkzname{pa}, \tkzname{pb}, \tkzname{pc}.
+
+It corresponds to the absolute value of the oriented angle $\widehat{BAC}$ in radians.
+
+\medskip
+\texttt{Syntax: }
+
+\begin{mybox}
+\verb|an = tkz.inner_angle(pa, pb, pc)|
+\end{mybox}
+
+\texttt{Arguments:}
+\begin{itemize}
+  \item \code{pa}, \code{pb}, \code{pc} — three points.
+\end{itemize}
+
+\texttt{Return value:}
+\begin{itemize}
+  \item a non-oriented angle in radians, in the interval $[0, \pi]$.
+\end{itemize}
+
+\medskip
+This function is especially useful for working with triangle angles:
+\[
+\alpha = \texttt{tkz.inner\_angle}(A,B,C),\quad
+\beta  = \texttt{tkz.inner\_angle}(B,C,A),\quad
+\gamma = \texttt{tkz.inner\_angle}(C,A,B).
+\]
+
+
+%%----------------------------------------------------
+%%----------------- NORMALIZE_ANGLE  ----------------------
+%%----------------------------------------------------
+
+
+\subsection{Function \tkzFct{tkz}{tkz.angle\_normalize}}
+\label{sub:tkz_angle_normalize}
+
+The function \verb|\tkzFct{tkz}{tkz.angle\_normalize}| normalizes a real angle to the interval
+$[0, 2\pi)$.
+
+\medskip
+\texttt{Syntax: }
+
+\verb|an2 = tkz.angle_normalize(an1)|
+
+
+\texttt{Arguments: }
+\begin{itemize}
+  \item \code{an1} — a real number (angle in radians).
+\end{itemize}
+
+\texttt{Return value:}
+\begin{itemize}
+  \item \code{an2} — the same angle, reduced modulo $2\pi$ into $[0, 2\pi)$.
+\end{itemize}
+
+\medskip
+\texttt{Application: }
 
 To compute the orientation of a line segment in the plane, we use the function \tkzFct{point}{arg(z)} which returns the angle (in radians) between the positive horizontal axis and the vector represented by the complex number \code{z}. This value may be negative or greater than $2\pi$ depending on the direction of the vector.
 
@@ -279,13 +451,13 @@ init_elements()
    z.b = point(-3, -3)
    z.c = point(0, 3)
    z.d = point(2, -2)
-   angle = point.arg(z.b - z.a)
+   local angle = point.arg(z.b - z.a)
    tex.print('slope of (ab) : '..tostring(angle)..'\\\\')
    tex.print('slope normalized of (ab) : '..tostring(tkz.angle_normalize(angle))..'\\\\')
-   angle    = point.arg (z.c-z.a)
+   local angle    = point.arg (z.c-z.a)
    tex.print('slope of (ac) : '..tostring(angle)..'\\\\')
    tex.print('slope normalized of (ac) : '..tostring(tkz.angle_normalize(angle))..'\\\\')
-   angle    = point.arg (z.d-z.a)
+   local angle    = point.arg (z.d-z.a)
    tex.print('slope of (ad) : '..tostring(angle)..'\\\\')
    tex.print('slope normalized of (ad) : '..tostring(tkz.angle_normalize(angle))..'\\\\')
 }
@@ -296,13 +468,13 @@ z.a = point(0, 0)
 z.b = point(-3, -3)
 z.c = point(0, 3)
 z.d = point(2, -2)
-angle = point.arg (z.b-z.a)
+local angle = point.arg (z.b-z.a)
 tex.print('slope of (ab) : '..tostring(angle)..'\\\\')
 tex.print('slope normalized of (ab) : '..tostring(tkz.angle_normalize(angle))..'\\\\')
-angle = point.arg (z.c-z.a)
+local angle = point.arg (z.c-z.a)
 tex.print('slope of (ac) : '..tostring(angle)..'\\\\')
 tex.print('slope normalized of (ac) : '..tostring(tkz.angle_normalize(angle))..'\\\\')
-angle = point.arg (z.d-z.a)
+local angle = point.arg (z.d-z.a)
 tex.print('slope of (ad) : '..tostring(angle)..'\\\\')
 tex.print('slope normalized of (ad) : '..tostring(tkz.angle_normalize(angle))..'\\\\')
 }
@@ -334,74 +506,112 @@ tex.print('slope normalized of (ad) : '..tostring(tkz.angle_normalize(angle))..'
 
 This technique is essential when working with angular comparisons, sorting directions (e.g., in convex hull algorithms), or standardizing outputs for further geometric processing.
 
-\subsection{Function \tkzFct{tkz}{tkz.get\_angle}}
-\label{sub:tkz.get_angle}
+%%----------------------------------------------------
+%%----------------- DIRECT_ANGLE  ----------------------
+%%----------------------------------------------------
 
-The function \tkzFct{tkz}{tkz.get\_angle(z1, z2, z3)} returns the oriented angle (in radians) between the vectors $\overrightarrow{z_1 z_2}$ and $\overrightarrow{z_1 z_3}$. The result is normalized to lie in the interval $[0, 2\pi]$.
 
-\medskip
-This function is particularly useful when measuring internal or external angles at a vertex, or comparing the orientation between two segments.
+
+
+\subsection{Function \tkzFct{tkz}{tkz.is\_direct}}
+\label{sub:tkz_is_direct}
+
+The function \tkzFct{tkz}{tkz.is\_direct} tests whether the oriented angle at a point
+is direct (counter-clockwise).
 
 \medskip
 \texttt{Syntax: }
 
-\begin{center}
-\code{tkz.get\_angle(vertex, point1, point2)}
-\end{center}
-
-
-This returns the angle $(\text{vertex} \to \text{point1}, \text{vertex} \to \text{point2})$.
+\begin{mybox}
+\verb|ok = tkz.is_direct(pa, pb, pc)|
+\end{mybox}
 
 \medskip
-\texttt{Example.}
-
-The following code computes both angles $ \widehat{CAB}$ and $ \widehat{CAB}$ using point \code{a} as the vertex, and formats them for display using \code{tkzround}:
-
-\begin{minipage}{0.58\textwidth}
-\begin{tkzexample}[code only]
-\directlua{
-  init_elements()
-  z.a = point(0, 0)
-  z.b = point(-2, -2)
-  z.c = point(0, 3)
-  ang_cb = tkz.round(tkz.get_angle(z.a, z.c, z.b), 3)
-  ang_bc = tkz.round(tkz.get_angle(z.a, z.b, z.c), 3)
-}
-\end{tkzexample}
-
-\begin{tkzexample}[code only]
-\begin{tikzpicture}
-  \tkzGetNodes
-  \tkzDrawLines[red](a,b a,c)
-  \tkzDrawPoints(a,b,c)
-  \tkzLabelPoints(a,b,c)
-  \tkzMarkAngle[->](c,a,b)
-  \tkzLabelAngle(c,a,b){\tkzUseLua{ang_cb}}
-  \tkzMarkAngle[->](b,a,c)
-  \tkzLabelAngle(b,a,c){\tkzUseLua{ang_bc}}
-\end{tikzpicture}
-\end{tkzexample}
-\end{minipage}
-\hfill
-\begin{minipage}{0.40\textwidth}
-\begin{center}
-\begin{tikzpicture}[scale = 1.2]
-  \tkzGetNodes
-  \tkzDrawLines[red](a,b a,c)
-  \tkzDrawPoints(a,b,c)
-  \tkzLabelPoints(a,b,c)
-  \tkzMarkAngle[->](c,a,b)
-  \tkzLabelAngle(c,a,b){\tkzUseLua{ang_cb}}
-  \tkzMarkAngle[->](b,a,c)
-  \tkzLabelAngle(b,a,c){\tkzUseLua{ang_bc}}
-\end{tikzpicture}
-\end{center}
-\end{minipage}
+\texttt{Arguments: }
+\begin{itemize}
+  \item \code{pa}, \code{pb}, \code{pc} — three points.
+\end{itemize}
 
 \medskip
-\texttt{Note: }
+\texttt{Return value: }
+\begin{itemize}
+  \item \code{true} if the oriented angle $\widehat{BAC}$ (from $\overrightarrow{AB}$ to $\overrightarrow{AC}$) is $> 0$ (direct, counter-clockwise),
+  \item \code{false} otherwise.
+\end{itemize}
 
-The result is a real number in radians between $0$ and $2\pi$. It does not depend on triangle orientation and can be rounded or converted to degrees using auxiliary functions.
+%%----------------------------------------------------
+%%-----------------  tkz.get_angle_normalize  -------
+%%----------------------------------------------------
+
+
+\subsection{Function \tkzFct{tkz}{tkz.get\_angle\_normalize}}
+\label{sub:tkz.get_angle_normalize}
+
+The function \tkzFct{tkz}{tkz.get\_angle\_normalize} combines
+\tkzFct{tkz}{tkz.get\_angle} and \tkzFct{tkz}{tkz.angle\_normalize}.
+
+It returns the oriented angle at a point, normalized to $[0, 2\pi)$.
+
+\medskip
+\texttt{Syntax: }
+
+\begin{mybox}
+\verb|an = tkz.get_angle_normalize(pa, pb, pc)|
+\end{mybox}
+
+\medskip
+\texttt{Arguments: }
+\begin{itemize}
+  \item \code{pa}, \code{pb}, \code{pc} — three points.
+\end{itemize}
+
+\medskip
+\texttt{Return value: }
+\begin{itemize}
+  \item a real number in $[0, 2\pi)$: the normalized oriented angle at \code{pa}.
+\end{itemize}
+
+%%----------------------------------------------------
+%%-----------------  tkz.angle_between_vectors  -------
+%%----------------------------------------------------
+
+\subsection{Function \tkzFct{tkz}{tkz.angle\_between\_vectors}}
+\label{sub:tkz_angle_between_vectors}
+
+The function \tkzFct{tkz}{tkz.angle\_between\_vectors} returns the oriented angle
+between two vectors $\overrightarrow{AB}$ and $\overrightarrow{CD}$.
+
+\medskip
+\texttt{Syntax:}
+
+\begin{mybox}
+\verb|an = tkz.angle_between_vectors(a, b, c, d)|
+\end{mybox}
+
+\medskip
+\texttt{Arguments: }
+\begin{itemize}
+  \item \code{a}, \code{b} — endpoints of the first vector (from \code{a} to \code{b}),
+  \item \code{c}, \code{d} — endpoints of the second vector (from \code{c} to \code{d}).
+\end{itemize}
+
+\medskip
+\texttt{Return value: }
+\begin{itemize}
+  \item an oriented angle in radians, in the interval $(-\pi, \pi]$, corresponding to the
+        rotation from $\overrightarrow{AB}$ to $\overrightarrow{CD}$.
+\end{itemize}
+
+\medskip
+Internally, the angle is computed using the standard $\operatorname{atan2}$ formula
+based on the dot product and the determinant of the two vectors.
+
+
+%%----------------------------------------------------
+%%-----------------  end ANGLES  -------
+%%----------------------------------------------------
+
+
 
 \subsection{Function \tkzFct{tkz}{tkz.dot\_product(z1, z2, z3)}}
 \label{sub:dot_or_scalar_product}
@@ -647,39 +857,39 @@ This is equivalent to testing whether the oriented area of triangle $(z_1, z_2, 
 
 The following code tests whether the points $A$, $B$ and $C$ are aligned. If so, the new point $D$ is set to $(0, 0)$; otherwise it is set to $(-1, -1)$.
 
-\begin{minipage}{0.48\textwidth}
-\begin{tkzexample}[code only]
-\directlua{
-  init_elements()
-  z.a = point(1, 1)
-  z.b = point(2, 2)
-  z.c = point(4, 4)
-  if tkz.is_linear(z.a, z.b, z.c) then
-    z.d = point(0, 0)
-  else
-    z.d = point(-1, -1)
-  end
-}
-\end{tkzexample}
-
-\begin{tkzexample}[code only]
-\begin{tikzpicture}
-  \tkzGetNodes
-  \tkzDrawPoints(a,b,c,d)
-  \tkzLabelPoints(a,b,c,d)
-\end{tikzpicture}
-\end{tkzexample}
-\end{minipage}
-\hfill
-\begin{minipage}{0.48\textwidth}
-\begin{center}
-\begin{tikzpicture}
-  \tkzGetNodes
-  \tkzDrawPoints(a,b,c,d)
-  \tkzLabelPoints(a,b,c,d)
-\end{tikzpicture}
-\end{center}
-\end{minipage}
+% \begin{minipage}{0.48\textwidth}
+% \begin{tkzexample}[code only]
+% \directlua{
+  % init_elements()
+  % z.a = point(1, 1)
+  % z.b = point(2, 2)
+  % z.c = point(4, 4)
+  % if tkz.is_linear(z.a, z.b, z.c) then
+  %   z.d = point(0, 0)
+  % else
+  %   z.d = point(-1, -1)
+  % end
+% }
+% \end{tkzexample}
+%
+% \begin{tkzexample}[code only]
+% \begin{tikzpicture}
+  % \tkzGetNodes
+  % \tkzDrawPoints(a,b,c,d)
+  % \tkzLabelPoints(a,b,c,d)
+% \end{tikzpicture}
+% \end{tkzexample}
+% \end{minipage}
+% \hfill
+% \begin{minipage}{0.48\textwidth}
+% \begin{center}
+% \begin{tikzpicture}
+  % \tkzGetNodes
+  % \tkzDrawPoints(a,b,c,d)
+  % \tkzLabelPoints(a,b,c,d)
+% \end{tikzpicture}
+% \end{center}
+% \end{minipage}
 
 \medskip
 \texttt{Note: }

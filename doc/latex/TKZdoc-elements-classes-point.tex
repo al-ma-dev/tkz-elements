@@ -55,6 +55,8 @@ Alternatively, the more explicit syntax is also available:
 
 
 Both forms are equivalent. The shorter syntax is available since version 4 and preferred for readability and consistency.
+
+
 \def\size{42mm}
 \begin{tikzpicture}[remember picture]
 \node[ draw, fill=red!10] (tbl) {%
@@ -82,7 +84,7 @@ Both forms are equivalent. The shorter syntax is available since version 4 and p
     rectangle split, rectangle split parts=4
   ] {
    \texttt{homothety(coeff,obj)}
-    \nodepart{two}\texttt{rotation (angle,object)}
+    \nodepart{two}\texttt{rotation(angle, object)}
     \nodepart{three}\texttt{symmetry (object)}
     \nodepart{four}\texttt{\ldots}
   };
@@ -115,7 +117,7 @@ Both forms are equivalent. The shorter syntax is available since version 4 and p
     rectangle split, rectangle split parts=4
   ] {
    \texttt{homothety(coeff,obj)}
-    \nodepart{two}\texttt{rotation (angle,object)}
+    \nodepart{two}\texttt{rotation(angle, object)}
     \nodepart{three}\texttt{symmetry (object)}
     \nodepart{four}\texttt{\ldots}
   };

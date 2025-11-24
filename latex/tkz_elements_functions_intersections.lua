@@ -6,24 +6,25 @@
 -------------------------------------------------------------------------
 -- intersection of lines
 -------------------------------------------------------------------------
-function intersection_ll(la, lb)
-	return intersection_ll_(la.pa, la.pb, lb.pa, lb.pb)
+function intersection_ll(la, lb ,EPS)
+	return intersection_ll_(la.pa, la.pb, lb.pa, lb.pb, EPS)
 end
 ---------------------------------------------------------------------------
 -- intersection of a line and a circle
 ---------------------------------------------------------------------------
-function intersection_lc(D, C)
-	return intersection_lc_(D.pa, D.pb, C.center, C.through)
+function intersection_lc(D, C, EPS)
+	return intersection_lc_(D.pa, D.pb, C.center, C.through, EPS)
 end -- function
 ---------------------------------------------------------------------------
 -- intersection of two circles
 ---------------------------------------------------------------------------
-function intersection_cc(Ca, Cb)
-	return intersection_cc_(Ca.center, Ca.through, Cb.center, Cb.through)
+function intersection_cc(Ca, Cb, EPS)
+	return intersection_cc_(Ca.center, Ca.through, Cb.center, Cb.through, EPS)
 end -- function
 
 --  line ellipse
-function intersection_le(L, E)
+function intersection_le(L, E, EPS)
+	 EPS = EPS or tkz.epsilon
 	local a, b, c, d, t1, t2, z1, z2, A, B, Bx, By, Ax, Ay, Rx, Ry, sd
 	A = (L.pa - E.center) * (point(math.cos(E.slope), -math.sin(E.slope)))
 	B = (L.pb - E.center) * (point(math.cos(E.slope), -math.sin(E.slope)))
@@ -51,7 +52,7 @@ function intersection_le(L, E)
 			return z2 * (point(math.cos(E.slope), math.sin(E.slope))) + E.center,
 				z1 * (point(math.cos(E.slope), math.sin(E.slope))) + E.center
 		end -- if
-	elseif math.abs(d) < tkz.epsilon then
+	elseif math.abs(d) < EPS then
 		t1 = -b / (2 * a)
 		z1 = point(Ax + (Bx - Ax) * t1, Ay + (By - Ay) * t1)
 		return z1 * (point(math.cos(E.slope), math.sin(E.slope))) + E.center,
@@ -61,102 +62,221 @@ function intersection_le(L, E)
 	end
 end
 
-function intersection_ll_(a, b, c, d)
-	local x1, y1, x2, y2, x3, y3, x4, y4
-	local DN, NX, NY
+function intersection_ll_(a, b, c, d, EPS)
+	local x1, y1 = a.re, a.im
+	local x2, y2 = b.re, b.im
+	local x3, y3 = c.re, c.im
+	local x4, y4 = d.re, d.im
 
-	x1, y1 = a.re, a.im
-	x2, y2 = b.re, b.im
-	x3, y3 = c.re, c.im
-	x4, y4 = d.re, d.im
+	 EPS = EPS or tkz.epsilon
 
-	DN = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
-
-	if math.abs(DN) < tkz.epsilon then
+	-- cas dégénérés : une "droite" réduite à un point
+	if (x1 == x2 and y1 == y2) or (x3 == x4 and y3 == y4) then
 		return false
 	end
 
-	NX = (x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)
-	NY = (x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)
+	local DN = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
+
+	-- droites parallèles ou quasi-parallèles
+	if math.abs(DN) < EPS then
+		return false
+	end
+
+	local NX = (x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)
+	local NY = (x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)
 
 	return point(NX / DN, NY / DN)
 end
 
-function intersection_lc_(pa, pb, c, p)
-	local zh, dh, arg_ab, phi, c1, c2, r, test
 
-	r = point.mod(c - p)
-	zh = projection_(pa, pb, c)
-	dh = point.abs(c - zh)
-	arg_ab = point.arg(pa - pb)
 
-	if dh < tkz.epsilon then
-		-- Le centre du cercle est sur la droite
-		return c + polar_(r, math.pi + arg_ab), c + polar_(r, arg_ab)
-	elseif math.abs(r - dh) < tkz.epsilon then
-		-- La droite est tangente au cercle
+
+function intersection_lc_(pa, pb, c, p, EPS)
+	-- pa, pb : deux points définissant la droite
+	-- c      : centre du cercle
+	-- p      : point sur le cercle (pour le rayon)
+	-- Retour :
+	--   - false, false si pas d’intersection
+	--   - P, P si tangence
+	--   - P1, P2 si sécante (ordonnées par angle autour de c)
+   EPS = EPS or tkz.epsilon
+
+
+	-- Rayon du cercle
+	local r = point.abs(c - p)
+
+	-- Vecteur directeur de la droite (pa -> pb)
+	local ab = pb - pa
+	local abx, aby = ab.re, ab.im
+	local lab2 = abx*abx + aby*aby
+
+	-- Droite dégénérée : pa == pb
+	if lab2 < EPS * EPS then
+		return false, false
+	end
+
+	local lab = math.sqrt(lab2)
+	local ex, ey = abx / lab, aby / lab  -- vecteur unitaire sur la droite
+
+	-- Projection du centre c sur la droite (pa,pb)
+	local zh = projection_(pa, pb, c)
+	local dh = point.abs(c - zh)        -- distance centre -> droite
+
+	-- Pas d'intersection : la droite est trop loin du cercle
+	if dh > r + EPS then
+		return false, false
+	end
+
+	-- Tangence : un seul point (renvoyé deux fois)
+	if math.abs(dh - r) <= EPS then
 		return zh, zh
-	elseif dh > r then
-		-- Aucune intersection
+	end
+
+	-- Cas général : deux intersections.
+	-- Longueur le long de la droite à partir du pied de la perpendiculaire.
+	local h2 = r*r - dh*dh
+	local R2 = math.max(r*r, lab2)
+
+	if h2 < -EPS * R2 then
+		-- numériquement négatif => pas de solution réelle
 		return false, false
+	end
+	if h2 < 0 then
+		h2 = 0
+	end
+
+	local h = math.sqrt(h2)
+
+	local xh, yh = zh.re, zh.im
+	local x1 = xh + h * ex
+	local y1 = yh + h * ey
+	local x2 = xh - h * ex
+	local y2 = yh - h * ey
+
+	local z1 = point(x1, y1)
+	local z2 = point(x2, y2)
+
+	-- Tri par angle autour du centre c, comme pour intersection_cc_
+	local a1 = angle_normalize_(point.arg(z1 - c))
+	local a2 = angle_normalize_(point.arg(z2 - c))
+
+	if a1 <= a2 then
+		return z1, z2
 	else
-		-- Il y a une intersection, calcul de l'angle
-		phi = math.asin(dh / r)
-		test = (pa - pb) * point.conj(c - zh)
-		if test.im < 0 then
-			phi = math.pi + phi
-		end
-
-		c1 = angle_normalize_(arg_ab + phi)
-		c2 = angle_normalize_(math.pi + arg_ab - phi)
-
-		-- Retourner les deux points d'intersection
-		if c2 < c1 then
-			return c + polar_(r, c2), c + polar_(r, c1)
-		else
-			return c + polar_(r, c1), c + polar_(r, c2)
-		end
+		return z2, z1
 	end
 end
 
-function intersection_cc_(ca, pa, cb, pb)
-	local d, cosphi, phi, ra, rb, c1, c2, epsilon
+function intersection_cc_(ca, pa, cb, pb, EPS)
+	-- ca, pa, cb, pb : points (type point/complex)
+	-- Retour :
+	--   - false, false si pas d'intersection
+	--   - P, P si tangence
+	--   - P1, P2 si sécante (ordre croissant en angle autour de ca)
+   EPS = EPS or tkz.epsilon
+	local ra = point.abs(ca - pa)
+	local rb = point.abs(cb - pb)
 
-	-- Précision pour arrondir les résultats
-	epsilon = 12
-	-- Distance entre les centres des cercles
-	d = point.abs(ca - cb)
-	-- Rayons des cercles
-	ra = point.abs(ca - pa)
-	rb = point.abs(cb - pb)
+	-- vecteur entre centres
+	local dc = cb - ca
+	local dx, dy = dc.re, dc.im
+	local d2 = dx*dx + dy*dy
+	local d  = math.sqrt(d2)
 
-	-- Calcul du cosinus de l'angle phi entre les centres et les points sur les cercles
-	cosphi = tkz_round_((ra * ra + d * d - rb * rb) / (2 * ra * d), epsilon)
-
-	-- Calcul de l'angle phi
-	phi = tkz_round_(math.acos(cosphi), epsilon)
-
-	-- Si phi est invalide (par exemple, cosphi > 1 ou < -1), aucune intersection
-	if not phi then
-		return false, false
-	elseif math.abs(phi) < tkz.epsilon then
-		-- Les cercles sont tangents l'un à l'autre, retourne le même point pour les deux intersections
-		return ca + polar_(ra, point.arg(cb - ca)), ca + polar_(ra, point.arg(cb - ca))
-	else
-		-- Calcul des angles des points d'intersection
-		c1 = angle_normalize_(phi + point.arg(cb - ca))
-		c2 = angle_normalize_(-phi + point.arg(cb - ca))
-
-		-- Retourner les points d'intersection dans l'ordre croissant des angles
-		if c1 < c2 then
-			return ca + polar_(ra, c1), ca + polar_(ra, c2)
+	-- centres (quasi) confondus
+	if d < EPS then
+		-- mêmes rayons -> cercles confondus : géométriquement infinité de solutions
+		-- pour l’instant on renvoie "pas d’intersection" (comportement ancien : false,false)
+		if math.abs(ra - rb) < EPS then
+			return false, false
 		else
-			return ca + polar_(ra, c2), ca + polar_(ra, c1)
+			return false, false
 		end
 	end
+
+	-- positions relatives simples : trop loin ou l'un dans l'autre sans contact
+	-- (ces tests ne sont pas obligatoires mais évitent des racines négatives parasites)
+	if d > ra + rb + EPS then
+		-- trop éloignés
+		return false, false
+	end
+	if d < math.abs(ra - rb) - EPS then
+		-- l’un est strictement à l’intérieur de l’autre, sans tangence
+		return false, false
+	end
+
+	-- projection du point d’intersection "médian" sur la droite des centres
+	local a = (ra*ra - rb*rb + d2) / (2*d)
+	local h2 = ra*ra - a*a
+
+	-- tolérance relative sur h2
+	local R2 = math.max(ra*ra, rb*rb, d2)
+	if h2 < -EPS * R2 then
+		-- numériquement négatif -> pas de solution réelle
+		return false, false
+	end
+
+	if h2 < 0 then
+		-- très léger négatif dû aux erreurs de flottants
+		h2 = 0
+	end
+
+	-- point "milieu" sur la droite (ca -> cb)
+	local ux, uy = dx / d, dy / d      -- vecteur unitaire ca->cb
+	local mx = ca.re + a * ux
+	local my = ca.im + a * uy
+
+	local h = math.sqrt(h2)
+
+	-- si h ~ 0 : tangence
+	if h < EPS * d then
+		local P = point(mx, my)
+		return P, P
+	end
+
+	-- vecteur unitaire perpendiculaire
+	local px, py = -uy, ux
+
+	local x1 = mx + h * px
+	local y1 = my + h * py
+	local x2 = mx - h * px
+	local y2 = my - h * py
+
+	local z1 = point(x1, y1)
+	local z2 = point(x2, y2)
+
+	-- ordre croissant en angle autour de ca (comme ton ancienne version)
+	local c1 = angle_normalize_(point.arg(z1 - ca))
+	local c2 = angle_normalize_(point.arg(z2 - ca))
+
+	if c1 <= c2 then
+		return z1, z2
+	else
+		return z2, z1
+	end
 end
+
 
 function intersection(X, Y, opts)
+-- Normalisation des arguments
+local EPS
+
+if type(opts) == "number" then
+	-- Ancien style : intersection(X, Y, EPS)
+	EPS  = opts
+	opts = nil
+elseif type(opts) == "table" then
+	-- Nouveau style : opts.eps (ou opts.EPS)
+	EPS = opts.EPS or tkz.epsilon
+elseif opts == nil then
+	EPS = tkz.epsilon
+else
+	tex.error("intersection: invalid third argument (expected table or number).")
+	return
+end
+
+opts = opts or {}
+
 	local t = {} -- Table pour stocker les points d'intersection
 
 	-- Intersection cercle-cercle, ligne-cercle, ligne-ligne, conique-ligne...
@@ -172,22 +292,22 @@ function intersection(X, Y, opts)
 	-- Cas principaux
 	if X.type == "circle" then
 		if Y.type == "circle" then
-			add(intersection_cc(X, Y))
+			add(intersection_cc(X, Y, EPS))
 		else
-			add(intersection_lc(Y, X))
+			add(intersection_lc(Y, X, EPS))
 		end
 	elseif X.type == "line" then
 		if Y.type == "circle" then
-			add(intersection_lc(X, Y))
+			add(intersection_lc(X, Y, EPS))
 		elseif Y.type == "line" then
-			add(intersection_ll(X, Y))
+			add(intersection_ll(X, Y, EPS))
 		elseif Y.type == "conic" then
 			if Y.subtype == "parabola" then
 				add(Y:inter_Pa_line(X.pa, X.pb))
 			elseif Y.subtype == "hyperbola" then
 				add(Y:inter_Hy_line(X.pa, X.pb))
 			elseif Y.subtype == "ellipse" then
-				add(intersection_le(X, Y))
+				add(intersection_le(X, Y, EPS))
 			end
 		end
 	elseif X.type == "conic" then
@@ -196,7 +316,7 @@ function intersection(X, Y, opts)
 		elseif X.subtype == "hyperbola" then
 			add(X:inter_Hy_line(Y.pa, Y.pb))
 		elseif X.subtype == "ellipse" then
-			add(intersection_le(Y, X))
+			add(intersection_le(Y, X, EPS))
 		end
 	end
 

@@ -250,7 +250,7 @@ This example is built with the help of some of the macros presented in this sect
   for i = 1, 48 do
       local k = i / 48
       z["P"..i] = L.OA:point(k)
-      local angle = i * 2 * math.pi / 48
+      local angle = i * tkz.tau / 48
       z["r"..i] = point(polar(5, angle))
       ray = line(z.O, z["r"..i])
       circ = circle(z.O, z["P"..i])

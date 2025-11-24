@@ -6,18 +6,20 @@
 -- tkz-settings and math
 
 tkz = tkz or {}
-tkz.nb_dec = 10
+tkz.nb_dec = 8
 tkz.epsilon = 0.1 ^ tkz.nb_dec
 tkz.dc = 2
 tkz.phi = (1 + math.sqrt(5)) / 2 -- golden number φ
 tkz.invphi = (math.sqrt(5) - 1) / 2
 tkz.sqrtphi = math.sqrt(tkz.phi)
-tkz.rad = 180/math.pi
-tkz.deg = math.pi/180
-tkz.pt = 254/7227
+tkz.rad = 180 / math.pi
+tkz.deg = math.pi / 180
+tkz.pt = 254 / 7227
+tkz.tau = 2 * math.pi
 -- real
-function tkz.approx(x, y)
-	return math.abs(x - y) <= tkz.epsilon
+function tkz.approx(x, y, EPS)
+	 EPS = EPS or tkz.epsilon
+	return math.abs(x - y) <= EPS
 end
 
 function tkz.midpoint(a, b)
@@ -57,15 +59,27 @@ end
 -------------- angles -------------------
 -----------------------------------------
 function tkz.get_angle(a, b, c)
-	return angle_normalize_(get_angle_(a, b, c))
+	return get_angle_(a, b, c)
 end
 
-function tkz.angle_normalize(a)
-	return angle_normalize_(a)
+function tkz.inner_angle(pa, pb, pc)
+	return inner_angle_(pa, pb, pc)
+end
+
+function tkz.angle_normalize(an)
+	return angle_normalize_(an)
 end
 
 function tkz.is_direct(pa, pb, pc)
 	return get_angle_(pa, pb, pc) > 0
+end
+
+function tkz.get_angle_normalize(a, b, c)
+	return get_angle_normalize_(a, b, c)
+end
+
+function tkz.angle_between_vectors(a, b, c, d)
+	return tkz_angle_between_vectors_(a, b, c, d)
 end
 
 function tkz.round(num, idp)
@@ -245,8 +259,8 @@ function tkz.solve_cubic_(a, b, c, d)
 
 		local theta = math.acos(t)
 		local x1 = 2 * cubert(r) * math.cos(theta / 3) - b / (3 * a)
-		local x2 = 2 * cubert(r) * math.cos((theta + 2 * math.pi) / 3) - b / (3 * a)
-		local x3 = 2 * cubert(r) * math.cos((theta + 4 * math.pi) / 3) - b / (3 * a)
+		local x2 = 2 * cubert(r) * math.cos((theta + tkz.tau) / 3) - b / (3 * a)
+		local x3 = 2 * cubert(r) * math.cos((theta + 2 * tkz.tau) / 3) - b / (3 * a)
 
 		return x1, x2, x3
 	end

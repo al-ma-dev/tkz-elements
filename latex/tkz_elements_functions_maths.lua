@@ -99,26 +99,40 @@ end
 ---- angles -------------------------------------
 ---------------------------------------------------------------------------
 
+-- function get_angle_(a, b, c)
+	-- if (b == a) or (c == a) then
+	-- 	tex.error("Points confused in get_angle_")
+	-- end
+	-- return point.arg((c - a) / (b - a))
+-- end
+
+-- Angle orienté ∠BAC en A, dans (-π, π]
 function get_angle_(a, b, c)
 	if (b == a) or (c == a) then
 		tex.error("Points confused in get_angle_")
 	end
+	-- vecteur AB = b - a, AC = c - a
+	-- arg(AC / AB) = angle pour tourner AB vers AC
 	return point.arg((c - a) / (b - a))
 end
+angle_at = get_angle_
+
+
+function inner_angle_(a, b, c)
+	return math.abs(get_angle_(a, b, c))
+end
+
+
+function angle_normalize_(a)
+	return a % tkz.tau  -- dans [0, 2π)
+end
+
 
 function get_angle_normalize_(a, b, c)
 	return angle_normalize_(get_angle_(a, b, c))
 end
 
-function angle_normalize_(a)
-	while a < 0 do
-		a = a + 2 * math.pi
-	end
-	while a >= 2 * math.pi do
-		a = a - 2 * math.pi
-	end
-	return a
-end
+
 
 function tkz_angle_between_vectors_(a, b, c, d)
 	-- Vector calculation
@@ -126,10 +140,15 @@ function tkz_angle_between_vectors_(a, b, c, d)
 	local zcd = d - c
 
 	-- Angle between vectors using ratio argument
-	local theta = math.atan(-zab.im * zcd.re + zab.re * zcd.im, zab.re * zcd.re + zab.im * zcd.im)
+	local theta = math.atan(
+		-zab.im * zcd.re + zab.re * zcd.im,
+		 zab.re * zcd.re + zab.im * zcd.im
+	)
 
 	return theta -- Angle in radians
 end
+
+
 ---------------------------------------------------------------------------
 -------------------------- end angles --------------------------
 ---------------------------------------------------------------------------

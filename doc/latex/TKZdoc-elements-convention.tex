@@ -20,8 +20,8 @@ Below is the list of reserved classes and the default variable names associated 
 
 \vspace{1em}
 \textcolor{red}{\directlua{
-local variables = { "C", "CO", "L", "M", "O", "P", "PA", "z", "Q", "R", "RP", "S", "T", "V"}
-local modules = { "circle",  "conic",  "line", "matrix", "occs", "parallelogram", "path",  "point", "quadrilateral", "rectangle", "regular\\_polygon", "square",  "triangle", "vector"}
+local variables = {"A", "C", "CO", "L", "M", "O", "P", "PA", "z", "Q", "R", "RP", "S", "T", "V"}
+local modules = {"angle", "circle",  "conic",  "line", "matrix", "occs", "parallelogram", "path",  "point", "quadrilateral", "rectangle", "regular\\_polygon", "square",  "triangle", "vector"}
   for i = 1, utils.table_getn(modules) do
     local class = modules[i]
     local var   = variables[i]

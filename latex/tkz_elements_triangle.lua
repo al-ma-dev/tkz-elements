@@ -32,9 +32,13 @@ function triangle:new(za, zb, zc)
 	local ca = line:new(zc, za)
 
 	-- ===== Angles =====
-	local alpha = find_angle_(za, zb, zc)
-	local beta = find_angle_(zb, zc, za)
-	local gamma = find_angle_(zc, za, zb)
+	local alpha = math.abs(get_angle_(za, zb, zc))
+	local beta = math.abs(get_angle_(zb, zc, za))
+	local gamma = math.abs(get_angle_(zc, za, zb))
+
+	local alpha_ = angle:new(za, zb, zc)
+	local beta_ = angle:new(zb, zc, za)
+	local gamma_ = angle:new(zc, za, zb)
 
 	local type = "triangle"
 	local circumcenter = circum_center_(za, zb, zc)
@@ -71,9 +75,9 @@ function triangle:new(za, zb, zc)
 		alpha = alpha,
 		beta = beta,
 		gamma = gamma,
-		angle_alpha = angle_alpha,
-		angle_beta = angle_beta,
-		angle_gamma = angle_gamma,
+		alpha_ = alpha_,
+		beta_ = beta_,
+		gamma_ = gamma_,
 		semiperimeter = semiperimeter,
 		area = area,
 		inradius = inradius,
@@ -110,22 +114,32 @@ function triangle:in_out(pt, strict)
 	return in_out_(self.pa, self.pb, self.pc, pt, strict)
 end
 
-function triangle:check_equilateral()
-	return check_equilateral_(self.pa, self.pb, self.pc)
+function triangle:check_equilateral(EPS)
+	return check_equilateral_(self.pa, self.pb, self.pc, EPS)
 end
 triangle.is_equilateral = triangle.check_equilateral
 
-function triangle:check_acutangle()
-	local asq = self.a * self.a
-	local bsq = self.b * self.b
-	local csq = self.c * self.c
-	if asq + bsq > csq and bsq + csq > asq and csq + asq > bsq then
-		return true
-	else
-		return false
-	end
+function triangle:check_acutangle(EPS)
+return check_acutangle_(self.pa, self.pb, self.pc, EPS)
 end
 triangle.is_acute = triangle.check_acutangle
+
+function triangle:check_isosceles(EPS)
+return check_isosceles_(self.pa, self.pb, self.pc, EPS)
+
+		-- if math.abs(a - b) <= eps then
+		-- 		return true, "c"      -- sommet C au-dessus de AB
+		-- elseif math.abs(b - c) <= eps then
+		-- 		return true, "a"      -- sommet A au-dessus de BC
+		-- elseif math.abs(c - a) <= eps then
+		-- 		return true, "b"      -- sommet B au-dessus de CA
+		-- else
+		-- 		return false
+		-- end
+end
+
+triangle.is_isosceles = triangle.check_isosceles
+
 -----------------------
 -- Result -> real
 -----------------------
@@ -547,6 +561,73 @@ function triangle:orthopole(l)
 	local lb = line:new(bp, bpp)
 	return intersection(la, lb)
 end
+
+
+function triangle:isodynamic_points()
+	-- Cas particulier : triangle équilatéral
+	if self:is_equilateral() then
+		-- On prend le centre de gravité G = (A + B + C)/3
+		local A, B, C = self.pa, self.pb, self.pc
+		local G = (A + B + C) / 3
+		-- On renvoie deux fois le même point pour garder la même signature
+		return G, G
+	end
+
+	-- Cas général
+	local a, b, c = self.a, self.b, self.c
+	local ab, bc = self.ab, self.bc, self.ca  -- self.ca est inutile ici mais cohérent
+
+	-- Cercles d’Apollonius associés aux rapports b/a sur AB et c/b sur BC
+	local Cab = ab:apollonius(b / a)
+	local Cbc = bc:apollonius(c / b)
+
+	-- L’intersection donne les deux points isodynamiques
+	return intersection(Cab, Cbc)
+end
+
+triangle.neuberg_points = triangle.isodynamic_points
+
+-- Points d’intersection du cercle d’Apollonius (b/a, côté AB)
+-- avec la droite (AB), en mettant en premier le point sur le segment [AB].
+
+function triangle:apollonius_points(side, EPS)
+	EPS = EPS or tkz.epsilon
+
+	local a, b, c = self.a, self.b, self.c  -- a = BC, b = CA
+	local A, B, C = self.pa, self.pb, self.pc
+  local ab, bc, ca = self.ab, self.bc, self.ca
+   local x, y, X, Y
+		if side == "ab"  then
+			L = self.ab
+			k = b / a
+			x, y = a, b
+			X, Y = A, B     -- AC / BC
+	elseif side == "bc"  then
+			L = self.bc
+			k = c / b
+			x, y = b, c
+			X, Y = B, C         -- AB / CA
+	elseif side == "ca"  then
+			L = self.ca
+			k = a / c
+			x, y = c, a
+			X, Y = C, A           -- BC / AB
+	else
+			tex.error("triangle:apollonius_circle -> invalid side: use 'ab', 'bc', or 'ca'")
+			return
+	end
+
+		if math.abs(x - y) <= EPS then
+		local M = (X + Y) / 2
+		return M, M
+	end
+
+     return L:harmonic(k)
+end
+
+-- Ancien nom si tu veux conserver la compatibilité :
+triangle.bisector_points = triangle.apollonius_points
+
 -------------------
 -- Result -> line
 -------------------
@@ -719,6 +800,54 @@ end
 -----------------------
 --- Result -> circles --
 -----------------------
+
+function triangle:apollonius_circle(side, EPS)
+		 EPS = EPS or tkz.epsilon
+		-- lengths
+		local a, b, c = self.a, self.b, self.c
+		local L, k
+
+		if side == "ab"  then
+				L = self.ab
+				k = b / a        -- AC / BC
+		elseif side == "bc"  then
+				L = self.bc
+				k = c / b        -- AB / CA
+		elseif side == "ca"  then
+				L = self.ca
+				k = a / c        -- BC / AB
+		else
+				tex.error("triangle:apollonius_circle -> invalid side: use 'ab', 'bc', or 'ca'")
+				return
+		end
+
+		-- cas k ≈ 1 : volontairement traité
+		if math.abs(k - 1) <= EPS then
+    	return L:bisector()
+		else
+		  return L:apollonius(k)
+		end
+end
+
+
+
+function triangle:three_apollonius_circles()
+	local a, b, c = self.a, self.b, self.c
+	local ab, bc, ca = self.ab, self.bc, self.ca
+	local Cab = ab:apollonius(b / a)
+	local Cbc = bc:apollonius(c / b)
+	local Cca = ca:apollonius(a / c)
+	return Cab, Cbc, Cca
+end
+
+
+function triangle:three_tangent_circles()
+	local i = self.incenter
+	local a, b, c = self:projection(i)
+	return circle:new(self.pa, c), circle:new(self.pb, a), circle:new(self.pc, b)
+end
+
+
 function triangle:euler_circle()
 	return circle:new(euler_center_(self.pa, self.pb, self.pc), midpoint_(self.pb, self.pc))
 end
@@ -880,10 +1009,10 @@ function triangle:c_c(p, C)
 		a, b, c = self.pc, self.pa, self.pb
 	end
 	local Lm = self:mediator(p)
-	local n = intersection(Lm, C)
+	local n = intersection(Lm, C, {near = p})
 	local i = self.incenter
-	local m = line:new(c, i):reflection(n)
-	local L = line:new(c, m):parallel_from(i)
+	local q = line:new(c, i):reflection(n)
+	local L = line:new(c, q):parallel_from(i)
 	local Lac = line:new(a, c)
 	local e = intersection(L, Lac)
 	local Lia = line:new(i, a)
@@ -892,12 +1021,75 @@ function triangle:c_c(p, C)
 end
 triangle.thebault = triangle.c_c
 
+function triangle:thebault_circles(p)
+	local pa, pb, pc = self.pa, self.pb, self.pc
+	local a, b, c    -- sommets réordonnés
+	local side       -- côté sur lequel se trouve p (objet line)
 
-function triangle:three_tangent_circles()
-	local i = self.incenter
-	local a, b, c = self:projection(i)
-	return circle:new(self.pa, c), circle:new(self.pb, a), circle:new(self.pc, b)
+	--------------------------------------------------
+	-- 1. Déterminer le côté contenant p et (a,b,c)
+	--    a = sommet opposé au côté portant p
+	--------------------------------------------------
+	if self.bc:in_out_segment(p) then
+		-- p sur BC -> sommet opposé A
+		a, b, c = pa, pb, pc
+		side    = self.bc
+
+	elseif self.ca:in_out_segment(p) then
+		-- p sur CA -> sommet opposé B
+		a, b, c = pb, pc, pa
+		side    = self.ca
+
+	elseif self.ab:in_out_segment(p) then
+		-- p sur AB -> sommet opposé C
+		a, b, c = pc, pa, pb
+		side    = self.ab
+
+	else
+		tex.error("thebault_circles: point is not on any side of the triangle.")
+		return
+	end
+
+	--------------------------------------------------
+	-- 2. Construction des centres (comme dans ta version)
+	--------------------------------------------------
+	local i  = self.incenter        -- incenter du triangle ABC
+	local ic = in_center_(p, a, c)  -- incenter du triangle (p,a,c)
+	local ib = in_center_(p, a, b)  -- incenter du triangle (p,a,b)
+
+	-- projections de p sur (ic i) et (ib i)
+	local pc_ = projection_(p, ic, i)
+	local pb_ = projection_(p, ib, i)
+
+	-- intersections avec (b c)
+	local tc = intersection_ll_(i, pc_, b, c)
+	local tb = intersection_ll_(i, pb_, b, c)
+
+	-- perpendiculaires à (b c) par tc et tb
+	local xc = ortho_from_(tc, b, c)
+	local xb = ortho_from_(tb, b, c)
+
+	-- centres des deux cercles
+	local center_c = intersection_ll_(p, ic, tc, xc)
+	local center_b = intersection_ll_(p, ib, tb, xb)
+
+	if not center_b or not center_c then
+		tex.error("thebault_circles: failed to construct circle centers.")
+		return
+	end
+
+	--------------------------------------------------
+	-- 3. Points de tangence sur le côté et cercles
+	--------------------------------------------------
+	-- side:projection(pt1, pt2) renvoie les projections
+	local tb_tan, tc_tan = side:projection(center_b, center_c)
+
+	local Cb = circle:new(center_b, tb_tan)
+	local Cc = circle:new(center_c, tc_tan)
+
+	return Cb, Cc
 end
+
 
 
 function triangle:mixtilinear_incircle(arg)

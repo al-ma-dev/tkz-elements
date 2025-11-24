@@ -42,43 +42,49 @@ function midarc_(o, a, b) -- a -> b
     return rotation_(o, phi, b)
 end
 
-function is_tangent_(a, b, o, t)
+function is_tangent_(a, b, o, t, EPS)
+   EPS = EPS or tkz.epsilon
   local r = length_(o, t)
   local d = distance_(a, b, o)
-  return math.abs(d - r) <= tkz.epsilon
+  return math.abs(d - r) <= EPS
 end
 
 -- p est SUR le cercle (bande de tolérance)
-function on_circle_(o, t, p)
+function on_circle_(o, t, p ,EPS)
+   EPS = EPS or tkz.epsilon
   local r = point.abs(t - o)
   local d = point.abs(p - o)
-  return math.abs(d - r) <= tkz.epsilon
+  return math.abs(d - r) <= EPS
 end
 
 -- Inclusif : disque fermé (<=)
-function in_disk_(o, t, p)
+function in_disk_(o, t, p, EPS)
+   EPS = EPS or tkz.epsilon
   local r = point.abs(t - o)
-  return point.abs(p - o) <= r + tkz.epsilon
+  return point.abs(p - o) <= r + EPS
 end
 
 -- Strict : disque ouvert (<)  — utile pour tes dispatchers
-function in_disk_strict_(o, t, p)
+function in_disk_strict_(o, t, p, EPS)
+   EPS = EPS or tkz.epsilon
   local r = point.abs(t - o)
-  return point.abs(p - o) < r - tkz.epsilon
+  return point.abs(p - o) < r - EPS
 end
 
 -- Strict : extérieur pur (>)
-function out_disk_strict_(o, t, p)
+function out_disk_strict_(o, t, p,EPS)
+   EPS = EPS or tkz.epsilon
   local r = point.abs(t - o)
-  return point.abs(p - o) > r + tkz.epsilon
+  return point.abs(p - o) > r + EPS
 end
 
-function point_circle_position_(o, t, p)
+function point_circle_position_(o, t, p, EPS)
+   EPS = EPS or tkz.epsilon
   local d = point.abs(p - o)
   local r = point.abs(t - o)
-  if math.abs(d - r) <= tkz.epsilon then
+  if math.abs(d - r) <= EPS then
     return "ON"
-  elseif d < r - tkz.epsilon then
+  elseif d < r - EPS then
     return "IN"
   else
     return "OUT"
@@ -86,7 +92,7 @@ function point_circle_position_(o, t, p)
 end
 
 function act_(O1, T1, O2, T2, EPS)
-  local EPS = EPS or 1e-5
+   EPS = EPS or tkz.epsilon
   local R1 = length_(O1, T1)
   local R2 = length_(O2, T2)
   local d = length_(O1, O2)
@@ -97,6 +103,15 @@ end
 -----------------------
 -- Result -> point
 -----------------------
+function tangent_point_two_circles_(c1, r1, c2, r2)
+  local dc = c2 - c1
+  local d  = point.abs(dc)
+  if d == 0 or r1 == 0 then
+    return false
+  end
+  local u = dc / d  -- vecteur unitaire c1 -> c2
+  return c1 + r1 * u
+end
 
 function tangent_from_(c, p, pt)
     local o = midpoint_(c, pt)
@@ -114,8 +129,9 @@ end
 -- pb avec l'inversion
 -- 1) si l'un des points est sur le cercle
 -- 2) si l'un des points est l'inverse de l'autre par rapport au cercle
-function orthogonal_through_(a, b, x, y)
-    if math.abs(point.mod(x - a) - point.mod(b - a)) < tkz.epsilon then
+function orthogonal_through_(a, b, x, y, EPS)
+   EPS = EPS or tkz.epsilon
+    if math.abs(point.mod(x - a) - point.mod(b - a)) < EPS then
         local ta, tb = tangent_at_(a, x)
         local mx, my = mediator_(x, y)
         local z = intersection_ll_(ta, tb, mx, my)
@@ -126,17 +142,19 @@ function orthogonal_through_(a, b, x, y)
     end
 end
 
-function are_inverses_(a, b, x, y)
-    local z = inversion_(a, b, x)
-    return point.mod(z - y) < tkz.epsilon
+function are_inverses_(a, b, x, y, EPS)
+   EPS = EPS or tkz.epsilon
+  local z = inversion_(a, b, x)
+    return point.mod(z - y) < EPS
 end
 
-function orthogonal_circle_through_(a, b, x, y)
+function orthogonal_circle_through_(a, b, x, y, EPS)
+   EPS = EPS or tkz.epsilon
     local r = point.mod(b - a)
     local d1 = math.abs(point.mod(x - a) - r)
     local d2 = math.abs(point.mod(y - a) - r)
-    local x_on = (d1 < tkz.epsilon)
-    local y_on = (d2 < tkz.epsilon)
+    local x_on = (d1 < EPS)
+    local y_on = (d2 < EPS)
 
     -- Cas 4 : x et y sont inverses par rapport à C(a,b)
     if are_inverses_(a, b, x, y) then
@@ -155,11 +173,12 @@ function orthogonal_circle_through_(a, b, x, y)
     end
 end
 
-function inversion_(c, p, pt)
+function inversion_(c, p, pt, EPS)
+   EPS = EPS or tkz.epsilon
     local ry = point.abs(c - p) -- radius of reference circle (c,p)
     local d = point.abs(c - pt) -- distance from c to pt
 
-    if d < tkz.epsilon then
+    if d < EPS then
         -- Avoid division by zero: return point at infinity or raise error
         tex.error("Inversion undefined at center", { "inversion_(c, p, pt): pt == c" })
         return nil
@@ -169,16 +188,30 @@ function inversion_(c, p, pt)
     return c + polar_(r, point.arg(pt - c))
 end
 
-function circles_position_(c1, r1, c2, r2)
+function line_position_(c, r, a, b, EPS)
+   EPS = EPS or tkz.epsilon
+  local d = distance_(a, b, c)
+  if d > r + 0.0001 then
+    return "disjoint"
+  elseif math.abs(d - r) <= EPS then
+    return "tangent"
+  else
+    return "secant"
+  end
+end
+
+
+function circles_position_(c1, r1, c2, r2, EPS)
+     EPS = EPS or tkz.epsilon
     local d = point.mod(c1 - c2)
     local max = r1 + r2
     local min = math.abs(r1 - r2)
 
     if d > max then
         return "outside"
-    elseif math.abs(d - max) < tkz.epsilon then
+    elseif math.abs(d - max) < EPS then
         return "outside tangent"
-    elseif math.abs(d - min) < tkz.epsilon then
+    elseif math.abs(d - min) < EPS then
         return "inside tangent"
     elseif d < min then
         return "inside"
@@ -246,70 +279,29 @@ function circlepoint_(c, t, k)
     return rotation_(c, phi, t)
 end
 
--- function midcircle_(C1, C2)
-    -- local state, r, s, t1, t2, T1, T2, p, a, b, c, d, Cx, Cy, i, j
-    -- state = circles_position_(C1.center, C1.radius, C2.center, C2.radius)
-    -- i = barycenter_({ C2.center, C1.radius }, { C1.center, -C2.radius })
-    -- j = barycenter_({ C2.center, C1.radius }, { C1.center, C2.radius })
-    -- t1, t2 = tangent_from_(C1.center, C1.through, i)
-    -- T1, T2 = tangent_from_(C2.center, C2.through, i)
---
-    -- if (state == "outside") or (state == "outside tangent") then
-    --     p = math.sqrt(point.mod(i - t1) * point.mod(i - T1))
-    --     return circle:radius(i, p)
-    -- elseif state == "intersect" then
-    --     r, s = intersection(C1, C2)
-    --     return circle:radius(i, point.mod(r - i)), circle:radius(j, point.mod(r - j))
-    -- elseif (state == "inside") or (state == "inside tangent") then
-    --     a, b = intersection_lc_(C1.center, C2.center, C1.center, C1.through)
-    --     c, d = intersection_lc_(C1.center, C2.center, C2.center, C2.through)
---
-    --     -- Ensure the smaller radius circle is used first
-    --     if C1.radius < C2.radius then
-    --         z.u, z.v, z.r, z.s = a, b, c, d
-    --     else
-    --         z.u, z.v, z.r, z.s = c, d, a, b
-    --     end
---
-    --     -- Determine circle orientation and return orthogonal from j
-    --     if in_segment_(z.s, z.v, z.u) then
-    --         Cx = circle:diameter(z.r, z.v)
-    --         Cy = circle:diameter(z.u, z.s)
-    --     else
-    --         Cx = circle:diameter(z.s, z.v)
-    --         Cy = circle:diameter(z.u, z.r)
-    --     end
---
-    --     -- Return the circle with the smaller radius orthogonal from j
-    --     if Cx.radius < Cy.radius then
-    --         return Cy:orthogonal_from(j)
-    --     else
-    --         return Cx:orthogonal_from(j)
-    --     end
-    -- end
--- end
 --
 -- midcircle_cc = midcircle_
 
-function midcircle_cc_(o1, t1, o2, t2)
-    local state, r, s, tg1, TG1, p, a, b, c, d, Cx, Cy, i, j, r1, r2
-    r1 = length_(o1, t1)
-    r2 = length_(o2, t2)
-    state = circles_position_(o1, r1, o2, r2)
-    i = barycenter_({ o2, r1 }, { o1, -r2 })
-    j = barycenter_({ o2, r1 }, { o1, r2 })
-    tg1, _ = tangent_from_(o1, t1, i)
-    TG1, _ = tangent_from_(o2, t2, i)
+function midcircle_cc_(o1, t1, o2, t2, EPS)
+   EPS = EPS or tkz.epsilon
+  local state, r, s, tg1, TG1, p, a, b, c, d, Cx, Cy, i, j, r1, r2
+  r1 = length_(o1, t1)
+  r2 = length_(o2, t2)
+  state = circles_position_(o1, r1, o2, r2, EPS)
+  i = barycenter_({ o2, r1 }, { o1, -r2 })
+  j = barycenter_({ o2, r1 }, { o1, r2 })
+  tg1, _ = tangent_from_(o1, t1, i)
+  TG1, _ = tangent_from_(o2, t2, i)
 
     if (state == "outside") or (state == "outside tangent") then
         p = math.sqrt(point.mod(i - tg1) * point.mod(i - TG1))
         return circle:radius(i, p)
     elseif state == "intersect" then
-        r, s = intersection_cc_(o1, t1, o2, t2)
+        r, s = intersection_cc_(o1, t1, o2, t2, EPS)
         return circle:radius(i, point.mod(r - i)), circle:radius(j, point.mod(r - j))
     elseif (state == "inside") or (state == "inside tangent") then
-        a, b = intersection_lc_(o1, o2, o1, t1)
-        c, d = intersection_lc_(o1, o2, o2, t2)
+        a, b = intersection_lc_(o1, o2, o1, t1, EPS)
+        c, d = intersection_lc_(o1, o2, o2, t2, EPS)
 
         -- Ensure the smaller radius circle is used first
         if r1 < r2 then
@@ -355,24 +347,25 @@ end
 --   - disjoint: two circles (centers A and B on OH)
 --   - tangent : one circle (center K = antipode of S on C)
 --   - secant  : two circles (centers A and B through an intersection S)
-function midcircle_cl_(O, T, x, y)
+function midcircle_cl_(O, T, x, y, EPS)
+  EPS  = EPS or tkz.epsilon
   r = length_(T, O)
 
   -- Foot H of the perpendicular from O to line (x,y)
   local H = projection_(x, y, O)
 
   -- A,B = intersections of line (O,H) with circle C
-  local A, B = intersection_lc_(O, H, O, T)
+  local A, B = intersection_lc_(O, H, O, T, EPS)
   -- Stable ordering: make A the farther from H
   if length_(B, H) > length_(A, H) then A, B = B, A end
 
   -- Intersections of L with C (nil if disjoint; doubled if tangent)
-  local S1, S2 = intersection_lc_(x, y, O, T)
+  local S1, S2 = intersection_lc_(x, y, O, T, EPS)
   local S      = S1 or S2
 
   -- test "tangent" via d(O, L) ≈ r
   local OL         = distance_(x, y, O)
-  local is_tangent = math.abs(OL - r) <= tkz.epsilon
+  local is_tangent = math.abs(OL - r) <= EPS
 
   -- Disjoint case: TWO solutions (centers A and B)
   if not S then
@@ -397,19 +390,20 @@ end
 
 
 --- =========== Common tangents of two circles =======-----
-function common_tangent_(C1, C2, mode)
+function common_tangent_(C1, C2, mode, EPS)
+   EPS = EPS or tkz.epsilon
   mode = mode or "external" -- "external" | "internal" | "both"
 
   local A, rA = C1.center, C1.radius
   local B, rB = C2.center, C2.radius
 
-  local pos   = circles_position_(A, rA, B, rB)
+  local pos   = circles_position_(A, rA, B, rB, EPS)
   -- "inside" | "outside" | "intersect" | "inside tangent" | "outside tangent"
   local S_ext = external_similitude_(A, rA, B, rB) -- peut être nil si rA == rB
   local S_int = internal_similitude_(A, rA, B, rB) -- pour rA == rB : milieu AB
 
   local function equal_radii()
-    return math.abs(rA - rB) < tkz.epsilon
+    return math.abs(rA - rB) < EPS
   end
 
   -- --------- Helpers factorisés ----------

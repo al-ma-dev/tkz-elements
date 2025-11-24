@@ -1,3 +1,56 @@
+## [2025/11/24 version 4.42c]
+
+### Added
+- **angle**
+  - New class `angle` (not yet connected to the others).
+    The identifier `"A"` is used internally to store objects of type `angle`.
+
+- **circle**
+  - Addition of `CCL`.
+  - New method `similitude` with optional argument `"internal"` or `"external"`.
+
+- **tkz**
+  - New angle-related functions, all accepting an optional EPS argument to adjust precision:
+    `tkz.inner_angle`, `tkz.angle_between_vectors`, `tkz.get_angle_normalize`.
+  - New comparison helper: `tkz.approx` (optional EPS argument).
+
+- **line**
+  - Aliases `perpendicular_bisector` and `bisector` added for `mediator`.
+  - New method `harmonic` with optional argument `"internal"`, `"external"`, or `"both"`.
+
+- **triangle**
+  - `isodynamic_points` (alias `neuberg_points`).
+  - `three_apollonius_circles`.
+  - `apollonius_circle`.
+  - `apollonius_points`.
+  - `apollonius_circles`.
+
+### Changed
+- **matrix**
+  - Corrections to `print_matrix` and `matrix:print`.
+  - Correction of method `htm`.
+
+- **intersection**
+  - Rewriting of algorithms with introduction of an EPS parameter to adjust precision.
+
+- **circle**
+  - The following functions now accept an optional EPS parameter:
+    `on_circle`, `in_out`, `in_disk`, `in_out_disk`,
+    `in_disk_strict`, `out_disk_strict`, `in_out_disk_strict`,
+    `line_position`, `pole`, `is_tangent`, `is_secant`, `circles_position`,
+    `orthogonal_through`, `midcircle`, `common_tangent`.
+  - Improved `CLL` for the case of parallel lines.
+
+- **line**
+  - Improved `LLL`.
+
+### Docs
+- Added Gothic example for CLP.
+- Added example with parallel lines for CLL.
+- Rewriting of `search_circle.lua`.
+- Apollonius section: new CLP examples.
+- Lua lesson: using `string.char(37)`.
+
 ## [2025/11/13 version 4.40c]
 
 ### Added

@@ -166,6 +166,8 @@ Here's the list of methods for the \tkzNameObj{line} object. The results can be 
 \tkzMeth{line}{harmonic\_int(pt)}   &  [\ref{ssub:method_line_harmonic_int};  \ref{sub:bankoff_circle}] \\
 \tkzMeth{line}{harmonic\_ext(pt)}  & [ \ref{sub:bankoff_circle}] \\
 \tkzMeth{line}{harmonic\_both(r)}  & [\ref{ssub:harmonic_both}; \ref{sub:harmonic_division_with_tkzphi}] \\
+\tkzMeth{line}{harmonic(mode, pt)}  & [\ref{ssub:harmonic}] \\
+
 
 \tkzMeth{line}{report(d,pt)}    &[\ref{ssub:method_report}]\\
 
@@ -753,8 +755,35 @@ The method returns the two corresponding points in the order: \code{internal, ex
      \tkzLabelPoints(A,B,C,D)
   \end{tikzpicture}
 \end{center}
-
 \end{tkzexample}
+
+\subsubsection{Method \tkzMeth{line}{harmonic(mode, arg)}}
+\label{ssub:harmonic}
+
+This method provides a unified interface for harmonic division.
+
+\begin{itemize}
+  \item \code{mode = "internal"} returns the internal harmonic point.
+  \item \code{mode = "external"} returns the external harmonic point.
+  \item \code{mode = "both"} returns both harmonic points.
+\end{itemize}
+
+The argument \code{arg} is:
+\begin{itemize}
+  \item a point when \code{mode} is \code{"internal"} or \code{"external"},
+  \item a ratio when \code{mode} is \code{"both"}.
+\end{itemize}
+
+\medskip
+\noindent\textbf{Example}
+\begin{verbatim}
+H1      = L.AB:harmonic("internal",  z.P)
+H2      = L.AB:harmonic("external",  z.P)
+Hi, He  = L.AB:harmonic("both", 2)
+\end{verbatim}
+
+
+
 
 \subsubsection{Methode \tkzMeth{line}{gold\_ratio}}
 \label{ssub:methode_imeth_line_gold__ratio}
@@ -1018,7 +1047,9 @@ Unlike the \code{orthogonal\_at} method, which returns a \code{point} located at
 
 \medskip
 
-\texttt{Use this method when a perpendicular line is needed as a geometric object.} Choose between \code{orthogonal\_at} and \code{ortho\_from} depending on whether you need a point or a line.
+\texttt{Use this method when a perpendicular line is needed as a geometric object.}
+
+Choose between \code{orthogonal\_at} and \code{ortho\_from} depending on whether you need a point or a line.
 
 \begin{minipage}{.5\textwidth}
   \directlua{
@@ -1084,7 +1115,7 @@ The method returns a new \code{line} object that is perpendicular to the origina
 
 \medskip
 
-\texttt{Alias: } You may also call this method using the alternative name \code{perpendicular\_bisector()}.
+\texttt{Alias: } You may also call this method using the alternative names \code{perpendicular\_bisector()} or \code{bisector()}.
 
 \vspace{1em}
 \begin{tkzexample}[latex=.5\textwidth]
@@ -1501,7 +1532,7 @@ If the optional argument \meta{"swap"} is provided, the side and angle are inste
   z.A = point(0, 0)
   z.B = point(5, 0)
   L.AB = line(z.A, z.B)
-  T.ABD = L.AB:sa_(3, 2 * math.pi / 5)
+  T.ABD = L.AB:sa_(3, tkz.tau / 5)
   z.D = T.ABD.pc}
   \begin{center}
     \begin{tikzpicture}[gridded]

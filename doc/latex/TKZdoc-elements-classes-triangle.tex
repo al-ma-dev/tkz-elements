@@ -422,6 +422,8 @@ See [\ref{ssub:_triangle_kenmotu__point}] \\
   \tkzMeth{triangle}{orthic\_axis\_points()}  &
 See [ \ref{ssub:method_triangle_orthic}; \ref{ssub:method_triangle_orthic_axis_points}] \\
 
+\tkzMeth{triangle}{isodynamic\_points()} & [\ref{ssub:isodynamic_points}] \\
+
   \bottomrule
   \end{tabular}
   \end{minipage}
@@ -545,6 +547,11 @@ See [ \ref{ssub:method_triangle_orthic}; \ref{ssub:method_triangle_orthic_axis_p
   \tkzMeth{triangle}{soddy\_circle()}  &
   See [\ref{ssub:method_triangle_soddy_circle}] \\
 
+  \tkzMeth{triangle}{three\_apollonius\_circles()}  &
+  See [\ref{ssub:three_apollonius_circles}] \\
+
+  \tkzMeth{triangle}{apollonius\_circle(side, EPS)}  &
+  See [\ref{ssub:apollonius_circle}] \\
   \midrule
 
   \textbf{Triangles} &\\
@@ -2210,6 +2217,124 @@ See the following example for the link between orthopole and Simson line: [\ref{
 \end{center}
 \end{tkzexample}
 
+\subsubsection{Method \tkzMeth{triangle}{isodynamic\_points()}}
+\label{ssub:isodynamic_points}
+
+This method computes the two isodynamic points of a non-degenerate triangle.
+
+\medskip
+
+\texttt{Geometric background: }
+Given a triangle $ABC$, consider the three Apollonius circles associated with its sides:
+\[
+\mathcal{A}_{a},\quad \mathcal{A}_{b},\quad \mathcal{A}_{c},
+\]
+each defined as the locus of points $M$ satisfying a ratio of distances
+corresponding to the opposite sides.
+
+A classical and fundamental property states that:
+
+\begin{quote}
+\emph{The three Apollonius circles intersect in exactly two points.
+These intersections are the first and second isodynamic points of the triangle.}
+\end{quote}
+
+The first isodynamic point is symmetric to the second by reflection in the
+circumcenter. Both points are isogonal conjugates of the Fermat points.
+
+\medskip
+
+\texttt{Description: }
+The method \code{isodynamic\_points()}  returns the two common intersection points of the Applonius circles.
+
+\medskip
+\texttt{Return values: }
+\begin{itemize}
+  \item \code{S1} — the first isodynamic point,
+  \item \code{S2} — the second isodynamic point.
+\end{itemize}
+
+\medskip
+\texttt{Example: }
+\begin{verbatim}
+S1, S2 = T.ABC:isodynamic_points()
+\end{verbatim}
+
+Each point can then be used like any other \code{point} object in subsequent constructions.
+
+\medskip
+\texttt{Application: }
+
+\begin{tkzexample}[vbox]
+\directlua{%
+z.A = point (0, 0)
+z.B = point (5, 0)
+z.C = point (3.5, 2)
+T.ABC = triangle (z.A,  z.B, z.C)
+C.ab, C.bc,
+C.ca = T.ABC:three_apollonius_circles()
+z.w1, z.t1 = C.ab:get()
+z.w2, z.t2 = C.bc:get()
+z.w3, z.t3 = C.ca:get()
+z.S, z.Sp = T.ABC:isodynamic_points()
+}
+\begin{center}
+\begin{tikzpicture}[scale=.5]
+ \tkzGetNodes
+ \tkzDrawLines[add = 1.5 and 1.5,
+               dashed](A,B B,C C,A)
+ \tkzDrawPolygons(A,B,C)
+ \tkzDrawCircle[purple](O,A)
+ \tkzDrawCircles[cyan](w1,t1 w2,t2 w3,t3)
+ \tkzDrawLines[purple](w1,w2)
+ \tkzDrawPoints(A,B,C,w1,w2,w3,S,S')
+ \tkzLabelPoints(A,B,w1,w2,w3)
+  \tkzLabelPoints[above](C,S,S')
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+
+\subsubsection{Method \tkzMeth{triangle}{apollonius\_points(side)}}
+\label{ssub:apollonius_points}
+
+This method returns the two Apollonius division points associated with a
+specified side of the triangle.
+
+\medskip
+
+\paragraph{Description.}
+Given a triangle $ABC$ and a chosen side:
+
+\begin{itemize}
+  \item \code{"ab"} — side $AB$, ratio defined by the opposite side $c = AB$,
+  \item \code{"bc"} — side $BC$, ratio defined by the opposite side $a = BC$,
+  \item \code{"ca"} — side $CA$, ratio defined by the opposite side $b = CA$,
+\end{itemize}
+
+the method  returns the two
+points that divide the chosen side internally and externally according to the
+ratio of the adjacent sides.
+
+\medskip
+\texttt{Return values: }
+Two points:
+\begin{itemize}
+  \item \code{P\_int} — internal division point on the chosen side,
+  \item \code{P\_ext} — external division point on the chosen side.
+\end{itemize}
+
+\medskip
+
+\texttt{Example: }
+\begin{verbatim}
+Pin, Pex = T.ABC:apollonius_points("ab")
+\end{verbatim}
+
+The returned objects are standard \code{point} instances usable in further
+constructions.
+
+\texttt{Application: } See [\ref{ssub:apollonius_circle}]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%  Lines %%%%%%%%%%%
@@ -3907,7 +4032,7 @@ The Kenmotu circle contains all six points of tangency between the triangle side
 
 The |c_c| (or |thebault|) method constructs a circle tangent to two sides of a triangle at a chosen vertex, and tangent to a given circle passing through the two remaining vertices.
 
-
+\medskip
 \texttt{Name and purpose: }
 
 Circle tangent to the two sides issuing from a vertex $p$ and tangent to the circle centered at $C$ passing through the other two vertices of the triangle.
@@ -3952,8 +4077,36 @@ A \code{circle} object $\mathcal{T}$ tangent to the two sides adjacent to \(p\) 
   \item The circle returned is tangent to the \emph{lines} supporting the two sides adjacent to \(p\). If you need the segment contact points explicitly, intersect the result with those lines and/or use orthogonal projections.
 \end{itemize}
 
-
+\medskip
 \texttt{Example usage: }
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+ init_elements()
+ z.A = point(2, 4)
+ z.B = point(-3, 0)
+ z.C = point(3, 0)
+ T.ABC = triangle(z.A, z.B, z.C)
+ L.med = T.ABC:mediator(z.A)
+ z.Oa = L.med:point(1)
+ C.main = circle(z.Oa, z.C)
+ z.wa,
+ z.Ea = T.ABC:thebault(z.A, C.main):get()
+}
+\begin{center}
+\begin{tikzpicture}%[ scale = 1]
+  \tkzGetNodes
+  \tkzDrawCircles(Oa,C)
+  \tkzDrawCircles(wa,Ea)
+  \tkzDrawPolygon[color = purple](A,B,C)
+  \tkzDrawPoints(A,B,C,wa)
+  \tkzLabelPoints(A,B,C,wa)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+\medskip
+\texttt{Application: }
 
 \begin{tkzexample}[latex=.5\textwidth]
 \directlua{
@@ -4083,6 +4236,134 @@ Three circle objects tangent to one another and to the triangle’s sides.
 \end{center}
 \end{tkzexample}
 
+\subsubsection{Method \tkzMeth{triangle}{three\_apollonius\_circles()}}
+\label{ssub:three_apollonius_circles}
+
+This method constructs the three Apollonius circles of a non-degenerate triangle.
+
+\medskip
+\texttt{Geometric background: }
+Given a triangle $ABC$ with side lengths $a = BC$, $b = CA$, and $c = AB$, one can
+associate to each vertex an Apollonius circle, defined as the locus of points $M$
+for which the ratio of distances to the two opposite vertices is fixed
+(in terms of the side lengths of the triangle).
+
+These three Apollonius circles have the remarkable property that they intersect
+in exactly two common points, which are the isodynamic points of the triangle
+(see Method \tkzMeth{triangle}{isodynamic\_points()}).
+
+\medskip
+\texttt{Description.}
+The method \code{three\_apollonius\_circles()} builds the three Apollonius circles
+associated with the triangle and returns them as circle objects.
+
+\medskip
+\texttt{Return values: }
+\begin{itemize}
+  \item \code{Ca} — Apollonius circle associated with side $a = BC$,
+  \item \code{Cb} — Apollonius circle associated with side $b = CA$,
+  \item \code{Cc} — Apollonius circle associated with side $c = AB$.
+\end{itemize}
+
+\medskip
+\texttt{Example: }
+\begin{verbatim}
+Ca, Cb, Cc = T.ABC:three_apollonius_circles()
+\end{verbatim}
+
+Each of \code{Ca}, \code{Cb}, and \code{Cc} is a \code{circle} object that can be
+used in further constructions (for instance, to compute the isodynamic points
+from their intersections).
+
+\medskip
+\texttt{Application: }
+
+\begin{tkzexample}[vbox]
+\directlua{%
+z.A = point (0, 0)
+z.B = point (4, 0)
+z.C = point (0, 3)
+T.ABC = triangle (z.A,  z.B, z.C)
+C.ab, C.bc,
+C.ca = T.ABC:three_apollonius_circles()
+z.w1, z.t1 = C.ab:get()
+z.w2, z.t2 = C.bc:get()
+z.w3, z.t3 = C.ca:get()}
+\begin{center}
+\begin{tikzpicture}[scale=.5]
+ \tkzGetNodes
+ \tkzDrawLines[add = 2 and 2,
+         dashed](A,B B,C C,A)
+ \tkzDrawPolygons(A,B,C)
+ \tkzDrawCircle[purple](O,A)
+ \tkzDrawCircles[cyan](w1,t1 w2,t2 w3,t3)
+ \tkzDrawLines[purple](w3,w2)
+ \tkzDrawPoints(A,B,C,w1,w2,w3)
+ \tkzLabelPoints(A,B,w1,w2,w3)
+  \tkzLabelPoints[above](C)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+\subsubsection{Method \tkzMeth{triangle}{apollonius\_circle(side, EPS)}}
+\label{ssub:apollonius_circle}
+
+This method returns one of the three Apollonius circles of the triangle.
+
+\medskip
+
+\texttt{Description: }
+Given a triangle $ABC$, the method \code{apollonius\_circle(side)} constructs the
+Apollonius circle associated with the specified side:
+\begin{itemize}
+  \item \code{"ab"} → Apollonius circle opposite vertex $C$,
+  \item \code{"bc"} → Apollonius circle opposite vertex $A$,
+  \item \code{"ca"} → Apollonius circle opposite vertex $B$.
+\end{itemize}
+
+The optional parameter \code{EPS} controls numerical tolerance for the
+underlying intersection or ratio calculations.
+If omitted, it defaults to \code{tkz.epsilon}.
+
+\medskip
+\texttt{Return value: }
+A single \code{circle} object corresponding to the chosen side.
+
+\medskip
+
+\texttt{Example: }
+\begin{verbatim}
+Cc = T.ABC:apollonius_circle("ab")
+\end{verbatim}
+
+This circle can be used independently or as part of the construction of the
+three Apollonius circles or the isodynamic points.
+
+\medskip
+\texttt{Application: }
+
+\begin{tkzexample}[latex = .5\textwidth]
+\directlua{
+  z.A = point(0, 0)
+  z.B = point(5, 0)
+  z.C = point(4.5, 2)
+  T.ABC  = triangle: new(z.A, z.B, z.C)
+  C.apo_ab  = T.ABC:apollonius_circle("ab")
+  z.N,z.K =  C.apo_ab:get()
+  z.P,
+  z.Q = T.ABC:apollonius_points("ab")}
+\begin{center}
+\begin{tikzpicture}[scale=.75]
+ \tkzGetNodes
+ \tkzDrawPolygons[red](A,B,C)
+ \tkzDrawCircle(N,K)
+ \tkzDrawLine[dashed](B,Q)
+ \tkzDrawPoints(A,B,C,P,Q)
+ \tkzLabelPoints(A,B)
+ \tkzLabelPoints[above](C,P,Q)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% Triangles %%%%%

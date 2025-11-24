@@ -1,0 +1,119 @@
+\newpage
+\section{Class \tkzClass{angle}}
+\label{sec:class_angle}
+
+The \tkzClass{angle} class is an experimental helper object used to represent
+an angle defined by three points.
+It is currently self-contained and does not interact with other classes.
+Its main purpose is to provide a simple and direct interface for obtaining:
+
+\begin{itemize}
+  \item the oriented angle in radians,
+  \item the normalised oriented angle in $[0, 2\pi]$
+  \item the interior (non-oriented) angle,
+  \item the measure of the interior angle in degrees.
+\end{itemize}
+
+An \tkzClass{angle} object is \emph{static}: all values are computed at creation
+time and never updated.
+
+\subsection{Creating an object}
+
+\begin{verbatim}
+local angle = require("tkz_elements_angle")
+
+local alpha  = angle(A, B, C)   -- equivalent to angle:new(A,B,C)
+local beta   = angle(B, C, A)
+local gamma  = angle(C, A, B)
+\end{verbatim}
+
+The three arguments are:
+\begin{itemize}
+  \item \tkzVar{ps} : the vertex of the angle,
+  \item \tkzVar{pa} : the first point defining the first ray,
+  \item \tkzVar{pb} : the second point defining the second ray.
+\end{itemize}
+
+\subsection{Attributes}
+
+The following attributes are stored inside every \tkzClass{angle} object:
+
+\vspace{1em}
+\bgroup
+\small
+\captionof{table}{Angle attributes.}\label{angle:attributes}
+\begin{tabular}{lll}
+\toprule
+\textbf{Attribute} & \textbf{Meaning} & \textbf{Reference} \\
+\midrule
+\tkzAttr{angle}{ps}   & Vertex of the angle & -- \\
+\tkzAttr{angle}{pa}   & First defining point (ray $[ps\,pa]$) & -- \\
+\tkzAttr{angle}{pb}   & Second defining point (ray $[ps\,pb]$) & -- \\
+\tkzAttr{angle}{raw}  & Oriented angle (radians), may be negative & -- \\
+\tkzAttr{angle}{norm} & Oriented angle normalised to $[0,2\pi]$ & -- \\
+\bottomrule
+\end{tabular}
+\egroup
+
+
+All values are numerical scalars and remain fixed once the object is created.
+
+\subsection{Methods}
+
+\paragraph{\tkzMeth{angle}{get()}}
+Returns the three defining points:
+\begin{verbatim}
+local ps, pa, pb = alpha:get()
+\end{verbatim}
+
+\subsubsection{\tkzMeth{angle}{is\_direct()}}
+Returns \verb|true| when the angle is positive (counterclockwise orientation).
+
+\subsubsection{\tkzMeth{angle}{value()}}
+Returns the interior (non-oriented) angle in the range $[0,\pi]$:
+
+\begin{tkzexample}[latex=.45\textwidth]
+  \directlua{%
+  init_elements()
+  z.O = point(0, 1)
+  z.T = point(2, 2)
+  C.OT = circle(z.O, z.T)
+  z.M = C.OT:point(.13)
+  A.OTM = angle(z.O, z.T, z.M)
+  tkzA = A.OTM:value()}
+\begin{center}
+  \begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawLines(O,T O,M)
+  \tkzDrawCircle(O,T)
+  \tkzDrawPoints(O,T,M)
+  \tkzLabelPoints(O,T,M)
+  \tkzMarkAngle(T,O,M)
+  \tkzLabelAngle[pos=1.5](T,O,M){%
+   \tkzPN[3]{\tkzUseLua{tkzA}}}
+\end{tikzpicture}
+  \end{center}
+\end{tkzexample}
+
+
+\subsubsection{\tkzMeth{angle}{deg()}}
+Returns the interior angle in degrees.
+
+\subsubsection{\tkzMeth{angle}{to\_degrees()}}
+Alias of \texttt{deg()}.
+
+\subsection{Example}
+
+\begin{tkzexample}[latex=.35\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(0,0)
+  z.B = point(3,0)
+  z.C = point(1,2)
+  A.alpha = angle(z.B, z.A, z.C)
+  tex.print("Angle at A = "..A.alpha:deg().." degrees")
+}
+\end{tkzexample}
+
+\medskip
+This class is \emph{experimental} and may evolve in future versions.

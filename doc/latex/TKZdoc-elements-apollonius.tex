@@ -785,8 +785,8 @@ If you do not know how many solutions exist, the following example shows how to 
   PA.center, PA.through = C.OX:CLL_all(L.AB, L.CD)
   z.w1 = PA.center:get(2)
   z.t1 = PA.through:get(2)}
-
-\begin{tikzpicture}
+\begin{center}
+  \begin{tikzpicture}[scale=.75]
  \tkzGetNodes
  \tkzInit[xmin=-.25,xmax=12,ymin=-8,ymax=8]
  \tkzClip
@@ -795,7 +795,37 @@ If you do not know how many solutions exist, the following example shows how to 
  \tkzDrawCirclesFromPaths[draw,orange,thick](PA.center,PA.through)
  \tkzDrawCircles[thick,purple](w1,t1)
 \end{tikzpicture}
+  \end{center}
 
+\texttt{The last case: the lines are parallel}
+
+\begin{tkzexample}[vbox]
+\directlua{
+  z.A = point(0, 0)
+  z.B = point(6, -2)
+  L.AB  = line(z.A, z.B)
+  z.C = point(-3, -3)
+  z.D = point(3, -5)
+  L.CD  = line(z.C, z.D)
+  z.O = point(2, -4)
+  z.X = z.O + point(0,2)
+  C.OX = circle(z.O, z.X)
+  PA.center, PA.through, n = C.OX:CLL(L.AB, L.CD)
+  tkz.nodes_from_paths(PA.center, PA.through)
+ }
+\begin{center}
+\begin{tikzpicture}[scale=.5]
+ \tkzGetNodes
+ \tkzInit[xmin=-8,xmax=8,ymin=-8,ymax=8]
+ \tkzClip
+ \tkzDrawLines[thick,blue,add =.5 and .5](A,B C,D)
+ \tkzDrawPoints[blue,size=3](O)
+ \tkzDrawCircles[thick,red](w1,t1 w2,t2)
+ \tkzDrawCircles[thick,blue](O,X)
+ \tkzLabelPoints[red](O, w1, w2)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
 
 \subsection{Case: \tkzMeth{circle}{CPP}(p, p)}
 \label{sub:CPP}
@@ -1081,6 +1111,42 @@ These paths can be drawn directly with:
 \end{center}
 \end{tkzexample}
 
+\texttt{Application: }
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+ init_elements()
+ xB = 5
+ z.A = point(0, 0)
+ z.B = point(xB, 0)
+ L.AB = line(z.A, z.B)
+ C.AB = circle(z.A, z.B)
+ C.BA = circle(z.B, z.A)
+ S.AB = L.AB:square()
+  _, _, z.C, z.D = S.AB:get()
+ z.E = point(1, 0)
+ z.F = point(4, 0)
+ L.EF = line(z.E, z.F)
+ S.EF = L.EF:square()
+  _, _, z.G, z.H = S.EF:get()
+ z.M = S.EF.cd.mid
+ PA.center, PA.through = C.AB:CLP(S.EF.cd, z.M)
+ z.w = PA.center:get(2)
+ z.t = PA.through:get(2)
+}
+\begin{center}
+  \begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawCircles(w,t)
+\tkzDrawArc(A,B)(D)
+\tkzDrawArc(B,C)(A)
+\tkzDrawPolygons(A,B,C,D E,F,G,H)
+\tkzDrawPoints(A,...,H,M)
+\tkzLabelPoints(A,...,H)
+\end{tikzpicture}
+  \end{center}
+\end{tkzexample}
+
 %% ====================
 %% END of CLP
 %% ====================
@@ -1350,7 +1416,7 @@ This method works with:
  z.C = PA.center:get(2)
  z.G = L.TG2:projection(z.C)}
 \begin{center}
-\begin{tikzpicture}[scale =.5]
+\begin{tikzpicture}[scale =.45]
   \tkzInit[xmin=-5,xmax=25,ymin=-4,ymax=16]
  \tkzClip
  \tkzGetNodes
@@ -1368,7 +1434,9 @@ This method works with:
 \subsection{Case: \tkzMeth{circle}{CCC}(C2, C3 [, opts])}
 \label{sub:CCC}
 
-\texttt{Purpose: } Circles tangent to three given circles \(C_1=\) \verb|self|, \(C_2\), \(C_3\) (up to 8 solutions). Implementation follows Viète’s reduction.
+\texttt{Purpose: } Circles tangent to three given circles \(C_1=\) \verb|self|, \(C_2\), \(C_3\) (up to 8 solutions).
+
+Implementation follows Viète’s reduction.
 
 \medskip
 \texttt{Syntax: }\verb|pc, pt, n = C1:CCC(C2, C3 [, opts])|
@@ -1530,6 +1598,79 @@ tex.print(n)
 \end{center}
 \end{tkzexample}
 
+\vspace{1em}
+\texttt{Example with CLP and CCL}
+
+Related circles from Leon Bankoff. The shaded circles are equal and the unshaded circles are equal.
+
+\begin{tkzexample}[vbox]
+\directlua{
+   local n = 0
+    PA.c = path:new()
+    PA.t = path:new()
+
+  local function push(o, t)
+    if o and t then
+      PA.c:add_point(o)
+      PA.t:add_point(t)
+      n = n + 1
+    end
+  end
+
+  local R = 8
+  local r = R / 8
+
+  z.O  = point(0, 0)
+  z.A  = point(R, 0)
+  C.AO = circle(z.A, z.O)
+  z.B  = point(R, R)
+  L.OB = line(z.O, z.B)
+  T.OAB = triangle(z.O, z.A, z.B)
+  z.A2 = T.OAB.ab.mid
+  z.B2 = T.OAB.bc.mid
+  z.M  = L.OB.mid
+  z.a1 = z.A2 + point( r,  r)
+  z.a2 = z.M  + point( r, -r)
+  z.a3 = z.A  + point(-r,  r)
+  z.a4 = z.B2 + point(-r, -r)
+  for i, A in ipairs{z.a1, z.a2, z.a3, z.a4} do
+      local B
+      if     i <= 2 then B = tkz.midpoint(z.a1, z.a2)
+      else               B = tkz.midpoint(z.a3, z.a4)
+      end
+      push(A, B)
+  end
+  T.OA2M = triangle(z.O, z.A2, z.M)
+  T.MBB2 = triangle(z.M, z.B, z.B2)
+  z.m1, z.th1 = T.OA2M:in_circle():get()
+  z.m2, z.th2 = T.MBB2:in_circle():get()
+  push(z.m1, z.th1)
+  push(z.m2, z.th2)
+  local pw, pt = C.AO:CLP(L.OB,z.M)
+  z.w1 = pw:get(1)
+  z.t1 = pt:get(1)
+  push(z.w1, z.t1 )
+  C.w1 = circle(z.w1, z.t1)
+  local pw, pt = C.AO:CCL(C.w1, L.OB)
+  z.c1 = pw:get(1)
+  z.h1 = pt:get(1)
+  z.c2 = pw:get(2)
+  z.h2 = pt:get(2)
+  push(z.c1, z.h1)
+  push(z.c2, z.h2)}
+\begin{center}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawSector(A,B)(O)
+  \tkzDrawLine[add=0 and 0](O,B)
+  \tkzDrawPolygon(A2,A,B2, M)
+  \tkzDrawPoints(A,O,B,M)
+  \tkzDrawCirclesFromPaths[draw,red](PA.c, PA.t)
+  \tkzFillCircles[pattern={north east lines}](w1,t1 m1,th1 m2,th2)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
 \subsection{Case: \tkzMeth{circle}{CCC\_gergonne}(C\_2, C\_3)}
 \label{sub:CCC_gergonne}
 
@@ -1615,7 +1756,7 @@ The construction follows Gergonne:
    PA.center, PA.through = C.Aa:CCC_gergonne(C.Bb, C.Cc)
 }
 \begin{center}
-\begin{tikzpicture}[scale = 0.8]
+\begin{tikzpicture}[scale = 0.7]
   \tkzInit[xmin=-8,xmax=12,ymin=-8,ymax=10]
   \tkzClip
   \tkzGetNodes

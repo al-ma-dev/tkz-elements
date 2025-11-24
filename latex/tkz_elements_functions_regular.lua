@@ -11,7 +11,7 @@ function regular_(c, th, s)
 	local dep = angle_normalize_(point.arg(th - c))
 	local r = point.mod(th - c)
 	local t = {}
-	local angle_step = 2 * math.pi / s
+	local angle_step = tkz.tau / s
 
 	for i = 0, s - 1 do
 		table.insert(t, c + point:polar(r, i * angle_step + dep))

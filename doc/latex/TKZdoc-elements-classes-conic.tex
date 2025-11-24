@@ -2090,8 +2090,8 @@ It will compute and return all the necessary parameters for further use.
   z.B = point(3, 1)
   z.E = point(2, 4)
   local coefficients = search_ellipse("A", "B", "C", "D", "E")
-  local center, ra, rb,
-  angle = ellipse_axes_angle(coefficients)
+  local center,
+   ra, rb, angle = ellipse_axes_angle(coefficients)
   z.W = center
   CO.EL = conic(EL_radii(center, ra, rb, angle))
   PA.curve = CO.EL:points(0, 1, 100)}

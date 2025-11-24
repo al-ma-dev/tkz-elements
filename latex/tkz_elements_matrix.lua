@@ -230,8 +230,8 @@ function matrix:diagonalize() -- return two matrices D and P
 end
 
 function matrix:print(style, fmt)
-	local style = (style or "bmatrix")
-	local fmt = (fmt or 0)
+	style = style or "bmatrix"
+	fmt   = fmt   or 0
 	return print_matrix(self, style, fmt)
 end
 
@@ -241,11 +241,11 @@ end
 
 -------------------------
 -- homogeneous transformation matrix
-function matrix:htm(phi, a, b, sx, sy)
+function matrix:htm(phi, a, b, c, d)
 	local tx = (a or 0)
 	local ty = (b or 0)
-	local sx = (sx or 1)
-	local sy = (sy or 1)
+	local sx = (c or 1)
+	local sy = (d or 1)
 	local phi = (phi or 0)
 	return matrix:square(3, sx * math.cos(phi), -math.sin(phi), tx, math.sin(phi), sy * math.cos(phi), ty, 0, 0, 1)
 end
