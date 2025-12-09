@@ -1571,7 +1571,158 @@ For ellipses and hyperbolas, the orthoptic is a circle—but in the case of the 
 \end{center}
 \end{minipage}
 
-\subsection{Intersection: Line and Conic}
+\subsubsection{Method \tkzMeth{conic}{path(pt, pt, nb, mode, dir)}}
+\label{ssub:conic_path}
+
+The \tkzClass{conic} class provides a method \tkzMeth{conic}{path} that creates a
+\tkzClass{path} object representing a portion of the conic between two given
+points (an arc of conic).
+
+\medskip
+\texttt{Syntax:}
+\verb|PA.arc = CO.myconic:path(zA, zB, 40, "swap")|
+
+\texttt{Arguments:}
+
+\begin{itemize}
+  \item \code{za}, \code{zb} — two points lying on the conic.
+  \item \code{nb} — number of interpolation steps (default: 20).
+  \item \code{mode} — optional string:
+  \begin{itemize}
+      \item omitted or \code{"direct"} (default): traces the shortest arc (for ellipses).
+      \item \code{"swap"}: selects the complementary arc (other part of the ellipse).
+  \end{itemize}
+  \item \code{dir} — optional orientation for ambiguous cases
+
+        In most cases, the points \code{za} and \code{zb} determine a unique arc of the conic.
+        However, when the two points are \emph{opposite} with respect to the center (for instance, on an ellipse),
+        two different arcs of equal length exist.
+        In such cases, the optional argument can be used to select the desired direction:
+
+        \begin{itemize}
+          \item \code{"ccw"} (\emph{counterclockwise}) — the arc is traced in the direct, or positive, direction.
+          \item \code{"cw"} (\emph{clockwise}) — the arc is traced in the opposite, or negative, direction.
+        \end{itemize}
+
+   In general use, this parameter can be omitted.
+\end{itemize}
+
+\medskip
+\texttt{Details:}
+
+Internally, the method computes the conic parameter $t$ at \code{za} and \code{zb} using \tkzMeth{conic}{get\_t\_from\_point(z)}. For ellipses, this parameter is normalized in [0,1) (one turn). For parabolas and hyperbolas, it is not periodic.
+
+A linear interpolation of $t$ produces intermediate points on the conic:
+\[
+t_i = t_a + \frac{i}{nb}(t_b - t_a)
+\]
+
+For ellipses specifically:
+\begin{itemize}
+  \item the angle/parameter is taken modulo $1$;
+  \item in \code{"direct"} mode, the interpolation follows the shortest arc
+        between the two points;
+  \item in \code{"swap"} mode, the complementary arc is used
+        (the same endpoints, but the other part of the ellipse);
+  \item if the points are exactly opposite ($\Delta t = \pm 0.5$), the option
+        \code{dir = "cw"} or \code{"ccw"} can be used to choose the direction.
+\end{itemize}
+
+\medskip
+
+\begin{mybox}
+\begin{verbatim}
+-- Example: parabola
+C = conic(z.F, L.directrix, 1)
+PA.arc = C:path(z.A, z.B, 100)
+\end{verbatim}
+\end{mybox}
+
+\begin{mybox}
+\begin{verbatim}
+-- Example: ellipse, complementary arc
+E = conic(z.F1, z.F2, 0.6) -- an ellipse
+PA.arc1 = E:path(z.A, z.B, 80, "direct") -- shortest arc
+PA.arc2 = E:path(z.A, z.B, 80, "swap")   -- other arc
+\end{verbatim}
+\end{mybox}
+
+To draw the resulting path with TikZ:
+\begin{mybox}
+\begin{verbatim}
+\tkzDrawCoordinates[smooth]
+\end{verbatim}
+\end{mybox}
+
+
+\begin{tkzexample}[latex=.35\textwidth]
+  \directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(4, 2)
+  L.dir = line(z.A, z.B)
+  z.F = point(2, 2)
+  CO.EL = conic(z.F, L.dir, 0.8)
+  PA.curve = CO.EL:points(0, 1, 50)
+  z.M = CO.EL:point(0.95)
+  z.N = CO.EL:point(0.15)
+  z.P = CO.EL:point(0.4)
+  z.Q = CO.EL:point(0.7)
+  PA.parta = CO.EL:path(z.M, z.N, 100, "swap")
+  PA.partb = CO.EL:path(z.P, z.Q, 100)
+  L.PM = line(z.P, z.M)
+  L.QN = line(z.Q, z.N)
+  z.I = intersection(L.PM, L.QN)
+  L.NI = line(z.N, z.I)
+  L.IM = line(z.I, z.M)
+  L.IP = line(z.I, z.P)
+  L.QI = line(z.Q, z.I)
+  PA.zone1 = CO.EL:path(z.M, z.N, 50, "swap")
+     + L.NI:path(2) + L.IM:path(2)
+  PA.zone2 = CO.EL:path(z.P, z.Q, 50, "swap")
+     + L.QI:path(2) + L.IP:path(2)
+  }
+  \begin{tikzpicture}[ scale = 1.2]
+  \tkzGetNodes
+  \tkzDrawCoordinates[fill = green!10](PA.zone1)
+  \tkzDrawCoordinates[fill = green!10](PA.zone2)
+  \tkzDrawCoordinates[smooth](PA.curve)
+  \tkzDrawCoordinates[smooth,red,thick](PA.partb)
+  \tkzDrawCoordinates[smooth,blue,thick](PA.parta)
+  \tkzDrawSegments(P,M Q,N)
+  \tkzDrawPoints(M,N,P,Q,I)
+  \end{tikzpicture}
+\end{tkzexample}
+
+
+\texttt{Example with parabola}
+
+This example shows the case of a parabola. It would be the same for a hyperbola ( the "swap" option is not yet authorized).
+
+\begin{tkzexample}[latex=.35\textwidth]
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(4, 2)
+ L.dir = line(z.A, z.B)
+ z.F = point(2, 2)
+ CO.EL = conic(z.F, L.dir, 1)
+ PA.curve = CO.EL:points(-2, 2, 50)
+ z.P = CO.EL:point(-1.75)
+ z.Q = CO.EL:point(1.5)
+ PA.part = CO.EL:path(z.P, z.Q, 100)
+}
+\begin{tikzpicture}
+ \tkzGetNodes
+ \tkzDrawCoordinates[smooth](PA.curve)
+ \tkzDrawCoordinates[smooth,red,thick](PA.part)
+ \tkzDrawPoints(P,Q)
+\end{tikzpicture}
+\end{tkzexample}
+
+
+
+\subsubsection{Intersection: Line and Conic}
 
 Additional details can be found in Section~\ref{sec:intersections}, in particular Subsection~\ref{sub:line_conic}.
 
@@ -1650,7 +1801,7 @@ Currently, intersections are only supported between straight lines and conics.
   \end{center}
 \end{minipage}
 
-\subsection{Useful Tools}
+\subsubsection{Useful Tools}
 
 This section presents utility functions for retrieving key geometric elements of a conic: its focus, directrix, and eccentricity.
 
@@ -2218,154 +2369,4 @@ The center is obtained by solving the system of equations corresponding to the p
 \end{tkzexample}
 \end{minipage}
 
-\subsubsection{Method \tkzMeth{conic}{path(pt, pt, nb, mode, dir)}}
-\label{ssub:conic_path}
-
-The \tkzClass{conic} class provides a method \tkzMeth{conic}{path} that creates a
-\tkzClass{path} object representing a portion of the conic between two given
-points (an arc of conic).
-
-\medskip
-\texttt{Syntax:}
-\verb|PA.arc = CO.myconic:path(zA, zB, 40, "swap")|
-
-\texttt{Arguments:}
-
-\begin{itemize}
-  \item \code{za}, \code{zb} — two points lying on the conic.
-  \item \code{nb} — number of interpolation steps (default: 20).
-  \item \code{mode} — optional string:
-  \begin{itemize}
-      \item omitted or \code{"direct"} (default): traces the shortest arc (for ellipses).
-      \item \code{"swap"}: selects the complementary arc (other part of the ellipse).
-  \end{itemize}
-  \item \code{dir} — optional orientation for ambiguous cases
-
-        In most cases, the points \code{za} and \code{zb} determine a unique arc of the conic.
-        However, when the two points are \emph{opposite} with respect to the center (for instance, on an ellipse),
-        two different arcs of equal length exist.
-        In such cases, the optional argument can be used to select the desired direction:
-
-        \begin{itemize}
-          \item \code{"ccw"} (\emph{counterclockwise}) — the arc is traced in the direct, or positive, direction.
-          \item \code{"cw"} (\emph{clockwise}) — the arc is traced in the opposite, or negative, direction.
-        \end{itemize}
-
-   In general use, this parameter can be omitted.
-\end{itemize}
-
-\medskip
-\texttt{Details:}
-
-Internally, the method computes the conic parameter $t$ at \code{za} and \code{zb}
-using \tkzMeth{conic}{get\_t\_from\_point(z)}. For ellipses, this parameter is normalized in
-$[0,1)$ (one turn). For parabolas and hyperbolas, it is not periodic.
-
-A linear interpolation of $t$ produces intermediate points on the conic:
-\[
-t_i = t_a + \frac{i}{nb}(t_b - t_a)
-\]
-
-For ellipses specifically:
-\begin{itemize}
-  \item the angle/parameter is taken modulo $1$;
-  \item in \code{"direct"} mode, the interpolation follows the shortest arc
-        between the two points;
-  \item in \code{"swap"} mode, the complementary arc is used
-        (the same endpoints, but the other part of the ellipse);
-  \item if the points are exactly opposite ($\Delta t = \pm 0.5$), the option
-        \code{dir = "cw"} or \code{"ccw"} can be used to choose the direction.
-\end{itemize}
-
-\medskip
-
-\begin{mybox}
-\begin{verbatim}
--- Example: parabola
-C = conic(z.F, L.directrix, 1)
-PA.arc = C:path(z.A, z.B, 100)
-\end{verbatim}
-\end{mybox}
-
-\begin{mybox}
-\begin{verbatim}
--- Example: ellipse, complementary arc
-E = conic(z.F1, z.F2, 0.6) -- an ellipse
-PA.arc1 = E:path(z.A, z.B, 80, "direct") -- shortest arc
-PA.arc2 = E:path(z.A, z.B, 80, "swap")   -- other arc
-\end{verbatim}
-\end{mybox}
-
-To draw the resulting path with TikZ:
-\begin{mybox}
-\begin{verbatim}
-\tkzDrawCoordinates[smooth]
-\end{verbatim}
-\end{mybox}
-
-
-\begin{tkzexample}[latex=.35\textwidth]
-  \directlua{
-  init_elements()
-  z.A = point(0, 0)
-  z.B = point(4, 2)
-  L.dir = line(z.A, z.B)
-  z.F = point(2, 2)
-  CO.EL = conic(z.F, L.dir, 0.8)
-  PA.curve = CO.EL:points(0, 1, 50)
-  z.M = CO.EL:point(0.95)
-  z.N = CO.EL:point(0.15)
-  z.P = CO.EL:point(0.4)
-  z.Q = CO.EL:point(0.7)
-  PA.parta = CO.EL:path(z.M, z.N, 100, "swap")
-  PA.partb = CO.EL:path(z.P, z.Q, 100)
-  L.PM = line(z.P, z.M)
-  L.QN = line(z.Q, z.N)
-  z.I = intersection(L.PM, L.QN)
-  L.NI = line(z.N, z.I)
-  L.IM = line(z.I, z.M)
-  L.IP = line(z.I, z.P)
-  L.QI = line(z.Q, z.I)
-  PA.zone1 = CO.EL:path(z.M, z.N, 50, "swap")
-     + L.NI:path(2) + L.IM:path(2)
-  PA.zone2 = CO.EL:path(z.P, z.Q, 50, "swap")
-     + L.QI:path(2) + L.IP:path(2)
-  }
-  \begin{tikzpicture}[ scale = 1.2]
-  \tkzGetNodes
-  \tkzDrawCoordinates[fill = green!10](PA.zone1)
-  \tkzDrawCoordinates[fill = green!10](PA.zone2)
-  \tkzDrawCoordinates[smooth](PA.curve)
-  \tkzDrawCoordinates[smooth,red,thick](PA.partb)
-  \tkzDrawCoordinates[smooth,blue,thick](PA.parta)
-  \tkzDrawSegments(P,M Q,N)
-  \tkzDrawPoints(M,N,P,Q,I)
-  \end{tikzpicture}
-\end{tkzexample}
-
-
-\texttt{Example with parabola}
-
-This example shows the case of a parabola. It would be the same for a hyperbola ( the "swap" option is not yet authorized).
-
-\begin{tkzexample}[latex=.35\textwidth]
-\directlua{
- init_elements()
- z.A = point(0, 0)
- z.B = point(4, 2)
- L.dir = line(z.A, z.B)
- z.F = point(2, 2)
- CO.EL = conic(z.F, L.dir, 1)
- PA.curve = CO.EL:points(-2, 2, 50)
- z.P = CO.EL:point(-1.75)
- z.Q = CO.EL:point(1.5)
- PA.part = CO.EL:path(z.P, z.Q, 100)
-}
-\begin{tikzpicture}
- \tkzGetNodes
- \tkzDrawCoordinates[smooth](PA.curve)
- \tkzDrawCoordinates[smooth,red,thick](PA.part)
- \tkzDrawPoints(P,Q)
-\end{tikzpicture}
-\end{tkzexample}
 \endinput

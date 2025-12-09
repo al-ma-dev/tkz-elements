@@ -13,26 +13,8 @@ The necessary definitions and calculations are performed with the primitive \tkz
 
 If you wish to use another package for plotting, you must define a custom macro similar to \tkzMacro{tkz-elements}{tkzGetNodes} that interprets the contents of the |z| table. You don't need to understand the following code to use the package. You only need to know that if |z.A| is defined, then the macro below will create a node named |A|.
 
-\vspace*{1em}
-\begin{mybox}
-\begin{verbatim}
-\def\tkzGetNodes{\directlua{
-   for K,V in pairs(z) do
-      local n,sd,ft
-      n = string.len(K)
-      if n >1 then
-      _,_,ft, sd = string.find( K , "(.+)(.)" )
-     if sd == "p" then   K=ft.."'" end
-     _,_,xft, xsd = string.find( ft , "(.+)(.)" )
-     if xsd == "p" then  K=xft.."'".."'" end
-       end
-  tex.print("\\coordinate ("..K..") at ("..V.re..","..V.im..") ;\\\\")
-end}
-}
-\end{verbatim}
-\end{mybox}
 
-See the section In-depth Study \ref{sec:in_depth_study} for an explanation of the previous code.
+See the section In-depth Study \ref{sec:in_depth_study} for more explanation.
 
 Point names may include the underscore  |_| and the macro \tkzMacro{tkz-elements}{tkzGetNodes} for automatic conversion to names with \tkzname{prime} or \tkzname{double prime}. (See  the next example)
 
@@ -81,13 +63,13 @@ This macro prints the value of a Lua variable or expression directly into the Te
  z.b = point(1, 1)
  z.c = point(2, 2)
  z.d = point(5, 1)
- L.ab = line(z.a,z.b)
- L.cd = line(z.c,z.d)
- det = (z.b-z.a)^(z.d-z.c)
+ L.ab = line(z.a, z.b)
+ L.cd = line(z.c, z.d)
+ det = (z.b - z.a) ^ (z.d - z.c)
  if det == 0 then bool = true
    else bool = false
  end
- x = intersection (L.ab,L.cd)}
+ x = intersection (L.ab, L.cd)}
 
 The intersection of the two lines lies at
 a point whose affix is: \tkzUseLua{x}
@@ -102,11 +84,11 @@ a point whose affix is: \tkzUseLua{x}
   z.d = point(5, 1)
   L.ab = line(z.a, z.b)
   L.cd = line(z.c, z.d)
-  det = (z.b - z.a)^(z.d - z.c)
+  det = (z.b - z.a) ^ (z.d - z.c)
   if det == 0 then bool = true
     else bool = false
   end
-  x = intersection (L.ab,L.cd)}
+  x = intersection (L.ab, L.cd)}
 
 The intersection of the two lines lies at
     a point whose affix is:\tkzUseLua{x}

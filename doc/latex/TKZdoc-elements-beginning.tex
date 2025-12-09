@@ -1,5 +1,6 @@
 \section{Getting started}
 
+\subsection{The first code}
 A quick introduction to get you started. We assume that the following packages are installed:  \tkzNamePack{tkz-euclide}, and \tkzNamePack{tkz-elements}.
 Compile the following code using the \tkzEngine{lualatex} engine; you should obtain a line passing through points $A$ and $B$.
 
@@ -39,6 +40,22 @@ Compile the following code using the \tkzEngine{lualatex} engine; you should obt
   \end{tikzpicture}
 \end{minipage}
 \end{mybox}
+
+\subsection{Key points}
+
+These points will be essential for most of the codes in this documentation.
+
+\begin{itemize}
+\item \verb|% !TEX TS-program = lualatex|.
+It is essential to compile with \code{lualatex}. This line is not necessary if your configuration is suitable for compilation with \code{lualatex}.
+\item \verb|\usepackage[mini]{tkz-euclide}|. You can do without my \tkzNamePack{tkz-euclide} package, but if you use it, it is best to use it with the \code{mini} option. This option avoids loading all the macros used to perform calculations. These will be handled by \code{lua}.
+\item \verb|\usepackage{tkz-elements}|. Mandatory! This package must be loaded in order to use it. It provides several macros to support \tkzNamePack{tkz-euclide}, as well as a multitude of mathematical functions written using \code{lua}.
+\item \verb| \directlua{ ... }|. Mandatory! The functions of the package will be placed in the body of this macro.
+\item \verb|init_elements()|. First function of the package that we will define as mandatory. It allows you to clear all global variables that you may have used in previous code.
+\item \verb|\tkzGetNodes|. Mandatory!! First macro to be placed in the \code{tikzpicture} environment. Without this macro, the points defined in the \code{lua} section will not be recognised as \code{nodes}.
+\end{itemize}
+
+\subsection{Testing}
 
 To test your installation and follow the examples in this documentation, you need to load two packages: \tkzNamePack{tkz-euclide} and \tkzNamePack{tkz-elements}. The first package automatically loads \tkzNamePack{\TIKZ}, which is necessary for all graphical rendering.
 

@@ -14,7 +14,7 @@
 ]{tkz-doc}
 %\overfullrule=5pt
 \gdef\tkznameofpack{tkz-elements}
-\gdef\tkzversionofpack{4.42c}
+\gdef\tkzversionofpack{4.44c}
 \gdef\tkzdateofpack{\today}
 \gdef\tkznameofdoc{tkz-elements.pdf}
 \let\tkzversionofdoc\tkzversionofpack
@@ -82,6 +82,7 @@
 \usepackage{unicode-math}
 \usepackage{concmath-otf}
 \let\rmfamily\ttfamily
+%\usepackage{fourier-otf}
 % après \usepackage{unicode-math}
 %\providecommand{\widearc}[1]{\overparen{#1}}
 % end fonts
@@ -151,7 +152,6 @@
 % end indexation
 %<--------------------------------------------------------------------------->
 % decoration
-\newcommand{\tkzRBomb}{\textcolor{red}{\ding{43}\ }}
 \newcommand{\lefthand}{\ding{43}}
 \newcommand{\tkzimpbf}[1]{\texttt{tkzPopt#1}}
 \newcommand{\tkzRHand}{\textcolor{red}{\lefthand}}
@@ -238,7 +238,6 @@ Please report typos or any other comments to this documentation to: \href{mailto
 This file can be redistributed and/or modified under the terms of the \LaTeX{}
 Project Public License Distributed from \href{http://www.ctan.org/}{CTAN}\  archives.
 
-
 \clearpage
 \listofoverviews
 
@@ -296,8 +295,8 @@ matrix & \hyperref[matrix:methods]{see table} \\
 
 \clearpage
 \newpage
-\input{TKZdoc-elements-beginning.tex}
-\input{TKZdoc-elements-structure.tex}
+ \input{TKZdoc-elements-beginning.tex}
+ \input{TKZdoc-elements-structure.tex}
 \input{TKZdoc-elements-why.tex}
 \input{TKZdoc-elements-presentation.tex}
 \input{TKZdoc-elements-convention.tex}

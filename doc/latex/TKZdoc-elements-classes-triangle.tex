@@ -351,23 +351,23 @@ This approach saves time and space in scripts involving medians, altitudes, bise
    \midrule
    \textbf{Points} &\\
   \midrule
-  \tkzMeth{triangle}{get(arg)} & [\ref{ssub:method_triangle_get}]\\
+\tkzMeth{triangle}{get(arg)} & [\ref{ssub:method_triangle_get}]\\
 
- \tkzMeth{triangle}{point(r)} & [\ref{ssub:method_triangle_point_r}]\\
+\tkzMeth{triangle}{point(r)} & [\ref{ssub:method_triangle_point_r}]\\
 
 \tkzMeth{triangle}{random(<'inside'>)} & [\ref{ssub:method_triangle_random_inside}]\\
 
-  \tkzMeth{triangle}{barycentric(ka,kb,kc)} & Note \footnote{The function \code{barycenter} is used to obtain the barycentre for any number of points }\\
+\tkzMeth{triangle}{barycentric(ka,kb,kc)} & Note \footnote{The function \code{barycenter} is used to obtain the barycentre for any number of points }\\
 
-  \tkzMeth{triangle}{base(u,v)} & [\ref{ssub:method_triangle_base}] \\
+\tkzMeth{triangle}{base(u,v)} & [\ref{ssub:method_triangle_base}] \\
 
-  \tkzMeth{triangle}{trilinear(u,v,w)}  & [\ref{ssub:method_triangle_trilinear_x_y_z}] \\
+\tkzMeth{triangle}{trilinear(u,v,w)}  & [\ref{ssub:method_triangle_trilinear_x_y_z}] \\
 
-  \tkzMeth{triangle}{lemoine\_point()} &  [\ref{ssub:method_line_isosceles}]\\
+\tkzMeth{triangle}{lemoine\_point()} &  [\ref{ssub:method_line_isosceles}]\\
 
-  \tkzMeth{triangle}{symmedian\_point()} & [\ref{ssub:method_triangle_symmedial}] \\
+\tkzMeth{triangle}{symmedian\_point()} & [\ref{ssub:method_triangle_symmedial}] \\
 
-  \tkzMeth{triangle}{lemoine\_point()}  &  [\ref{ssub:method_triangle_symmedial}] \\
+\tkzMeth{triangle}{lemoine\_point()}  &  [\ref{ssub:method_triangle_symmedial}] \\
 
   \tkzMeth{triangle}{bevan\_point()}  &  [\ref{ssub:method_imeth_triangle_bevan_point}; \ref{ssub:methods_triangle_bevan_circle}]\\
 
@@ -424,6 +424,7 @@ See [ \ref{ssub:method_triangle_orthic}; \ref{ssub:method_triangle_orthic_axis_p
 
 \tkzMeth{triangle}{isodynamic\_points()} & [\ref{ssub:isodynamic_points}] \\
 
+\tkzMeth{triangle}{apollonius\_point()} & [\ref{ssub:apollonius_point}] \\
   \bottomrule
   \end{tabular}
   \end{minipage}
@@ -544,36 +545,44 @@ See [ \ref{ssub:method_triangle_orthic}; \ref{ssub:method_triangle_orthic_axis_p
   \tkzMeth{triangle}{lamoen\_circle()}  &
   See [\ref{ssub:method_triangle_lamoen_points}] \\
 
-  \tkzMeth{triangle}{soddy\_circle()}  &
+\tkzMeth{triangle}{soddy\_circle()}  &
   See [\ref{ssub:method_triangle_soddy_circle}] \\
 
-  \tkzMeth{triangle}{three\_apollonius\_circles()}  &
+\tkzMeth{triangle}{three\_apollonius\_circles()}  &
   See [\ref{ssub:three_apollonius_circles}] \\
 
-  \tkzMeth{triangle}{apollonius\_circle(side, EPS)}  &
+\tkzMeth{triangle}{apollonius\_circle(side, EPS)}  &
   See [\ref{ssub:apollonius_circle}] \\
-  \midrule
 
-  \textbf{Triangles} &\\
-  \midrule
+\tkzMeth{triangle}{feuerbach\_apollonius\_k181(side, EPS)}  &
+  See [\ref{ssub:feuerbach_apollonius_k181}] \\
+
+\tkzMeth{triangle}{feuerbach\_apollonius(side, EPS)}  &
+  See [\ref{ssub:feuerbach_apollonius}] \\
+
+
+\midrule
+
+\textbf{Triangles} &\\
+\midrule
   \tkzMeth{triangle}{orthic()}   & [\ref{ssub:method_triangle_altitude}]   \\
 
-  \tkzMeth{triangle}{medial()} &  [\ref{ssub:method_triangle_medial} ; \ref{sub:nine_points} ; \ref{ssub:method_triangle_symmedial}]\\
+\tkzMeth{triangle}{medial()} &  [\ref{ssub:method_triangle_medial} ; \ref{sub:nine_points} ; \ref{ssub:method_triangle_symmedial}]\\
 
-  \tkzMeth{triangle}{incentral()}  &[\ref{ssub:method_incentral}] \\
+\tkzMeth{triangle}{incentral()}  &[\ref{ssub:method_incentral}] \\
 
-  \tkzMeth{triangle}{excentral()}  &[\ref{ssub:method_triangle_excentral}; \ref{ssub:method_triangle_feuerbach} ]  \\
+\tkzMeth{triangle}{excentral()}  &[\ref{ssub:method_triangle_excentral}; \ref{ssub:method_triangle_feuerbach} ]  \\
 
-  \tkzMeth{triangle}{extouch()}   &[\ref{ssub:method_triangle_extouch}; \ref{sub:excircles} ] \\
+\tkzMeth{triangle}{extouch()}   &[\ref{ssub:method_triangle_extouch}; \ref{sub:excircles} ] \\
 
-  \tkzMeth{triangle}{intouch() }   &[\ref{ssub:method_triangle_intouch}; \ref{ssub:gergonne_point}]\\
+\tkzMeth{triangle}{intouch() }   &[\ref{ssub:method_triangle_intouch}; \ref{ssub:gergonne_point}]\\
 
-  \tkzMeth{triangle}{contact() } &  contact = intouch ; [
-  \ref{ssub:gergonne_point}] \\
+\tkzMeth{triangle}{contact() } &  contact = intouch ; [
+\ref{ssub:gergonne_point}] \\
 
-  \tkzMeth{triangle}{tangential()} &[\ref{ssub:method_triangle_tangential}]\\
+\tkzMeth{triangle}{tangential()} &[\ref{ssub:method_triangle_tangential}]\\
 
-  \tkzMeth{triangle}{anti() }&  Anticomplementary [\ref{ssub:method_triangle_anti}]  \\
+\tkzMeth{triangle}{anti() }&  Anticomplementary [\ref{ssub:method_triangle_anti}]  \\
 
   \tkzMeth{triangle}{cevian(pt)} & [\ref{ssub:method_triangle_cevian}] \\
 
@@ -2335,6 +2344,19 @@ The returned objects are standard \code{point} instances usable in further
 constructions.
 
 \texttt{Application: } See [\ref{ssub:apollonius_circle}]
+
+
+\subsubsection{Method \tkzMeth{triangle}{apollonius\_point()}}
+\label{ssub:apollonius_point}
+
+This method should not be confused with the previous one.
+
+Consider the excircles $J_A$, $J_B$, and $J_C$ of a triangle, and the external Apollonius circle  tangent externally to all three. Denote the contact point  by $xa$, $xb$ and $xc$, etc. Then the lines $Axa$, $Bxb$, and $Cxc$ concur in a point known as the Apollonius point. This point is Kimberling center $X_(181)$ (Kimberling 1998, p. 102).
+
+\begin{flushright}
+\small
+\href{https://mathworld.wolfram.com/ApolloniusPoint.html}{\textit{(Reference: Weisstein, Eric W. "Apollonius Point." MathWorld)}}
+\end{flushright}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%  Lines %%%%%%%%%%%
@@ -4364,6 +4386,72 @@ three Apollonius circles or the isodynamic points.
 \end{tikzpicture}
 \end{center}
 \end{tkzexample}
+
+
+
+\subsubsection{Method \tkzMeth{triangle}{feuerbach\_apollonius\_k181}(<EPS<)}
+\label{ssub:feuerbach_apollonius_k181}
+
+This method constructs a circle through three points obtained from simple
+line--line intersections involving:
+
+\begin{itemize}
+  \item the three Feuerbach points $E_a,E_b,E_c$,
+  \item the Apollonius point $K_{181}$ of the triangle,
+  \item the Spieker center~$S$.
+\end{itemize}
+
+\texttt{Construction idea: }
+For each Feuerbach point $E_a$, consider the lines
+$(A,K_{181})$ and $(S,E_a)$.
+Their intersection defines a point $x_a$.
+Repeating the process with $B,E_b$ and $C,E_c$ gives three points
+$x_a,x_b,x_c$ which always lie on a unique circle.
+
+This circle is the \emph{Apollonius--K181 Feuerbach circle}.
+
+\texttt{Usage: }
+
+\begin{verbatim}
+local C = T.ABC:feuerbach_apollonius_k181()
+\end{verbatim}
+
+\texttt{Return: }
+A \tkzClass{circle} object: the circumcircle of the three intersection points
+$x_a,x_b,x_c$.
+
+
+
+\subsubsection{Method \tkzMeth{triangle}{feuerbach\_apollonius}(EPS)}
+\label{ssub:feuerbach_apollonius}
+
+This method constructs a remarkable Apollonius-type circle associated with the
+triangle.
+The construction is based on three Feuerbach points and an inversion in a
+circle orthogonal to the excircle touching point.
+
+\texttt{Definition: }
+Let $E_a,E_b,E_c$ be the three Feuerbach contact points of the triangle, and
+let $J_a$ be the excenter opposite to vertex~$A$.
+Let $C_{J_aE_a}$ be the circle with center $J_a$ passing through $E_a$, and
+let~$S$ be the Spieker center.
+
+The circle $C_{J_aE_a}$ admits a unique orthogonal circle through $S$.
+Inverting the Euler circle in this orthogonal circle maps the three Feuerbach
+points to points $x_a,x_b,x_c$ which lie on a common circle.
+This is the \emph{Feuerbach--Apollonius circle}.
+
+\paragraph{Usage: }
+
+\begin{verbatim}
+local C = T.ABC:feuerbach_apollonius()
+\end{verbatim}
+
+\texttt{Return: }
+A \code{circle} object: the circle passing through the three inverted
+Feuerbach points.
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% Triangles %%%%%

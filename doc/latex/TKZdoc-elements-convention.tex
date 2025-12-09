@@ -95,49 +95,117 @@ These precautions help ensure consistency in the system and prevent unpredictabl
 \vspace{1em}
 We’ll now explain how to assign variable names for each type of object.
 
+
 \subsection{Assigning a Name to a Point}
-At present, points must be stored in the table \tkzname{z} if you intend to use them later in \tkzNamePack{\TIKZ} or \tkzNamePack{tkz-euclide}.
 
-In \tkzNamePack{tkz-elements}, points must follow the \tkzname{z.name} convention, where name is the label of the corresponding node.
+Points must be stored in the table \tkzname{z} if you intend to use them
+later in \tkzNamePack{\TIKZ} or \tkzNamePack{tkz-euclide}.
+In \tkzNamePack{tkz-elements}, all points follow the convention
+\tkzname{z.name}, where \tkzname{name} is the intended node label.
 
-Special attention is needed for certain naming cases:
-
-
-\begin{enumerate}
-
-\item \emph{Primes (or double prime) can be problematic.}\\
-
-If a point’s name ends in |p| (like Bp),  then when passing into \tkzNamePack{tkz-euclide}, this is interpreted during transfer to \tkzNamePack{tkz-euclide} via \tkzMacro{tkz-elements}{tkzGetNodes}; \index{prime} as a prime, and |p| will be converted into |'|, giving B' in the \tkzNamePack{\TIKZ} output.
-
-   \item  \emph{For clarity or complex names, you may use intermediate variables.}\\
-
- For example, if you want to define a point named \tkzname{euler}, you could write:
-
- \begin{mybox}
- |local euler = point(...)| or |z.euler = point(...)|
-  and at the end |z.E = euler| or |z.E = z.euler|
- \end{mybox}
-
-  In this case, the point will be labeled E in the drawing, but internally it remains clear in code.
-  Alternatively, you can keep the name euler in Lua and alias it for display with:
+\medskip
+When transferring points to \TIKZ{} using \tkzcname{tkzGetNodes},
+each entry \code{z.name} produces the corresponding coordinate:
 
 \begin{mybox}
-|pgfnodealias{E}{euler}| in \TIKZ{}.
+\verb|\coordinate (name) at (x,y);|
 \end{mybox}
-\end{enumerate}
 
-Examples of valid naming:
+Some naming cases require attention, particularly those involving primes.
+
+\paragraph{Prime notation.}
+
+The macro \tkzcname{tkzGetNodes} converts certain terminal patterns in
+Lua names into prime or double-prime notation in \TIKZ.
+
+\begin{itemize}
+  \item A name ending in \code{p} becomes a single prime:
+        \begin{mybox}
+        \verb|z.Bp = point(...)|  →  node \verb|(B')|
+        \end{mybox}
+
+  \item A name ending in \code{pp} becomes a double prime:
+        \begin{mybox}
+        \verb|z.Bpp = point(...)| → node \verb|(B'')|
+        \end{mybox}
+\end{itemize}
+
+This convention is convenient for geometric constructions but may lead to
+unexpected renaming if the final \code{p} or \code{pp} is not intended
+as prime notation.
+
+\begin{tcolorbox}[colback=red!7,colframe=red!60!black,title=Warning]
+Avoid names ending with \code{p} or \code{pp} unless you explicitly want
+prime or double-prime notation in \TIKZ.
+\end{tcolorbox}
+
+\medskip
+ You can work with all these names in the \code{lua} section, but an error will occur when transferring points to nodes with the \verb|\tkzGetNodes| macro. To avoid errors, use one of the solutions in the following paragraph. For \code{z.p}, simply using \code{z.P} is sufficient. The lowercase letter can be retrieved with \TIKZ{}.
+
+\paragraph{Intermediate names.}
+
+For readability or when working with long or descriptive names in Lua,
+you may use an intermediate variable and optionally assign a short label
+for the drawing.
+
+For instance:
+
+\begin{mybox}
+\verb|local euler = point(...)|
+\verb|z.E = euler|
+\end{mybox}
+
+Here, the point is internally stored under the clear name \code{euler},
+but it appears as node \code{(E)} in \TIKZ.
+
+If you prefer to keep the long name in both Lua and \TIKZ, simply write:
+
+\begin{mybox}
+\verb|z.euler = point(...)|
+\end{mybox}
+
+Alternatively, you may assign an alias at the \TIKZ{} level:
+
+\begin{mybox}
+\verb|\pgfnodealias{E}{euler}|
+\end{mybox}
+
+Possible also, Before the transfer, we use an accepted name such as \code{A} and remove the point \code{z.apollonius} with \verb|z.apollonius = nil|.
+
+\begin{mybox}
+\verb|z.A = z.apollonius|
+\verb|z.apollonius = nil|
+\end{mybox}
+
+
+
+\paragraph{Valid examples.}\mbox{}
+
 \begin{mybox}
 \begin{itemize}
-   \item |z.A = point(1, 2)|
-   \item |z.Bp = point(3, 4)|  --> this gives |B'| in the \tkzEnv{tikz}{tikzpicture}
-   \item |z.H_a = T.ABC:altitude ()| --> this gives |H_a| in the \tkzEnv{tikz}{tikzpicture} code and $H_a$ in math display.
-
-   \item |z.euler = T.ABC.eulercenter|
+  \item \verb|z.A = point(1,2)|     → node \verb|(A)|
+  \item \verb|z.Bp = point(3,4)|     → node \verb|(B')|
+  \item \verb|z.Cpp = point(5,1)|    → node \verb|(C'')|
+  \item \verb|z.H_a = T.ABC:altitude()| → node \verb|(H_a)|
+  \item \verb|z.euler = T.ABC.eulercenter| → node \verb|(euler)|
 \end{itemize}
 \end{mybox}
 
-In \tkzname{Lua}, |z.A| is a "sugar syntax" for |z["A"]| and |z.A = nil| deletes point $A$.
+Names may contain letters, digits, and “\_”.
+Other characters should be avoided because they may not form valid TikZ
+node names.
+
+\paragraph{Lua reminder.}
+
+Fields of the table \tkzname{z} may be accessed as:
+
+\begin{itemize}
+  \item \verb|z.A| (sugar syntax), or
+  \item \verb|z["A"]|
+\end{itemize}
+
+Assigning \verb|z.A = nil| removes the point entirely.
+
 
 \subsection{Assigning a Name to Other Objects}
 For all geometric objects other than points, you are free to choose names. However, adopting consistent conventions greatly improves code readability and maintainability. To be more precise, each Lua code block is usually preceded by the call to the function \tkzFct{package}{init\_elements()}, whose role is to clear and reset the various tables (such as \tkzname{L}, \tkzname{C}, etc.).

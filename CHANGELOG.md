@@ -1,3 +1,38 @@
+## [2025/12/09 — version 4.44c]
+
+### Added
+- **triangle**
+  - New methods: `feuerbach_apollonius_k181` and `feuerbach_apollonius`.
+  - Kimberling point **#181** added (Apollonius point associated with the Feuerbach configuration).
+
+- **circle**
+  - Addition of several special-case handlers inside the `CCC` method.
+
+- **vector**
+  - Two new attributes: `dx` and `dy`.
+  - New methods: `is_zero`, `is_parallel`, `is_orthogonal`, `dot`, `cross`,
+    `angle_to`, `rotate`, `orthogonal`, and `get`.
+
+- **tkz**
+  - New constants:
+    - `tkz.maxdimen_pt = 16383.99999`
+    - `tkz.max_coord_cm = tkz.maxdimen_pt * tkz.pt`  (≈ 575.8 cm)
+    - `tkz.max_coord_safe = 0.9 * tkz.max_coord_cm`  (≈ 518 cm)
+
+### Changed
+- **tkz-elements.sty**
+  - Improved handling of `\tkzGetNodes`: only names of points ending in *p* or *pp* are transformed; all others are preserved.
+    The macro now calls the Lua function `tkz.GetNodes`.
+  - Update of the `vector` class implementation.
+  - Update of `tkz.GetNodes`: coordinate checking has been added; when a coordinate exceeds the safe limit (≈ 518 cm), the
+    corresponding node is placed at `(0,0)` and a warning is written to the `.log` file.
+
+### Docs
+- Restoration of the *Overview* and *Contents* sections.
+- Additions and refinements in the documentation of the `vector` class.
+- Correction of the example on **Soddy circles**.
+
+
 ## [2025/11/24 version 4.42c]
 
 ### Added

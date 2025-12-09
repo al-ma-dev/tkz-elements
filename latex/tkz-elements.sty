@@ -3,7 +3,10 @@
 % SPDX-License-Identifier: LPPL-1.3c
 % Maintainer: Alain Matthes
 
-\ProvidesPackage{tkz-elements}[2025/11/24 version 4.42c Graphic Object Library]
+\ProvidesPackage{tkz-elements}[2025/12/09 v4.44c Graphic Object Library]
+
+\typeout{Package tkz-elements v4.44c (2025/12/09) loaded.}
+
 \RequirePackage{iftex}
 \ifluatex\else
   \PackageError{tkz-elements}{%
@@ -41,18 +44,11 @@
 \@ifpackageloaded{tkz-euclide}{%
   \@ifpackagelater{tkz-euclide}{2024/04/19}{%
    \def\tkzGetNodes{\directlua{%
-     for K,V in pairs(z) do
-        local n,sd,ft
-        n = string.len(K)
-        if n > 1 then
-        _,_,ft, sd = string.find(K, "(.+)(.)" )
-       if sd == "p" then   K=ft.."'" end
-       _,_,xft, xsd = string.find(ft, "(.+)(.)" )
-       if xsd == "p" then  K=xft.."'".."'" end
-         end
-    tex.sprint("\\coordinate ("..K..") at ("..V.re..","..V.im..") ; \string\r")
-   end
+   tkz.GetNodes()
+   tkz.flush_coord_warnings()
    }}
+
+
 \def\tkzDrawLuaEllipse{\pgfutil@ifnextchar[{\tkz@DrawLuaEllipse}{\tkz@DrawLuaEllipse[]}}
 \def\tkz@DrawLuaEllipse[#1](#2,#3,#4){%
 \begingroup

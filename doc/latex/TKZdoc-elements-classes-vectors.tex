@@ -2,34 +2,20 @@
 
 \section{Class \tkzClass{vector}}
 \label{sec:class_vector}
+
+A \tkzname{vector} object represents an oriented segment from a tail point $A$ to a head point $B$.
+Internally, it is built from two points \tkzVar{za} and \tkzVar{zb}, interpreted as complex numbers.
+The vector stores both its geometric endpoints and its analytic data (components, length, direction).
+
+
+
 The variable \tkzVar{vector}{V} holds a table used to store vectors. It is optional, and you are free to choose the variable name. However, using \code{V} is a recommended convention for clarity and consistency. If you use a custom variable (e.g., Vectors), you must initialize it manually. The \code{init\_elements()} function reinitializes the \code{V} table if used.
 
 \vspace{1em}
 In fact, they are more a class of oriented segments than vectors in the strict mathematical sense.
 
 A vector is defined by giving two points (i.e. two affixes).
-|V.AB = vector : new (z.A,z.B)| creates the vector $(\overrightarrow{AB})$, i.e. the oriented segment with origin $A$ representing a vector. A few rudimentary operations are defined, such as sum, subtraction and multiplication by a scalar.
-
-The sum is defined as follows:
-
-Let V.AB + V.CD result in a vector V.AE defined as follows
-
-If $\overrightarrow{CD} = \overrightarrow{BE} $ then $\overrightarrow{AB} + \overrightarrow{CD} = \overrightarrow{AB} + \overrightarrow{BE} =\overrightarrow{AE}$
-
-\begin{mybox}
-   Creation |V.AB = vector(z.A,z.B)|
-\end{mybox}
-
-\begin{verbatim}
-z.A = ...
-z.B = ...
-z.C = ...
-z.D = ...
-V.AB = vector(z.A,z.B)
-V.CD = vector(z.C,z.D)
-V.AE = V.AB + V.CD  % possible V.AB : add (V.CD)
-z.E  = V.AE.head % we recover the final point (head)
-\end{verbatim}
+|V.AB = vector(z.A, z.B)| creates the vector $(\overrightarrow{AB})$, i.e. the oriented segment with origin $A$ representing a vector. A few rudimentary operations are defined, such as sum, subtraction and multiplication by a scalar.
 
 
 \subsection{Creating a vector}
@@ -40,24 +26,17 @@ The \tkzClass{vector} class represents a vector between two points or a free vec
 \medskip
 The result is usually stored in \tkzVar{vector}{V}.
 
-
-
+\medskip
+\textbf{Short form: }
 \begin{mybox}
 \begin{verbatim}
 V.v1 = vector:new(z.A, z.B) -- from A to B
-V.v2 = vector:new(3, -1) -- free vector with components (3, -1)
-\end{verbatim}
-\end{mybox}
-
-\textbf{Short form.}
 The short form is equivalent:
-
-\begin{mybox}
-\begin{verbatim}
 V.v1 = vector(z.A, z.B)
-V.v2 = vector(3, -1)
 \end{verbatim}
 \end{mybox}
+
+
 
 \subsection{Attributes of a vector}
 
@@ -76,6 +55,8 @@ V.v2 = vector(3, -1)
   \tkzAttr{vector}{type}     &  [\ref{ssub:attributes_vector_type}] \\
   \tkzAttr{vector}{slope}    &  [\ref{ssub:attributes_vector_slope}] \\
   \tkzAttr{vector}{z}        &  [\ref{ssub:attributes_vector_z}] \\
+  \tkzAttr{vector}{dx}       &  [\ref{ssub:attributes_vector_d}] \\
+  \tkzAttr{vector}{dy}       &  [\ref{ssub:attributes_vector_d}]\\
   \tkzAttr{vector}{norm}     &  [\ref{ssub:attributes_vector_norm}]\\
   \tkzAttr{vector}{mtx}      &  [\ref{ssub:attributes_vector_mtx}] \\
   \bottomrule
@@ -83,9 +64,7 @@ V.v2 = vector(3, -1)
   \egroup
 
 
-
-
-\subsubsection{Attributes \tkzAttr{vector}{head}}
+\subsubsection{Attribute \tkzAttr{vector}{head}}
 \label{ssub:attributes_vector_head}
 
 \begin{minipage}{.5\textwidth}
@@ -136,7 +115,7 @@ With previous data:
 \code{|V.u.type = 'vector'|}
 \end{mybox}
 
-\subsubsection{Attributes \tkzAttr{vector}{slope}}
+\subsubsection{Attribute \tkzAttr{vector}{slope}}
 \label{ssub:attributes_vector_slope}
 The attribute gives the slope of the line supporting a vector representative.
 
@@ -149,20 +128,52 @@ The attribute gives the slope of the line supporting a vector representative.
    tex.print(utils.format_number(d,3))}
 \end{tkzexample}
 
-\subsubsection{Attributes \tkzAttr{vector}{norm}}
+\subsubsection{Attributes \tkzAttr{vector}{dx}, \tkzAttr{vector}{dy}}
+\label{ssub:attributes_vector_d}
+
+These attributes give the coordinates of the vectors in the reference base.
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  z.A = point(0, 1)
+  z.B = point(3, 4)
+  z.C = point(3, 2)
+  z.D = point(4, 1)
+  V.u = vector(z.A, z.B)
+  V.v = vector(z.C, z.D)
+  V.w = V.u + V.v
+  z.E = V.w.head
+  local pc = string.char(37)
+  local format = "("..pc.."g,"..pc.."g)"
+  tex.print("(dx,dy) =
+     ",string.format(format, V.w.dx, V.w.dy))
+  }
+\begin{center}
+  \begin{tikzpicture}[gridded]
+  \tkzGetNodes
+  \tkzLabelPoints(A,B,C,D,E)
+  \tkzDrawSegments[->,red](A,B C,D)
+  \tkzDrawSegments[->,blue](A,E B,E)
+  \tkzDrawPoints(A,C)
+\end{tikzpicture}
+  \end{center}
+\end{tkzexample}
+
+
+\subsubsection{Attribute \tkzAttr{vector}{norm}}
 \label{ssub:attributes_vector_norm}
 This attribute gives the length of the segment between the two ends.
 
 \begin{tkzexample}[latex = .5\textwidth]
 \directlua{
-   z.A = point(-1, 0 )
-   z.B = point(3, 3 )
+   z.A = point(-1, 0)
+   z.B = point(3, 3)
    V.u = vector(z.A, z.B)
    V.d = V.u.norm
-   tex.print(V.d)}
+   tex.print("norm = ",V.d)}
 \end{tkzexample}
 
-\subsubsection{Attributes \tkzAttr{vector}{mtx}}
+\subsubsection{Attribute \tkzAttr{vector}{mtx}}
 \label{ssub:attributes_vector_mtx}
 This involves associating a matrix in the form of a \code{column vector} with the vector under consideration.
 
@@ -176,7 +187,7 @@ This involves associating a matrix in the form of a \code{column vector} with th
    V.v:print()}
 \end{tkzexample}
 
-\subsubsection{Attributes \tkzAttr{vector}{z}}
+\subsubsection{Attribute \tkzAttr{vector}{z}}
 \label{ssub:attributes_vector_z}
 This attribute is very useful for working with the \code{\^{}} and \code{..} metamethods.
 
@@ -188,19 +199,20 @@ This attribute is very useful for working with the \code{\^{}} and \code{..} met
  z.D = point(3, 2)
  V.u = vector(z.A, z.B)
  V.v = vector(z.C, z.D)
- n = V.u.z^V.v.z
- m = V.u.z..V.v.z
+ n = V.u.z ^ V.v.z
+ m = V.u.z .. V.v.z
  tex.print("determinant(u,v) = "..tostring(n))
  tex.print('\\\\')
  tex.print("dot product(u,v) = "..tostring(m))
 }
 \end{tkzexample}
+
+
 \newpage
 
-\subsection{Methods of the class vector}
+\subsection{Metamethods overview of the class vector}
 
 \vspace{1em}
-
 \bgroup
   \catcode`_=12
   \small
@@ -209,9 +221,9 @@ This attribute is very useful for working with the \code{\^{}} and \code{..} met
   \toprule
    \textbf{Metamethods} & \textbf{Reference} \\
    \midrule
-  \tkzMeta{vector}{add(u,v)}   & [\ref{ssub:method_imeth_vector_add}]  \\
-  \tkzMeta{vector}{sub(u,v)}   & [\ref{ssub:method_imeth_vector_sub}]  \\
-  \tkzMeta{vector}{unm(u)}     &  []                                   \\
+  \tkzMeta{vector}{add(u,v)}   & [\ref{ssub:method_vector_add}]  \\
+  \tkzMeta{vector}{sub(u,v)}   & [\ref{ssub:method_vector_sub}]  \\
+  \tkzMeta{vector}{unm(u)} & [\ref{ssub:method_vector_unm}] \\
   \tkzMeta{vector}{mul(k,u)}   & [\ref{ssub:method_vector_mul}]        \\
   \tkzMeta{vector}{pow(k,u)}   & [\ref{ssub:method_vector_det}]        \\
   \tkzMeta{vector}{concat(k,u)}& [\ref{ssub:method_vector_dot}]        \\
@@ -219,30 +231,32 @@ This attribute is very useful for working with the \code{\^{}} and \code{..} met
     \end{tabular}
   \egroup
 
- \bgroup
- \catcode`_=12
- \small
- \captionof{table}{Methods of the class vector.}\label{vector:methods}
- \begin{tabular}{ll}
- \toprule
-   \textbf{Methods} & \textbf{Reference} \\
-   \midrule
-  \tkzMeth{vector}{new(pt, pt)}    & Note\footnote{vector(pt, pt) (short form, recommended)}; \ref{sub:creating_a_vector}                                        \\
-  \tkzMeth{vector}{normalize(V)}   & [\ref{ssub:method_vector_normalize}]     \\
-  \tkzMeth{vector}{orthogonal(r)}  &  [\ref{ssub:method_vector_orthogonal_r}] \\
-  \tkzMeth{vector}{at (V)}         & [\ref{ssub:method_vector_at}]            \\
-  \bottomrule
-  \end{tabular}
-\egroup
-
 
 
 \subsection{Example of metamethods}
 
 \subsubsection{Method \tkzMeth{vector}{add}}
-\label{ssub:method_imeth_vector_add}
+\label{ssub:method_vector_add}
 
-\begin{minipage}{.5\textwidth}
+The sum is defined as follows:
+
+Let V.AB + V.CD result in a vector V.AE defined as follows
+
+If $\overrightarrow{CD} = \overrightarrow{BE} $ then $\overrightarrow{AB} + \overrightarrow{CD} = \overrightarrow{AB} + \overrightarrow{BE} =\overrightarrow{AE}$
+
+\begin{verbatim}
+z.A  = point(0, 1)
+z.B  = point(3, 4)
+z.C  = point(3, 2)
+z.D  = point(4, 1)
+V.AB = vector(z.A, z.B)
+V.CD = vector(z.C, z.D)
+V.AE = V.AB + V.CD  % possible V.AB : add (V.CD)
+z.E  = V.AE.head % we recover the final point (head)
+\end{verbatim}
+
+
+\begin{tkzexample}[latex=.5\textwidth]
 \directlua{
  init_elements()
  z.A = point(0, 1)
@@ -251,40 +265,25 @@ This attribute is very useful for working with the \code{\^{}} and \code{..} met
  z.D = point(4, 1)
  V.u = vector(z.A, z.B)
  V.v = vector(z.C, z.D)
- V.w = V.u + V.v
+ V.w = V.u + V.v % or V.u:add(V.v)
  z.E = V.w.head}
-
 \begin{tikzpicture}[gridded]
   \tkzGetNodes
   \tkzLabelPoints(A,B,C,D,E)
   \tkzDrawSegments[->,red](A,B)
-    \tkzDrawSegments[->,cyan](A,E)
-   \tkzDrawSegments[->,blue](C,D B,E)
+  \tkzDrawSegments[->,cyan](A,E)
+  \tkzDrawSegments[->,blue](C,D B,E)
   \tkzLabelSegment(A,B){$\overrightarrow{u}$}
   \tkzLabelSegment(C,D){$\overrightarrow{v}$}
   \tkzLabelSegment(A,E){$\overrightarrow{w}$}
 \end{tikzpicture}
-
-\end{minipage}
-\begin{minipage}{.5\textwidth}
-\begin{tkzexample}[code only]
-\directlua{
- init_elements()
- z.A = point(0, 1)
- z.B = point(3, 4)
- z.C = point(3, 2)
- z.D = point(4, 1)
- V.u = vector(z.A, z.B)
- V.v = vector(z.C, z.D)
- V.w = V.u + V.v
- z.E = V.w.head}
 \end{tkzexample}
-\end{minipage}
+
 
 \subsubsection{Method \tkzMeth{vector}{sub}}
-\label{ssub:method_imeth_vector_sub}
+\label{ssub:method_vector_sub}
 
-\begin{minipage}{.5\textwidth}
+\begin{tkzexample}[latex=.5\textwidth]
 \directlua{
  z.A = point(0, 1)
  z.B = point(3, 4)
@@ -305,27 +304,14 @@ This attribute is very useful for working with the \code{\^{}} and \code{..} met
   \tkzLabelSegment(C,D){$\overrightarrow{v}$}
   \tkzLabelSegment(A,E){$\overrightarrow{w}$}
 \end{tikzpicture}
-
-\end{minipage}
-\begin{minipage}{.5\textwidth}
-\begin{tkzexample}[code only]
-\directlua{
- z.A = point(0, 1)
- z.B = point(3, 4)
- z.C = point(3, 2)
- z.D = point(4, 1)
- V.u = vector(z.A, z.B)
- V.v = vector(z.C, z.D)
- V.w = V.u - V.v
- z.E = V.w.head}
 \end{tkzexample}
-\end{minipage}
+
 
 \subsubsection{Method \tkzMeth{vector}{mul}}
 \label{ssub:method_vector_mul}
 This is, of course, multiplication by a scalar.
 
-\begin{minipage}{.5\textwidth}
+\begin{tkzexample}[latex=.5\textwidth]
 \directlua{
  init_elements()
  z.A = point(0, 1)
@@ -347,22 +333,34 @@ This is, of course, multiplication by a scalar.
   \tkzLabelSegment(C,D){$\overrightarrow{v}$}
   \tkzLabelSegment(A,E){$\overrightarrow{w}$}
 \end{tikzpicture}
-
-\end{minipage}
-\begin{minipage}{.5\textwidth}
-\begin{tkzexample}[code only]
-\directlua{
- init_elements()
- z.A = point(0, 1)
- z.B = point(3, 4)
- z.C = point(3, 2)
- z.D = point(4, 1)
- V.u = vector(z.A, z.B)
- V.v = vector(z.C, z.D)
- V.w = V.u + 2 * V.v
- z.E = V.w.head}
 \end{tkzexample}
-\end{minipage}
+
+
+\subsubsection{Method \tkzMeth{vector}{unm}}
+\label{ssub:method_vector_unm}
+
+Cette méthode vous permet d'écrire \code{V.w = -V.v}
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  z.A = point(0, 1)
+  z.B = point(3, 3)
+  z.C = point(3, 2)
+  z.D = point(4, 1)
+  V.u = vector(z.A, z.B)
+  V.v = vector(z.C, z.D)
+  V.v = -V.v
+  V.w = V.u + V.v
+  z.E = V.w.head}
+\begin{center}
+  \begin{tikzpicture}[gridded]
+  \tkzGetNodes
+  \tkzLabelPoints(A,B,C,D,E)
+  \tkzDrawSegments[->,red](A,B)
+  \tkzDrawSegments[->,cyan](A,E)
+  \tkzDrawSegments[->,blue](D,C B,E)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
 
 \subsubsection{Method \tkzMeth{vector}{\textasciicircum{}}}
 \label{ssub:method_vector_det}
@@ -383,7 +381,7 @@ Instead of the concatenation, which wouldn't make sense here, we're talking abou
 \begin{mybox}
 |V.u = vector(z.A, z.B) with z.A = point(xa, ya) and z.B = point(xb, yb)|
 |V.v = vector(z.C, z.D) with z.C = point(xc, yc) and z.D = point(xd, yd)|
-then |V.u..V.v = xa * xb +  ya * yb|
+then |V.u .. V.v = xa * xb +  ya * yb|
 \end{mybox}
 
 remark : |V.u .. V.v = V.u.norm * V.v.norm * cos(V.u,V.v)|
@@ -398,8 +396,8 @@ We're going to use the two last methods . We can determine the cosine and sine o
  z.B = point(1, -4)
  V.u = vector(z.O, z.A)
  V.v = vector(z.O, z.B)
- local dp = V.u..V.v % dot product
- local d = V.u^V.v % determinant
+ local dp = V.u .. V.v % dot product
+ local d = V.u ^ V.v % determinant
  % costheta = dp / (u.norm * v.norm)
  % sintheta = d / (u.norm * v.norm)
   an = math.atan(d / dp)}
@@ -423,8 +421,8 @@ We're going to use the two last methods . We can determine the cosine and sine o
   z.B = point(1, -4)
   V.u = vector(z.O, z.A)
   V.v = vector(z.O, z.B)
-  local dp = V.u..V.v % dot product
-  local d = V.u^V.v % determinant
+  local dp = V.u .. V.v % dot product
+  local d = V.u ^ V.v % determinant
   % costheta = dp / (u.norm * v.norm)
   % sintheta = d / (u.norm * v.norm)
   an = math.atan(d / dp)}
@@ -441,7 +439,41 @@ The code required to display the angle measurement is as follows:
 
 % subsubsection method_vector_dot (end)`
 
+
+
+\smallskip
+  The main methods provided by the \tkzClass{vector} class are summarised below.
+
+\medskip
+ \bgroup
+ \catcode`_=12
+ \small
+ \captionof{table}{Methods of the class vector.}\label{vector:methods}
+ \begin{tabular}{ll}
+ \toprule
+   \textbf{Methods} & \textbf{Reference} \\
+   \midrule
+  \tkzMeth{vector}{new(pt, pt)}    & Note\footnote{vector(pt, pt) (short form, recommended)}; \ref{sub:creating_a_vector}                                        \\
+  \tkzMeth{vector}{is\_zero([EPS])} & \\
+  \tkzMeth{vector}{is\_parallel(v,[EPS])} & \\
+  \tkzMeth{vector}{is\_orthogonal(v,[EPS])} & \\
+  \tkzMeth{vector}{get()}   & \\
+  \tkzMeth{vector}{add(v)}      & \\
+  \tkzMeth{vector}{scale(d)}    & \\
+  \tkzMeth{vector}{dot(v)}      &\\
+   \tkzMeth{vector}{cross(v)}    &\\
+  \tkzMeth{vector}{normalize()}   & [\ref{ssub:method_vector_normalize}]     \\
+   \tkzMeth{vector}{angle\_to(v)} & \\
+  \tkzMeth{vector}{at (pt)}         & [\ref{ssub:method_vector_at}]            \\
+  \tkzMeth{vector}{rotate(\tkzVar{$\theta$})} & \\
+  \tkzMeth{vector}{orthogonal([side],[length])} & \\
+  \bottomrule
+  \end{tabular}
+\egroup
+
+
 \subsection{Example of methods}
+
 \subsubsection{Method \tkzMeth{vector}{normalize()}}
 \label{ssub:method_vector_normalize}
 This method produces a normalized vector that is collinear with the initial vector.
@@ -482,9 +514,27 @@ This method produces a normalized vector that is collinear with the initial vect
    \end{tikzpicture}
  \end{tkzexample}
 
-\subsubsection{Method \tkzMeth{vector}{orthogonal(r)}}
+\subsubsection{Method  \tkzMeth{vector}{orthogonal([side],[length])}}
 \label{ssub:method_vector_orthogonal_r}
-\begin{minipage}{.5\textwidth}
+
+\begin{verbatim}
+Vperp  = V:orthogonal()           -- default: "ccw"
+VperpC = V:orthogonal("cw")       -- clockwise orthogonal
+Vlen   = V:orthogonal("ccw", 2.0) -- orthogonal of prescribed length
+\end{verbatim}
+
+The \tkzMeth{vector}{orthogonal} method constructs an orthogonal vector to \code{V},
+with the same tail:
+\begin{itemize}
+  \item the optional argument \tkzVar{side} may be \code{"ccw"} (counter-clockwise,
+        the default) or \code{"cw"} (clockwise),
+  \item the optional argument \tkzVar{length} may be used to prescribe the norm
+        of the resulting vector; if omitted, the length is determined by a rotation
+        of the current vector.
+\end{itemize}
+
+
+\begin{tkzexample}[latex=.5\textwidth]
  \directlua{
  init_elements()
  z.A = point(0, 1)
@@ -492,32 +542,30 @@ This method produces a normalized vector that is collinear with the initial vect
  V.AB = vector(z.A, z.B)
  V.AR = V.AB:orthogonal(2 * math.sqrt(2))
  z.R = V.AR.head
- V.AS = V.AB:orthogonal(-2)
+ V.AS = V.AB:orthogonal("cw",2)
  z.S = V.AS.head}
-\begin{tikzpicture}[gridded]
+\begin{center}
+ \begin{tikzpicture}[gridded]
   \tkzGetNodes
   \tkzDrawSegments[>=stealth,->,
     red](A,B A,R A,S)
   \tkzLabelPoints(A,B,R,S)
 \end{tikzpicture}
-\end{minipage}
-\begin{minipage}{.5\textwidth}
+\end{center}
+\end{tkzexample}
+
+
+\subsubsection{Predicates: \tkzMeth{vector}{is\_zero}, \tkzMeth{vector}{is\_parallel}, \tkzMeth{vector}{is\_orthogonal}}
+
 \begin{verbatim}
- \directlua{
- init_elements()
- z.A = point(0, 1)
- z.B = point(3, 4)
- V.AB = vector(z.A, z.B)
- V.AR = V.AB:orthogonal(2 * math.sqrt(2))
- z.R = V.AR.head
- V.AS = V.AB:orthogonal(-2)
- z.S = V.AS.head}
-\begin{tikzpicture}[gridded]
-  \tkzGetNodes
-  \tkzDrawSegments[>=stealth,
-    ->,red](A,B A,R A,S)
-  \tkzLabelPoints(A,B,R,S)
-\end{tikzpicture}
+if V:is_zero() then ... end
+if V:is_parallel(W) then ... end
+if V:is_orthogonal(W) then ... end
 \end{verbatim}
-\end{minipage}
+
+These methods test basic geometric relations between vectors, using an optional
+tolerance \tkzVar{EPS}, which defaults to \tkzVar{tkz.epsilon}. They are convenient
+when deciding whether two directions should be treated as parallel or orthogonal
+in numerical computations.
+
 \endinput

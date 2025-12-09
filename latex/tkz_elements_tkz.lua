@@ -16,6 +16,53 @@ tkz.rad = 180 / math.pi
 tkz.deg = math.pi / 180
 tkz.pt = 254 / 7227
 tkz.tau = 2 * math.pi
+tkz.maxdimen_pt   = 16383.99999
+tkz.max_coord_cm  = tkz.maxdimen_pt * tkz.pt      -- ≈ 575.8 cm
+tkz.max_coord_safe = 0.9 * tkz.max_coord_cm       -- ≈ 518 cm
+
+tkz.has_coord_warning = false
+tkz.coord_warnings    = {}
+
+function tkz.register_coord_warning(name, x, y)
+	tkz.has_coord_warning = true
+	table.insert(tkz.coord_warnings, {
+		name  = name,
+		x     = x,
+		y     = y,
+		limit = tkz.max_coord_safe
+	})
+end
+
+function tkz.flush_coord_warnings()
+	if not tkz.has_coord_warning or #tkz.coord_warnings == 0 then
+		return
+	end
+
+	local bs = string.char(92)
+
+	for _, w in ipairs(tkz.coord_warnings) do
+		local msg = string.format(
+			"Point `%s' has very large coordinates (%.6f, %.6f). " ..
+			"Safe limit is about |x|,|y| <= %.2f (TikZ units).",
+			w.name, w.x, w.y, w.limit
+		)
+
+		-- 1) Log / terminal
+		texio.write_nl("term and log",
+			"tkz-elements warning (coordinates): " .. msg)
+
+		-- 2) Warning LaTeX (hors tikzpicture si on appelle flush après)
+		tex.print(
+			bs .. "PackageWarning{tkz-elements}{" .. msg .. "}"
+		)
+	end
+
+	tkz.has_coord_warning = false
+	tkz.coord_warnings    = {}
+end
+
+
+
 -- real
 function tkz.approx(x, y, EPS)
 	 EPS = EPS or tkz.epsilon
@@ -518,5 +565,48 @@ function tkz.range(a, b, step)
 	end
 	return tbl
 end
+
+function tkz.GetNodes()
+		local bs = string.char(92)
+
+		-- reset pour cet appel
+		tkz.has_coord_warning = false
+		tkz.coord_warnings    = {}
+
+		for K, V in pairs(z) do
+				local name = K
+				local n = string.len(name)
+
+				-- Gestion des 'p' → ' et ''
+				if n > 1 then
+						local ft, sd = string.match(name, "(.+)(.)")
+						if sd == "p" then
+								name = ft .. "'"
+								local xft, xsd = string.match(ft, "(.+)(.)")
+								if xsd == "p" then
+										name = xft .. "''"
+								end
+						end
+				end
+
+				local x = V.re
+				local y = V.im
+				local ox, oy = x, y  -- garder trace des originales
+
+				-- Coordonnées hors limite → on enregistre, et on remplace par (0,0)
+				if math.abs(x) > tkz.max_coord_safe or math.abs(y) > tkz.max_coord_safe then
+						tkz.register_coord_warning(name, ox, oy)
+						x, y = 0, 0
+				end
+
+				-- Sortie TikZ *neutre* : aucune chance de casser des groupes
+				tex.sprint(
+					bs .. "coordinate (" .. name .. ") at (" .. x .. "," .. y .. ");"
+				)
+		end
+end
+
+
+
 
 return tkz

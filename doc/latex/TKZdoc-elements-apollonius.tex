@@ -1343,6 +1343,7 @@ This method works with:
 
 \begin{tkzexample}[vbox]
 \directlua{
+  init_elements()
   z.A = point(-4, 4)
   z.B = z.A + point(3, 0)
   C.AB  = circle(z.A, z.B)
@@ -1372,6 +1373,7 @@ This method works with:
 
 \begin{tkzexample}[vbox]
 \directlua{
+ init_elements()
  z.A = point(1, 5)
  z.B = point(6, 2)
  C.A = circle(from_radius(z.A, 4))
@@ -1404,6 +1406,7 @@ This method works with:
 
 \begin{tkzexample}[vbox]
 \directlua{
+ init_elements()
  z.A = point(1, 5)
  z.B = point(6, 2)
  C.A = circle(from_radius(z.A, 4))
@@ -1584,7 +1587,6 @@ C.Aa = circle(z.A, z.a)
 C.Bb = circle(z.B, z.b)
 C.Cc = circle(z.C, z.c)
 PA.center, PA.through, n = C.Aa:CCC(C.Bb, C.Cc)
-tex.print(n)
 }
 \begin{center}
 

@@ -130,7 +130,7 @@ z.M = L.AB.mid
 
 \medskip
 \texttt{Polygonal midpoints: }
-To compute the midpoints of a polygonal chain, use the function \tkzFct{tkz}{midpoints(z1, z2, ..., zn)}. This function returns the midpoints of each successive segment: $z_1z_2$, $z_2z_3$, ..., $z_{n-1}z_n$.
+To compute the midpoints of a polygonal chain, use the function |tkz.midpoints(...)|. This function returns the midpoints of each successive segment: $z_1z_2$, $z_2z_3$, ..., $z_{n-1}z_n$.
 
 \begin{mybox}
 \begin{verbatim}
@@ -149,7 +149,7 @@ z.ma, z.mb, z.mc = T.abc:medial()
 \end{verbatim}
 \end{mybox}
 
-This is equivalent to calling \tkzFct{misc}{midpoints} directly:
+This is equivalent to calling \tkzFct{tkz}{midpoints} directly:
 
 \begin{mybox}
 \begin{verbatim}
@@ -165,7 +165,7 @@ z.mc, z.ma, z.mb = tkz.midpoints(T.ABC:get())
 \end{verbatim}
 \end{mybox}
 
-This avoids the need to extract the triangle’s vertices manually, but |T.abc:medial()| is preferabe.
+This avoids the need to extract the triangle’s vertices manually, but |T.abc:medial()| is preferable.
 
 \medskip
 \texttt{Recommendation: }
@@ -896,8 +896,8 @@ The following code tests whether the points $A$, $B$ and $C$ are aligned. If so,
 
 The function does not create any geometric object. It is intended for use in conditionals or assertions to verify configurations before constructing further elements.
 
-\subsubsection{Function \tkzFct{tkz}{tkz.round(num, idp)}}
-\label{ssub:function_tkz_round}
+\subsection{Function \tkzFct{tkz}{tkz.round(num, idp)}}
+\label{sub:function_tkz_round}
 
 This function performs rounding of a real number to a specified number of decimal places and returns the result as a numerical value.
 
@@ -936,7 +936,7 @@ tkz.round(-2.71828, 3) --> -2.718
  \tkzFct{utils}{format\_number(x, decimals)} – Converts rounded number to string
 
 
-\subsection{Function \tkzFct{tkz}{angle\_between\_vectors(a, b, c, d)}}
+\subsection{Function \tkzFct{tkz}{tkz.angle\_between\_vectors(a, b, c, d)}}
 \label{sub:angle_between_vectors}
 
 \texttt{Purpose: }
@@ -952,17 +952,17 @@ This function is especially useful for computing turning angles or verifying geo
 \end{tabular}
 
 
-\texttt{Example.}
+\texttt{Example: }
 
  In this example, several methods are used to determine the angles for each vertex.
 
 \medskip
 \begin{tkzexample}[vbox]
   \directlua{
-  z.A = point:new (0, 0)
-  z.B = point:new (5, 0)
-  z.C = point:new (1, 4)
-  T.ABC = triangle:new(z.A, z.B, z.C)
+  z.A = point(0, 0)
+  z.B = point(5, 0)
+  z.C = point(1, 4)
+  T.ABC = triangle(z.A, z.B, z.C)
   }
   \begin{center}
     \begin{tikzpicture}
@@ -1080,8 +1080,8 @@ The function creates Lua entries in the global table \tkzVar{z} such as:
 
 \texttt{Purpose: }
 Searches numerically for real roots of a function \( f(x) \) over the interval \([a,b]\).
-The interval is divided into \( n \) subintervals, and on each one a few Newton-type iterations
-(with numerical derivative) are performed.
+
+The interval is divided into \( n \) subintervals, and on each one a few Newton-type iterations are performed (with numerical derivative).
 
 \medskip
 \texttt{Syntax: }

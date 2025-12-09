@@ -1455,313 +1455,9 @@ function circle:CLL_all(L1, L2)
 end
 
 
----===== START  CCC by Viète =====-------
--- === Test de tangence robuste (absolu ET relatif) ============================
-local function act_(O1, T1, O2, T2, opts)
-  opts = opts or {}
-  local eps_abs = (opts.abs ~= nil) and opts.abs or 1e-4
-  local eps_rel = (opts.rel ~= nil) and opts.rel or 1e-6
-
-  local R1 = length_(O1, T1)
-  local R2 = length_(O2, T2)
-  local d  = length_(O1, O2)
-
-  local sum = R1 + R2
-  local dif = math.abs(R1 - R2)
-
-  local eE_abs = math.abs(d - sum)
-  local eI_abs = math.abs(d - dif)
-
-  local eE_rel = eE_abs / math.max(1.0, sum)
-  local eI_rel = eI_abs / math.max(1.0, dif, 1.0)
-
-  return (eE_abs <= eps_abs) or (eI_abs <= eps_abs)
-      or (eE_rel <= eps_rel) or (eI_rel <= eps_rel)
-end
-
--- === CCC : toutes les solutions (0..8) ======================================
-function circle:CCC_viete_core(C2, C3, opts)
-  opts = opts or {}
-  local C1, R3, W3 = self, C3.radius, C3.center
-
-  local pc, pt, n = path:new(), path:new(), 0
-  local function push(o,t) pc:add_point(o); pt:add_point(t); n = n + 1 end
-
-  -- dédup : compare centre et rayon avec tolérance
-  local function exists_(o,t)
-    local r = length_(o,t)
-    for i=1,n do
-      local oi, ti = pc:get(i), pt:get(i)
-      if oi and ti then
-        local same_center = length_(o, oi) <= (opts.abs or 1e-4)
-        local same_radius = math.abs(r - length_(oi,ti)) <= (opts.abs or 1e-4)
-        if same_center and same_radius then return true end
-      end
-    end
-    return false
-  end
-  local function push_unique(o,t) if o and t and not exists_(o,t) then push(o,t) end end
-
-  -- ta variante “garder centre, ajouter ΔR au rayon”
-  local function grow_keep_center(C, dR)
-    return circle:new(C.center, report_(C.center, C.through, dR, C.through))
-  end
-
-  -- test "rayon ~ 0" robuste (absolu OU relatif)
-  local function radius_is_zero_(r, ref)
-    local eps_abs = (opts.abs ~= nil) and opts.abs or 1e-4
-    local eps_rel = (opts.rel ~= nil) and opts.rel or 1e-6
-    return (math.abs(r) <= eps_abs) or (math.abs(r)/math.max(ref,1.0) <= eps_rel)
-  end
-
-  -- petit helper : à partir d'une liste de centres (path pcv, nv),
-  -- produire les deux relèvements +/- R3 (comme dans ton code initial)
-  local function lift_from_centers_(pcv, nv)
-    for i=1,nv do
-      local O = pcv:get(i)
-      if O then
-        local Tplus  = report_(O, W3,  R3, W3)  -- r = |OW3| + R3  (tangence interne à C3)
-        local Tminus = report_(O, W3, -R3, W3)  -- r = |OW3| - R3  (tangence externe à C3)
-
-        if Tplus then
-          local S = circle:new(O, Tplus)
-          if act_(S.center, S.through, C1.center, C1.through, opts)
-          and act_(S.center, S.through, C2.center, C2.through, opts)
-          and act_(S.center, S.through, C3.center, C3.through, opts) then
-            push_unique(O, Tplus)
-          end
-        end
-
-        if Tminus then
-          local S = circle:new(O, Tminus)
-          if act_(S.center, S.through, C1.center, C1.through, opts)
-          and act_(S.center, S.through, C2.center, C2.through, opts)
-          and act_(S.center, S.through, C3.center, C3.through, opts) then
-            push_unique(O, Tminus)
-          end
-        end
-      end
-    end
-  end
-
-  -- Les 4 branches de Viète (±R3 sur C1 et C2)
-  local mods = { {-R3,-R3}, {-R3, R3}, { R3,-R3}, { R3, R3} }
-
-  for _, m in ipairs(mods) do
-    local C1T = grow_keep_center(C1, m[1])   -- (O1, R1 + s1*R3)
-    local C2T = grow_keep_center(C2, m[2])   -- (O2, R2 + s2*R3)
-
-    local r1t = C1T.radius
-    local r2t = C2T.radius
-
-    local ref = math.max(C1.radius, C2.radius, R3, 1.0)
-    local z1  = radius_is_zero_(r1t, ref)
-    local z2  = radius_is_zero_(r2t, ref)
-
-    if z1 and z2 then
-      -- === PPP : les deux transformés sont des points => cercle passant par O1,O2,O3
-      local pcv, ptv, nv = C1.center:PPP(C2.center, W3)
-      lift_from_centers_(pcv, nv)
-
-    elseif z1 then
-      -- === CPP : un seul transformé est un point => tangent à C2T et passant par O1 et O3
-      local pcv, ptv, nv = C2T:CPP(C1.center, W3)
-      -- on n’utilise que les centres pour garder la même logique de relèvement
-      lift_from_centers_(pcv, nv)
-
-    elseif z2 then
-      -- === CPP : un seul transformé est un point => tangent à C1T et passant par O2 et O3
-      local pcv, ptv, nv = C1T:CPP(C2.center, W3)
-      lift_from_centers_(pcv, nv)
-
-    else
-      -- === CCP classique : cercle (préimage) passant par W3 et tangent à C1T et C2T
-      local pcv, _, nv = C1T:CCP(C2T, W3, "all")
-      lift_from_centers_(pcv, nv)
-    end
-  end
-
-  return pc, pt, n
-
-end
-
-------------------------------------------------------------
--- Dispatcher CCC : classification 3 cercles → résolution
--- - route "non-sécants" vers ta version qui marche (CCC_viete_ok)
--- - isole tous les cas "sécants" pour un traitement dédié (CCC_secant)
-------------------------------------------------------------
-
--- === Tolérances (abs + rel) ====================================
-local function approx_(a, b, opts)
-  opts = opts or {}
-  local eps_abs = (opts.abs ~= nil) and opts.abs or 1e-4
-  local eps_rel = (opts.rel ~= nil) and opts.rel or 1e-6
-  local d = math.abs(a - b)
-  return (d <= eps_abs) or (d <= eps_rel * math.max(math.abs(a), math.abs(b), 1.0))
-end
-
--- === Relation entre deux cercles Ci, Cj =========================
--- retourne une étiquette parmi :
---  "concentric", "equal", "disjoint_ext", "tangent_ext",
---  "secant", "tangent_int", "disjoint_one_in_other"
-local function circle_pair_relation(Ci, Cj, opts)
-  local Oi, Ri = Ci.center, Ci.radius
-  local Oj, Rj = Cj.center, Cj.radius
-  local d = length_(Oi, Oj)
-
-  -- cas concentriques
-  if approx_(d, 0, opts) then
-    if approx_(Ri, Rj, opts) then return "equal" end
-    return "concentric"
-  end
-
-  local sum = Ri + Rj
-  local dif = math.abs(Ri - Rj)
-
-  if d > sum then
-    return "disjoint_ext"
-  elseif approx_(d, sum, opts) then
-    return "tangent_ext"
-  elseif (d < sum) and (d > dif) then
-    return "secant"
-  elseif approx_(d, dif, opts) then
-    return "tangent_int"
-  else -- d < dif
-    return "disjoint_one_in_other"
-  end
-end
-
--- === Signature des trois paires =================================
-local function three_circles_signature(C1, C2, C3, opts)
-  local r12 = circle_pair_relation(C1, C2, opts)
-  local r23 = circle_pair_relation(C2, C3, opts)
-  local r31 = circle_pair_relation(C3, C1, opts)
-
-  local counts = { secant=0, tangent=0, disjoint=0, inside=0, concentric=0, equal=0 }
-  local function acc(tag)
-    if tag == "secant" then counts.secant = counts.secant + 1
-    elseif tag == "tangent_ext" or tag == "tangent_int" then counts.tangent = counts.tangent + 1
-    elseif tag == "disjoint_ext" then counts.disjoint = counts.disjoint + 1
-    elseif tag == "disjoint_one_in_other" then counts.inside = counts.inside + 1
-    elseif tag == "concentric" then counts.concentric = counts.concentric + 1
-    elseif tag == "equal" then counts.equal = counts.equal + 1
-    end
-  end
-  acc(r12); acc(r23); acc(r31)
-
-  return { r12=r12, r23=r23, r31=r31, counts=counts }
-end
-
-local function CCC_viete_ok(C1, C2, C3, opts)
-  return C1:CCC_viete_core(C2, C3, opts)  -- <-- ajuste le nom si différent
-end
-
--- === 2) Stub pour les cas sécants (à implémenter ensuite) =========
--- Cas CCC : les trois cercles sont deux à deux sécants
--- Stratégie : inversion en X = C1∩C2  →  C1,C2 ↦ lignes
---             résoudre (S3:CLL(L1,L2)) ou (L1:LLL(L2,L3))  →  ré-inversion
-local function CCC_secant(C1, C2, C3, opts)
-  opts = opts or {}
-
-  -- --- sorties (toujours renvoyées)
-  local pa_center  = path:new()
-  local pa_through = path:new()
-  local n = 0
-
-  -- --- push unique (style unifié)
-  local function push(o, t)
-    if o and t then
-      pa_center:add_point(o)
-      pa_through:add_point(t)
-      n = n + 1
-    end
-  end
-
-  -- --- 1) intersections de C1 et C2 (doivent exister dans ce cas)
-  local X, Y = intersection(C1, C2)
-  if (not X) or (not Y) then
-    -- garde-fou : si pas sécants, on ne traite pas ici
-    return pa_center, pa_through, 0
-  end
-
-  -- --- 2) cercle d'inversion : centre X, rayon arbitraire (on prend XY)
-  local Cinv = circle:new(X, Y)
-
-  -- --- 3) objets inversés
-  local L1 = Cinv:inversion(C1)  -- attendu : ligne
-  local L2 = Cinv:inversion(C2)  -- attendu : ligne
-  local S3 = Cinv:inversion(C3)  -- cercle OU ligne (si C3 passe par X)
-
-  -- --- helper : ré-inverser une solution donnée par (o_i, t_i) dans l'espace inversé
-  local function push_back_from_inverted(o_i, t_i)
-    if (not o_i) or (not t_i) then return end
-    local S_i  = circle:new(o_i, t_i)         -- cercle solution dans l'espace inversé
-    local S_o  = Cinv:inversion(S_i)          -- ré-inversion → cercle solution original
-    local t_out = Cinv:inversion(t_i)         -- ré-inversion du point de tangence/through
-    if S_o and S_o.center and t_out then
-      push(S_o.center, t_out)
-    end
-  end
-
-  -- --- 4) Résolution dans l'espace inversé puis ré-inversion
-  if S3 and S3.center then
-    -- 4.a) S3 est un cercle : problème CLL (cercle tangent à 2 lignes L1,L2 et à S3)
-    --     On demande toutes les solutions (secteurs) ; adaptez via opts.which / opts.inside si besoin.
-    local pc, pt, m = S3:CLL(L1, L2, "all")
-    if m and m > 0 then
-      for i = 1, m do
-        push_back_from_inverted(pc:get(i), pt:get(i))  -- pt[i] est le point de tangence sur S3
-      end
-    end
-
-  elseif S3 then
-    -- 4.b) S3 est une ligne (C3 passait par X) : problème LLL (trois lignes)
-    local pc, pt, m = L1:LLL(L2, S3, "all")
-    if m and m > 0 then
-      for i = 1, m do
-        push_back_from_inverted(pc:get(i), pt:get(i))  -- pt[i] : pied sur L1 (OK)
-      end
-    end
-  else
-    -- inversion de C3 échouée (hautement improbable) → pas de solution
-    return pa_center, pa_through, 0
-  end
-
-  return pa_center, pa_through, n
-end
-
--- === 3) Cas spécial : "deux tangents + un disjoint" ==============
-local function CCC_two_tangent_one_disjoint(C1, C2, C3, sig, opts)
-  -- Ex : r12 tangent, r23 tangent, r31 disjoint (ou toute permutation)
-  return CCC_viete_ok(C1, C2, C3, opts)
-end
--- === 4) Dispatcher principal =====================================
-function circle:CCC(C2, C3, opts)
-  local C1 = self
-  local sig = three_circles_signature(C1, C2, C3, opts)
-  local k = sig.counts
-  -- (A) Si AU MOINS une paire est sécante → on isole et on traite à part
-  if k.secant > 0 then
-    return CCC_secant(C1, C2, C3, opts)
-  end
-  -- (B) Cas spécial "deux tangents + un disjoint"
-  if (k.tangent == 2) and (k.disjoint == 1) and (k.inside == 0) and (k.concentric == 0) then
-    return CCC_two_tangent_one_disjoint(C1, C2, C3, sig, opts)
-  end
-
-  -- (C) Tous disjoints (0..3) et/ou tangents (0..3), sans sécants →
-  return CCC_viete_ok(C1, C2, C3, opts)
-end
-
-
-
-
-----=================================
-----=========== <END CCC viète ===========
-----=================================
-
 -- =========================================================
 -- =========================================================
+
 
 function circle:CCL_DDD(C2, D)
   local pa_center, pa_through = path:new(), path:new()
@@ -2061,6 +1757,342 @@ function circle:CCL(C2, D, EPS)
   end
 end
 
+
+---===== START  CCC by Viète =====-------
+-- === Test de tangence robuste (absolu ET relatif) ============================
+
+
+-- === CCC : toutes les solutions (0..8) ======================================
+function circle:CCC_viete_core(C2, C3, opts)
+  opts = opts or {}
+  local C1, R3, W3 = self, C3.radius, C3.center
+
+  local pc, pt, n = path:new(), path:new(), 0
+  local function push(o,t) pc:add_point(o); pt:add_point(t); n = n + 1 end
+
+  -- dédup : compare centre et rayon avec tolérance
+  local function exists_(o,t)
+    local r = length_(o,t)
+    for i=1,n do
+      local oi, ti = pc:get(i), pt:get(i)
+      if oi and ti then
+        local same_center = length_(o, oi) <= (opts.abs or 1e-4)
+        local same_radius = math.abs(r - length_(oi,ti)) <= (opts.abs or 1e-4)
+        if same_center and same_radius then return true end
+      end
+    end
+    return false
+  end
+  local function push_unique(o,t) if o and t and not exists_(o,t) then push(o,t) end end
+
+  -- ta variante “garder centre, ajouter ΔR au rayon”
+  local function grow_keep_center(C, dR)
+    return circle:new(C.center, report_(C.center, C.through, dR, C.through))
+  end
+
+  -- test "rayon ~ 0" robuste (absolu OU relatif)
+  local function radius_is_zero_(r, ref)
+    local eps_abs = (opts.abs ~= nil) and opts.abs or 1e-4
+    local eps_rel = (opts.rel ~= nil) and opts.rel or 1e-6
+    return (math.abs(r) <= eps_abs) or (math.abs(r)/math.max(ref,1.0) <= eps_rel)
+  end
+
+  -- petit helper : à partir d'une liste de centres (path pcv, nv),
+  -- produire les deux relèvements +/- R3 (comme dans ton code initial)
+  local function lift_from_centers_(pcv, nv)
+    for i=1,nv do
+      local O = pcv:get(i)
+      if O then
+        local Tplus  = report_(O, W3,  R3, W3)  -- r = |OW3| + R3  (tangence interne à C3)
+        local Tminus = report_(O, W3, -R3, W3)  -- r = |OW3| - R3  (tangence externe à C3)
+
+        if Tplus then
+          local S = circle:new(O, Tplus)
+          if act_(S.center, S.through, C1.center, C1.through, opts)
+          and act_(S.center, S.through, C2.center, C2.through, opts)
+          and act_(S.center, S.through, C3.center, C3.through, opts) then
+            push_unique(O, Tplus)
+          end
+        end
+
+        if Tminus then
+          local S = circle:new(O, Tminus)
+          if act_(S.center, S.through, C1.center, C1.through, opts)
+          and act_(S.center, S.through, C2.center, C2.through, opts)
+          and act_(S.center, S.through, C3.center, C3.through, opts) then
+            push_unique(O, Tminus)
+          end
+        end
+      end
+    end
+  end
+
+  -- Les 4 branches de Viète (±R3 sur C1 et C2)
+  local mods = { {-R3,-R3}, {-R3, R3}, { R3,-R3}, { R3, R3} }
+
+  for _, m in ipairs(mods) do
+    local C1T = grow_keep_center(C1, m[1])   -- (O1, R1 + s1*R3)
+    local C2T = grow_keep_center(C2, m[2])   -- (O2, R2 + s2*R3)
+
+    local r1t = C1T.radius
+    local r2t = C2T.radius
+
+    local ref = math.max(C1.radius, C2.radius, R3, 1.0)
+    local z1  = radius_is_zero_(r1t, ref)
+    local z2  = radius_is_zero_(r2t, ref)
+
+    if z1 and z2 then
+      -- === PPP : les deux transformés sont des points => cercle passant par O1,O2,O3
+      local pcv, ptv, nv = C1.center:PPP(C2.center, W3)
+      lift_from_centers_(pcv, nv)
+
+    elseif z1 then
+      -- === CPP : un seul transformé est un point => tangent à C2T et passant par O1 et O3
+      local pcv, ptv, nv = C2T:CPP(C1.center, W3)
+      -- on n’utilise que les centres pour garder la même logique de relèvement
+      lift_from_centers_(pcv, nv)
+
+    elseif z2 then
+      -- === CPP : un seul transformé est un point => tangent à C1T et passant par O2 et O3
+      local pcv, ptv, nv = C1T:CPP(C2.center, W3)
+      lift_from_centers_(pcv, nv)
+
+    else
+      -- === CCP classique : cercle (préimage) passant par W3 et tangent à C1T et C2T
+      local pcv, _, nv = C1T:CCP(C2T, W3, "all")
+      lift_from_centers_(pcv, nv)
+    end
+  end
+
+  return pc, pt, n
+
+end
+
+------------------------------------------------------------
+-- Dispatcher CCC : classification 3 cercles → résolution
+-- - route "non-sécants" vers ta version qui marche (CCC_viete_ok)
+-- - isole tous les cas "sécants" pour un traitement dédié (CCC_secant)
+------------------------------------------------------------
+
+-- === Tolérances (abs + rel) ====================================
+local function approx_(a, b, opts)
+  opts = opts or {}
+  local eps_abs = (opts.abs ~= nil) and opts.abs or 1e-4
+  local eps_rel = (opts.rel ~= nil) and opts.rel or 1e-6
+  local d = math.abs(a - b)
+  return (d <= eps_abs) or (d <= eps_rel * math.max(math.abs(a), math.abs(b), 1.0))
+end
+
+
+-- === Signature des trois paires =================================
+-- Relation entre deux cercles Ci, Cj à partir de circles_position_
+-- Convertit les étiquettes "outside", "inside", ... vers
+-- celles utilisées par CCC : "disjoint_ext", "tangent_ext", etc.
+local function circle_relation_from_positions(Ci, Cj, EPS)
+  EPS = EPS or tkz.epsilon
+
+  local c1, r1 = Ci.center, Ci.radius
+  local c2, r2 = Cj.center, Cj.radius
+
+  -- d'abord : test "centres confondus" pour distinguer concentriques / égaux
+  local d = point.mod(c1 - c2)
+  local same_center = tkz.approx(d, 0, EPS)
+  if same_center then
+    if tkz.approx(r1, r2, EPS) then
+      return "equal"
+    else
+      return "concentric"
+    end
+  end
+  -- sinon, on délègue à circles_position_
+  return circles_position_(c1, r1, c2, r2, EPS)
+end
+
+-- === Signature des trois paires =================================
+local function three_circles_signature(C1, C2, C3, opts)
+  opts = opts or {}
+  local EPS = opts.EPS or opts.eps or tkz.epsilon
+
+  -- relations pour chaque paire
+  local r12 = circle_relation_from_positions(C1, C2, EPS)
+  local r23 = circle_relation_from_positions(C2, C3, EPS)
+  local r31 = circle_relation_from_positions(C3, C1, EPS)
+
+  -- comptage global comme avant
+  local counts = {
+    secant     = 0,
+    tangent    = 0,
+    disjoint   = 0,
+    inside     = 0,
+    concentric = 0,
+    equal      = 0,
+  }
+
+  local function acc(tag)
+    if tag == "intersect" then
+      counts.secant = counts.secant + 1
+
+    elseif tag == "outside tangent" or tag == "inside tangent" then
+      counts.tangent = counts.tangent + 1
+
+    elseif tag == "outside" then
+      counts.disjoint = counts.disjoint + 1
+
+    elseif tag == "inside" then
+      counts.inside = counts.inside + 1
+
+    elseif tag == "concentric" then
+      counts.concentric = counts.concentric + 1
+
+    elseif tag == "equal" then
+      counts.equal = counts.equal + 1
+    end
+  end
+
+  acc(r12)
+  acc(r23)
+  acc(r31)
+
+  return {
+    r12    = r12,
+    r23    = r23,
+    r31    = r31,
+    counts = counts
+  }
+end
+
+
+
+local function CCC_viete_ok(C1, C2, C3, opts)
+  return C1:CCC_viete_core(C2, C3, opts)  -- <-- ajuste le nom si différent
+end
+
+-- === 2) Stub pour les cas sécants (à implémenter ensuite) =========
+-- Cas CCC : les trois cercles sont deux à deux sécants
+-- Stratégie : inversion en X = C1∩C2  →  C1,C2 ↦ lignes
+--             résoudre (S3:CLL(L1,L2)) ou (L1:LLL(L2,L3))  →  ré-inversion
+local function CCC_secant(C1, C2, C3, opts)
+  opts = opts or {}
+
+  -- --- sorties (toujours renvoyées)
+  local pa_center  = path:new()
+  local pa_through = path:new()
+  local n = 0
+
+  -- --- push unique (style unifié)
+  local function push(o, t)
+    if o and t then
+      pa_center:add_point(o)
+      pa_through:add_point(t)
+      n = n + 1
+    end
+  end
+
+  -- --- 1) intersections de C1 et C2 (doivent exister dans ce cas)
+  local X, Y = intersection(C1, C2)
+  if (not X) or (not Y) then
+    -- garde-fou : si pas sécants, on ne traite pas ici
+    return pa_center, pa_through, 0
+  end
+
+  -- --- 2) cercle d'inversion : centre X, rayon arbitraire (on prend XY)
+  local Cinv = circle:new(X, Y)
+
+  -- --- 3) objets inversés
+  local L1 = Cinv:inversion(C1)  -- attendu : ligne
+  local L2 = Cinv:inversion(C2)  -- attendu : ligne
+  local S3 = Cinv:inversion(C3)  -- cercle OU ligne (si C3 passe par X)
+
+  -- --- helper : ré-inverser une solution donnée par (o_i, t_i) dans l'espace inversé
+  local function push_back_from_inverted(o_i, t_i)
+    if (not o_i) or (not t_i) then return end
+    local S_i  = circle:new(o_i, t_i)         -- cercle solution dans l'espace inversé
+    local S_o  = Cinv:inversion(S_i)          -- ré-inversion → cercle solution original
+    local t_out = Cinv:inversion(t_i)         -- ré-inversion du point de tangence/through
+    if S_o and S_o.center and t_out then
+      push(S_o.center, t_out)
+    end
+  end
+
+  -- --- 4) Résolution dans l'espace inversé puis ré-inversion
+  if S3 and S3.center then
+    -- 4.a) S3 est un cercle : problème CLL (cercle tangent à 2 lignes L1,L2 et à S3)
+    --     On demande toutes les solutions (secteurs) ; adaptez via opts.which / opts.inside si besoin.
+    local pc, pt, m = S3:CLL(L1, L2, "all")
+    if m and m > 0 then
+      for i = 1, m do
+        push_back_from_inverted(pc:get(i), pt:get(i))  -- pt[i] est le point de tangence sur S3
+      end
+    end
+
+  elseif S3 then
+    -- 4.b) S3 est une ligne (C3 passait par X) : problème LLL (trois lignes)
+    local pc, pt, m = L1:LLL(L2, S3, "all")
+    if m and m > 0 then
+      for i = 1, m do
+        push_back_from_inverted(pc:get(i), pt:get(i))  -- pt[i] : pied sur L1 (OK)
+      end
+    end
+  else
+    -- inversion de C3 échouée (hautement improbable) → pas de solution
+    return pa_center, pa_through, 0
+  end
+
+  return pa_center, pa_through, n
+end
+
+-- === 3) Cas spécial : "deux tangents + un disjoint" ==============
+local function CCC_two_tangent_one_disjoint(C1, C2, C3, sig, opts)
+  -- Ex : r12 tangent, r23 tangent, r31 disjoint (ou toute permutation)
+  return CCC_viete_ok(C1, C2, C3, opts)
+end
+
+local function three_distinct_radii(C1, C2, C3, opts)
+  opts = opts or {}
+  local eps = opts.EPS or opts.eps or tkz.epsilon
+  local R1, R2, R3 = C1.radius, C2.radius, C3.radius
+  return (not tkz.approx(R1, R2, eps))
+     and (not tkz.approx(R2, R3, eps))
+     and (not tkz.approx(R3, R1, eps))
+end
+
+-- === 4) Dispatcher principal =====================================
+function circle:CCC(C2, C3, opts)
+  local C1 = self
+  local sig = three_circles_signature(C1, C2, C3, opts)
+  local k = sig.counts
+  -- (A) Si AU MOINS une paire est sécante → on isole et on traite à part
+  if k.secant > 0 then
+    return CCC_secant(C1, C2, C3, opts)
+
+  -- (B) Cas spécial "deux tangents + un disjoint"
+  elseif (k.tangent == 2) and (k.disjoint == 1) and (k.inside == 0) and (k.concentric == 0) then
+    return CCC_two_tangent_one_disjoint(C1, C2, C3, sig, opts)
+
+   elseif (k.tangent == 3)
+       and (
+         (sig.r12 == "inside tangent"
+           and sig.r23 == "outside tangent"
+           and sig.r31 == "outside tangent")
+         or (sig.r23 == "inside tangent"
+           and sig.r31 == "outside tangent"
+           and sig.r12 == "outside tangent")
+         or (sig.r31 == "inside tangent"
+           and sig.r12 == "outside tangent"
+           and sig.r23 == "outside tangent")
+       )
+    then
+      return C1:CCC_gergonne(C2, C3, opts)
+
+  else
+  return CCC_viete_ok(C1, C2, C3, opts)
+  end
+end
+
+
+----=================================
+----=========== <END CCC viète ===========
+----=================================
 
 ---=========================================================
 

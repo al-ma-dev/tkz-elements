@@ -91,14 +91,27 @@ function point_circle_position_(o, t, p, EPS)
   end
 end
 
-function act_(O1, T1, O2, T2, EPS)
-   EPS = EPS or tkz.epsilon
+
+function act_(O1, T1, O2, T2, opts)
+  opts = opts or {}
+  local eps_abs = (opts.abs ~= nil) and opts.abs or 1e-4
+  local eps_rel = (opts.rel ~= nil) and opts.rel or 1e-6
+
   local R1 = length_(O1, T1)
   local R2 = length_(O2, T2)
-  local d = length_(O1, O2)
-  local max = R1 + R2
-  local min = math.abs(R1 - R2)
-  return (math.abs(d - max) < EPS) or  ( math.abs(d - min) < EPS)
+  local d  = length_(O1, O2)
+
+  local sum = R1 + R2
+  local dif = math.abs(R1 - R2)
+
+  local eE_abs = math.abs(d - sum)
+  local eI_abs = math.abs(d - dif)
+
+  local eE_rel = eE_abs / math.max(1.0, sum)
+  local eI_rel = eI_abs / math.max(1.0, dif, 1.0)
+
+  return (eE_abs <= eps_abs) or (eI_abs <= eps_abs)
+      or (eE_rel <= eps_rel) or (eI_rel <= eps_rel)
 end
 -----------------------
 -- Result -> point
@@ -202,23 +215,34 @@ end
 
 
 function circles_position_(c1, r1, c2, r2, EPS)
-     EPS = EPS or tkz.epsilon
-    local d = point.mod(c1 - c2)
-    local max = r1 + r2
-    local min = math.abs(r1 - r2)
+  EPS = EPS or tkz.epsilon
 
-    if d > max then
-        return "outside"
-    elseif math.abs(d - max) < EPS then
-        return "outside tangent"
-    elseif math.abs(d - min) < EPS then
-        return "inside tangent"
-    elseif d < min then
-        return "inside"
-    else
-        return "intersect"
-    end
+  local d   = point.mod(c1 - c2)
+  local sum = r1 + r2
+  local dif = math.abs(r1 - r2)
+
+  -- à l'extérieur « clairement » (au-delà d'EPS)
+  if d > sum + EPS then
+    return "outside"
+
+  -- tangence extérieure
+  elseif math.abs(d - sum) <= EPS then
+    return "outside tangent"
+
+  -- tangence intérieure
+  elseif math.abs(d - dif) <= EPS then
+    return "inside tangent"
+
+  -- strictement à l'intérieur
+  elseif d < dif - EPS then
+    return "inside"
+
+  -- sinon : secants
+  else
+    return "intersect"
+  end
 end
+
 
 function radical_axis_(c1, p1, c2, p2)
     local r1 = point.abs(c1 - p1)

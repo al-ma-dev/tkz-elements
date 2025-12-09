@@ -7,3 +7,11 @@
 function scale_(v, d)
 	return v.tail + point(d * v.norm * math.cos(v.slope), d * v.norm * math.sin(v.slope))
 end
+
+-- Retourne la nouvelle TÊTE du vecteur, pas le vecteur scalaire
+function scaled_head_(v, d)
+	return v.tail + point(
+			d * v.norm * math.cos(v.slope),
+			d * v.norm * math.sin(v.slope)
+	)
+end

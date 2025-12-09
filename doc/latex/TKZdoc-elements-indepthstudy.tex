@@ -189,22 +189,38 @@ We've seen (sous-section \ref{ssub:points_transfer}) that the macro \tkzMacro{tk
 \begin{mybox}
 \begin{verbatim}
 \def\tkzGetNodes{\directlua{%
-  for K,V in pairs(z) do
-     local n,sd,ft
-     n = string.len(K)
-     if n > 1 then
-     _,_,ft, sd = string.find(K, "(.+)(.)" )
-    if sd == "p" then   K=ft.."'" end
-    _,_,xft, xsd = string.find(ft, "(.+)(.)" )
-    if xsd == "p" then  K=xft.."'".."'" end
-      end
- tex.sprint("\\coordinate ("..K..") at ("..V.re..","..V.im..") ; \string\r")
-end}
+   tkz.GetNodes()
+
+function tkz.GetNodes()
+     local bs = string.char(92)
+
+     for K, V in pairs(z) do
+       local name = K
+       local n = string.len(name)
+
+       if n > 1 then
+         local ft, sd = string.match(name, "(.+)(.)")
+         if sd == "p" then
+           name = ft .. "'"
+
+           local xft, xsd = string.match(ft, "(.+)(.)")
+           if xsd == "p" then
+             name = xft .. "''"
+           end
+         end
+       end
+
+       tex.sprint(
+         bs .. "coordinate (" .. name .. ") at (" ..
+         V.re .. "," .. V.im .. ");"
+       )
+     end
+   end}
 }
 \end{verbatim}
 \end{mybox}
 
-It consists mainly of a loop. The variables used are K (for keys) and V (for Values). To take pairs (key/value) from the \tkzname{z} table, use the \tkzname{pairs} function. K becomes the name of a node whose coordinates are \tkzname{V.re} and \tkzname{V.im}. Meanwhile, we search for keys with more than one symbol ending in \tkzname{p}, in order to associate them with the symbol "'" valid in \TIKZ{}.
+It consists mainly of a loop. The variables used are K (for keys) and V (for Values). To take pairs (key/value) from the \tkzname{z} table, use the \tkzname{pairs} function. K becomes the name of a node whose coordinates are \tkzname{V.re} and \tkzname{V.im}. Meanwhile, we search for keys with more than one symbol ending in \tkzname{p} or \tkzname{pp}, in order to associate them with the symbol "'" valid in \TIKZ{}.
 
 \subsection{Complex numbers library and point}
 \label{sub:complex_numbers}

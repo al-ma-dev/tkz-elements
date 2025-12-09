@@ -41,7 +41,7 @@ Examples are provided in this documentation, which you can see :
 
 \end{itemize}
 
-\tkzRBomb How to comment in a file under \tkzEngine{\LUALATEX}. There are several cases to consider: in the \LATEX{} part outside a |directlua| directive, the \% symbol is always used. Within a |\directlua| directive, \% is still used. In an external file |fic.lua|, the symbol for a single-line comment in Lua is |--| (two hyphens).
+\tkzRHand How to comment in a file under \tkzEngine{\LUALATEX}. There are several cases to consider: in the \LATEX{} part outside a |directlua| directive, the \% symbol is always used. Within a |\directlua| directive, \% is still used. In an external file |fic.lua|, the symbol for a single-line comment in Lua is |--| (two hyphens).
 
 With \tkzEnv{luacode}{luacode} environment, you need to use two hyphens.
 
@@ -101,7 +101,7 @@ The name you assign to a variable must follow certain rules:
 
 The type is defined by the assigned value. So when \code{|x = 5|} then the type of \code{x} is \code{number}, but if \code{|x = true|} then its type changes to \code{boolean}.
 
-\tkzRBomb This warning was issued earlier concerning classes and variables reserved by the \tkzNamePack{tkz-elements}. For example, you cannot use : \code{circle} with $circle = ...$ which would result in losing the use of the class \tkzClass{circle}. Similarly, $C= 1$ would result in the loss of the contents of the table \tkzVar{circle}{C}.
+\tkzRHand This warning was issued earlier concerning classes and variables reserved by the \tkzNamePack{tkz-elements}. For example, you cannot use : \code{circle} with $circle = ...$ which would result in losing the use of the class \tkzClass{circle}. Similarly, $C= 1$ would result in the loss of the contents of the table \tkzVar{circle}{C}.
 
 \subsubsection{Scope and block}
 

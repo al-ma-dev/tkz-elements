@@ -126,16 +126,6 @@ triangle.is_acute = triangle.check_acutangle
 
 function triangle:check_isosceles(EPS)
 return check_isosceles_(self.pa, self.pb, self.pc, EPS)
-
-		-- if math.abs(a - b) <= eps then
-		-- 		return true, "c"      -- sommet C au-dessus de AB
-		-- elseif math.abs(b - c) <= eps then
-		-- 		return true, "a"      -- sommet A au-dessus de BC
-		-- elseif math.abs(c - a) <= eps then
-		-- 		return true, "b"      -- sommet B au-dessus de CA
-		-- else
-		-- 		return false
-		-- end
 end
 
 triangle.is_isosceles = triangle.check_isosceles
@@ -297,7 +287,9 @@ function triangle:kimberling(n)
 	elseif n == 176 then
 		ra, rb, rc = radius_excircle_(self.pa, self.pb, self.pc)
 		return self:barycentric(a + ra, b + rb, c + rc)
-	elseif n == 213 then
+	elseif n == 181 then
+	  return self:trilinear((a * (b + c) ^ 2) / (b + c - a), (b * (c + a) ^ 2) / (c + a - b), (c * (a + b) ^ 2) / (a + b - c))--apollonius point
+  elseif n == 213 then
 		return self:trilinear((b + c) * a ^ 2, (c + a) * b ^ 2, (a + b) * c ^ 2)
 	elseif n == 264 then
 		return self:barycentric(1 / sin(2 * A), 1 / sin(2 * B), 1 / sin(2 * C))
@@ -1118,7 +1110,36 @@ function triangle:mixtilinear_incircle(arg)
 	return circle(W, P1)
 end
 
+function triangle:feuerbach_apollonius(EPS)
+	EPS = EPS or tkz.epsilon
+	-- 1. Points de Feuerbach
+	 local Ea, Eb, Ec = self:feuerbach():get()
+	-- -- 2. Excentre Ja
+	local C_JaEa = self:ex_circle()
+	-- 4. Spieker center
+	local S = self.spiekercenter
+	-- 5. Cercle orthogonal
+	local Cortho = C_JaEa:orthogonal_from(S)
+	-- 6. Cercle d'Euler
+	local Ceuler = self:euler_circle()
+	-- 7. Inversion du cercle
+	local InvEuler = Cortho:inversion(Ceuler)
+	local O = InvEuler.center
+	-- 8. Points inversés
+	local xa, xb, xc = Cortho:inversion(Ea, Eb, Ec)
+  return circle:new(O, xa)
+end
 
+function triangle:feuerbach_apollonius_k181(EPS)
+	EPS = EPS or tkz.epsilon
+	local Ea, Eb, Ec = self:feuerbach():get() --Feuerbach points
+	local A = self:kimberling(181)-- Apollonius point
+	local S = self.spiekercenter
+  local xa = intersection_ll_(self.pa,A,S,Ea)
+	local xb = intersection_ll_(self.pb,A,S,Eb)
+	local xc = intersection_ll_(self.pc,A,S,Ec)
+	return circle:new(circum_circle_(xa, xb, xc))
+end
 
 -------------------
 -- Result -> triangle
