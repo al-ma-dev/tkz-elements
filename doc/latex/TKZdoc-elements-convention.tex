@@ -43,7 +43,7 @@ However, the recommended approach is to define the segment first with:
 
 |L.AB = line(z.A, z.B)|, and then use the attribute:
 
-|z.m = line(z.A, z.B).mid|. If you don't reuse the line, a one-liner like |z.m = line(z.A, z.B).mid| is acceptable.
+|z.m = L.AB.mid|. If you don't reuse the line, a one-liner like |z.m = line(z.A, z.B).mid| is acceptable.
 
 \vspace{12pt}
 Similarly, it may have been tempting to write |L.bi = tkz.bisector(z.A, z.B, z.C)| to obtain the angle bisector at vertex $A$. As in the previous example, this is no longer valid. You must now use:
