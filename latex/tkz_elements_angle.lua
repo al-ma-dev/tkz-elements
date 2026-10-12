@@ -6,20 +6,33 @@
 angle = {}
 angle.__index = angle
 
+-- angle(ps, pa, pb): angle at the vertex ps, from the ray [ps pa] to the
+-- ray [ps pb]. All the values are computed at creation.
 function angle:new(ps, pa, pb)
-  local raw  = get_angle_(ps, pa, pb)       -- angle orienté, peut être négatif
-  local norm = angle_normalize_(raw)        -- angle orienté normalisé [0, 2π)
-  local value = math.abs(raw)
+  local pts = { ps, pa, pb }
+  for i = 1, 3 do
+    local p = pts[i]
+    if type(p) ~= "table" or p.type ~= "point" then
+      error("tkz-elements: angle: argument #" .. i .. " must be a point", 2)
+    end
+  end
+  if point.abs(pa - ps) <= tkz.epsilon or point.abs(pb - ps) <= tkz.epsilon then
+    error("tkz-elements: angle: the angle is undefined (a point is identical to the vertex)", 2)
+  end
+  local raw  = get_angle_(ps, pa, pb)       -- oriented angle, in (-pi, pi]
+  local norm = angle_normalize_(raw)        -- oriented angle, in [0, 2pi)
+  local value = math.abs(raw)               -- non-oriented angle, in [0, pi]
   local deg = math.deg(value)
 
   local obj = {
-    ps   = ps,      -- sommet
-    pa   = pa,      -- premier point
-    pb   = pb,      -- second point
-    raw  = raw,     -- angle orienté brut
-    norm = norm,    -- angle normalisé
-    value = value,
-    deg = deg
+    type = "angle",
+    ps   = ps,      -- vertex
+    pa   = pa,      -- point of the first ray
+    pb   = pb,      -- point of the second ray
+    raw  = raw,     -- oriented angle
+    norm = norm,    -- normalized oriented angle
+    value = value,  -- non-oriented angle (radians)
+    deg = deg       -- non-oriented angle (degrees)
   }
   return setmetatable(obj, self)
 end
@@ -30,17 +43,14 @@ setmetatable(angle, {
   end
 })
 
--- Récupérer les points de définition
+-- The defining points: vertex, first point, second point
 function angle:get()
   return self.ps, self.pa, self.pb
 end
 
--- L’angle est direct si raw > 0
+-- The angle is direct if raw > 0
 function angle:is_direct()
   return self.raw > 0
 end
-
-
-
 
 return angle

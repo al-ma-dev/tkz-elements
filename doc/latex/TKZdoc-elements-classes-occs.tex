@@ -158,11 +158,15 @@ This class provides the following methods:
 \midrule
 \texttt{Constructor} &    \\
 \midrule
-\tkzMeth{occs}{occs(dir, origin)} & \ref{ssub:example_attributes_of_occs}] \\
+\tkzMeth{occs}{occs(L, pt)} & [\ref{occs:new}] \\
 \midrule
 \texttt{Methods Returning a Real Number} &    \\
 \midrule
 \tkzMeth{occs}{coordinates(pt)}  & [\ref{occs:coordinates}] \\
+\midrule
+\texttt{Methods Returning a Point} &    \\
+\midrule
+\tkzMeth{occs}{point(u, v)}  & [\ref{occs:point}] \\
 \bottomrule
 \end{tabular}
 \egroup
@@ -246,7 +250,6 @@ L.MN = line(z.M, z.N)
 sys = occs(L.MN, z.M)
 z.U = sys.x
 z.V = sys.y
-L.MV = line(z.M, z.V)
 L.MU = line(z.M, z.U)
 local a, b, c = tkz.parabola(point(sys:coordinates(z.A)),
                              point(sys:coordinates(z.B)),
@@ -259,9 +262,8 @@ xf = - b / (2 * a)
 yf = (4 * a * c - b ^ 2 + 1) / (4 * a)
 xk = xf
 yk = (4 * a * c - (b ^ 2) - 1) / (4 * a)
-z.K = L.MV:report(yk, L.MU:report(xk))
-z.f = L.MU:report(xf)
-z.F = L.MV:report(yf, z.f)
+z.K = sys:point(xk, yk)
+z.F = sys:point(xf, yf)
 L.dir = L.MU:ll_from(z.K)
 PA = conic(z.F, L.dir, 1)
 curve = PA:points(-3, 3, 30)
@@ -275,6 +277,31 @@ curve = PA:points(-3, 3, 30)
  \tkzLabelPoints(A,B,U,V)
  \tkzLabelPoints[above](M,N,C)
 \end{tikzpicture}
+
+\subsection{Method \tkzMeth{occs}{point(u, v)}}\label{occs:point}
+
+This method is the inverse of \tkzMeth{occs}{coordinates(pt)}: it returns the
+point whose coordinates in the system are \code{(u, v)}.
+For any point \code{P}, \code{O.sys:point(O.sys:coordinates(P))} gives \code{P}.
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(3, 1)
+ z.S = point(1, 1)
+ L.AB = line(z.A, z.B)
+ O.sys = occs(L.AB, z.S)
+ z.u, z.v = O.sys.x, O.sys.y
+ z.P = O.sys:point(2, 1)}
+\begin{tikzpicture}
+ \tkzGetNodes
+ \tkzDrawLines[purple](A,B)
+ \tkzDrawSegments[thick,->](S,u S,v)
+ \tkzDrawPoints(A,B,S,P)
+ \tkzLabelPoints(A,B,S,u,v,P)
+\end{tikzpicture}
+\end{tkzexample}
 
 \subsection{Example: Using \texttt{occs} with a parabola}
 

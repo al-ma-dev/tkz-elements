@@ -68,7 +68,7 @@ The \tkzClass{fct} class offers a compact set of methods, centered around:
 \texttt{Creation} & \\
 \midrule
 \tkzFct{fct}{new(expr\_or\_fn)}   & [\ref{ssub:method_fct_new}] \\
-\tkzFct{fct}{compile(expr)}      & [\ref{ssub:method_fct_compile}] \\
+\tkzMeth{fct}{compile()}      & [\ref{ssub:method_fct_compile}] \\
 \midrule
 \texttt{Reals / evaluation} & \\
 \midrule
@@ -79,6 +79,11 @@ The \tkzClass{fct} class offers a compact set of methods, centered around:
 \tkzMeth{fct}{set\_scale(x)}     & [\ref{ssub:method_fct_set_scale}] \\
 \tkzMeth{fct}{point(x)}     & [\ref{ssub:method_fct_point}] \\
 \tkzMeth{fct}{path(xmin,xmax,n)}   & [\ref{ssub:method_fct_path}] \\
+\midrule
+\texttt{Tangents} & \\
+\midrule
+\tkzMeth{fct}{tangent(x0,<h>,<tol>)} & [\ref{ssub:fct_tangent}] \\
+\tkzMeth{fct}{half\_tangents(x0,<h>)} & [\ref{ssub:method_fct_half_tangents}] \\
 \bottomrule
 \end{tabular}
 \egroup
@@ -89,7 +94,7 @@ The \tkzClass{fct} class offers a compact set of methods, centered around:
 \texttt{Description: }Creates a function object from either a Lua expression
 (string) or a callable Lua function. When a string is provided, it represents
 an expression in the variable \texttt{x}, evaluated using standard Lua rules
-(therefore requiring \texttt{math.} prefixes).
+(without the \texttt{math.} prefix, see above). An invalid expression raises an error when the object is created.
 
 \medskip
 \texttt{Arguments: }\par
@@ -109,25 +114,19 @@ an expression in the variable \texttt{x}, evaluated using standard Lua rules
 \begin{verbatim}
 \directlua{
   init_elements()
-  F.f = fct:new("x*math.exp(-x^2)+1")
-  tex.print(F.f:value(0))
+  F.f = fct("x*exp(-x^2)+1")
+  tex.print(F.f:eval(0))
 }
 \end{verbatim}
 
 
 
-\subsubsection{Function \tkzFct{fct}{compile(expr)}}
+\subsubsection{Method \tkzMeth{fct}{compile()}}
 \label{ssub:method_fct_compile}
 
-\texttt{Description: }Compiles an expression and returns a callable Lua function
-(or wraps it into a \tkzClass{fct}, depending on the implementation). This is a
-low-level helper mainly intended for internal use.
-
-\medskip
-\texttt{Argument: } \code{expr} (string, expression in variable \texttt{x}). \qquad
-
-\medskip
-\texttt{Returns: } a callable function or a \tkzClass{fct} object (depending on implementation).
+\texttt{Description: }Returns the Lua function $x \mapsto f(x)$ (the expression is
+compiled when the object is created). This is a low-level helper mainly intended
+for internal use.
 
 \subsubsection{Method \tkzMeth{fct}{eval(x)}}
 \label{ssub:method_fct_value}
@@ -136,6 +135,7 @@ low-level helper mainly intended for internal use.
 
 \medskip
 \texttt{Returns: } a number (which may be \texttt{nan} or infinite if the expression is not defined).
+\tkzMeth{fct}{point}, \tkzMeth{fct}{tangent} and \tkzMeth{fct}{half\_tangents} raise an error when $f$ is not defined at the point.
 
 \begin{verbatim}
   init_elements()

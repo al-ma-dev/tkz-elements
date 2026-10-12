@@ -9,6 +9,10 @@
 square = {}
 square.__index = square
 function square:new(pa, pb, pc, pd)
+	if not (is_point_(pa) and is_point_(pb) and is_point_(pc) and is_point_(pd)) then
+		-- level 2: __call is a tail call (return cls:new(...))
+		error("tkz-elements: square: four points are expected", 2)
+	end
 	local type = "square"
 	local side = point.abs(pb - pa)
 	local center = midpoint_(pa, pc)
@@ -56,8 +60,12 @@ setmetatable(square, {
 	end,
 })
 
-function square:get()
-	return self.pa, self.pb, self.pc, self.pd
+-- get() returns the four vertices ; get(i) returns the i-th vertex (1 to 4)
+function square:get(i)
+	if i == nil then
+		return self.pa, self.pb, self.pc, self.pd
+	end
+	return ({ self.pa, self.pb, self.pc, self.pd })[i]
 end
 
 

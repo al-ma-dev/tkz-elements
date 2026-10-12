@@ -9,6 +9,9 @@ line = {}
 line.__index = line
 -- Function to create a new line object with two points za and zb.
 function line:new(za, zb)
+  if type(za) ~= "table" or za.type ~= "point" or type(zb) ~= "table" or zb.type ~= "point" then
+    error("tkz-elements: line: two points are expected", 2)
+  end
   local type = "line"
   local mid = (za + zb) / 2
   local north_pa = rotation_(za, math.pi / 2, zb)
@@ -78,12 +81,6 @@ end
 
 
 
--- --- new canonical API --------------------------------------------
--- Returns "on" or "outside"
--- function line:position(p, EPS)
-  -- return line_on_(self.pa, self.pb, p, EPS) and "ON" or "OUT"
--- end
---
 -- -- --- legacy API (compat)
 function line:position(obj, EPS)
   EPS = EPS or tkz.epsilon
@@ -173,7 +170,7 @@ function line_line_position_(L1, L2, EPS)
   EPS = EPS or tkz.epsilon
 
   if is_parallel_(L1.pa, L1.pb, L2.pa, L2.pb) then
-    -- parallèles ou identiques
+    -- parallel or identical
     if line_on_(L1.pa, L1.pb, L2.pa, EPS) then
       return "IDENTICAL"
     else
@@ -192,7 +189,7 @@ end
 -- Returns a point on the line to a distance d from pa (optionally modified by pt).
 function line:report(d, pt)
   if not self.length or math.abs(self.length) < tkz.epsilon then
-    tex.error("self.length must be non-zero")
+    error("tkz-elements: line:report: the line is degenerate (its two points are identical)", 2)
   end
   local t = d / self.length
   local result = barycenter_({ self.pa, 1 - t }, { self.pb, t })
@@ -236,13 +233,13 @@ end
 --   L:harmonic("int",  pt)       --> internal harmonic conjugate of pt
 --   L:harmonic("ext",  pt)       --> external harmonic conjugate of pt
 function line:harmonic(mode, arg)
-  -- si le premier argument n'est pas une chaîne, on suppose mode = "both"
+  -- if the first argument is not a string, mode = "both"
   if type(mode) ~= "string" then
-    if mode == "int" then mode = "internal" end
-    if mode == "ext" then mode = "external" end
     arg  = mode
     mode = "both"
   end
+  if mode == "int" then mode = "internal" end
+  if mode == "ext" then mode = "external" end
 
 
   if mode == "internal" then
@@ -255,8 +252,8 @@ function line:harmonic(mode, arg)
     return div_harmonic_both_(self.pa, self.pb, arg)
 
   else
-    tex.error("line:harmonic -> invalid mode: use 'internal', 'external' or 'both'")
-    return
+    error("tkz-elements: line:harmonic: invalid mode " .. tostring(mode)
+      .. " (use \"internal\", \"external\" or \"both\")", 2)
   end
 end
 
@@ -283,7 +280,7 @@ function line:collinear_at(pt, k)
   if type(k) == "table" then
     local L = k.length or k.len
     if not L then
-       -- pas de longueur fournie : on retombe sur le comportement par défaut
+       -- no length given: default behaviour
        return collinear_at_(self.pa, self.pb, pt, 1)
      end
      return collinear_at_(self.pa, self.pb, pt, L / self.length)
@@ -301,7 +298,7 @@ function line:orthogonal_at(pt, k)
   if type(k) == "table" then
      local L = k.length or k.len
      if not L then
-       -- pas de longueur fournie : on retombe sur le comportement par défaut
+       -- no length given: default behaviour
        return orthogonal_at_(self.pa, self.pb, pt, 1)
      end
      return orthogonal_at_(self.pa, self.pb, pt, L / self.length)
@@ -371,10 +368,6 @@ function line:circle(swap)
   else
     return circle:new(self.pa, self.pb)
   end
-end
-
-function line:circle_swap()
-  return circle:new(self.pb, self.pa)
 end
 
 function line:diameter()
@@ -499,9 +492,8 @@ function line:s_a(a, phi, swap)
   local y = report_(self.pa, self.pb, a)
   local u, v = intersection_lc_(self.pb, x, self.pa, y)
 
-  if not u then -- Pas d'intersection
-    tex.error("Invalid configuration. No solution found.")
-    return nil
+  if not u then -- no intersection
+    error("tkz-elements: line:s_a: no solution for these data", 2)
   end
 
   if point.mod(u - v) < tkz.epsilon then -- Solution unique
@@ -515,8 +507,7 @@ function line:s_a(a, phi, swap)
 
   if swap == "swap" then
     if point.mod(v - self.pb) < tkz.epsilon then
-      tex.error("Degenerated triangle.")
-      return nil
+      error("tkz-elements: line:s_a: the second solution is a degenerate triangle", 2)
     else
       return triangle:new(self.pa, self.pb, v)
     end
@@ -531,9 +522,8 @@ function line:a_s(a, phi, swap)
   local y = report_(self.pb, self.pa, a)
   local u, v = intersection_lc_(self.pa, x, self.pb, y)
 
-  if not u then -- No intersection
-    tex.error("Invalid configuration. No solution found.")
-    return nil
+  if not u then -- no intersection
+    error("tkz-elements: line:a_s: no solution for these data", 2)
   end
 
   if point.mod(u - v) < tkz.epsilon then -- One-stop solution
@@ -547,8 +537,7 @@ function line:a_s(a, phi, swap)
 
   if swap == "swap" then
     if point.mod(v - self.pa) < tkz.epsilon then
-      tex.error("Degenerated triangle.")
-      return nil
+      error("tkz-elements: line:a_s: the second solution is a degenerate triangle", 2)
     else
       return triangle:new(self.pa, self.pb, v)
     end
@@ -639,7 +628,7 @@ line.isis = line.egyptian
 line.golden_gnomon = line.divine
 
 ------------------------------
--- Résultat -> carré
+-- Result -> square
 ------------------------------
 function line:square(swap)
   return square_from_side_(self.pa, self.pb, swap)
@@ -649,211 +638,75 @@ end
 -- Transformations
 -------------------
 
--- Translation of a given point in the direction of the line (pb - pa)
-function line:translation_pt(pt)
-  return translation_(self.pb - self.pa, pt)
-end
-
--- Translation of a circle object in line direction
-function line:translation_C(obj)
-  local pa = obj.center
-  local pb = obj.through
-  local x, y = set_translation_(self.pb - self.pa, pa, pb)
-  return circle:new(x, y)
-end
-
---Translation of a triangle object in line direction
-function line:translation_T(obj)
-  local pa = obj.pa
-  local pb = obj.pb
-  local pc = obj.pc
-  local x, y, z = set_translation_(self.pb - self.pa, pa, pb, pc)
-  return triangle:new(x, y, z)
-end
-
--- Translation of a line object along the line direction
-function line:translation_L(obj)
-  local pa = obj.pa
-  local pb = obj.pb
-  local x, y = set_translation_(self.pb - self.pa, pa, pb)
-  return line:new(x, y)
-end
-
--- General function for translating one or more objects
+-- Translation by the vector pb - pa.
+-- z.B = L:translation(z.A) ; C.new = L:translation(C.old)
+-- z.B, L.new, T.new = L:translation(z.A, L.AB, T.ABC)
 function line:translation(...)
-  local tp = table.pack(...) -- Groups all arguments in a table
-  local obj = tp[1] -- The first object is retrieved
-  local nb = tp.n -- Number of objects to be processed
+  local u = self.pb - self.pa
+  return map_objects_(function(p) return translation_(u, p) end, "line:translation", ...)
+end
 
-  --If only one object is passed
-  if nb == 1 then
-    if obj.type == "point" then
-      return translation_(self.pb - self.pa, obj)
-    elseif obj.type == "line" then
-      return self:translation_L(obj)
-    elseif obj.type == "triangle" then
-      return self:translation_T(obj)
-    elseif obj.type == "circle" then
-      return self:translation_C(obj)
-    else
-      tex.error("Unsupported object type for translation")
-    end
-  else
-    -- If several objects are passed, they are translated one by one
-    local t = {}
-    for i = 1, nb do
-      -- Translation of each object with the translation vector
-      table.insert(t, translation_(self.pb - self.pa, tp[i]))
-    end
-    return table.unpack(t) --Returns translated objects
+-- Arguments that must be points (projection, affinity): an object
+-- would not keep its class (a projected triangle is not a triangle).
+local function check_point(p, name)
+  if type(p) ~= "table" or p.type ~= "point" then
+    local got = type(p) == "table" and tostring(p.type) or type(p)
+    error("tkz-elements: " .. name .. ": expected a point, got a " .. got, 3)
   end
 end
 
--- Function for translating an object using line direction
-function line:set_translation(...)
-  return set_translation_(self.pb - self.pa, ...)
-end
-
-function line:projection_ll(...)
-  local tp = table.pack(...)
-  local c, d = tp[1].pa, tp[1].pb -- c and d are the two points that define the projection line
-  local obj = tp[2] -- The object to be projected
-  local nb = tp.n -- Number of objects passed as parameters
-
-  if nb == 2 then
-    --Projection of line onto object
-    return projection_ll_(self.pa, self.pb, c, d, obj)
-  else
-    local t = {}
-    for i = 2, tp.n do
-      -- Projection of each object on the line
-      table.insert(t, projection_ll_(self.pa, self.pb, c, d, tp[i]))
-    end
-    return table.unpack(t) -- Retourne les résultats de la projection pour tous les objets
+local function check_line(L, name)
+  if type(L) ~= "table" or L.type ~= "line" then
+    error("tkz-elements: " .. name .. ": the first argument must be a line", 3)
   end
 end
 
-function line:set_projection_ll(...)
-  local tp = table.pack(...)
-  local c, d = tp[1].pa, tp[1].pb -- c and d are the two points defining the projection line
+-- Projection onto self, parallel to the line L.
+-- z.H = L.AB:projection_ll(L.CD, z.M) ; z.H, z.K = L.AB:projection_ll(L.CD, z.M, z.N)
+function line:projection_ll(L, ...)
+  check_line(L, "line:projection_ll")
+  local n = select("#", ...)
   local t = {}
-
-  for i = 2, tp.n do
-    -- Projection de chaque objet sur la ligne
-    table.insert(t, projection_ll_(self.pa, self.pb, c, d, tp[i]))
+  for i = 1, n do
+    local p = select(i, ...)
+    check_point(p, "line:projection_ll")
+    t[i] = projection_ll_(self.pa, self.pb, L.pa, L.pb, p)
   end
-  return table.unpack(t) -- Returns projection results for all objects
+  return table.unpack(t, 1, n)
 end
 
+-- Orthogonal projection onto self.
+-- z.H = L.AB:projection(z.M) ; z.H, z.K = L.AB:projection(z.M, z.N)
 function line:projection(...)
-  local tp = table.pack(...) -- Groups arguments in a table
-  local obj = tp[1] -- Retrieves the first object
-  local nb = tp.n -- Number of objects to be processed
-
-  -- If only one object is passed
-  if nb == 1 then
-    return projection_(self.pa, self.pb, obj) -- Projects object onto line
-  else
-    local t = {}
-    -- If several objects are passed, each is projected onto the line
-    for i = 1, tp.n do
-      table.insert(t, projection_(self.pa, self.pb, tp[i])) -- Projection of each object
-    end
-    return table.unpack(t) --Return projections
-  end
-end
-
-function line:set_projection(...)
-  local tp = table.pack(...) -- Groups arguments in a table
+  local n = select("#", ...)
   local t = {}
-  -- Projects each object onto the line
-  for i = 1, tp.n do
-    table.insert(t, projection_(self.pa, self.pb, tp[i])) --Projection of each object
+  for i = 1, n do
+    local p = select(i, ...)
+    check_point(p, "line:projection")
+    t[i] = projection_(self.pa, self.pb, p)
   end
-  return table.unpack(t) -- Return projections
+  return table.unpack(t, 1, n)
 end
 
-function line:symmetry_axial_L(obj)
-  local pa = obj.pa
-  local pb = obj.pb
-  local x, y = self:set_reflection(pa, pb)
-  return line:new(x, y)
-end
-
-function line:symmetry_axial_T(obj)
-  local pa = obj.pa
-  local pb = obj.pb
-  local pc = obj.pc
-  local x, y, z = self:set_reflection(pa, pb, pc)
-  return triangle:new(x, y, z)
-end
-
-function line:symmetry_axial_C(obj)
-  local pa = obj.center
-  local pb = obj.through
-  local x, y = self:set_reflection(pa, pb)
-  return circle:new(x, y)
-end
-
+-- Reflection (axial symmetry) about the line.
+-- z.B = L:reflection(z.A) ; T.new = L:reflection(T.ABC)
+-- z.B, L.new, T.new = L:reflection(z.A, L.AB, T.ABC)
 function line:reflection(...)
-  local tp = table.pack(...)
-  local obj = tp[1]
-  local nb = tp.n
-
-  if nb == 1 then
-    if obj.type == "point" then
-      return symmetry_axial_(self.pa, self.pb, obj)
-    elseif obj.type == "line" then
-      return self:symmetry_axial_L(obj)
-    elseif obj.type == "triangle" then
-      return self:symmetry_axial_T(obj)
-    elseif obj.type == "circle" then
-      return self:symmetry_axial_C(obj)
-    else
-      tex.error("Unsupported object type for reflection")
-    end
-  else
-    local t = {}
-    for i = 1, tp.n do
-      table.insert(t, symmetry_axial_(self.pa, self.pb, tp[i]))
-    end
-    return table.unpack(t)
-  end
+  local pa, pb = self.pa, self.pb
+  return map_objects_(function(p) return symmetry_axial_(pa, pb, p) end, "line:reflection", ...)
 end
 
-function line:set_reflection(...)
-  return set_symmetry_axial_(self.pa, self.pb, ...)
-end
-
-function line:affinity(...)
-  local tp = table.pack(...)
-  local c, d = tp[1].pa, tp[1].pb
-  local k = tp[2]
-  local obj = tp[3]
-  local nb = tp.n
-  if nb == 3 then
-    return affinity_(self.pa, self.pb, c, d, k, obj)
-  else
-    local t = {}
-    for i = 3, tp.n do
-      table.insert(t, affinity_(self.pa, self.pb, c, d, k, tp[i]))
-    end
-    return table.unpack(t)
-  end
-end
-
-function line:set_affinity(...)
-  local tp = table.pack(...) -- Gather all arguments passed to table tp
-  local c, d = tp[1].pa, tp[1].pb --Extract the two points of the reference line (tp[1])
-  local k = tp[2] -- The affinity coefficient
-  local t = {}
-
-  -- Apply affinity for each object passed in parameter (from 3rd object upwards)
-  for i = 3, tp.n do
-    table.insert(t, affinity_(self.pa, self.pb, c, d, k, tp[i])) --Apply affinity to each object
-  end
-
-  return table.unpack(t) --Returns transformed objects
+-- Affinity with axis self, direction L and ratio k.
+-- Each argument may be a point or an object: a line, a triangle, a
+-- quadrilateral and a parallelogram keep their class; a square and a
+-- rectangle become parallelograms; a circle and an ellipse become an
+-- ellipse (or a circle).
+-- z.P = L.AB:affinity(L.CD, k, z.M) ; CO.E = L.AB:affinity(L.CD, k, C.OA)
+function line:affinity(L, k, ...)
+  check_line(L, "line:affinity")
+  local f = function(p) return affinity_(self.pa, self.pb, L.pa, L.pb, k, p) end
+  local t, n = affine_objects_(f, "line:affinity", false, math.abs(k) <= tkz.epsilon, ...)
+  return table.unpack(t, 1, n)
 end
 
 function line:path(nb)
@@ -870,8 +723,8 @@ end
 ---  =====   CONTACT PROBLEM APOLLONIUS ===---
 --- LLL   LLP   LPP
 
--- which ∈ {"all","in","pa","pb","pc"}   -- comme triangle:c_lll
--- "all" (défaut) : renvoie 4 cercles (inscrit + 3 exinscrits)
+-- which in {"all","in","pa","pb","pc"}   -- as triangle:c_lll
+-- "all" (default): returns 4 circles (incircle + 3 excircles)
 -- line: LLL — circles tangent to three lines (self, L1, L2)
 -- Return value (like CLL): centers_path, through_path, n
 function line:LLL(L1, L2, which)
@@ -970,7 +823,7 @@ function line:LLL(L1, L2, which)
     local dir   = P.pb - P.pa
     local M     = line:new(mpt, mpt + dir)
 
-    -- Offsets of R at ±r
+    -- Offsets of R at +-r
     local Rp = R:collinear_at_distance( r)
     local Rm = R:collinear_at_distance(-r)
 
@@ -985,7 +838,7 @@ function line:LLL(L1, L2, which)
     return pa_center, pa_through, n
   end
 
-  -- === Case 3: degenerate (≥ 2 parallel pairs) -> no unique circle
+  -- === Case 3: degenerate (at least 2 parallel pairs) -> no unique circle
   return pa_center, pa_through, 0
 end
 --- === END ===
@@ -994,7 +847,7 @@ end
 --===================================================
 -- LPP (paths) — Circle tangent to self (a line) and
 --               passing through two points a, b
--- Sortie unifiée : PA.center, PA.through, n
+-- Output: PA.center, PA.through, n
 --===================================================
 function line:LPP(a, b)
   -- Paths de sortie
@@ -1009,13 +862,13 @@ function line:LPP(a, b)
     end
   end
 
-  -- Données de base
+  -- Data
   local lab  = line:new(a, b)              -- droite (a,b)
-  local Cab  = circle:diameter(a, b)       -- cercle de diamètre [a,b]
+  local Cab  = circle:diameter(a, b)       -- circle with diameter [a,b]
   local i    = intersection(lab, self)     -- intersection (ab) ∩ self
 
 
-  -- 1) Un des points est sur la droite self (un seul cercle)
+  -- 1) One of the points is on the line self (a single circle)
   --    NB: on conserve ta logique avec in_out() telle quelle.
   if (self:on_line(a)) and (not self:on_line(b) )then
   local lmed = lab:mediator()
@@ -1032,7 +885,7 @@ function line:LPP(a, b)
     return pa_center, pa_through, n
   end
 
-  -- 2) (ab) ⟂ self
+  -- 2) (ab) orthogonal to self
   if self:is_orthogonal(lab) and i then
     local m  = lab.mid
     local r  = length_(m, i)
@@ -1048,20 +901,20 @@ function line:LPP(a, b)
     local mid  = midpoint_(a, b)
     local proj = self:projection(mid)
     local o    = circum_center_(a, b, proj)
-    push(o, proj)            -- une seule solution (centre sur médiatrice, rayon = proj→a)
+    push(o, proj)            -- a single solution (center on the perpendicular bisector, radius = proj-a)
     return pa_center, pa_through, n
   end
 
-  -- Cas dégénéré : i existe et est sur le segment [a,b] → aucune solution
+  -- Degenerate case: i exists and is on the segment [a,b] -> no solution
   if i and lab:on_segment(i) then
     return pa_center, pa_through, n
   end
 
-  -- 4) Cas général (deux solutions en général)
+  -- 4) General case (two solutions in general)
   if i then
-    local tpt   = Cab:tangent_from(i).pb          -- point de tangence sur Cab
-    local circ  = circle:new(i, tpt)               -- cercle (i, tpt)
-    local x, y  = intersection(self, circ)         -- tangences sur self
+    local tpt   = Cab:tangent_from(i).pb          -- point of tangency on Cab
+    local circ  = circle:new(i, tpt)               -- circle (i, tpt)
+    local x, y  = intersection(self, circ)         -- points of tangency on self
 
     if x then
       local o1 = intersection(self:ortho_from(x), lab:mediator())
@@ -1082,9 +935,8 @@ line.c_l_pp = line.LPP
 --=============================================
 
 --===================== c_LLP (paths) =================--
--- Cercles tangents à self et L, passant par p
+-- Circles tangent to self and L, through p
 -- Retour : PA.center, PA.through, n
--- (port fidèle de ton ancien code, sans changer l'algo)
 --=====================================================--
 function line:LLP(L, p)
   -- Conteneurs de solutions (paths)
@@ -1139,7 +991,7 @@ function line:LLP(L, p)
   end
   -- ======= FIN PARALLÈLES =======
 
-  -- ======= CAS SÉCANTS =======
+  -- ======= SECANT LINES =======
   local s    = intersection_ll_(self.pa, self.pb, L.pa, L.pb)
   local caux = circle:new(through(s, 2))
   local a, b = intersection_lc_(self.pa, self.pb, s, caux.through)
@@ -1147,7 +999,7 @@ function line:LLP(L, p)
   local lbi  = tkz.bisector(s, a, c)
   local lbj  = tkz.bisector(s, a, d)
 
-  -- ======= CAS SPÉCIAUX : p sur une des droites =======
+  -- ======= SPECIAL CASES: p on one of the lines =======
   if self:on_line(p) or L:on_line(p) then
     if self:on_line(p) and L:on_line(p) then
       return pa_center, pa_through, 0
@@ -1176,9 +1028,9 @@ function line:LLP(L, p)
       return pa_center, pa_through, n
     end
   end
-  -- ======= FIN CAS SPÉCIAUX =======
+  -- ======= END OF SPECIAL CASES =======
 
-  -- --- p sur une bissectrice ---
+  -- --- p on a bisector ---
   if lbi:on_line(p) or lbj:on_line(p) then
     local bis = lbi:on_line(p) and lbi or lbj
     local lp  = bis:ortho_from(p)
@@ -1198,7 +1050,7 @@ function line:LLP(L, p)
     return pa_center, pa_through, n
   end
 
-  -- --- cas général ---
+  -- --- general case ---
   local u = lbi:reflection(p)
   local v = lbj:reflection(p)
   local sp = self:side_line(p)
@@ -1209,10 +1061,10 @@ function line:LLP(L, p)
   push_from_paths(centers, throughs, m)
 
   return pa_center, pa_through, n
-  -- ======= FIN SÉCANTS =======
+  -- ======= END OF SECANT LINES =======
 end
 
--- alias conservé
+-- alias retained
 line.c_ll_p = line.LLP
 
 

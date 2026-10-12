@@ -41,24 +41,36 @@
 conic = {}
 conic.__index = conic
 function conic:new(Fa, Di, ecc) -- focus, directrix, eccentricity
+	if type(Fa) ~= "table" or Fa.type ~= "point" then
+		error("tkz-elements: conic: the first argument (focus) must be a point", 2)
+	end
+	if type(Di) ~= "table" or Di.type ~= "line" then
+		error("tkz-elements: conic: the second argument (directrix) must be a line", 2)
+	end
+	if type(ecc) ~= "number" or ecc <= 0 then
+		error("tkz-elements: conic: the eccentricity must be a positive number", 2)
+	end
+	if Di:distance(Fa) < tkz.epsilon then
+		error("tkz-elements: conic: the focus must not lie on the directrix", 2)
+	end
 	local type = "conic"
 	local e = ecc
-	local subtype = get_subtype(e)
+	local subtype = get_subtype_(e)
 	local K = projection_(Di.pa, Di.pb, Fa)
 	local h = length_(K, Fa)
-	local a = get_a(h, e)
-	local b = get_b(h, e) -- only hy and el
-	local c = get_c(h, e)
+	local a = get_a_(h, e)
+	local b = get_b_(h, e) -- only hy and el
+	local c = get_c_(h, e)
 	local p = e * h -- demi latus rectum if hy and el b^2/a
 	local slope = slope_(K, Fa)
 	local major_axis = line:new(K, Fa)
 	local directrix = Di
-	local vertex = get_vertex(Fa, K, e, h)
+	local vertex = get_vertex_(Fa, K, e, h)
 	-- pb No center, no covertex, no Fb with parabola
-	local center = conic_center(Fa, K, e, h)
-	local Fb = next_focus(Fa, K, e, h)
-	local covertex = get_covertex(Fa, K, e, h)
-	local minor_axis = get_minor_axis(Fa, K, e, h)
+	local center = conic_center_(Fa, K, e, h)
+	local Fb = next_focus_(Fa, K, e, h)
+	local covertex = get_covertex_(Fa, K, e, h)
+	local minor_axis = get_minor_axis_(Fa, K, e, h)
 	local o = {
 		type = type,
 		subtype = subtype,
@@ -132,17 +144,16 @@ function conic:point(t, swap)
 	if not swap then
 		return get_one_point_conic_(self, t)
 	else
-		return get_one_point_hyperbola_ii(self, t)
+		return get_one_point_hyperbola_ii_(self, t)
 	end
 end
 
 function conic:antipode(pt)
 	local e = self.e
 	if math.abs(e - 1) < tkz.epsilon then
-		tex.error("Undefined antipode for a parabola.")
-	else
-		return 2 * self.center - pt
+		error("tkz-elements: conic:antipode: undefined for a parabola", 2)
 	end
+	return 2 * self.center - pt
 end
 
 function conic:tangent_at(pt) -- actually  only parabola
@@ -166,41 +177,46 @@ function conic:tangent_at(pt) -- actually  only parabola
 	return line:new(u, v)
 end
 
--- Intersection entre une parabole et une droite
-function conic:inter_Pa_line(pa, pb)
+-- Intersection of a parabola and a line (internal).
+-- Returns two points, one point (line parallel to the axis) or nothing.
+function conic:inter_Pa_line_(pa, pb, EPS)
+	EPS = EPS or tkz.epsilon
 	local function solve_para_line(p, m, n)
 		return tkz.solve_quadratic_(1, -2 * p * m, -2 * p * n)
 	end
 
-	-- Crée un système de coordonnées basé sur l'axe majeur et le sommet de la parabole
+	-- coordinate system based on the axis and the vertex of the parabola
 	local sys = occs:new(self.major_axis, self.vertex)
 
-	-- Calcule les coordonnées des points pa et pb dans ce système
+	-- coordinates of pa and pb in this system
 	local Xa, Ya = sys:coordinates(pa)
 	local Xb, Yb = sys:coordinates(pb)
 
-	-- Résout l'intersection entre la parabole et la droite définie par les points pa et pb
+	-- line parallel to the axis: a single intersection point
+	if math.abs(Xa - Xb) < EPS then
+		return self:point(Xa)
+	end
+
+	-- solve the intersection of the parabola and the line (pa, pb)
 	local r1, r2 = solve_para_line(self.h, tkz.line_coefficients(Xa, Ya, Xb, Yb))
-	-- Si les résultats de l'intersection sont invalides (false), retourne deux faux
-	if r1 == false then
-		local s1 = false
-		local s2 = false
+	if not r1 then
+		return nil, nil -- no intersection
+	end
+	local s1, s2 = self:point(r1), self:point(r2)
+
+	-- points sorted by increasing distance from pa
+	if length_(pa, s1) < length_(pa, s2) then
 		return s1, s2
 	else
-		-- Sinon, calcule les points d'intersection
-		local s1, s2 = self:point(r1), self:point(r2)
-
-		-- Retourne les points d'intersection dans l'ordre croissant de distance par rapport à pa
-		if length_(pa, s1) < length_(pa, s2) then
-			return s1, s2
-		else
-			return s2, s1
-		end
+		return s2, s1
 	end
 end
 
 function conic:tangent_from(pt)
-  if math.abs(self.e - 1) < tkz.epsilon then --
+	if self:position(pt) == "IN" then
+		error("tkz-elements: conic:tangent_from: the point must not be inside the conic", 2)
+	end
+	if math.abs(self.e - 1) < tkz.epsilon then -- Parabola
 		local sys = occs:new(self.major_axis, self.vertex)
 		local Xb, Yb = sys:coordinates(pt)
 		local p1, p2 = tkz.solve_quadratic_(self.h, -2 * Xb, 2 * Yb)
@@ -233,8 +249,10 @@ function conic:tangent_from(pt)
 	end
 end
 
--- intersection line hyperbola
-function conic:inter_Hy_line(pa, pb)
+-- Intersection of a hyperbola and a line (internal).
+-- Returns two points, one point (line parallel to an asymptote) or nothing.
+function conic:inter_Hy_line_(pa, pb, EPS)
+	EPS = EPS or tkz.epsilon
 	local function hyp_fct(x)
 		return self.a * math.sqrt(1 + (x ^ 2) / self.b ^ 2)
 	end
@@ -249,7 +267,7 @@ function conic:inter_Hy_line(pa, pb)
 	local sys = occs:new(self.major_axis, self.center)
 	local XA, YA = sys:coordinates(pa)
 	local XB, YB = sys:coordinates(pb)
-	if math.abs(XA - XB) < tkz.epsilon then
+	if math.abs(XA - XB) < EPS then
 		local xs = XA
 		local fa, c = self.Fa, self.center
 		local s1, s2 = hyp_fct(xs), -hyp_fct(xs)
@@ -259,9 +277,22 @@ function conic:inter_Hy_line(pa, pb)
 		return wx, wy
 	else
 		local r, s = tkz.line_coefficients(XA, YA, XB, YB)
+		local A = self.a ^ 2 / self.b ^ 2 - r ^ 2
+		if math.abs(A) < EPS then
+			-- line parallel to an asymptote: at most one point
+			local B = -2 * r * s
+			if math.abs(B) < EPS then
+				return nil, nil -- the line is an asymptote
+			end
+			local t = -(self.a ^ 2 - s ^ 2) / B
+			if r * t + s < 0 then
+				return self:point(t, "swap")
+			end
+			return self:point(t)
+		end
 		local t1, t2 = solve_hyper_line(self.a, self.b, r, s)
-		if t1 == false then
-			return pa, pb
+		if not t1 then
+			return nil, nil -- no intersection
 		else
 			local s1, s2 = self:point(t1), self:point(t2)
 
@@ -281,25 +312,24 @@ function conic:inter_Hy_line(pa, pb)
 	end
 end
 
--- Fonction pour déterminer si un point est à l'intérieur ou à l'extérieur de la conique
 -- ============================================================
--- 1) API COMPATIBLE : in_out -> boolean (historique)
+-- in_out -> boolean (historical API)
 -- ============================================================
 function conic:in_out(pt, EPS)
 	EPS = EPS or tkz.epsilon
 	local e = self.e
 	if math.abs(e - 1) <= EPS then        -- parabola
-		return PA_in_out(self, pt, EPS)     -- boolean
+		return PA_in_out_(self, pt, EPS)     -- boolean
 	elseif e > 1 then                     -- hyperbola
-		return HY_in_out(self, pt, EPS)     -- boolean
+		return HY_in_out_(self, pt, EPS)     -- boolean
 	else                                  -- ellipse
-		return EL_in_out(self, pt, EPS)     -- boolean
+		return EL_in_out_(self, pt, EPS)     -- boolean
 	end
 end
 
 
 -- ============================================================
--- 2) NOUVELLE API : position -> "IN" | "ON" | "OUT"
+-- position -> "IN" | "ON" | "OUT"
 -- ============================================================
 function conic:position(pt, EPS)
 	EPS = EPS or tkz.epsilon
@@ -315,19 +345,20 @@ end
 
 
 -- ============================================================
--- Ellipse : position
--- (on utilise le même principe que ton EL_in_out, mais avec ON)
+-- Ellipse: position
+-- (same principle as EL_in_out_, with the "ON" case)
 -- ============================================================
 function EL_position_(CO, pt, EPS)
 	EPS = EPS or tkz.epsilon
 
 	local d = point.abs(pt - CO.center)
+	if d <= EPS then return "IN" end -- the center
 	local L = line(CO.center, pt)
 	local x, y = intersection(L, CO)
-	if x == false then return "OUT" end
+	if not x then return "OUT" end
 
 	local dx = point.abs(x - CO.center)
-	if y ~= false then
+	if y then
 		local dy = point.abs(y - CO.center)
 		if dy < dx then dx = dy end
 	end
@@ -339,8 +370,9 @@ end
 
 
 -- ============================================================
--- Parabola/Hyperbola : position
--- Convention : "IN" si pt est entre les 2 intersections sur la corde
+-- Parabola/Hyperbola: position
+-- Convention: "IN" if pt lies between the two intersection points
+-- of the conic and the chord through pt perpendicular to the axis
 -- ============================================================
 local function AX_position_(CO, pt, EPS)
 	EPS = EPS or tkz.epsilon
@@ -349,12 +381,12 @@ local function AX_position_(CO, pt, EPS)
 	local Dp = D:ortho_from(pt)
 	local x, y = intersection(Dp, CO)
 
-	if x == false then return "OUT" end
-	if y == false then
+	if not x then return "OUT" end
+	if not y then
 		return (point.abs(pt - x) <= EPS) and "ON" or "OUT"
 	end
 
-	-- test ON (utile si pt est calculé et tombe sur la conique)
+	-- "ON" test (useful when pt is computed and lies on the conic)
 	if point.abs(pt - x) <= EPS or point.abs(pt - y) <= EPS then
 		return "ON"
 	end
@@ -367,20 +399,15 @@ function PA_position_(PA, pt, EPS) return AX_position_(PA, pt, EPS) end
 function HY_position_(HY, pt, EPS) return AX_position_(HY, pt, EPS) end
 
 
--- ============================================================
--- 3) (Option) rendre "ON" compatible avec l'ancien booléen
---    Si tu veux que ON compte comme IN pour l'ancien monde :
--- ============================================================
--- function conic:on_conic(pt, EPS)
---   return self:position(pt, EPS) == "ON"
--- end
-
--- Fonction pour obtenir l'orthoptique de la conique
+-- Orthoptic of the conic: directrix (parabola) or director circle
 function conic:orthoptic()
 	local e = self.e
-	if math.abs(e - 1) < tkz.epsilon then -- Parabole
+	if math.abs(e - 1) < tkz.epsilon then -- Parabola
 		return self.directrix
-	elseif self.e > 1 and self.e < math.sqrt(2) then -- Hyperbole
+	elseif self.e > 1 then -- Hyperbola
+		if self.a <= self.b + tkz.epsilon then
+			error("tkz-elements: conic:orthoptic: undefined for a hyperbola with e >= sqrt(2)", 2)
+		end
 		local r = math.sqrt(self.a * self.a - self.b * self.b)
 		local th = report_(self.center, self.vertex, r)
 		return circle:new(self.center, th)
@@ -391,32 +418,29 @@ function conic:orthoptic()
 	end
 end
 
--- Fonction pour calculer les asymptotes de la conique
+-- Asymptotes of a hyperbola
 function conic:asymptotes()
-	if self.subtype == "hyperbola" then -- Hyperbole
-		-- Calcul du point sur les foyers et des asymptotes
+	if self.subtype == "hyperbola" then
+		-- points on the asymptotes
 		local pa = report_(self.Fa, self.Fb, self.a, self.center)
 		local p1 = (pa - self.center):orthogonal(self.b):at(pa)
 		local p2 = (pa - self.center):orthogonal(-self.b):at(pa)
 
-		-- Symétrie des points d'asymptotes par rapport au centre
+		-- symmetric points with respect to the center
 		local q1 = symmetry_(self.center, p1)
 		local q2 = symmetry_(self.center, p2)
 
-		-- Retourne les deux asymptotes
 		return line:new(p1, q1), line:new(p2, q2)
 	else
-		-- If this is not an hyperbola, return an error
-		tex.error("An error has occurred", { "It's not an hyperbola" })
-		return
+		error("tkz-elements: conic:asymptotes: the conic is not a hyperbola", 2)
 	end
 end
 
 -- conic:path(za, zb, nb, mode, dir)
--- mode : nil/"direct" (défaut) → arc direct (court)
---        "swap"                → arc complémentaire (l'autre partie)
--- dir  : "ccw" | "cw" (optionnel, utilisé pour lever l'ambiguïté à dt=±0.5
---                      ou quand za==zb → tour complet)
+-- mode : nil/"direct" (default) -> direct (short) arc
+--        "swap"                -> complementary arc (the other part)
+-- dir  : "ccw" | "cw" (optional, used to remove the ambiguity when dt = ±0.5
+--                      or when za == zb -> full turn)
 function conic:path(za, zb, nb, mode, dir)
 	nb   = nb or 20
 	mode = (mode or "direct"):lower()
@@ -432,37 +456,35 @@ function conic:path(za, zb, nb, mode, dir)
 		return x
 	end
 
-	-- Ellipse uniquement : paramètre périodique sur [0,1)
+	-- ellipse only: periodic parameter on [0,1)
 	if self.e and self.e < 1 then
 		ta = frac1(ta)
 
-		-- Normaliser dt dans (-0.5, 0.5]
+		-- normalize dt in (-0.5, 0.5]
 		local eps = 1e-12
 		dt = ((dt + 0.5) % 1) - 0.5
 
-		-- Antipodes : trancher proprement
+		-- antipodal points: deterministic choice
 		if math.abs(math.abs(dt) - 0.5) < eps then
-			-- choix déterministe selon dir (par défaut "cw")
+			-- choice according to dir (default "cw")
 			dt = (dir == "ccw") and  0.5 or -0.5
 		end
 
 		if mode == "swap" then
-			-- Prendre l'autre partie (arc complémentaire)
+			-- take the other part (complementary arc)
 			if math.abs(dt) < eps then
-				-- mêmes points : faire un tour complet
+				-- same points: full turn
 				dt = (dir == "cw") and -1 or 1
 			else
-				-- décale de ±1 pour obtenir l'arc > 0.5 en valeur absolue
+				-- shift by ±1 to get the arc with |dt| > 0.5
 				dt = dt - sgn(dt)
 			end
-		else
-			-- "direct" (défaut) : on garde dt dans (-0.5, 0.5]
 		end
-	else
-		-- Parabole/hyperbole : pas de périodicité ; on ne modifie pas dt
+		-- "direct" (default): dt is kept in (-0.5, 0.5]
 	end
+	-- parabola/hyperbola: no periodicity, dt is not modified
 
-	-- Échantillonnage
+	-- sampling
 	local P = path()
 	for i = 0, nb do
 		local t = i / nb
@@ -475,7 +497,7 @@ function conic:path(za, zb, nb, mode, dir)
 		end
 		local pt = self:point(t_interp)
 		if not pt or not pt.re or not pt.im then
-			tex.error("Invalid point at t = " .. tostring(t_interp))
+			error("tkz-elements: conic:path: invalid point at t = " .. tostring(t_interp), 2)
 		end
 		P:add_point(pt)
 	end
@@ -486,15 +508,15 @@ end
 function conic:get_t_from_point(z)
 	local e = self.e
 	if e == 1 then
-		return self:get_t_parabola(z)
+		return self:get_t_parabola_(z)
 	elseif e < 1 then
-		return self:get_t_ellipse(z)
+		return self:get_t_ellipse_(z)
 	else
-		return self:get_t_hyperbola(z)
+		return self:get_t_hyperbola_(z)
 	end
 end
 
-function conic:get_t_parabola(z)
+function conic:get_t_parabola_(z)
 	local H = self.directrix:projection(z)
 	local d = length_(H, self.K)
 	local u = self.directrix.pb - self.directrix.pa
@@ -507,7 +529,7 @@ function conic:get_t_parabola(z)
 	end
 end
 
-function conic:get_t_hyperbola(z)
+function conic:get_t_hyperbola_(z)
 	local H = self.directrix:projection(z)
 	local d = length_(H, self.K)
 	local u = self.directrix.pb - self.directrix.pa
@@ -520,8 +542,8 @@ function conic:get_t_hyperbola(z)
 	end
 end
 
-function conic:get_t_ellipse(z)
-	local M = inverse_affinity_ellipse(self, z)
+function conic:get_t_ellipse_(z)
+	local M = inverse_affinity_ellipse_(self, z)
 	local a = get_angle_normalize_(self.center, self.vertex, M)
 	if a < 0 then
 		a = a + tkz.tau
@@ -529,16 +551,16 @@ function conic:get_t_ellipse(z)
 	return a / tkz.tau
 end
 
--- Tangentes communes externes ellipse–ellipse.
--- Retour : L1, L2
+-- Common tangents of two ellipses.
+-- which: "external" (default) or "internal"
+-- Returns: L1, L2
 function conic:common_tangent(E2, which)
-which = which or "external"  -- "external" (défaut) ou "internal"
+	which = which or "external"
 	if self.subtype ~= "ellipse" or E2.subtype ~= "ellipse" then
 		return nil, nil
 	end
 
 	local E1 = self
-  local E2 = E2
 	local C1 = E1.center
 	local C2 = E2.center
 	local A1 = E1.a
@@ -567,7 +589,7 @@ which = which or "external"  -- "external" (défaut) ou "internal"
 	local A2 = E2.a
 	local B2 = E2.b
 
-	-- paramétrisation locale de E2 (dans le repère sys)
+	-- local parametrization of E2 (in the sys frame)
 	local function pE2_loc(t)
 		return {
 			x = c2_loc.re + A2 * math.cos(t) * u2_loc.re + B2 * math.sin(t) * v2_loc.re,
@@ -581,7 +603,7 @@ which = which or "external"  -- "external" (défaut) ou "internal"
 		}
 	end
 
-	-- produit scalaire elliptique (E1) & normes associées
+	-- elliptic inner product (E1) and associated norm
 	local function ps_loc(z1, z2)
 		return (z1.x * z2.x) / (A1 * A1) + (z1.y * z2.y) / (B1 * B1)
 	end
@@ -589,7 +611,7 @@ which = which or "external"  -- "external" (défaut) ou "internal"
 		return ps_loc(z, z)
 	end
 
-	-- discriminant de tangence
+	-- tangency discriminant
 	local function D_of_t(t)
 		local p  = pE2_loc(t)
 		local dp = dE2_loc(t)
@@ -604,7 +626,7 @@ which = which or "external"  -- "external" (défaut) ou "internal"
 		return s1 * s2 >= 0
 	end
 
-local function is_internal(A, u)
+	local function is_internal(A, u)
 		local px, py = -u.y, u.x
 		local s1 = A.x * px + A.y * py
 		local dx, dy = A.x - c2_loc.re, A.y - c2_loc.im
@@ -624,7 +646,6 @@ local function is_internal(A, u)
 		eps = eps or 1e-4
 		return (math.abs(P.x - Q.x) < eps) and (math.abs(P.y - Q.y) < eps)
 	end
-	-- ===== Fin du bloc “préambule/repère” adapté =====
 
 	local E1_raw, E2_raw = {}, {}
 	local T = tkz.fsolve(D_of_t, -math.pi, math.pi, 720)
@@ -639,11 +660,7 @@ local function is_internal(A, u)
 			if uu and uu > 0 then
 				local lam = -ps_loc(A, u) / uu
 				local B = { x = A.x + lam * u.x, y = A.y + lam * u.y }
-				if which == "external" then
-					is_which=is_external
-				else
-					is_which=is_internal
-				end
+				local is_which = (which == "external") and is_external or is_internal
 				if is_which(A, u) then
 					local n = utils.table_getn(E1_raw)
 					local dup = false
@@ -663,7 +680,7 @@ local function is_internal(A, u)
 		end
 	end
 
-	-- projection finale en global via le repère sys centré en C1
+	-- back to global coordinates through the sys frame centred at C1
 	local a = E1_raw[1] and to_global(sys, C1, E1_raw[1].x, E1_raw[1].y) or nil
 	local b = E1_raw[2] and to_global(sys, C1, E1_raw[2].x, E1_raw[2].y) or nil
 	local c = E2_raw[1] and to_global(sys, C1, E2_raw[1].x, E2_raw[1].y) or nil

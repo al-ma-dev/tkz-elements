@@ -81,7 +81,7 @@ This avoids having to define \code{L.AB = line(z.A, z.B)} and then access \code{
 \subsection{Length of a segment}
 \label{sub:length_of_a_segment}
 
-The function \tkzFct{misc}{tkz.length(z1, z2)} returns the Euclidean distance between two points. It is equivalent to:
+The function \tkzFct{tkz}{tkz.length(z1, z2)} returns the Euclidean distance between two points. It is equivalent to:
 
 \begin{mybox}
 \begin{verbatim}
@@ -111,7 +111,7 @@ Use \code{tkz.length(z1, z2)} for simple distance computations, especially withi
 \subsection{Midpoint and midpoints}
 \label{sub:midpoint_and_midpoints}
 
-As with \tkzFct{misc}{length}, the function \tkzFct{misc}{tkz.midpoint(z1, z2)} provides a shortcut for computing the midpoint of a segment:
+As with \tkzFct{tkz}{length}, the function \tkzFct{tkz}{tkz.midpoint(z1, z2)} provides a shortcut for computing the midpoint of a segment:
 
 \begin{mybox}
 \begin{verbatim}
@@ -578,35 +578,94 @@ It returns the oriented angle at a point, normalized to $[0, 2\pi)$.
 \subsection{Function \tkzFct{tkz}{tkz.angle\_between\_vectors}}
 \label{sub:tkz_angle_between_vectors}
 
-The function \tkzFct{tkz}{tkz.angle\_between\_vectors} returns the oriented angle
-between two vectors $\overrightarrow{AB}$ and $\overrightarrow{CD}$.
+The function \code{tkz.angle\_between\_vectors} returns the oriented angle
+from the vector $\overrightarrow{AB}$ to the vector $\overrightarrow{CD}$.
 
 \medskip
-\texttt{Syntax:}
-
+\noindent\textbf{Syntax:}
 \begin{mybox}
-\verb|an = tkz.angle_between_vectors(a, b, c, d)|
+an = tkz.angle\_between\_vectors(a, b, c, d)
 \end{mybox}
 
-\medskip
-\texttt{Arguments: }
+\noindent\textbf{Arguments:}
 \begin{itemize}
-  \item \code{a}, \code{b} — endpoints of the first vector (from \code{a} to \code{b}),
-  \item \code{c}, \code{d} — endpoints of the second vector (from \code{c} to \code{d}).
+  \item \code{a}, \code{b} --- endpoints of the first vector (from \code{a} to \code{b});
+  \item \code{c}, \code{d} --- endpoints of the second vector (from \code{c} to \code{d}).
+\end{itemize}
+
+\noindent\textbf{Return value:}
+an oriented angle in radians, in the interval $(-\pi,\pi]$, corresponding to
+the rotation that takes $\overrightarrow{AB}$ to $\overrightarrow{CD}$.
+The angle is positive in the counterclockwise direction.
+
+\medskip
+\noindent\textbf{Method:}
+with $\vec u=\overrightarrow{AB}$ and $\vec v=\overrightarrow{CD}$,
+\[
+  \theta = \operatorname{atan2}\bigl(\det(\vec u,\vec v),\ \vec u\cdot\vec v\bigr),
+  \qquad
+  \det(\vec u,\vec v)=u_x v_y-u_y v_x,
+  \qquad
+  \vec u\cdot\vec v = u_x v_x+u_y v_y .
+\]
+
+\noindent\textbf{Remarks:}
+\begin{itemize}
+  \item The order of the vectors matters: exchanging them changes the sign
+        of the result.
+  \item Two vectors with the same direction give $0$; two opposite vectors
+        give $\pi$.
+  \item If one of the vectors is null ($A=B$ or $C=D$), the angle is
+        undefined and an error is raised.
 \end{itemize}
 
 \medskip
-\texttt{Return value: }
-\begin{itemize}
-  \item an oriented angle in radians, in the interval $(-\pi, \pi]$, corresponding to the
-        rotation from $\overrightarrow{AB}$ to $\overrightarrow{CD}$.
-\end{itemize}
+\noindent\textbf{Example:}
+\begin{Verbatim}
+\directlua{%
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(4, 0)
+ z.C = point(1, 1)
+ z.D = point(1, 4)
+ an = tkz.angle_between_vectors(z.A, z.B, z.C, z.D)
+}
+Angle: \tkzUseLua{string.format('\percentchar.2f', math.deg(an))} degrees
+\end{Verbatim}
+\directlua{%
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(4, 0)
+ z.C = point(1, 1)
+ z.D = point(1, 4)
+ an = tkz.angle_between_vectors(z.A, z.B, z.C, z.D)
+}
+Angle: \tkzUseLua{string.format('\percentchar.2f', math.deg(an))} degrees
+
+Here $\overrightarrow{AB}=(4,0)$ and $\overrightarrow{CD}=(0,3)$:
+the dot product is $0$ and the determinant is $12$, so the result is
+$\pi/2$, that is $90^\circ$.
 
 \medskip
-Internally, the angle is computed using the standard $\operatorname{atan2}$ formula
-based on the dot product and the determinant of the two vectors.
+\noindent\textbf{Other cases:}
 
+\begin{center}
+\begin{tabular}{lll}
+  \hline
+  $\overrightarrow{AB}$ & $\overrightarrow{CD}$ & Result \\
+  \hline
+  $(1,0)$  & $(3,-3)$ & $-\pi/4$ \quad ($-45^\circ$, clockwise) \\
+  $(3,-3)$ & $(1,0)$  & $\pi/4$ \quad ($45^\circ$, vectors exchanged) \\
+  $(2,0)$  & $(-1,0)$ & $\pi$ \quad ($180^\circ$, opposite vectors) \\
+  $(2,0)$  & $(5,0)$  & $0$ \quad (same direction) \\
+  \hline
+\end{tabular}
+\end{center}
 
+\noindent A typical use is the oriented angle at vertex $A$ of a triangle:
+\begin{verbatim}
+an = tkz.angle_between_vectors(z.A, z.B, z.A, z.C)  -- angle (AB, AC)
+\end{verbatim}
 %%----------------------------------------------------
 %%-----------------  end ANGLES  -------
 %%----------------------------------------------------
@@ -762,7 +821,7 @@ These functions are particularly useful in decision structures or automated cons
 \subsection{Bisector and altitude}
 \label{sub:bisector_and_altitude}
 
-The functions \tkzFct{misc}{bisector}, \tkzFct{misc}{bisector\_ext}, and \tkzFct{misc}{altitude} return \tkzClass{line} objects corresponding to classical triangle constructions. They are useful when you don't need to create a full \tkzClass{triangle} object and simply want the desired line or foot point directly.
+The functions \tkzFct{tkz}{bisector}, \tkzFct{tkz}{bisector\_ext}, and \tkzFct{tkz}{altitude} return \tkzClass{line} objects corresponding to classical triangle constructions. They are useful when you don't need to create a full \tkzClass{triangle} object and simply want the desired line or foot point directly.
 
 \medskip
 \texttt{Internal bisector: }
@@ -1028,7 +1087,7 @@ function \(y = Ax^2 + Bx + C\) that interpolates these points.
 \verb|tkz.nodes_from_paths(PAcenters, PAthrough [, wbase, tbase, indice])|
 
 \texttt{Purpose: }
-This function transfers the points contained in two Lua paths — one representing the circle centers and the other the corresponding through points — into the global Lua table \tkzVar{z}.
+This function transfers the points contained in two Lua paths — one representing the circle centers and the other the corresponding through points — into the global Lua table \tkzVar{point}{z}.
 Each pair of points is assigned a name based on two prefixes (for instance ``w'' and ``t'') followed by an index number.
 
 \texttt{Arguments: }
@@ -1042,7 +1101,7 @@ Each pair of points is assigned a name based on two prefixes (for instance ``w''
 
 \texttt{Returned values: }
 None.
-The function creates Lua entries in the global table \tkzVar{z} such as:
+The function creates Lua entries in the global table \tkzVar{point}{z} such as:
 
 \verb|z["w1"]=z.w1, z["t1"]=z.t1, z["w2"], z["t2"], ...|
 

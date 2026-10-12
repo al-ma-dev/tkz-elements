@@ -9,11 +9,11 @@ The variable \tkzVar{regular\_polygon}{RP} holds a table used to store regular p
 The \tkzClass{regular\_polygon} class builds a regular polygon from its center, a first vertex, and the number of sides.
 
 \medskip
-The result is usually stored in \tkzVar{regular\_polygon}{P}, a variable used to group polygonal objects.
+The result is usually stored in \tkzVar{regular\_polygon}{RP}.
 
 \begin{mybox}
 \begin{verbatim}
-P.hex = regular_polygon:new(z.O, z.A, 6)
+RP.hex = regular_polygon:new(z.O, z.A, 6)
 \end{verbatim}
 \end{mybox}
 
@@ -23,7 +23,7 @@ Use the short form for brevity:
 
 \begin{mybox}
 \begin{verbatim}
-P.hex = regular_polygon(z.O, z.A, 6)
+RP.hex = regular_polygon(z.O, z.A, 6)
 \end{verbatim}
 \end{mybox}
 
@@ -43,16 +43,20 @@ Creation | RP.IA = regular_polygon(z.I,z.A,6)|
   \toprule
   \texttt{Attributes}      & \textbf{Application}  \\
  \midrule
-  \tkzAttr{regular}{center}  & |z.I = RP.IA.center|  \\
-  \tkzAttr{regular}{vertices}   & array containing all vertex affixes  \\
-  \tkzAttr{regular}{through} & first vertex  \\
-  \tkzAttr{regular}{circle}  & defines the circle with center I passing through A \\
-  \tkzAttr{regular}{type}    & |RP.IA.type= 'regular\_polygon'|   \\
-  \tkzAttr{regular}{side}    & |s = RP.IA.side| ; s = length of side\\
-  \tkzAttr{regular}{circumradius}&  |S.AB.circumradius| ; radius of the circumscribed circle \\
-  \tkzAttr{regular}{inradius}&  |S.AB.inxradius| ; radius of the inscribed circle   \\
-  \tkzAttr{regular}{apothem}    &  |RP.IA.apothem| ; projection of the center on one side   \\
-  \tkzAttr{regular}{angle}   &  |RP.IA.angle| ; angle formed by the center and 2 consecutive vertices   \\
+  \tkzAttr{regular\_polygon}{center}  & |z.I = RP.IA.center|  \\
+  \tkzAttr{regular\_polygon}{vertices}   & array containing all vertex affixes  \\
+  \tkzAttr{regular\_polygon}{through} & first vertex  \\
+  \tkzAttr{regular\_polygon}{circle}  & defines the circle with center I passing through A \\
+  \tkzAttr{regular\_polygon}{type}    & |RP.IA.type= 'regular\_polygon'|   \\
+  \tkzAttr{regular\_polygon}{side}    & |s = RP.IA.side| ; s = length of side\\
+  \tkzAttr{regular\_polygon}{circumradius}&  |RP.IA.circumradius| ; radius of the circumscribed circle \\
+  \tkzAttr{regular\_polygon}{inradius}&  |RP.IA.inradius| ; radius of the inscribed circle   \\
+  \tkzAttr{regular\_polygon}{apothem}    &  |RP.IA.apothem| ; length of the apothem (same as inradius)   \\
+  \tkzAttr{regular\_polygon}{apothem\_foot} & |z.H = RP.IA.apothem_foot| ; projection of the center on the first side \\
+  \tkzAttr{regular\_polygon}{nb}      & |RP.IA.nb| ; number of sides \\
+  \tkzAttr{regular\_polygon}{perimeter} & |RP.IA.perimeter| ; perimeter \\
+  \tkzAttr{regular\_polygon}{area}    & |RP.IA.area| ; area \\
+  \tkzAttr{regular\_polygon}{angle}   &  |RP.IA.angle| ; angle formed by the center and 2 consecutive vertices   \\
   \bottomrule %
   \end{tabular}
   \egroup
@@ -127,9 +131,13 @@ z.H = RP.five.apothem
 \midrule
 \texttt{Methods Returning a Circle}&\\
 \midrule
-\tkzMeth{regular\_polygon}{incircle ()} & [\ref{ssub:method_regular_incirle}]\\
+\tkzMeth{regular\_polygon}{incircle()} & [\ref{ssub:method_regular_incircle}]\\
 \midrule
 \texttt{Methods Returning a Point}&\\
+\midrule
+\tkzMeth{regular\_polygon}{get(<i>)} & [\ref{ssub:method_regular_get}] \\
+\midrule
+\texttt{Other methods}&\\
 \midrule
 \tkzMeth{regular\_polygon}{name (string)} & [\ref{ssub:method_regular_name}] \\
 \bottomrule %
@@ -137,7 +145,7 @@ z.H = RP.five.apothem
 \egroup
 
 
-\subsubsection{Method \tkzMeth{regular}{new(pt, pt, n)}}
+\subsubsection{Method \tkzMeth{regular\_polygon}{new(pt, pt, n)}}
 \label{ssub:function_regular_new}
 
 \begin{tkzexample}[latex=.5\textwidth]
@@ -158,13 +166,25 @@ z.H = RP.five.apothem
 \end{tikzpicture}
 \end{tkzexample}
 
-\subsubsection{Method \tkzMeth{regular}{incirle()}}
-\label{ssub:method_regular_incirle}
+\subsubsection{Method \tkzMeth{regular\_polygon}{get(<i>)}}
+\label{ssub:method_regular_get}
+
+\code{get()} returns all the vertices; \code{get(i)} returns the i-th vertex ($1 \le i \le n$). An invalid index raises an error.
+
+\begin{verbatim}
+z.A, z.B, z.C = RP.tri:get()
+z.B = RP.tri:get(2)
+\end{verbatim}
+
+\subsubsection{Method \tkzMeth{regular\_polygon}{incircle()}}
+\label{ssub:method_regular_incircle}
 
 See  previous example [\ref{ssub:function_regular_new}]
 
-\subsubsection{Method \tkzMeth{regular}{name(s)}}
+\subsubsection{Method \tkzMeth{regular\_polygon}{name(s)}}
 \label{ssub:method_regular_name}
+
+\code{RP.six:name("A\_")} creates the points \code{z.A\_1}, \ldots, \code{z.A\_6}.
 
 See   [\ref{ssub:function_regular_new}]
 \endinput

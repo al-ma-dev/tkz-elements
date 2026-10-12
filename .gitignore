@@ -15,6 +15,10 @@
 *.blg
 *.zip
 
+# fichiers produits par la compilation de la doc
+doc/latex/tmp.table
+doc/latex/myfic.mp
+
 # builds locaux
 /build/
 doc/latex/build
@@ -25,6 +29,7 @@ __MACOSX/
 # Editors / tools
 .nova/
 .git.bak-*/
+Claude outputs/
 
 # ignorer les scripts en général
 *.sh

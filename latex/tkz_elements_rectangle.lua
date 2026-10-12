@@ -9,9 +9,10 @@
 rectangle = {}
 rectangle.__index = rectangle
 function rectangle:new(za, zb, zc, zd)
-	local d
-	local zi = midpoint_(za, zc)
-	local zj = midpoint_(zb, zd)
+	if not (is_point_(za) and is_point_(zb) and is_point_(zc) and is_point_(zd)) then
+		-- level 2: __call is a tail call (return cls:new(...))
+		error("tkz-elements: rectangle: four points are expected", 2)
+	end
 	local type = "rectangle"
 	local center = midpoint_(za, zc)
 	local circumradius = point.abs(center - za)
@@ -52,12 +53,15 @@ setmetatable(rectangle, {
 	end,
 })
 
-function rectangle:get()
-	return self.pa, self.pb, self.pc, self.pd
+-- get() returns the four vertices ; get(i) returns the i-th vertex (1 to 4)
+function rectangle:get(i)
+	if i == nil then
+		return self.pa, self.pb, self.pc, self.pd
+	end
+	return ({ self.pa, self.pb, self.pc, self.pd })[i]
 end
 
 function rectangle:angle(zi, za, an)
-	local zb, zc, zd
 	local zc = symmetry_(zi, za)
 	local zb = rotation_(zi, -an, zc)
 	local zd = symmetry_(zi, zb)

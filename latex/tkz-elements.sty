@@ -3,35 +3,58 @@
 % SPDX-License-Identifier: LPPL-1.3c
 % Maintainer: Alain Matthes
 
-\ProvidesPackage{tkz-elements}[2026/04/11 v5.06c Graphic Object Library]
+\ProvidesPackage{tkz-elements}[2026/10/11 v6.00c Graphic Object Library]
 
-\typeout{Package tkz-elements v5.06c (2026/04/11) loaded.}
+\typeout{Package tkz-elements v6.00c (2026/10/11) loaded.}
 
 \RequirePackage{iftex}
 \ifluatex\else
   \PackageError{tkz-elements}{%
-    This package requires LuaLaTeX.%
+    This package requires LuaLaTeX%
   }{%
     Please compile with LuaLaTeX.\MessageBreak
     Aborted compilation.%
-  }
+  }%
+  \expandafter\endinput
 \fi
- \directlua{
-      require "tkz_elements_main"
-      init_elements()
-      }%
+\directlua{
+  require "tkz_elements_main"
+  init_elements()
+}%
 
-% new version of the next macro proposed by Sanskar Singh
 \makeatletter
 \let\percentchar\@percentchar
-\@ifpackageloaded{tkz-euclide}{%
-  \@ifpackagelater{tkz-euclide}{2024/04/19}{%
-   \def\tkzGetNodes{\directlua{%
-   tkz.GetNodes()
-   tkz.flush_coord_warnings()
-   }}
 
-\def\tkzDrawLuaEllipse{\pgfutil@ifnextchar[{\tkz@DrawLuaEllipse}{\tkz@DrawLuaEllipse[]}}
+% ---------------------------------------------------------------------
+% Transfer macros (Lua -> TikZ).
+% They only emit TikZ code (\coordinate, \draw, \node, \foreach) and
+% therefore do not require tkz-euclide, except the few macros that call
+% \tkzDefPoint, \tkzDrawPoint or \tkzDrawSegment at use time.
+% They are defined whatever the loading order of the packages.
+% The only exception is an old tkz-euclide (< 2024/04/19) already
+% loaded: its own macros are kept, as in previous versions.
+% ---------------------------------------------------------------------
+\newif\iftkzel@define
+\tkzel@definetrue
+\def\tkzel@minversion{2024/04/19}
+\def\tkzel@oldeuclide{%
+  \PackageWarning{tkz-elements}{%
+    tkz-euclide is loaded but too old.\MessageBreak
+    tkz-euclide \tkzel@minversion\space or later is required\MessageBreak
+    (5.13c or later recommended)}}
+\@ifpackageloaded{tkz-euclide}{%
+  \@ifpackagelater{tkz-euclide}{\tkzel@minversion}{}{%
+    \tkzel@definefalse
+    \tkzel@oldeuclide}}{}
+
+\iftkzel@define
+% new version of the next macro proposed by Sanskar Singh
+\def\tkzGetNodes{\directlua{%
+  tkz.GetNodes()
+  tkz.flush_coord_warnings()
+}}
+
+\def\tkzDrawLuaEllipse{\@ifnextchar[{\tkz@DrawLuaEllipse}{\tkz@DrawLuaEllipse[]}}
 \def\tkz@DrawLuaEllipse[#1](#2,#3,#4){%
 \begingroup
 \draw[#1](#2) ellipse [x radius=\tkzUseLua{length_(z.#3,z.#2)}, y radius =
@@ -39,7 +62,7 @@
 \endgroup}%
 
 
-\def\tkzDrawCoordinates{\pgfutil@ifnextchar[{\tkz@DrawCoordinates}{\tkz@DrawCoordinates[]}}
+\def\tkzDrawCoordinates{\@ifnextchar[{\tkz@DrawCoordinates}{\tkz@DrawCoordinates[]}}
 \def\tkz@DrawCoordinates[#1](#2){%
 \begingroup
 \draw[#1] plot coordinates {\directlua{tex.print(#2)}};
@@ -48,7 +71,7 @@
  \let\tkzDrawPath\tkzDrawCoordinates
 
 
-\def\tkzPrintNumber{\pgfutil@ifnextchar[{\tkz@PrintNumber}{\tkz@PrintNumber[2]}}%
+\def\tkzPrintNumber{\@ifnextchar[{\tkz@PrintNumber}{\tkz@PrintNumber[2]}}%
 \def\tkz@PrintNumber[#1]#2{%
   \begingroup
     \pgfkeys{/pgf/number format/.cd,fixed,precision=#1}%
@@ -57,7 +80,7 @@
 }
 \let\tkzPN\tkzPrintNumber
 
-\def\tkzDrawSegmentsFromPaths{\pgfutil@ifnextchar[{\tkz@DrawSegmentsFromPaths}{\tkz@DrawSegmentsFromPaths[]}}
+\def\tkzDrawSegmentsFromPaths{\@ifnextchar[{\tkz@DrawSegmentsFromPaths}{\tkz@DrawSegmentsFromPaths[]}}
 \def\tkz@DrawSegmentsFromPaths[#1](#2,#3){%
 \begingroup
 \directlua{%
@@ -74,7 +97,7 @@
 
 \def\tkzUseLua#1{\directlua{tex.sprint(#1)}}
 
-\def\tkzDrawPointsFromPath{\pgfutil@ifnextchar[{\tkz@DrawPointsFromPath}{\tkz@DrawPointsFromPath[]}}
+\def\tkzDrawPointsFromPath{\@ifnextchar[{\tkz@DrawPointsFromPath}{\tkz@DrawPointsFromPath[]}}
 \def\tkz@DrawPointsFromPath[#1](#2){%
   \begingroup
    \foreach[expand list] \r/\s in {\directlua{tex.sprint(#2:concat_rawpair(","))}} {%
@@ -84,7 +107,7 @@
 }
 
 
-\def\tkzDrawCirclesFromPaths{\pgfutil@ifnextchar[{\tkz@DrawCirclesFromPaths}{\tkz@DrawCirclesFromPaths[]}}
+\def\tkzDrawCirclesFromPaths{\@ifnextchar[{\tkz@DrawCirclesFromPaths}{\tkz@DrawCirclesFromPaths[]}}
 \def\tkz@DrawCirclesFromPaths[#1](#2,#3){%
   \begingroup
   \directlua{
@@ -110,7 +133,7 @@
 
 
 \def\tkzDrawFromPointToPath{%
-  \pgfutil@ifnextchar[{\tkz@DrawFromPointToPath}{\tkz@DrawFromPointToPath[]}%
+  \@ifnextchar[{\tkz@DrawFromPointToPath}{\tkz@DrawFromPointToPath[]}%
 }
 \def\tkz@DrawFromPointToPath[#1](#2,#3){%
   \begingroup
@@ -126,7 +149,6 @@
   \endgroup
 }
 
-\makeatother
 
 
 % Returns the number of points in a path (usage: \tkzPathCount{PA.A}{N})
@@ -150,12 +172,16 @@
 
 \def\tkzEraseLuaObj#1{\directlua{#1 = nil}}
 
-}{%
-\PackageWarning{tkz-elements}{%
-      tkz-euclide is loaded but too old.\MessageBreak
-      Minimum version required : 5.10c 2024/04/19%
-}}}{%
-}%
+\fi
+
+% tkz-euclide loaded after tkz-elements: check its version at the end
+% of the preamble.
+\AtBeginDocument{%
+  \iftkzel@define
+    \@ifpackageloaded{tkz-euclide}{%
+      \@ifpackagelater{tkz-euclide}{\tkzel@minversion}{}{\tkzel@oldeuclide}}{}%
+  \fi}
+\makeatother
 
 
 

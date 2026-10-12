@@ -453,6 +453,8 @@ Tests whether two matrices are equal. The result is \textbf{true} or \textbf{fal
     & [\ref{ssub:method_identity}] & \\
   \tkzFct{matrix}{matrix.htm()}
     & [\ref{ssub:method_htm}] & \\
+  \tkzFct{matrix}{get\_htm\_point(V)}
+    & [\ref{ssub:method_get_htm_point}] & \\
   \midrule
   \textbf{Methods} & \texttt{Reference}   & \\
   \midrule
@@ -460,8 +462,6 @@ Tests whether two matrices are equal. The result is \textbf{true} or \textbf{fal
     &  & \\
   \tkzMeth{matrix}{htm\_apply(...)}
     & [\ref{ssub:method_code_htm__apply}] & \\
-  \tkzMeth{matrix}{get\_htm\_point()}
-    & [\ref{ssub:method_get_htm_point}] & \\
   \tkzMeth{matrix}{get()}
     & [\ref{ssub:get_an_element_of_a_matrix}] & \\
   \tkzMeth{matrix}{inverse()}
@@ -650,7 +650,7 @@ Creating the identity matrix order 3
 \subsubsection{Method  \tkzMeth{matrix}{is\_orthogonal}}
 \label{ssub:method_is_orthogonal}
 
-The method returns \code{true} if the matrix is orthogonal and \code{false} otherwise.
+The method returns \code{true} if $A^TA = I$ (with the tolerance \code{tkz.epsilon}) and \code{false} otherwise.
 
 \begin{verbatim}
 \directlua{
@@ -669,9 +669,9 @@ The method returns \code{true} if the matrix is orthogonal and \code{false} othe
  end
  tex.print("\\\\")
  tex.print("Test: $M.A^T = M.A^{-1} ?$")
- print_matrix(transposeMatrix(M.A))
+ M.A:transpose():print()
  tex.print("=")
- inv_matrix(M.A):print()}
+ M.A:inverse():print()}
 \end{verbatim}
 
 \directlua{
@@ -690,14 +690,14 @@ The method returns \code{true} if the matrix is orthogonal and \code{false} othe
  end
  tex.print("\\\\")
  tex.print("Test: $M.A^T = M.A^{-1} ?$")
- print_matrix(transposeMatrix(M.A))
+ M.A:transpose():print()
  tex.print("=")
- inv_matrix(M.A):print()}
+ M.A:inverse():print()}
 
 \subsubsection{Method \tkzMeth{matrix}{is\_diagonal}}
 \label{ssub:method_is_diagonal}
 
-The method returns \code{true} if the matrix is diagonal and \code{false} otherwise.
+The method returns \code{true} if the matrix is diagonal and \code{false} otherwise. Off-diagonal entries are compared with \code{tkz.epsilon}.
 
 \subsubsection{Function \tkzFct{matrix}{print\_array}}
 \label{ssub:display_a_table_or_array_function_code_print_array}
@@ -760,6 +760,8 @@ Get an element of a matrix.
 
 \subsubsection{Method  \tkzMeth{matrix}{inverse}}
 \label{ssub:inverse_matrix}
+
+If the matrix is not invertible, an error is raised.
 
 \begin{minipage}{.6\textwidth}
 \begin{verbatim}
@@ -874,7 +876,7 @@ Remark: |(A ^'T')^'T' = A|
 \subsubsection{Method \tkzMeth{matrix}{diagonalize}}
 \label{ssub:diagonalization}
 
-For the moment, this method only concerns matrices of order 2.
+This method only concerns matrices of order 2. It returns two matrices $D$ and $P$ such that $A = PDP^{-1}$: the eigenvalues are on the diagonal of $D$, the eigenvectors are the columns of $P$. Complex eigenvalues are given as complex numbers. A matrix with a double eigenvalue that is not already diagonal raises an error.
 
 \begin{minipage}{.5\textwidth}
 \begin{verbatim}
@@ -972,6 +974,8 @@ The main method is to create the matrix:
 
 A 3x3 matrix is created which combines a $\pi/4$ rotation and a $\overrightarrow{t}=(3,1)$ translation.
 
+The complete form is \code{matrix.htm(phi, tx, ty, sx, sy)}: a scaling by (\code{sx}, \code{sy}), then a rotation of angle \code{phi}, then a translation of vector (\code{tx}, \code{ty}). The scale factors default to 1.
+
 \directlua{
   init_elements()
   pi = math.pi
@@ -1001,12 +1005,12 @@ M.W = M.A * M.V
 
 All that remains is to extract the coordinates of the new point.
 
-\subsubsection{Method \tkzMeth{matrix}{get\_htm\_point}}
+\subsubsection{Function \tkzFct{matrix}{get\_htm\_point}}
 \label{ssub:method_get_htm_point}
 
 In the previous section, we obtained the $W$ matrix. Now we need to obtain the point it defines.
 
-The  method \code{get\_htm\_point}  extracts a point from a vector obtained after applying a \code{htm} matrix.
+The function \code{get\_htm\_point} extracts a point from a vector obtained after applying a \code{htm} matrix.
 
 \begin{minipage}{.5\textwidth}
 \begin{verbatim}
@@ -1047,6 +1051,7 @@ The above operations can be simplified by using the \code{htm\_apply} method dir
 \end{mybox}
 
 Then the method \code{htm\_apply} transforms a point, a list of points or an object.
+Each argument may be a point or an object (line, circle, triangle, square, rectangle, quadrilateral, parallelogram, ellipse). If the matrix defines a similarity, the objects keep their class; otherwise a circle or an ellipse becomes an ellipse, and a square or a rectangle becomes a parallelogram. The matrix must be a 3x3 matrix with last row (0, 0, 1).
 
 \directlua{
  init_elements()

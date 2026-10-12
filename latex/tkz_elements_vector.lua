@@ -6,30 +6,38 @@
 -- ----------------------------------------------------------------------------
 vector = {}
 vector.__index = vector
--- Constructor for creating a new vector
+
+local function is_point(p)
+	return type(p) == "table" and p.type == "point"
+end
+
+local function is_vector(v)
+	return getmetatable(v) == vector
+end
+
+-- Constructor: vector from the tail za to the head zb
 function vector:new(za, zb)
-	local type = "vector"
-	local mtx = matrix:new({ { za }, { zb } })
-  local z = zb - za
-	local dx = z.re
-	local dy = z.im
+	if not (is_point(za) and is_point(zb)) then
+		-- level 2: __call is a tail call (return cls:new(...))
+		error("tkz-elements: vector: two points are expected", 2)
+	end
+	local z = zb - za
 	local norm = point.mod(z)
 	local slope = 0
-	if norm > (tkz.epsilon or 0) then
+	if norm > tkz.epsilon then
 		slope = angle_normalize_(point.arg(z))
 	end
-local vect = {
-			type  = type,
-			tail  = za,
-			head  = zb,
-			z     = z,
-			dx    = dx,
-			dy    = dy,
-			norm  = norm,
-			slope = slope,
-			mtx   = mtx,
+	local vect = {
+		type  = "vector",
+		tail  = za,
+		head  = zb,
+		z     = z,
+		dx    = z.re,
+		dy    = z.im,
+		norm  = norm,
+		slope = slope,
+		mtx   = matrix:new({ { za }, { zb } }),
 	}
-
 	setmetatable(vect, self)
 	return vect
 end
@@ -40,11 +48,22 @@ setmetatable(vector, {
 	end,
 })
 
+-- ----------------------------------------------------------------------------
+-- metamethods
+-- ----------------------------------------------------------------------------
+local function check_vectors(v1, v2, op)
+	if not (is_vector(v1) and is_vector(v2)) then
+		error("tkz-elements: vector: " .. op .. " of two vectors expected", 3)
+	end
+end
+
 function vector.__add(v1, v2)
+	check_vectors(v1, v2, "sum")
 	return v1:add(v2)
 end
 
 function vector.__sub(v1, v2)
+	check_vectors(v1, v2, "difference")
 	return v1:add(v2:scale(-1))
 end
 
@@ -52,35 +71,31 @@ function vector.__unm(v)
 	return v:scale(-1)
 end
 
--- function vector.__mul(r, v)
-	-- return v:scale(r)
--- end
-
 function vector.__mul(a, b)
-	local ta, tb = type(a), type(b)
-
-	if ta == "number" and getmetatable(b) == vector then
+	if type(a) == "number" and is_vector(b) then
 		return b:scale(a)
-	elseif tb == "number" and getmetatable(a) == vector then
+	elseif type(b) == "number" and is_vector(a) then
 		return a:scale(b)
 	else
-		error("vector.__mul: expected scalar * vector or vector * scalar")
+		error("tkz-elements: vector: scalar * vector or vector * scalar expected", 2)
 	end
 end
 
-
+-- v1 ^ v2 : cross product (determinant)
 function vector.__pow(v1, v2)
-	local z
-	z = point.conj(v1.head - v1.tail) * (v2.head - v2.tail)
-	return z.im
+	check_vectors(v1, v2, "^")
+	return v1:cross(v2)
 end
 
+-- v1 .. v2 : dot product
 function vector.__concat(v1, v2)
-	local z
-	z = (v1.head - v1.tail) * point.conj((v2.head - v2.tail))
-	return z.re
+	check_vectors(v1, v2, "..")
+	return v1:dot(v2)
 end
 
+-- ----------------------------------------------------------------------------
+-- methods
+-- ----------------------------------------------------------------------------
 function vector:get()
 	return self.tail, self.head
 end
@@ -106,15 +121,6 @@ function vector:is_orthogonal(v, EPS)
 	return math.abs(self:dot(v)) <= EPS * self.norm * v.norm
 end
 
-
--- Normalize the vector (unit vector)
--- function vector:normalize()
-	-- local z = self.head - self.tail
-	-- local d = point.abs(z)
-	-- local nz = point(z.re / d, z.im / d)
-	-- return vector:new(self.tail, nz + self.tail)
--- end
-
 function vector:dot(v)
 	local z = point.conj(self.z) * v.z
 	return z.re
@@ -125,43 +131,29 @@ function vector:cross(v)
 	return z.im
 end
 
-
-
+-- unit vector with the same tail
 function vector:normalize()
-  local EPS = tkz.epsilon
-  if self.norm <= EPS then
-  	tex.error("Cannot normalize a near-zero vector.")
-  	return self
-  end
+	if self.norm <= tkz.epsilon then
+		error("tkz-elements: vector:normalize: cannot normalize a null vector", 2)
+	end
 	local u = point(self.z.re / self.norm, self.z.im / self.norm)
 	return vector:new(self.tail, self.tail + u)
 end
-
 
 function vector:add(ve)
 	return vector:new(self.tail, self.head + ve.head - ve.tail)
 end
 
-
-
--- --Scale the vector by a scalar
--- function vector:scale(d)
-	-- local z = scale_(self, d)
-	-- return vector:new(self.tail, z)
--- end
-
 function vector:scale(d)
-	local new_head = scaled_head_(self, d)
-	return vector:new(self.tail, new_head)
+	return vector:new(self.tail, scaled_head_(self, d))
 end
-
 
 function vector:at(zc)
 	return vector:new(zc, zc + self.head - self.tail)
 end
 
+-- oriented angle from self to v
 function vector:angle_to(v)
-	-- angle entre self et v (orienté)
 	return angle_normalize_(v.slope - self.slope)
 end
 
@@ -169,15 +161,16 @@ function vector:rotate(theta)
 	return vector:new(self.tail, rotation_(self.tail, theta, self.head))
 end
 
--- side = "ccw" (par défaut) ou "cw"
--- length optionnel pour imposer la norme du vecteur orthogonal
+-- side   = "ccw" (default) or "cw"
+-- length : optional norm of the orthogonal vector
 function vector:orthogonal(side, length)
 	local theta = (side == "cw") and -math.pi / 2 or math.pi / 2
-
 	if length then
-		-- on part du vecteur normalisé, on impose sa norme, puis on tourne
-		local u = self:normalize()
-		local tip = self.tail + point(length * math.cos(u.slope), length * math.sin(u.slope))
+		if self.norm <= tkz.epsilon then
+			error("tkz-elements: vector:orthogonal: null vector", 2)
+		end
+		-- unit vector scaled to the given length, then rotated
+		local tip = self.tail + point(length * math.cos(self.slope), length * math.sin(self.slope))
 		return vector:new(self.tail, rotation_(self.tail, theta, tip))
 	else
 		return self:rotate(theta)

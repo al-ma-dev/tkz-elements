@@ -5,7 +5,19 @@
 
 occs = {}
 occs.__index = occs
+-- occs(L, zO): orthonormal system with origin zO; the ordinate axis has
+-- the direction of the line L, the abscissa axis is obtained by a rotation
+-- of -pi/2 (direct system).
 function occs:new(L, zO)
+	if type(L) ~= "table" or L.type ~= "line" then
+		error("tkz-elements: occs: the first argument must be a line", 2)
+	end
+	if point.abs(L.pb - L.pa) <= tkz.epsilon then
+		error("tkz-elements: occs: the line is degenerate (its two points are identical)", 2)
+	end
+	if type(zO) ~= "table" or zO.type ~= "point" then
+		error("tkz-elements: occs: the second argument (origin) must be a point", 2)
+	end
 	local type = "occs"
 	local origin = zO
 	local y = report_(L.pa, L.pb, 1, zO)
@@ -23,31 +35,27 @@ setmetatable(occs, {
 	end,
 })
 -----------------------
+-- coordinates(pt): coordinates (u, v) of the point pt in the system
 function occs:coordinates(pt)
-	local O = self.origin
-
-	local dx = pt.re - O.re
-	local dy = pt.im - O.im
-
-	-- axes directeurs
-	local ux = self.x - O
-	local vx = self.y - O
-
-	-- normes (évite division par 0)
-	local nu = point.abs(ux)
-	local nv = point.abs(vx)
-	local eps = tkz.epsilon or 1e-9
-
-	if nu <= eps or nv <= eps then
-		tex.error("Degenerate occs: axis length too small.")
-		return
+	if type(pt) ~= "table" or pt.type ~= "point" then
+		error("tkz-elements: occs:coordinates: a point is expected", 2)
 	end
+	local O = self.origin
+	local d = pt - O
+	-- unit vectors of the axes (length 1 by construction)
+	local ux = self.x - O
+	local uy = self.y - O
+	return d .. ux, d .. uy
+end
 
-	-- coordonnées projetées, corrigées par l'échelle des axes
-	local u = (ux.re * dx + ux.im * dy) / nu
-	local v = (vx.re * dx + vx.im * dy) / nv
-
-	return u, v
+-- point(u, v): the point with coordinates (u, v) in the system
+-- (inverse of coordinates)
+function occs:point(u, v)
+	if type(u) ~= "number" or type(v) ~= "number" then
+		error("tkz-elements: occs:point: two numbers are expected", 2)
+	end
+	local O = self.origin
+	return O + u * (self.x - O) + v * (self.y - O)
 end
 
 

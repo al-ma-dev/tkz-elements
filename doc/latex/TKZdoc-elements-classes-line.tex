@@ -182,6 +182,7 @@ Here's the list of methods for the \tkzNameObj{line} object. The results can be 
 \tkzMeth{line}{ll\_from(pt)}    & [\ref{ssub_line_from_a_defined_line}] \\
 \tkzMeth{line}{ortho\_from(pt)} & [\ref{ssubline_ortho_from}] \\
 \tkzMeth{line}{mediator()}      &  [\ref{ssub:method_line_mediator}]\\
+\tkzMeth{line}{equidistant\_with(L, <choice>)} & [\ref{ssub:method_line_equidistant_with}]\\
 \tkzMeth{line}{swap\_line()}    & [\ref{ssub:method_line_swap__line} ; \ref{ssub:intersection_line_parabola_explained}] \\
 
 \tkzMeth{line}{orthogonal\_at()} & \ref{ssub:method_line_orthogonal__at} \\
@@ -235,11 +236,11 @@ Here's the list of methods for the \tkzNameObj{line} object. The results can be 
 \midrule
 \texttt{Methods Returning a Object} &\\
 \midrule
-\tkzMeth{line}{reflection(obj)}  &  [\ref{ssub:reflection_of_object}] \\
-\tkzMeth{line}{translation(obj)} & [\ref{ssub:example_translation}] \\
+\tkzMeth{line}{reflection(obj, ...)}  &  [\ref{ssub:reflection_of_object}] \\
+\tkzMeth{line}{translation(obj, ...)} & [\ref{ssub:example_translation}] \\
 \tkzMeth{line}{projection(obj)}  &  [\ref{ssub:example_projection_of_several_points}]\\
 \tkzMeth{line}{projection\_ll(L, pts)}  & [\ref{ssub:method_line_projection__ll}] \\
-\tkzMeth{line}{affinity\_ll(L, k, pts)}  &  [\ref{ssub:method_line_affinity}] \\
+\tkzMeth{line}{affinity(L, k, obj, ...)}  &  [\ref{ssub:method_line_affinity}] \\
 
 \texttt{Methods Returning a Path} &\\
 \midrule
@@ -886,7 +887,7 @@ Hi, He  = L.AB:harmonic("both", 2)
 
 
 
-\subsubsection{Methode \tkzMeth{line}{gold\_ratio}}
+\subsubsection{Method \tkzMeth{line}{gold\_ratio}}
 \label{ssub:methode_imeth_line_gold__ratio}
 
 This method returns a point $C$ on the segment $[AB]$ that divides it according to the \smallbf{golden ratio}~$\varphi$:
@@ -1242,6 +1243,45 @@ The method returns a new \code{line} object that is perpendicular to the origina
 \end{tkzexample}
 
 
+\subsubsection{Method \tkzMeth{line}{equidistant\_with(L, <choice>)}}
+\label{ssub:method_line_equidistant_with}
+
+This method returns the locus of the points equidistant from the line and from
+the line \code{L}:
+\begin{itemize}
+  \item if the two lines are parallel, the parallel line halfway between them;
+  \item if they intersect, the two bisectors of the angles they form (through
+        their point of intersection).
+\end{itemize}
+The optional argument \code{choice} (\code{1} or \code{2}) selects one of the two
+bisectors.
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(4, 1)
+ z.C = point(0, 3)
+ z.D = point(4, 2)
+ L.AB = line(z.A, z.B)
+ L.CD = line(z.C, z.D)
+ L.b1, L.b2 = L.AB:equidistant_with(L.CD)
+ z.I = intersection(L.AB, L.CD)
+ z.E = L.b1:report(3, z.I)
+ z.F = L.b1:report(-3, z.I)
+ z.G = L.b2:report(3, z.I)
+ z.H = L.b2:report(-3, z.I)}
+\begin{center}
+\begin{tikzpicture}
+ \tkzGetNodes
+ \tkzDrawLines[add=.2 and 1.5](A,B C,D)
+ \tkzDrawLines[red,add=0 and 0](E,F G,H)
+ \tkzDrawPoints(A,B,C,D,I)
+ \tkzLabelPoints(A,B,C,D,I)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
 \subsubsection{Method \tkzMeth{line}{collinear\_at\_distance(d)}}
 \label{ssub:method_line_collinear_at_distance}
 
@@ -1269,7 +1309,7 @@ A new \tkzname{line} object parallel to \texttt{L} at distance \texttt{d}.
   z.A = point(0, 0)
   z.B = point(5, 2)
   L.AB = line (z.A, z.B)
-  L.n = line(collinear_at_distance_(z.A, z.B, -1))
+  L.n = L.AB:collinear_at_distance(-1)
   z.D, z.E = L.n:get()}
 \begin{tikzpicture}[gridded,scale=.5]
 \tkzGetNodes
@@ -2075,7 +2115,7 @@ This method is presented in the document \tkzname{Euclidean Geometry} presented 
   L.AC = line(z.A, z.C)
   L.med = L.AB:mediator ()
   z.M = L.AB.mid
-  z.x, z.y = get_points(L.med)
+  z.x, z.y = L.med:get()
   z.H = L.AB:projection(z.C)
   L.ortho = L.AB:orthogonal_from(z.C)
   PA.center,
@@ -2233,7 +2273,7 @@ The projection is computed along lines parallel to \code{L}. The result is:
 
 \end{tkzexample}
 
-\subsubsection{Method \tkzMeth{line}{affinity(L, k, obj)}}
+\subsubsection{Method \tkzMeth{line}{affinity(L, k, obj, ...)}}
 \label{ssub:method_line_affinity}
 
 The introduction of parallel projection onto a given direction allows the definition of a new geometric transformation: \emph{affinity}.
@@ -2247,7 +2287,10 @@ This method applies an affine transformation to a point or a group of points, us
 Accepted arguments:
 \begin{itemize}
   \item \code{L} — a \code{line} object defining the direction of the affinity,
-  \item \code{obj} — a point or a list of points to transform.
+  \item \code{obj, ...} — points or objects. A line, a triangle, a quadrilateral and
+  a parallelogram keep their class; a square and a rectangle become
+  parallelograms; a circle and an ellipse become an ellipse (or a circle).
+  Other objects raise an error.
 \end{itemize}
 
 
@@ -2282,23 +2325,53 @@ This transformation preserves parallelism and the ratio of distances along lines
 
 \end{tkzexample}
 
-\subsubsection{Method \tkzMeth{line}{translation(obj)}}
+\medskip
+The image of a circle is an ellipse (an object of class \tkzClass{conic}).
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+ init_elements()
+ z.A = point(-1, 0)
+ z.B = point(5, 0)
+ z.C = point(0, 0)
+ z.D = point(1, 2)
+ L.AB = line(z.A, z.B)
+ L.CD = line(z.C, z.D)
+ z.O = point(2, 1.5)
+ z.T = point(3, 1.5)
+ C.OT = circle(z.O, z.T)
+ CO.E = L.AB:affinity(L.CD, 2, C.OT)
+ z.W = CO.E.center
+ PA.E = CO.E:points(0, 1, 100)
+}
+\begin{center}
+\begin{tikzpicture}
+ \tkzGetNodes
+ \tkzDrawLines(A,B)
+ \tkzDrawCircle(O,T)
+ \tkzDrawCoordinates[smooth,red](PA.E)
+ \tkzDrawSegments[dashed,->](O,W)
+ \tkzDrawPoints(O,W)
+ \tkzLabelPoints(O,W)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+\subsubsection{Method \tkzMeth{line}{translation(obj, ...)}}
 \label{ssub:example_translation}
 
 This method performs a translation based on the vector defined by the segment from \code{pa} to \code{pb}, the two endpoints of the line.
 
 \medskip
 
-The argument \code{obj} can be:
-\begin{itemize}
-  \item a point,
-  \item a line,
-  \item a triangle,
-  \item a circle.
-\end{itemize}
+Each argument can be a point or one of the following objects:
+a line, a circle, a triangle, a square, a rectangle, a quadrilateral or
+a parallelogram. Several objects can be given; one result is returned
+for each, and each object is rebuilt in its own class. Any other object
+(e.g. a conic) raises an error.
 
 
-The method applies the same translation vector to all components of the object. Other object types may be supported in future versions.
+The method applies the same translation vector to all the defining points of the object.
 
 \vspace{1em}
 
@@ -2321,23 +2394,21 @@ The method applies the same translation vector to all components of the object. 
 \end{center}
 \end{tkzexample}
 
-\subsubsection{Method \tkzMeth{line}{reflection(obj)}}
+\subsubsection{Method \tkzMeth{line}{reflection(obj, ...)}}
 \label{ssub:reflection_of_object}
 
 This method performs an axial (orthogonal) reflection with respect to the line. It corresponds to a symmetry with respect to the axis defined by the segment from \code{pa} to \code{pb}.
 
 \medskip
 
-The argument \code{obj} can be:
-\begin{itemize}
-  \item a point,
-  \item a line,
-  \item a triangle,
-  \item a circle.
-\end{itemize}
+Each argument can be a point or one of the following objects:
+a line, a circle, a triangle, a square, a rectangle, a quadrilateral or
+a parallelogram. Several objects can be given; one result is returned
+for each, and each object is rebuilt in its own class. Any other object
+(e.g. a conic) raises an error.
 
 
-The method returns the reflected object across the line. Support for additional geometric objects may be added in future versions.
+The method returns the reflected objects across the line.
 
 \vspace{1em}
 

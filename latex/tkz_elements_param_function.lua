@@ -1,10 +1,9 @@
--- tkz_elements_param_function.lua
+-- File: tkz_elements_param_function.lua
 -- Copyright (c) 2026 Alain Matthes
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
 
-
--- Define a GLOBAL class: pfct
+-- Global class pfct
 -- Parametric function: (x(t), y(t)) -> path() or file
 -- Requires tkz-elements objects: path(), point(x,y)
 
@@ -15,9 +14,10 @@ pfct.__index = pfct
 -- helpers
 -- ------------------------------------------------------------
 local function is_finite_(v)
-  return (v == v) and v ~= math.huge and v ~= -math.huge
+  return type(v) == "number" and (v == v) and v ~= math.huge and v ~= -math.huge
 end
 
+-- compile an expression in varname; returns the function, or nil and a message
 local function compile_1var_(expr, env, varname)
   env = env or math
   varname = varname or "t"
@@ -28,23 +28,43 @@ local function compile_1var_(expr, env, varname)
     nil, "t", env
   )
   if not chunk then
-    if tex and tex.error then
-      tex.error("tkz-elements: invalid parametric expression", { err or "compile error", expr })
-    end
-    return function(_) return 0/0 end
+    return nil, err
   end
-  return chunk()
+  local ok, fn = pcall(chunk)
+  if not ok or type(fn) ~= "function" then
+    return nil, fn
+  end
+  return fn
+end
+
+local function compile_coord_(e, env, name)
+  if type(e) == "function" then
+    return e
+  end
+  if type(e) ~= "string" and type(e) ~= "number" and e ~= nil then
+    -- level 3: compile_coord_ -> new -> user code (__call is a tail call)
+    error("tkz-elements: pfct: " .. name .. ": an expression (string) or a function is expected", 3)
+  end
+  local fn, err = compile_1var_(e, env, "t")
+  if not fn then
+    error("tkz-elements: pfct: invalid expression for " .. name .. " '" .. tostring(e)
+      .. "': " .. tostring(err), 3)
+  end
+  return fn
 end
 
 -- ------------------------------------------------------------
 -- constructor
 -- ------------------------------------------------------------
+-- The expressions are compiled at once, so that an invalid expression is
+-- reported at the line of the user code.
 function pfct:new(exprx, expry, env)
   local o = setmetatable({}, self)
   o.exprx = exprx
   o.expry = expry
   o.env   = env or math
-  o.fx, o.fy = nil, nil
+  o.fx = compile_coord_(exprx, o.env, "x(t)")
+  o.fy = compile_coord_(expry, o.env, "y(t)")
   o.sx = 1
   o.sy = 1
   o.mapfn = nil
@@ -56,24 +76,20 @@ setmetatable(pfct, {
     return pfct:new(exprx, expry, env)
   end
 })
+
+-- copy (used by scale and map)
+function pfct:copy_()
+  local o = setmetatable({}, getmetatable(self))
+  for k, v in pairs(self) do
+    o[k] = v
+  end
+  return o
+end
+
 -- ------------------------------------------------------------
--- compile (lazy)
+-- compile (the expressions are compiled by the constructor)
 -- ------------------------------------------------------------
 function pfct:compile()
-  if not self.fx then
-    if type(self.exprx) == "function" then
-      self.fx = self.exprx
-    else
-      self.fx = compile_1var_(self.exprx, self.env, "t")
-    end
-  end
-  if not self.fy then
-    if type(self.expry) == "function" then
-      self.fy = self.expry
-    else
-      self.fy = compile_1var_(self.expry, self.env, "t")
-    end
-  end
   return self
 end
 
@@ -84,21 +100,19 @@ function pfct:set_scale(sx, sy)
 end
 
 function pfct:scale(sx, sy)
-  local o = self:copy()
+  local o = self:copy_()
   return o:set_scale(sx, sy)
 end
 
 -- ------------------------------------------------------------
--- evaluation
+-- evaluation: nan if a coordinate is not defined at t
 -- ------------------------------------------------------------
 function pfct:eval(t)
-  self:compile()
-
   local okx, x = pcall(self.fx, t)
   local oky, y = pcall(self.fy, t)
 
-  if not okx then x = 0/0 end
-  if not oky then y = 0/0 end
+  x = okx and tonumber(x) or 0 / 0
+  y = oky and tonumber(y) or 0 / 0
 
   -- scale
   x = (self.sx or 1) * x
@@ -108,9 +122,9 @@ function pfct:eval(t)
   if self.mapfn then
     local ok, X, Y = pcall(self.mapfn, x, y, t, self)
     if ok then
-      x, y = X, Y
+      x, y = tonumber(X) or 0 / 0, tonumber(Y) or 0 / 0
     else
-      x, y = 0/0, 0/0
+      x, y = 0 / 0, 0 / 0
     end
   end
 
@@ -127,8 +141,6 @@ function pfct:path(tmin, tmax, n)
   if n <= 0 then n = 1 end
 
   local p = path()
-  self:compile()
-
   local step = (tmax - tmin) / n
 
   for i = 0, n do
@@ -144,32 +156,47 @@ end
 
 function pfct:set_map(fn)
   if fn ~= nil and type(fn) ~= "function" then
-    error("pfct:set_map(fn): fn must be a function")
+    error("tkz-elements: pfct:set_map: a function is expected", 2)
   end
   self.mapfn = fn
   return self
 end
 
 function pfct:map(fn)
-  local o = self:copy()
+  if fn ~= nil and type(fn) ~= "function" then
+    error("tkz-elements: pfct:map: a function is expected", 2)
+  end
+  local o = self:copy_()
   return o:set_map(fn)
 end
+
 -- ------------------------------------------------------------
 -- file (TikZ plot file)
 -- ------------------------------------------------------------
 function pfct:file(tmin, tmax, n, filename)
-  tmin = tonumber(tmin)
-  tmax = tonumber(tmax)
-  n    = tonumber(n) or 200
+  local a, b = tonumber(tmin), tonumber(tmax)
+  n = tonumber(n) or 200
+  if not (a and b) then
+    error("tkz-elements: pfct:file: tmin and tmax must be numbers", 2)
+  end
+  if n <= 0 then
+    error("tkz-elements: pfct:file: n must be positive", 2)
+  end
+  if type(filename) ~= "string" or filename == "" then
+    error("tkz-elements: pfct:file: a file name is expected", 2)
+  end
 
-  local out = assert(io.open(filename, "w"))
-  local step = (tmax - tmin) / n
+  local out, err = io.open(filename, "w")
+  if not out then
+    error("tkz-elements: pfct:file: cannot open '" .. filename .. "': " .. tostring(err), 2)
+  end
+  local step = (b - a) / n
 
   for i = 0, n do
-    local t = tmin + i * step
+    local t = a + i * step
     local x, y = self:eval(t)
-    if x == x and y == y then
-      out:write(x, " ", y, "\n")
+    if is_finite_(x) and is_finite_(y) then
+      out:write(checknumber_(x), " ", checknumber_(y), "\n")
     end
   end
 
@@ -181,7 +208,8 @@ end
 function pfct:jobfile(tmin, tmax, n, suffix)
   local job = (tex and tex.jobname) or "job"
   local fname = job .. "-" .. tostring(suffix or "param") .. ".table"
-  return self:file(tmin, tmax, n, fname)
+  local r = self:file(tmin, tmax, n, fname)
+  return r
 end
 
 -- ------------------------------------------------------------
@@ -201,9 +229,13 @@ end
 -- point on parametric curve
 -- ------------------------------------------------------------
 function pfct:point(t)
-  return point(self:x(t), self:y(t))
+  local x, y = self:eval(t)
+  if not (is_finite_(x) and is_finite_(y)) then
+    error("tkz-elements: pfct:point: the curve is not defined at t = " .. tostring(t), 2)
+  end
+  return point(x, y)
 end
 
--- alias naturel
+-- alias
 pfct.at = pfct.point
 return pfct

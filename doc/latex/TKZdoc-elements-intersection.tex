@@ -18,7 +18,7 @@ The \code{conic} class includes parabolas, hyperbolas, and ellipses.
 
 The function takes a pair of objects as arguments, regardless of order.
 The result typically consists of one or two points, depending on the geometric configuration.
-If there is no intersection, the function may return \code{false} or \code{\_}, depending on the context.
+If there is no intersection, the function returns nothing (\code{nil}); the result can be tested with \code{if not x then}. Any other pair of objects (for example a circle and a conic, or two conics) raises an error.
 
 \medskip
 
@@ -31,7 +31,7 @@ you may use optional keys in the \code{opts} table.
 
 In addition, numerical robustness can be controlled through an optional tolerance parameter \code{eps}, also stored in \code{opts}.
 
-\subsection{Optional arguments: \code{known}, \code{near}, and \code{EPS}}
+\subsection{Optional arguments: \code{known}, \code{near}, and \code{eps}}
 
 The function \tkzFct{tkz-elements}{intersection(X, Y, opts)} computes the intersection between two geometric objects \code{X} and \code{Y}.
 The optional table \code{opts} may contain the following keys:
@@ -61,10 +61,11 @@ The optional table \code{opts} may contain the following keys:
 
   Here, \code{z.A} will be the intersection point closest to \code{z.O}.
 
-  \item \tkzKey{EPS} \tkzOptArg{number} \\
+  \item \tkzKey{eps} \tkzOptArg{number} \\
   This optional key sets the numerical tolerance used internally when determining
   whether objects intersect, touch, or are tangential.
-  If omitted, the global value \code{tkz.epsilon} is used:
+  If omitted, the global value \code{tkz.epsilon} is used
+  (\code{EPS} is accepted as an alias):
 
   \begin{mybox}
   \begin{verbatim}
@@ -109,7 +110,7 @@ z.A, z.B = intersection(C1, C2, {eps = 1e-5})
 \subsection{Line-line}
 \label{sub:line_line}
 
-The result is of the form: |point| or |false|.
+The result is a point, or nothing (|nil|) if the lines are parallel.
 
 \begin{minipage}{0.6\textwidth}
 \begin{verbatim}
@@ -123,7 +124,7 @@ The result is of the form: |point| or |false|.
  L.AB = line(z.A, z.B)
  L.CD = line(z.C, z.D)
  x = intersection(L.AB, L.CD)
- if x == false then
+ if not x then
  	tex.print("error")
  else
  	z.I = x
@@ -148,7 +149,7 @@ end}
  L.AB = line(z.A, z.B)
  L.CD = line(z.C, z.D)
  x = intersection(L.AB, L.CD)
- if x == false then
+ if not x then
  	tex.print("error")
  else
  	z.I = x
@@ -166,7 +167,7 @@ end}
 
 \subsection{Line-circle}
 
-The result is of the form: |point,point| or |false,false|. If the line is tangent to the circle, then the two points are identical. You can ignore one of the points by using the underscore: |_, point| or |point, _|. When the intersection yields two solutions, the order of the points is determined by the argument of |(z.p - z.c)| with |c| center of the circle and |p| point of intersection. The first solution corresponds to the smallest argument (arguments are between 0 and $2\pi$).
+The result is of the form: |point,point|, or nothing (|nil|) if there is no intersection. If the line is tangent to the circle, then the two points are identical. You can ignore one of the points by using the underscore: |_, point| or |point, _|. When the intersection yields two solutions, the order of the points is determined by the argument of |(z.p - z.c)| with |c| center of the circle and |p| point of intersection. The first solution corresponds to the smallest argument (arguments are between 0 and $2\pi$).
 
 \begin{minipage}{0.6\textwidth}
 \begin{verbatim}
@@ -220,7 +221,7 @@ The result is of the form: |point,point| or |false,false|. If the line is tangen
 
 \subsection{Circle-circle}
 
-The result is of the form: |point,point| or |false,false|. If the circles are  tangent, then the two points are identical. You can ignore one of the points by using the underscore: |_ , point| or |point , _|. As for the intersection of a line and a circle, consider the argument of |z.p-z.c|  with |c| center of the first circle and |p| point of intersection. The first solution corresponds to the smallest argument (arguments are between 0 and $2\pi$).
+The result is of the form: |point,point|, or nothing (|nil|) if there is no intersection. If the circles are  tangent, then the two points are identical. You can ignore one of the points by using the underscore: |_ , point| or |point , _|. As for the intersection of a line and a circle, consider the argument of |z.p-z.c|  with |c| center of the first circle and |p| point of intersection. The first solution corresponds to the smallest argument (arguments are between 0 and $2\pi$).
 
 \begin{minipage}{0.5\textwidth}
 \begin{verbatim}
@@ -271,6 +272,8 @@ Other example: \ref{sub:the_figure_pappus_circle}
 \label{sub:line_conic}
 The following example is complex, but it shows the possibilities of Lua.
 The designation of intersection points is a little more complicated than the previous one, as the argument characterizing the major axis must be taken into account.  The principle is the same, but this argument must be subtracted. In concrete terms, you need to consider the slopes of the lines formed by the center of the ellipse and the points of intersection, and the slope of the major axis.
+
+For a parabola or a hyperbola, the two points are ordered by increasing distance from the first point of the line (|pa|). A line parallel to the axis of a parabola, or to an asymptote of a hyperbola, meets the conic at a single point, which is returned alone; an asymptote does not meet the hyperbola.
 \vspace{1em}
 
 \begin{minipage}{0.5\textwidth}

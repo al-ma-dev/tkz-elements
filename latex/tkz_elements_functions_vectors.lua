@@ -3,13 +3,7 @@
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
 
-
-function scale_(v, d)
-	return v.tail + point(d * v.norm * math.cos(v.slope), d * v.norm * math.sin(v.slope))
-end
-
--- Retourne la nouvelle TÊTE du vecteur, pas le vecteur scalaire
+-- new head of the vector v scaled by d (not the vector itself)
 function scaled_head_(v, d)
 	return v.tail + d * (v.head - v.tail)
 end
-

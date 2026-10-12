@@ -62,17 +62,28 @@ math.sin(x), math.exp(-x^2)
   \texttt{Constructor} & \\
   \midrule
   \tkzFct{pfct}{new(exprx,expry)}       & [\ref{ssub:method_pfct_new}] \\
-  \tkzFct{pfct}{compile(exprx,expry)}   & [\ref{ssub:method_pfct_compile}] \\
+  \tkzMeth{pfct}{compile()}   & [\ref{ssub:method_pfct_compile}] \\
   \midrule
   \texttt{Methods Returning a Real Number } & \\
   \midrule
   \tkzMeth{pfct}{x(t)}                 & [\ref{ssub:method_pfct_x}] \\
   \tkzMeth{pfct}{y(t)}                 & [\ref{ssub:method_pfct_y}] \\
+  \tkzMeth{pfct}{eval(t)}              & [\ref{ssub:method_pfct_eval}] \\
   \tkzMeth{pfct}{point(t)}             & [\ref{ssub:method_pfct_point}] \\
+  \tkzMeth{pfct}{at(t)}                & alias of \code{point} \\
   \midrule
   \texttt{Methods Returning a Path} & \\
   \midrule
   \tkzMeth{pfct}{path(tmin,tmax,n)}    & [\ref{ssub:method_pfct_path}] \\
+  \midrule
+  \texttt{Transformations and files} & \\
+  \midrule
+  \tkzMeth{pfct}{set\_scale(sx,sy)}     & [\ref{ssub:method_pfct_scale}] \\
+  \tkzMeth{pfct}{scale(sx,sy)}         & [\ref{ssub:method_pfct_scale}] \\
+  \tkzMeth{pfct}{set\_map(fn)}         & [\ref{ssub:method_pfct_map}] \\
+  \tkzMeth{pfct}{map(fn)}             & [\ref{ssub:method_pfct_map}] \\
+  \tkzMeth{pfct}{file(tmin,tmax,n,name)} & [\ref{ssub:method_pfct_file}] \\
+  \tkzMeth{pfct}{jobfile(tmin,tmax,n,<suffix>)} & [\ref{ssub:method_pfct_file}] \\
   \bottomrule
   \end{tabular}
 \egroup
@@ -84,8 +95,8 @@ math.sin(x), math.exp(-x^2)
 \texttt{Description: }Creates a parametric function object from two expressions
 or callable Lua functions describing the components $x(t)$ and $y(t)$. When
 strings are provided, they represent Lua expressions in the variable
-\texttt{t}, evaluated using standard Lua rules (therefore requiring
-\texttt{math.} prefixes).
+\texttt{t}, evaluated using standard Lua rules (without the \texttt{math.}
+prefix, see above). An invalid expression raises an error when the object is created.
 
 \texttt{Arguments: }\par
 \begin{itemize}
@@ -97,13 +108,19 @@ strings are provided, they represent Lua expressions in the variable
 
 \texttt{Returns: } a \tkzClass{pfct} object.
 
-\subsubsection{Function \tkzFct{pfct}{compile(exprx,expry)}}
+\subsubsection{Method \tkzMeth{pfct}{compile()}}
 \label{ssub:method_pfct_compile}
 
-\texttt{Description: }Compiles the two expressions defining $x(t)$ and $y(t)$
-and returns the corresponding callable Lua functions (or wraps them into a
-\tkzClass{pfct} object, depending on the implementation). This is a low-level
-helper mainly intended for internal use.
+\texttt{Description: }Returns the object itself; the expressions are compiled
+when the object is created. This is a low-level helper mainly intended for
+internal use.
+
+\subsubsection{Method \tkzMeth{pfct}{eval(t)}}
+\label{ssub:method_pfct_eval}
+
+\texttt{Description: }Returns $x(t), y(t)$ (with the scale and the map);
+\code{nan} if the curve is not defined at $t$. \tkzMeth{pfct}{point} raises an
+error in this case.
 
 
 \subsubsection{Method \tkzMeth{pfct}{x(t)}}
@@ -232,6 +249,26 @@ the internal policy.
 %--------------------------------------------------------------------
 
 
+
+
+\subsubsection{Methods \tkzMeth{pfct}{set\_scale(sx,sy)} and \tkzMeth{pfct}{scale(sx,sy)}}
+\label{ssub:method_pfct_scale}
+
+Multiply the coordinates by \code{sx} and \code{sy}; \code{set\_scale} modifies
+the object, \code{scale} returns a modified copy.
+
+\subsubsection{Methods \tkzMeth{pfct}{set\_map(fn)} and \tkzMeth{pfct}{map(fn)}}
+\label{ssub:method_pfct_map}
+
+Apply a function \code{fn(x, y, t, self)} returning the new coordinates $(X, Y)$;
+\code{set\_map} modifies the object, \code{map} returns a modified copy.
+
+\subsubsection{Methods \tkzMeth{pfct}{file(tmin,tmax,n,name)} and \tkzMeth{pfct}{jobfile(tmin,tmax,n,<suffix>)}}
+\label{ssub:method_pfct_file}
+
+Write the points $(x, y)$ in a file usable with \code{\textbackslash draw plot file};
+non-finite values are skipped. \code{jobfile} uses the name
+\code{<jobname>-<suffix>.table} (default suffix: \code{param}).
 
 \endinput
 %--------------------------------------------------------------------

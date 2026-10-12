@@ -148,7 +148,7 @@ When working with path objects—especially when several intermediate curves are
 
 \begin{mybox}
 \textbf{Rule — Prefer explicit, indexed names:}
-Using \code{PA.p1}, \code{PA.p2}, \code{PA.result}, etc., improves clarity, avoids accidental overwriting, and ensures that all geometric data can be reset with a single call to \tkzFct{init\_elements()}.
+Using \code{PA.p1}, \code{PA.p2}, \code{PA.result}, etc., improves clarity, avoids accidental overwriting, and ensures that all geometric data can be reset with a single call to \tkzFct{tkz-elements}{init\_elements()}.
 \end{mybox}
 
 This approach aligns with the overall philosophy of \tkzNamePack{tkz-elements}, where named tables like \code{PA}, \code{T}, \code{C}, and \code{L} are used to store structured geometric information. Indexing also helps make diagrams more readable, reproducible, and easier to debug.
@@ -332,7 +332,8 @@ in the path.
 
 If \code{n} is provided, the coordinates are rounded to \code{n}
 decimal places before being stored in the path.
-If omitted, a default formatting precision is used.
+If omitted, 10 decimal places are used, so that the points read back from
+the path keep enough precision for further computations.
 
 \medskip
 
@@ -660,7 +661,7 @@ It is mainly used to store segments, by keeping together the coordinates of two 
 
 \begin{itemize}
   \item \code{z1}, \code{z2} – points given as tables \code{\{re, im\}}.
-  \item \code{decimals} (optional) – number of decimals (default: \code{5}).
+  \item \code{decimals} (optional) – number of decimals (default: \code{10}).
 \end{itemize}
 
 \medskip

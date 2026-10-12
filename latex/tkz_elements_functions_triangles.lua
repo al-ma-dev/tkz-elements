@@ -26,7 +26,7 @@ function check_equilateral_(A, B, C, EPS)
 	EPS = EPS or tkz.epsilon
 	local a, b, c = length_(B, C), length_(A, C), length_(A, B)
 
-	-- Vérifie que les trois longueurs sont égales à epsilon près
+	-- The three lengths are equal (up to epsilon)
 	if math.abs(a - b) < EPS and math.abs(a - c) < EPS and math.abs(b - c) < EPS then
 		return true
 	else
@@ -53,17 +53,17 @@ function check_isosceles_(A, B, C, EPS)
 	EPS = EPS or tkz.epsilon
   local a, b, c = length_(B, C), length_(A, C), length_(A, B)
 
-		-- si déjà équilatéral
+		-- if already equilateral
 		if check_equilateral_(A, B, C, EPS) then
 				return true
 		end
 
 		if math.abs(a - b) <= EPS then
-				return true      -- sommet C au-dessus de AB
+				return true      -- vertex C above AB
 		elseif math.abs(b - c) <= EPS then
-				return true      -- sommet A au-dessus de BC
+				return true      -- vertex A above BC
 		elseif math.abs(c - a) <= EPS then
-				return true      -- sommet B au-dessus de CA
+				return true      -- vertex B above CA
 		else
 				return false
 		end
@@ -111,8 +111,7 @@ function barycentric_coordinates_(a, b, c, pt)
 	local orient2d_ABC = oriented_area2_(xA,yA,xB,yB,xC,yC)
 
 	if is_zero_(orient2d_ABC) then
-		tex.error("Degenerate triangle: vertices aligned (barycentric).")
-		return
+		error("tkz-elements: barycentric coordinates: degenerate triangle (collinear vertices)", 2)
 	end
 
 	local l_A = oriented_area2_(xP,yP,xB,yB,xC,yC) / orient2d_ABC
@@ -512,7 +511,10 @@ function square_inscribed_(a, b, c)
 	return m, n, o, p
 end
 
-function resolve_triangle_index(self, arg)
+-- Index 0, 1, 2 of a vertex, given by a number (taken modulo 3) or by a
+-- point (the vertex itself, or a point with the same coordinates).
+-- Errors are reported at level 3 (user -> method -> resolve_triangle_index_).
+function resolve_triangle_index_(self, arg)
 	local a, b, c = self.pa, self.pb, self.pc
 
 	if arg == nil or arg == 0 then
@@ -526,11 +528,34 @@ function resolve_triangle_index(self, arg)
 			return 1
 		elseif rawequal(arg, c) then
 			return 2
-		else
-			tex.error("Invalid vertex (not the stored triangle vertex object)")
 		end
+		for k, v in ipairs({ a, b, c }) do
+			if point.abs(arg - v) <= tkz.epsilon then
+				return k - 1
+			end
+		end
+		error("tkz-elements: triangle: the point is not a vertex of the triangle", 3)
 	else
-		tex.error("Invalid argument for triangle index")
+		error("tkz-elements: triangle: invalid vertex index (use 0, 1, 2 or a vertex), got "
+			.. tostring(arg), 3)
 	end
 end
 
+-- Poncelet point of four points: common point of the nine-point circles
+-- of ABC, BCD, CDA and DAB. Returns the point, or nil and a message.
+function poncelet_point_(A, B, C, D)
+	if tkz.aligned(A, B, C) or tkz.aligned(A, C, D) then
+		return nil, "three points are collinear"
+	end
+	local e1 = euler_center_(A, B, C)
+	local e2 = euler_center_(A, C, D)
+	local m = midpoint_(A, C)
+	local x, y = intersection_cc_(e1, m, e2, m)
+	if not x then
+		return nil, "construction failed (no intersection)"
+	end
+	if point.abs(x - m) < tkz.epsilon then
+		return y
+	end
+	return x
+end

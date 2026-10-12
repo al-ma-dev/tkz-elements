@@ -107,8 +107,8 @@ operations in a natural way.
     \tkzMeta{point}{pow(z1,z2)}    & \verb|z.a ^ z.b|        & determinant (real number) \\
     \tkzMeta{point}{div(z1,z2)}    & \verb|z.a / z.b|        & affix \\
     \tkzMeta{point}{tostring(z)}   & \verb|tostring(z.a)|    & TeX-friendly display \\
-    \tkzMeta{point}{tonumber(z)}   & \verb|tonumber(z.a)|    & affix or \texttt{nil} \\
-    \tkzMeta{point}{eq(z1,z2)}     & \verb|z.a == z.b|       & boolean \\
+    \tkzMeth{point}{tonumber()}    & \verb|z.a:tonumber()|   & real number or \texttt{nil} \\
+    \tkzMeta{point}{eq(z1,z2)}     & \verb|z.a == z.b|       & boolean (distance $<$ \texttt{tkz.epsilon}) \\
     \bottomrule
   \end{tabular}
   \end{minipage}

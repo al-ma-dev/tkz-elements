@@ -6,6 +6,10 @@
 quadrilateral = {}
 quadrilateral.__index = quadrilateral
 function quadrilateral:new(pa, pb, pc, pd)
+	if not (is_point_(pa) and is_point_(pb) and is_point_(pc) and is_point_(pd)) then
+		-- level 2: __call is a tail call (return cls:new(...))
+		error("tkz-elements: quadrilateral: four points are expected", 2)
+	end
 	local type = "quadrilateral"
 	local a = point.abs(pb - pa)
 	local b = point.abs(pc - pb)
@@ -48,41 +52,33 @@ setmetatable(quadrilateral, {
 	end,
 })
 -----------------------
-function quadrilateral:get()
-	return self.pa, self.pb, self.pc, self.pd
+-- get() returns the four vertices ; get(i) returns the i-th vertex (1 to 4)
+function quadrilateral:get(i)
+	if i == nil then
+		return self.pa, self.pb, self.pc, self.pd
+	end
+	return ({ self.pa, self.pb, self.pc, self.pd })[i]
 end
 
-function quadrilateral:is_cyclic()
-	if not self:is_convex() then
-		tex.error("Quadrilateral is not convex.")
-		return
-	end
-	local alpha = inner_angle_(self.pa, self.pb, self.pd) -- ∠BAD ou ∠DAB selon ordre, mais interne
-	local beta  = inner_angle_(self.pc, self.pb, self.pd) -- angle au sommet C: entre CB et CD
-	return math.abs(alpha + beta - math.pi) < tkz.epsilon
-end
-
-function quadrilateral:poncelet_point()
-	if not self:is_convex() then
-		tex.error("Quadrilateral is not convex.")
-		return
-	end
-
+-- true if the four vertices lie on a same circle
+function quadrilateral:is_cyclic(EPS)
+	EPS = EPS or tkz.epsilon
 	local A, B, C, D = self.pa, self.pb, self.pc, self.pd
-	local e1 = euler_center_(A, B, C)
-	local e2 = euler_center_(A, C, D)
-	local m = midpoint_(A, C)
-	local x, y = intersection_cc_(e1, m, e2, m)
-
-	if not x or not y then
-		tex.error("Poncelet construction failed: no intersection.")
+	if tkz.aligned(A, B, C) then
+		return false
 	end
+	local o = circum_center_(A, B, C)
+	local r = point.abs(A - o)
+	return math.abs(point.abs(D - o) - r) <= EPS * math.max(r, 1)
+end
 
-	if point.abs(x - m) < tkz.epsilon then
-		return y
-	else
-		return x
+-- common point of the nine-point circles of ABC, BCD, CDA and DAB
+function quadrilateral:poncelet_point()
+	local p, err = poncelet_point_(self.pa, self.pb, self.pc, self.pd)
+	if not p then
+		error("tkz-elements: quadrilateral:poncelet_point: " .. err, 2)
 	end
+	return p
 end
 
 function quadrilateral:is_convex(EPS)
@@ -99,7 +95,7 @@ function quadrilateral:is_convex(EPS)
 	local z3 = cross(D - C, A - D)
 	local z4 = cross(A - D, B - A)
 
-	-- alignement → dégénéré
+	-- collinear consecutive vertices: degenerate
 	if math.abs(z1) < EPS or math.abs(z2) < EPS
 		 or math.abs(z3) < EPS or math.abs(z4) < EPS then
 		return false
@@ -111,13 +107,29 @@ function quadrilateral:is_convex(EPS)
 		 and (z4 > 0) == s1
 end
 
+-- true if the sides [AB] and [CD], or [BC] and [DA], cross each other
+function quadrilateral:is_crossed_()
+	local A, B, C, D = self.pa, self.pb, self.pc, self.pd
+	local function cross(u, v)
+		return (point.conj(u) * v).im
+	end
+	local function segments_cross(p1, p2, p3, p4)
+		local d1 = cross(p4 - p3, p1 - p3)
+		local d2 = cross(p4 - p3, p2 - p3)
+		local d3 = cross(p2 - p1, p3 - p1)
+		local d4 = cross(p2 - p1, p4 - p1)
+		return d1 * d2 < 0 and d3 * d4 < 0
+	end
+	return segments_cross(A, B, C, D) or segments_cross(B, C, D, A)
+end
+
+-- area of a non-crossed quadrilateral (convex or not)
 function quadrilateral:area()
-	if not self:is_convex() then
-		tex.error("Area undefined: quadrilateral is not convex.")
-		return
+	if self:is_crossed_() then
+		error("tkz-elements: quadrilateral:area: undefined for a crossed quadrilateral", 2)
 	end
 
-	local A,B,C,D = self.pa, self.pb, self.pc, self.pd
+	local A, B, C, D = self.pa, self.pb, self.pc, self.pd
 
 	local function cross(u, v)
 		return (point.conj(u) * v).im

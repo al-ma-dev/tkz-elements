@@ -1,4 +1,450 @@
-## [2026/04/11 — version 5.06c]
+## [2026/10/11 — version 6.00c]
+
+   ### Added
+   - **conic**
+     - `EL_from_equation(t)` or `EL_from_equation(A, B, C, D, E, F)`: ellipse
+       defined by its equation Ax^2 + Bxy + Cy^2 + Dx + Ey + F = 0. Like
+       `EL_five_points`, it returns the arguments of `conic(...)`:
+       `CO.EL = conic(EL_from_equation(1, 0, 4, 0, 0, -4))`.
+     - `EL_conjugate(c, m, n)`: ellipse with center `c` and conjugate
+       semi-diameters `[c, m]` and `[c, n]` (Rytz construction). It returns the arguments of `conic(...)`.
+   - **line**
+     - `affinity(L, k, ...)` accepts objects as well as points: a line, a triangle, a quadrilateral and a parallelogram keep their class; a square and a rectangle become parallelograms; a circle and an ellipse become an ellipse (a circle if the axes are equal). A ratio 0 with an object, or an unsupported object (hyperbola, parabola, …), raises an explicit error.
+   - **occs**
+     - `point(u, v)`: the point with coordinates (u, v) in the system (inverse of `coordinates`).
+   - **triangle**
+     - `angle(i)`: the angle object (class `angle`) at the vertex i = 1, 2, 3
+       (numbering of `get(i)`), or at a vertex given as a point.
+   - **square**, **rectangle**, **quadrilateral**, **parallelogram**
+     - `get(i)` returns the i-th vertex (1 to 4), as for `line`, `circle` and
+       `triangle`; `get()` still returns the four vertices.
+
+   ### Fixed
+   - **main**
+     - `tkz_elements_tkz.lua` was loaded twice. The reserved tables are now listed once, in `tkz.tables`, used by `init_elements()` and by the  documentation.
+   - **tkz-elements.sty**
+     - Transfer macros (`\tkzGetNodes`, `\tkzUseLua`, `\tkzPathCount`, …) are now defined whatever the loading order: previously they were undefined when  `tkz-elements` was loaded before `tkz-euclide`, or with plain TikZ.
+       An old `tkz-euclide` (< 2024/04/19) loaded first still keeps its own macros.
+     - The version of `tkz-euclide` is also checked when it is loaded after `tkz-elements` (at `\begin{document}`).
+     - Warning for an old `tkz-euclide`: the message gave the version number
+       5.10c with the date 2024/04/19 (5.10c is dated 2024/04/27); it now gives
+       the minimum date and recommends 5.13c.
+     - `\pgfutil@ifnextchar` replaced by the kernel `\@ifnextchar`.
+     - Without LuaLaTeX, loading now stops after a single error (`\endinput`)
+       instead of a cascade of errors; removed the doubled period in the message.
+   - **point**
+     - `rotation`, `homothety` and `symmetry` now rebuild an object of the same
+       class: a rotated `rectangle`, `quadrilateral` or `parallelogram` was
+       returned as a `square`, and the symmetric of any object other than a
+       point, line or circle was returned as a `triangle`. With several
+       arguments, each one may now be any supported object (not only points).
+       An unsupported object (e.g. a conic) raises an explicit error.
+     - `__eq` now uses the same criterion as `identity` (Euclidean distance
+       less than `tkz.epsilon`), as announced in 5.03c; comparing a point with
+       a non-point returns `false`.
+     - Errors (invalid point, division by zero, normalization of a null vector,
+       `orthogonal(d)` of a null vector, conversion of a non-numeric value) now
+       stop the Lua chunk with `error()` and report the line of the user code,
+       instead of `tex.error()` followed by `nil` or `nan` values.
+     - `math.round` (not standard Lua, provided by lualibs) replaced by a local
+       function.
+     - `tostring`: no more `-0.00`; integer imaginary parts are written without
+       decimals (`1+2i` instead of `1+2.00i`).
+     - New method `z:tonumber()`. Lua has no `__tonumber` metamethod, so
+       `tonumber(z)` always returned `nil`; `point.__tonumber` is kept as an alias.
+     - Internal `class()`: inheritance from a base class was lost (the second
+       `setmetatable` overwrote `__index`).
+   - **maths**
+     - `tkz.angle_between_vectors` now returns an angle in (-π, π], as
+       documented (it returned e.g. 190° instead of -170°): it uses
+       `math.atan(y, x)`. A null vector raises an error instead of returning `nan`.
+     - `get_angle_`: `error()` instead of `tex.error()` (the computation went on
+       and produced a second, misleading division-by-zero error).
+     - `tkz_display_` (used by `tkz.display`) no longer depends on `math.round`
+       (lualibs) and no longer prints `-0.00`. `tostring(point)` now uses the
+       same formatter: a single display function for numbers and complex numbers.
+     - `tkz.round` / `tkz_round_`: symmetric rounding (`-2.5` gives `-3`), and an
+       integral result is returned as an integer (`3`, not `3.0`).
+   - **points**
+     - `barycenter_`: `error()` when the sum of the weights is (close to) zero,
+       instead of `tex.error()` followed by a division by zero.
+     - `random_point_(lower, upper)`: real coordinates; non-integer bounds were
+       rejected by `math.random` and only integer coordinates were produced.
+   - **tkz**
+     - `tkz.GetNodes()`: a point with undefined coordinates (NaN) now produces an
+       explicit warning naming the point and is placed at (0,0), instead of a
+       `Missing number` / `Illegal unit` TeX error.
+       `tkz.register_coord_warning` accepts an optional `kind` argument.
+     - `tkz.angle_between_vectors`: the error for a null vector now reports the
+       line of the user code.
+
+   - **line**
+     - `harmonic("int", pt)` and `harmonic("ext", pt)` returned `nil` (the short
+       mode names were converted in the wrong branch).
+     - The constructor checks that its two arguments are points.
+     - Errors stop with a clear message at the line of the user code, instead of
+       `tex.error` followed by `nil` or `nan`: `report` (degenerate line),
+       `harmonic` (invalid mode), `s_a` and `a_s` (no solution, degenerate
+       triangle), `abscissa_`.
+
+   - **circle**
+     - `common_tangent` failed for two circles of equal radii ("the sum of the
+       weights is zero"), a regression of 5.10c: the external center of
+       similitude, at infinity, was computed before the equal radii case.
+     - `external_similitude` and `similitude(C, "external")` with equal radii:
+       explicit error (the center of similitude is at infinity).
+     - `common_tangent(C, mode)`: the mode `"both"` (documented but not
+       implemented) returns all the common tangents, externals first: 4 for
+       disjoint circles, 3 for externally tangent circles, 2 for secant circles,
+       1 for internally tangent circles. When no tangent of the requested family
+       exists (one circle inside the other, internal tangents of secant circles,
+       …), an explicit error is raised instead of returning lines with `nil`
+       points; an unknown mode raises an error. For internally tangent circles,
+       the external mode returns the tangent at the contact point, as documented.
+     - Errors now stop with a clear message at the line of the user code, instead
+       of `tex.error` followed by `nil`: `orthogonal_from` (point inside the
+       circle; the message was lost), `orthogonal_through` (collinear points;
+       the case of inverse points returned `nil` silently), `point(t, P)` (P not on
+       the circle), `inversion` at the center, `midcircle`, `CLL` (choice not in
+       1..4), `position` (unsupported object).
+     - `position` was defined twice.
+     - `orthogonal_through(pta, ptb)`: when the two points are inverse with
+       respect to the circle, an error was raised although the documentation
+       announced a solution. Every circle through two inverse points is
+       orthogonal: the circle with diameter [pta, ptb] is now returned, or the
+       circle through a third point given as optional argument
+       (`orthogonal_through(pta, ptb, X)`). Two equal points raise a clear
+       error. The old call `orthogonal_through(pta, ptb, EPS)` still works.
+     - Removed the internal function `orthogonal_circle_through_`, never used,
+       whose case "point on the circle" gave a tangent circle instead of an
+       orthogonal one.
+
+   - **matrix**
+     - `inverse()` (and `M^-n`) always returned the identity matrix:
+       `inv_matrix` ignored the result of `gauss_jordan()`, which works on a copy.
+       `is_orthogonal()`, which relies on the inverse, is fixed as well.
+
+   - **line**
+     - `translation` and `reflection` now work like the transformations of
+       `point`: each argument may be a point or any supported object (line,
+       circle, triangle, square, rectangle, quadrilateral, parallelogram), and
+       an object of the same class is returned. Previously, several objects
+       other than points raised an error, and squares, rectangles,
+       quadrilaterals and parallelograms were not supported. An unsupported
+       object (e.g. a conic) raises an explicit error.
+     - `projection` and `projection_ll` accept only points (an object would
+       not keep its class): any other argument now raises an explicit error
+       at the line of the user code, instead of a Lua error inside the library.
+   - **circle**
+     - `inversion` with several arguments now accepts lines and circles as
+       well as points (previously only points); any other object raises an
+       explicit error instead of being treated as a circle.
+
+   - **angle**
+     - New attribute `type` (`"angle"`), as for the other classes. The
+       constructor checks its arguments (three points, distinct from the vertex)
+       and reports errors at the line of the user code.
+   - **occs**
+     - The constructor checks its arguments: a degenerate line gave `nan` axes
+       without error, a point instead of a line gave a Lua error inside the
+       library. `coordinates` checks its argument and no longer uses `tex.error`.
+   - **path**
+     - `get()` without argument returns all the points (it raised an error);
+       `get(i)` is unchanged.
+     - `p1 + p2`: the common point is now recognized whatever its writing
+       (`(1,0)` and `(1.00000,0.00000)`), and is no longer duplicated.
+     - `concat_rawpair`: spaces around the coordinates are removed; a path of
+       pairs (built with `add_pair`) raises an explicit error.
+     - `get_point`, `get_number_path`, `iter`: errors report the line of the
+       user code; the points are read by `utils.parse_point`.
+     - `add_point` and `add_pair_to_path` store the coordinates with 10
+       decimals by default (previously 5). The points returned in paths
+       (`CPP`, `CCP`, ..., read back by `tkz.nodes_from_paths`) lost their
+       precision: a tangency was no longer detected by `intersection`
+       (tolerance `tkz.epsilon` = 1e-10) and the result was `nil`.
+   - **triangle**
+     - Errors stop with a clear message at the line of the user code, instead of
+       `tex.error` followed by `nil`: constructor (degenerate triangle),
+       `kimberling` (number not available: the message itself raised a Lua
+       error), `parameter`, `excenter`, `poncelet_point`, `orthopole`,
+       `apollonius_points`, `apollonius_circle`, `euler_line` (equilateral
+       triangle), `thebault_circles`, `kiepert_parabola`, `macbeath_inellipse`,
+       `orthic_inellipse`, `path`, `LLL`/`c_lll`, `cevian_point`,
+       `ellipse_inscribed`.
+     - Methods taking a vertex (`get_angle`, `symmedian_line`, …): a point with the
+       same coordinates as a vertex is now accepted (previously only the stored
+       vertex object); an invalid argument raises a clear error instead of
+       `tex.error` followed by a Lua error.
+     - `three_tangent_circles` failed (`circle:new` received `nil`): it still
+       called `projection(pt)`, renamed `projections(pt)` in 5.04c, while
+       `projection()` now applies to the vertices. It now uses `projections`.
+     - `kiepert_parabola` assigned the global variables `L` and `F`: after a
+       call, the table `L` of the lines was replaced by the Euler line.
+       They are now local.
+   - **utils**
+     - Errors (`parse_point`, `format_number`, `format_coord`, `format_point`,
+       `almost_equal`, `table_len_contiguous`) now stop the Lua chunk with
+       `error()` and a clear message, instead of `tex.error()` followed by `nil`
+       values. An invalid string given to `path:add_point` is reported at the
+       line of the user code.
+     - `format_number`, `format_coord`, `format_point`: the number of decimals
+       must be a non-negative integer (a value like 2.5 caused a Lua error);
+       no more `-0.00`.
+
+   - **conic**
+     - `intersection(L, P)` and `intersection(L, H)` (line and parabola or
+       hyperbola) crashed when there was no common point; they now return
+       nothing, as for an ellipse. A line parallel to the axis of a parabola, or
+       to an asymptote of a hyperbola, now gives its single intersection point
+       (instead of `nan` values), and an asymptote gives none.
+     - `position(pt)`: a point between the branches of a hyperbola crashed; it
+       now gives `"OUT"`. The center of an ellipse was reported `"OUT"`; it is
+       now `"IN"`.
+     - `tangent_from(pt)` from a point inside the conic raises a clear error
+       instead of an arithmetic error.
+     - The constructor checks its arguments: the focus must be a point, the
+       directrix a line, the eccentricity a positive number, and the focus must
+       not lie on the directrix.
+     - `orthoptic()` raises an error for a hyperbola with e >= sqrt(2) (it
+       returned `nil`).
+     - `antipode` (parabola), `asymptotes` (not a hyperbola), `path`,
+       `PA_focus`, `EL_five_points` and `ellipse_axes_angle`: `error()` instead
+       of `tex.error()`; the message of `EL_five_points` gave a wrong function
+       name.
+     - `search_ellipse` no longer creates the global variables `Names` and
+       `points`.
+   - **intersection**
+     - The option `{eps = ...}` (the documented form) was ignored: only `EPS`
+       was read. Both are now accepted.
+     - An unsupported pair of objects (circle and conic, two conics, a line and
+       a triangle, ...) raises a clear error, instead of a Lua error or of no
+       result without any message. An invalid third argument raises an error
+       (it used `tex.error` and the computation went on).
+     - Line and ellipse: a degenerate line (two identical points) gave `nan`
+       points; it now gives no intersection, as with a circle.
+     - Relative tolerances: the parallelism test of `intersection_ll_` and the
+       tangency test of `intersection_le` no longer depend on the lengths of
+       the segments that define the lines.
+     - The tolerance is also passed to the line/parabola and line/hyperbola
+       intersections.
+     - Tangent circles: `intersection_cc_` detected the tangency on the
+       half-chord h = sqrt(h2), which amplifies rounding errors (h2 ~ 1e-15
+       gives h ~ 3e-8); the point of contact was wrong by about 1e-7. The
+       tangency is now tested on the distances, as in `intersection_lc_`, and
+       the exact point of contact is returned. This fixes
+       `triangle:feuerbach_point()`, `triangle:feuerbach()`,
+       `intersection(C1, C2)` for tangent circles, `circle:tangent_from(pt)`
+       with `pt` on the circle and the common tangent of two tangent circles;
+       the center given by `triangle:feuerbach_apollonius_k181()` was wrong by
+       about 5e-6.
+   - **matrix**
+     - `matrix.htm(phi, tx, ty, sx, sy)`: the scale factors were applied to the
+       diagonal only, so a rotation combined with a scaling was not a
+       similarity; the matrix is now T·R·S (scaling, then rotation, then
+       translation). Results are unchanged when `sx = sy = 1`.
+     - `htm_apply` crashed with a circle, a square, a rectangle, a
+       quadrilateral or a parallelogram, and accepted only points when several
+       arguments were given. Each argument may now be a point or an object; a
+       similarity keeps the class of the objects, another affine map changes a
+       circle or an ellipse into an ellipse and a square or a rectangle into a
+       parallelogram (as `line:affinity`). An unsupported object, a matrix that
+       is not 3x3 with last row (0, 0, 1), or a degenerate map with an object
+       raise an explicit error.
+     - `is_orthogonal` returned `false` for rotation matrices (exact comparison
+       of floating numbers): it now tests AᵀA = I with the tolerance
+       `tkz.epsilon`. `is_diagonal` and `==` also use this tolerance.
+     - `diagonalize`: a matrix other than 2x2 gave a wrong result without
+       message; a null entry at (1,2) gave `inf`/`nan`; the matrix P is now also
+       returned for complex eigenvalues; a double eigenvalue raises an error
+       (not diagonalizable).
+     - The determinant is computed on first access to `det` (it was computed
+       for every matrix, by cofactor expansion): explicit formulas up to 3x3,
+       Gaussian elimination beyond. An integer matrix up to 3x3 now has an
+       integer determinant (`-10` instead of `-10.0`).
+     - `inverse`, `inv_matrix` and `A^-1` of a singular matrix: `error()`
+       instead of a message written in the document and a `nil` result.
+     - Clear errors instead of `nil` or Lua errors: sum, difference or product
+       of matrices of incompatible sizes, rows of different lengths, non-integer
+       exponent, power of a non-square matrix, `matrix.square` with a wrong
+       number of values, `adjugate` beyond 3x3, `homogenization` of a matrix
+       that is not 2x1, `augment_right` and `submatrix` with wrong arguments.
+     - `print_array` used a global variable `j`.
+   - **triangle**
+     - `in_out(pt, true)` raised a Lua error: the second argument was passed as
+       the tolerance. `true` now excludes the boundary.
+   - **vector**
+     - The constructor checks its arguments: `vector(1, 2)` gave a Lua error and
+       `vector(A)` an error about matrices; both now give a clear error.
+     - `normalize` of a null vector: `error()` instead of `tex.error()` (the
+       computation went on: `orthogonal(side, length)` of a null vector returned
+       a vector in an arbitrary direction).
+     - `V + P`, `V - P`, `^` and `..` with a non-vector, and `__mul` with
+       invalid operands: clear errors reported at the line of the user code.
+   - **conic**, **matrix**: the constructor errors are reported at the line of
+     the user code (the level of `error()` did not take into account the tail
+     call in `__call`).
+   - **square**, **rectangle**, **quadrilateral**, **parallelogram**
+     - The constructors check that four points are given (a wrong argument gave
+       an error about lines or points).
+     - `parallelogram`: four points whose diagonals do not have the same
+       midpoint raise an error (`tex.error` was followed by the creation of the
+       object).
+     - `quadrilateral:area()`: the area of a non-convex quadrilateral is now
+       computed (it raised an error and returned `nil`); only a crossed
+       quadrilateral raises an error.
+     - `quadrilateral:is_cyclic()` tests whether the four vertices are
+       concyclic and returns `false` for a non-convex quadrilateral (it raised
+       an error and returned `nil`).
+     - `quadrilateral:poncelet_point()` accepts any quadrilateral (the Poncelet
+       point is defined for four points); an error is raised only when three
+       vertices are collinear.
+   - **regular_polygon**
+     - The constructor checks its arguments: two points (center and first
+       vertex, distinct) and an integer number of sides >= 3 (`nb < 3` used
+       `tex.error` and returned `nil`; a missing or non-integer number gave a
+       Lua error or a wrong polygon).
+     - `get(i)` with an invalid index raises an error (`tex.error`, or nothing
+       for `i <= 0`); `get()` now returns all the vertices, as for the other
+       classes (the table is still available as the attribute `vertices`).
+   - **list_point**
+     - `new`, `add`, `extend` and `map` check that they receive points (a
+       non-point gave a Lua error later, e.g. in `bbox()`).
+     - `get()` without argument returns all the points, as for the other
+       classes (it returned `nil`).
+     - New attribute `type = "list_point"`, as for the other objects.
+     - `to_tikz_path()` (and `point:to_tikz()`, moved to `point.lua`) write the
+       coordinates with fixed decimals, as the other path outputs, instead of
+       raw numbers such as `1e-17`.
+   - **fct**, **pfct**
+     - `pfct:scale()` and `pfct:map()` crashed (they called an undefined
+       method `copy`).
+     - An invalid expression raises an error at the line of the user code,
+       when the object is created (`tex.error` was followed by a function equal
+       to 0 for `fct`, to `nan` for `pfct`).
+     - `fct:eval(x)` returns `nan` or an infinite value when f is not defined
+       at x, as documented (it returned 0, so that `point(x)` gave a wrong
+       point); `fct:point`, `tangent` and `half_tangents` raise an error when f
+       is not defined at the point.
+     - `pfct`: a coordinate that is not a number (e.g. `nil`) is treated as
+       undefined (it gave a Lua error); `point(t)` raises an error when the
+       curve is not defined at t and evaluates the curve once.
+     - `pfct:file()` skips infinite values, writes fixed decimals and checks
+       its arguments; `set_map` and `map` errors are reported at the line of
+       the user code.
+   - **tkz**
+     - `tkz.poncelet_point` called a nonexistent function (`tex.xs`) when the
+       construction failed; three collinear points gave an error about
+       barycenters. `tkz.poncelet_point`, `quadrilateral:poncelet_point` and
+       `triangle:poncelet_point` now share the same computation and raise a
+       clear error.
+     - `tkz.trisector` with an indirect angle: `error()` instead of
+       `tex.error` followed by the word "stop" written in the document.
+     - `tkz.solve_linear_system` with more equations than unknowns returned as
+       many rows as equations; it now returns one row per unknown.
+     - `tkz.solve`: a wrong number of parameters or a zero leading coefficient
+       raises a clear error (`tex.error`, or an infinite value); `tkz.cramer`
+       and `tkz.range`: clear errors.
+   - **circle**
+     - `CPP(a, b)`: when the line (ab) is tangent to the circle and the center
+       is on the perpendicular bisector of [ab], the method raised an error
+       (circle through three collinear points); the degenerate solution is now
+       skipped and the valid circle is returned.
+     - `midcircle(C)`: two circles with the same radius raised an obscure error
+       ("barycenter: the sum of the weights is zero"): the external center of
+       similitude is at infinity. The midcircle is then the perpendicular
+       bisector of the centers, returned as a `line` (with, for two secant
+       circles, the circle centered at the midpoint of the centers). Two
+       concentric circles gave `nil`: the midcircle is the concentric circle of
+       radius sqrt(r1 r2). Two identical circles raise a clear error.
+   ### Deprecated
+   - `get_points(obj)`: still available but not recommended; use `obj:get()`.
+     A warning is written once in the terminal and the log. An unsupported
+     object now raises an error instead of returning nothing.
+
+   ### Removed
+   - Undocumented methods, made redundant by the methods above, which accept
+     several objects: `point:set_rotation`, `point:set_symmetry`,
+     `point:rotation_pt`, `line:set_translation`, `line:translation_pt`,
+     `line:translation_L`, `line:translation_T`, `line:translation_C`,
+     `line:set_reflection`, `line:symmetry_axial_L`, `line:symmetry_axial_T`,
+     `line:symmetry_axial_C`, `line:set_projection`, `line:set_projection_ll`,
+     `line:set_affinity`, `circle:set_inversion`, `path:get_rawpair_list`,
+     `circle:external_tangent`, `circle:internal_tangent` (replaced by
+     `common_tangent`), `circle:are_circles_tangents`, `line:circle_swap`
+     (use `circle("swap")`).
+   - Undocumented matrix methods, now internal: `swap_rows`, `k_mul_row`,
+     `add_k_mul_row`, `swap_rows_inplace`, `k_mul_row_inplace`,
+     `add_k_mul_row_inplace`, `left_block`, `right_block`, `k_mul` (use `k * A`).
+
+   ### Documentation
+     - conic: hyperbola construction example, `LFq` (undefined) instead of
+       `LFa` in `intersection(LC, LFa)` (Lua error "attempt to index a nil
+       value", now "unsupported objects (line, nil)").
+     - fct, pfct: the constructor sections said that the `math.` prefix was
+       required (it must not be used); constructor example (`math.exp`,
+       nonexistent `value`) corrected; `compile()` described as it is; `fct`:
+       `tangent` and `half_tangents` added to the table; `pfct`: `eval`, `at`,
+       `set_scale`, `scale`, `set_map`, `map`, `file`, `jobfile` documented.
+     - list_point: the attributes `n` and `items` did not exist (replaced by
+       `type`, `len()` and `get(i)`); `get()`; argument checks; new section on
+       `as_path()`; the `unpack` example no longer replaces the table `LP`.
+     - regular_polygon: the table `RP` (the doc used `P`); `apothem` is a length
+       (the doc described the foot); attributes `nb`, `apothem_foot`,
+       `perimeter`, `area` added; new section on `get(<i>)`; `name` described.
+     - square, rectangle, parallelogram, quadrilateral: attribute tables
+       corrected (`da` instead of `ad`, examples of `ac`, `side`,
+       `apothem_foot`; side lengths of a quadrilateral described as
+       "barycenter"); missing attributes of the square; the doc announced a
+       shape test for squares and rectangles, which does not exist; the
+       parallelogram constructor takes four points (the doc gave three);
+       `is_convex`, `is_cyclic`, `poncelet_point` and the new section `area`;
+       `rectangle:diagonal` builds a rectangle with sides parallel to the axes.
+     - vector: table of methods reorganized (`dot`, `cross`, `angle_to` return
+       numbers); new section on `get`, `add`, `scale`, `dot`, `cross`,
+       `angle_to` and `rotate`, with an example.
+     - matrix: `matrix.htm` (complete form with the scale factors),
+       `htm_apply` (accepted objects and their class), `is_orthogonal`,
+       `is_diagonal`, `diagonalize`, `inverse` (errors); the `is_orthogonal`
+       example uses `transpose()` and `inverse()`; `get_htm_point` is listed
+       as a function.
+     - intersection: no intersection gives `nil` (the doc said `false`; the
+       line-line example tested `x == false`); option `eps` (alias `EPS`);
+       order of the points for a parabola or a hyperbola; single intersection
+       point of a line parallel to the axis or to an asymptote.
+     - triangle: new sections on `check_isosceles`, `parameter`,
+       `brocard_midpoint`, `soddy_points`, `conway_center`, `the_apollonius_center`,
+       `trisector`, `soddy_line`, `thebault_circles`, `the_apollonius_circle`,
+       `morley`, `napoleon` (previously undocumented).
+     - line: new section on `equidistant_with(L, <choice>)`.
+     - circle: `common_tangent`, description of the results and of the errors.
+     - triangle: new section on `angle(i)`; `get_angle`: accepted arguments
+       corrected; example of `alpha_`, `beta_`, `gamma_` corrected.
+     - angle: `type` and `norm` added to the table of attributes; interval of  `norm` corrected ([0, 2pi)).
+     - occs: table of methods corrected (constructor name and reference); new
+       section on `point(u, v)`.
+     - utils: new sections on `utils.clamp`, `utils.sign` and `utils.w`;
+       default tolerance of `almost_equal` corrected (`tkz.epsilon`).
+     - New sections on `get(<i>)` for `square`, `rectangle`, `quadrilateral` and `parallelogram`.
+     - New section on `EL_conjugate`; `line:affinity`: accepted objects and a
+       new example (image of a circle).
+     - `line:translation` and `line:reflection`: list of accepted objects updated; several objects can be given.
+     - New section on `EL_from_equation`, with an example; added to the
+       table of conic functions.
+     - Method names aligned with the code: `common_tangent`, `random`,
+       `orthoptic`, `affinity`, `lemoine_inellipse`, `mandart_inellipse`,
+       `nagel_point`, `mittenpunkt_point`, `macbeath_point`, `to_tikz_path`,
+       `regular_polygon:incircle`; signature of `feuerbach_apollonius(EPS)`
+       and `feuerbach_apollonius_k181(EPS)`.
+     - Added documentation of `medial_points()`, `orthic_points()`,
+       `tangential_points()`; `EL_five_points` added to the conic functions table.
+     - Index: merged duplicate groups (`regular`/`regular_polygon`,
+       `math`/`conic`, `misc`/`tkz`, `package`/`tkz-elements`, `TikZ`/`tikz`).
+     - README: corrected the location of the manual and its sources.
+     - Point metamethods table: `tonumber(z.a)` replaced by `z.a:tonumber()`.
+     - Removed the duplicated 5.04c entry in this changelog.
+
+
+## [2026/09/30 — version 5.06c]
 
 ### Changed
 - **triangle**
@@ -57,28 +503,6 @@
       - `projections(pt)` and `reflections(pt)` apply to an arbitrary point.
       - `projection()` and `reflection()` apply to the triangle vertices.
 
-
-## [2026/03/11 — version 5.04c]
-
-   ### Added
-
-   - **triangle**
-     - Added new attributes: `ma`, `mb`, `mc`, `ha`, `hb`, `hc`, `ia`, `ib`, `ic`
-       - `ma`, `mb`, `mc`: midpoints of the sides
-       - `ha`, `hb`, `hc`: feet of the altitudes
-       - `ia`, `ib`, `ic`: feet of the internal angle bisectors
-
-     - Added method: `triangle:reflections(pt)`
-
-   ### Changed
-
-   - **triangle**
-   - Renamed method: `projection(pt)` -> `projections(pt)`
-
-   ### Notes
-   - **triangle**
-      - `projections(pt)` and `reflections(pt)` apply to an arbitrary point.
-      - `projection()` and `reflection()` apply to the triangle vertices.
 
 
 ## [2026/03/04 — version 5.03c]

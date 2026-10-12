@@ -10,27 +10,41 @@ utils = {}
 -- ----------------------------
 
 -- Parse a string of the form "(x,y)" into two numbers.
-function utils.parse_point(str)
+-- level (optional) : error level, so that the message points to the
+-- user's code when parse_point is called by a method (default 2).
+function utils.parse_point(str, level)
 	local x, y = tostring(str):match("^%s*%(?%s*([%+%-%.%deE]+)%s*,%s*([%+%-%.%deE]+)%s*%)%s*$")
+	x, y = tonumber(x), tonumber(y)
 	if not x or not y then
-		tex.error("Invalid point string: " .. tostring(str))
+		error("tkz-elements: invalid point string \"" .. tostring(str) .. "\", expected \"(x,y)\"", level or 2)
 	end
-	return tonumber(x), tonumber(y)
+	return x, y
 end
 
--- Internal: format a number to fixed decimals (with checks)
+-- Internal: format a number to fixed decimals (with checks).
+-- Errors are reported at level 3 (user -> public function -> _fmt_number).
+-- A result such as "-0.00" is written "0.00".
 local function _fmt_number(x, decimals, ctx)
 	decimals = decimals or 5
+	if type(decimals) ~= "number" or decimals < 0 or decimals ~= math.floor(decimals) then
+		error("tkz-elements: " .. ctx .. ": the number of decimals must be a non-negative integer, got "
+			.. tostring(decimals), 3)
+	end
 	local n = tonumber(x)
 	if not n then
-		tex.error((ctx or "Invalid number") .. ": " .. tostring(x))
+		error("tkz-elements: " .. ctx .. ": invalid number " .. tostring(x), 3)
 	end
-	return string.format("%." .. decimals .. "f", n)
+	local s = string.format("%." .. decimals .. "f", n)
+	if s:match("^%-0%.?0*$") then
+		s = s:sub(2)
+	end
+	return s
 end
 
 -- Public: format a number with a specified number of decimal places.
 function utils.format_number(x, decimals)
-	return _fmt_number(x, decimals, "Invalid input to format_number")
+	local s = _fmt_number(x, decimals, "format_number")
+	return s
 end
 
 -- Public: alias (kept for backward compatibility)
@@ -39,17 +53,18 @@ utils.checknumber       = utils.format_number
 
 -- Coordinates formatting (single component)
 function utils.format_coord(x, decimals)
-	return _fmt_number(x, decimals, "Invalid coordinate")
+	local s = _fmt_number(x, decimals, "format_coord")
+	return s
 end
 
 -- Format a complex number (table with .re and .im) as a coordinate string.
 function utils.format_point(z, decimals)
 	if type(z) ~= "table" or type(z.re) ~= "number" or type(z.im) ~= "number" then
-		tex.error("format_point expects a table with fields 're' and 'im'")
+		error("tkz-elements: format_point: a point (table with fields 're' and 'im') is expected", 2)
 	end
 	decimals = decimals or 5
-	local x = _fmt_number(z.re, decimals, "Invalid x in format_point")
-	local y = _fmt_number(z.im, decimals, "Invalid y in format_point")
+	local x = _fmt_number(z.re, decimals, "format_point")
+	local y = _fmt_number(z.im, decimals, "format_point")
 	return "(" .. x .. "," .. y .. ")"
 end
 
@@ -62,7 +77,7 @@ function utils.almost_equal(a, b, EPS)
 	EPS = EPS or (tkz and tkz.epsilon) or 1e-9
 	local na, nb = tonumber(a), tonumber(b)
 	if not na or not nb then
-		tex.error("almost_equal expects numbers: " .. tostring(a) .. ", " .. tostring(b))
+		error("tkz-elements: almost_equal: numbers are expected, got " .. tostring(a) .. ", " .. tostring(b), 2)
 	end
 	return math.abs(na - nb) <= EPS
 end
@@ -99,7 +114,7 @@ end
 -- (Name explicit to avoid confusion with #t on sparse tables.)
 function utils.table_len_contiguous(t)
 	if type(t) ~= "table" then
-		tex.error("bad argument #1 (table expected)", 2)
+		error("tkz-elements: table_len_contiguous: a table is expected, got a " .. type(t), 2)
 	end
 	local i = 0
 	while t[i + 1] ~= nil do

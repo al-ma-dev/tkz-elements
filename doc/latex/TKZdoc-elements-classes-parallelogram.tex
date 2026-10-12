@@ -6,14 +6,14 @@ The variable \tkzVar{parallelogram}{P} holds a table used to store parallelogram
 \subsection{Creating a parallelogram}
 \label{sub:creating_a_parallelogram}
 
-The \tkzClass{parallelogram} class creates a parallelogram using three points. The fourth vertex is computed automatically.
+The \tkzClass{parallelogram} class creates a parallelogram from its four vertices. To compute the fourth vertex from three points, use \tkzFct{parallelogram}{parallelogram.fourth(za, zb, zc)}.
 
 \medskip
 The resulting object is stored in \tkzVar{parallelogram}{P}. You are free to use another name, but \tkzVar{parallelogram}{P} is preferred for consistency.
 
 \begin{mybox}
 \begin{verbatim}
-P.ABCD = parallelogram:new(z.A, z.B, z.C)
+P.ABCD = parallelogram:new(z.A, z.B, z.C, z.D)
 \end{verbatim}
 \end{mybox}
 
@@ -23,13 +23,13 @@ You may also use the short form:
 
 \begin{mybox}
 \begin{verbatim}
-P.ABCD = parallelogram(z.A, z.B, z.C)
+P.ABCD = parallelogram(z.A, z.B, z.C, z.D)
 \end{verbatim}
 \end{mybox}
 
 \subsection{Parallelogram attributes}
 
-Points are created in the direct direction. A test is performed to check whether the points form a parallelogram, otherwise compilation is blocked.
+Points are given in the direct direction. A test checks that the diagonals have the same midpoint; otherwise an error is raised.
 
 \begin{mybox}
 Creation | P.new = parallelogram(z.A,z.B,z.C,z.D)|
@@ -51,8 +51,8 @@ Creation | P.new = parallelogram(z.A,z.B,z.C,z.D)|
   \tkzAttr{parallelogram}{type} & |P.new.type= 'parallelogram'|&  \\
   \tkzAttr{parallelogram}{center}    & |z.I = P.new.center|  & intersection of diagonals \\
   \tkzAttr{parallelogram}{ab}   & |P.new.ab|    &  line passing through two vertices \\
-  \tkzAttr{parallelogram}{ac}   & |P.new.ca|           &  idem. \\
-  \tkzAttr{parallelogram}{ad}   & |P.new.ad|           &  idem. \\
+  \tkzAttr{parallelogram}{ac}   & |P.new.ac|           &  idem. \\
+  \tkzAttr{parallelogram}{da}   & |P.new.da|           &  idem. \\
   \tkzAttr{parallelogram}{bc}   & |P.new.bc|           &  idem. \\
   \tkzAttr{parallelogram}{bd}   & |P.new.bd|           &  idem. \\
   \tkzAttr{parallelogram}{cd}   & |P.new.cd|           &  idem. \\
@@ -125,10 +125,34 @@ Creation | P.new = parallelogram(z.A,z.B,z.C,z.D)|
   \midrule
   \tkzMeth{parallelogram}{new (za, zb, zc, zd)} & \ref{ssub:example_attributes}\\
   \tkzFct{parallelogram}{parallelogram.fourth (za,zb,zc)} & \ref{ssub:parallelogram_with_fourth_method} \\
+  \tkzMeth{parallelogram}{get(<i>)} & [\ref{ssub:method_parallelogram_get}]\\
   \bottomrule %
   \end{tabular}
   \egroup
 \end{center}
+
+\subsubsection{Method \tkzMeth{parallelogram}{get(<i>)}}
+\label{ssub:method_parallelogram_get}
+
+This method returns the points that define the parallelogram object.
+
+\begin{itemize}
+  \item \code{P.ABCD:get()} returns the four vertices in order: \code{pa}, \code{pb}, \code{pc}, \code{pd};
+  \item \code{P.ABCD:get(i)}, with \code{i} from 1 to 4, returns only the
+        \code{i}-th vertex; for example \code{P.ABCD:get(2)} is equivalent to \code{P.ABCD.pb}.
+\end{itemize}
+
+\begin{tkzexample}[code only]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(2, 0)
+  z.C = point(3, 2)
+  P.ABCD = parallelogram.fourth(z.A, z.B, z.C)
+  z.E, z.F, z.G, z.H = P.ABCD:get()
+  z.K = P.ABCD:get(3)
+}
+\end{tkzexample}
 
 \subsubsection{Method \tkzMeth{parallelogram}{new(pt,pt,pt,pt)}}
 \label{ssub:function_parallelogram_new}

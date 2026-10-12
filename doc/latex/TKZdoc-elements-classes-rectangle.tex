@@ -8,7 +8,7 @@ The variable \code{R} holds a table used to store triangles. It is optional, and
 \label{sub:rectangle_attributes}
 
 
-Points are created in the direct direction. A test is performed to check whether the points form a rectangle, otherwise compilation is blocked.
+Points are given in the direct direction. No test is performed: the four points must form a rectangle.
 
 \begin{mybox}
 Creation | R.ABCD = rectangle:new(z.A, z.B, z.C, z.D)|
@@ -32,8 +32,8 @@ Creation | R.ABCD = rectangle:new(z.A, z.B, z.C, z.D)|
   \tkzAttr{rectangle}{width}  &  |R.ABCD.width| & the width \\
   \tkzAttr{rectangle}{diagonal}  &  |R.ABCD.diagonal| & diagonal length\\
   \tkzAttr{rectangle}{ab}     &  |R.ABCD.ab|   &  line passing through two vertices   \\
-  \tkzAttr{rectangle}{ac}     &  |R.ABCD.ca|   &  idem. \\
-  \tkzAttr{rectangle}{ad}     &  |R.ABCD.ad|   &  idem. \\
+  \tkzAttr{rectangle}{ac}     &  |R.ABCD.ac|   &  idem. \\
+  \tkzAttr{rectangle}{da}     &  |R.ABCD.da|   &  idem. \\
   \tkzAttr{rectangle}{bc}     &  |R.ABCD.bc|   &  idem. \\
   \tkzAttr{rectangle}{bd}     &  |R.ABCD.bd|   &  idem. \\
   \tkzAttr{rectangle}{cd}     &  |R.ABCD.cd|   &  idem. \\
@@ -109,10 +109,33 @@ Creation | R.ABCD = rectangle:new(z.A, z.B, z.C, z.D)|
   \tkzMeth{rectangle}{diagonal (za, zc)} &[\ref{ssub:diagonal_method}]\\
   \tkzMeth{rectangle}{side (za, zb, d)} & [\ref{ssub:side_method}]\\
   \tkzMeth{rectangle}{get\_lengths ()} & [\ref{ssub:function_rectangle_get__lengths}]\\
+  \tkzMeth{rectangle}{get(<i>)} & [\ref{ssub:method_rectangle_get}]\\
   \bottomrule %
   \end{tabular}
   \egroup
 
+
+\subsubsection{Method \tkzMeth{rectangle}{get(<i>)}}
+\label{ssub:method_rectangle_get}
+
+This method returns the points that define the rectangle object.
+
+\begin{itemize}
+  \item \code{R.ABCD:get()} returns the four vertices in order: \code{pa}, \code{pb}, \code{pc}, \code{pd};
+  \item \code{R.ABCD:get(i)}, with \code{i} from 1 to 4, returns only the
+        \code{i}-th vertex; for example \code{R.ABCD:get(2)} is equivalent to \code{R.ABCD.pb}.
+\end{itemize}
+
+\begin{tkzexample}[code only]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(2, 0)
+  R.ABCD = rectangle:side(z.A, z.B, 1)
+  z.E, z.F, z.G, z.H = R.ABCD:get()
+  z.K = R.ABCD:get(3)
+}
+\end{tkzexample}
 
 \subsubsection{Method \tkzMeth{rectangle}{new(pt,pt,pt,pt)}}
 \label{meth_rectangle_new}
@@ -235,6 +258,8 @@ This function creates a square using four points. No test is performed, and veri
 
 \subsubsection{Method \tkzMeth{rectangle}{diagonal(pt,pt)}}
 \label{ssub:diagonal_method}
+The sides of the rectangle are parallel to the axes: a diagonal alone does not determine a rectangle.
+
 \begin{minipage}{.5\textwidth}
 \begin{verbatim}
 \directlua{

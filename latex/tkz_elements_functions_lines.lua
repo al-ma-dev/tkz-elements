@@ -33,8 +33,7 @@ function line:abscissa_(pt, EPS)
 	local u = b - a
 	local uu = (u .. u) -- dot product
 	if uu <= EPS*EPS then
-		tex.error("Degenerate line: two points coincide.")
-		return nil
+		error("tkz-elements: abscissa: the line is degenerate (its two points are identical)", 2)
 	end
 	local t = ((pt - a) .. u) / uu
 	return t
@@ -86,9 +85,6 @@ function mediator_(a, b)
 	return m, rotation_(m, math.pi / 2, b)
 end
 
-function midpoint_(z1, z2)
-	return (z1 + z2) / 2
-end
 -- triangle specific
 function equilateral_tr_(a, b)
 	return rotation_(a, math.pi / 3, b)
@@ -130,13 +126,9 @@ end
 function golden_ratio_(a, b)
 	return a + (b - a) * tkz.invphi
 end
--- projection
--- function projection(Dt, pt)
-	-- return projection_(Dt.pa, Dt.pb, pt)
--- end
 
 function projection_(pa, pb, pt)
-	if islinear_(pa, pb, pt) then
+	if is_linear_(pa, pb, pt) then
 		return pt
 	else
 		local v = pb - pa
@@ -150,7 +142,7 @@ function projection_ll(Dt1, Dt2, pt)
 end
 
 function projection_ll_(pa, pb, pc, pd, pt)
-	if islinear_(pa, pb, pt) then
+	if is_linear_(pa, pb, pt) then
 		return pt
 	else
 		local m = ll_from_(pt, pc, pd)
@@ -169,14 +161,6 @@ function symmetry_axial_(pa, pb, pt)
 end
 
 reflection_ = symmetry_axial_
-
-function set_symmetry_axial_(u, v, ...)
-	local t = {}
-	for _, value in ipairs({ ... }) do
-		table.insert(t, symmetry_axial_(u, v, value))
-	end
-	return table.unpack(t)
-end
 
 function square_(a, b)
 	return rotation_(b, -math.pi / 2, a), rotation_(a, math.pi / 2, b)
@@ -222,40 +206,40 @@ function collinear_at_distance_(za, zb, d)
 end
 
 
--- Lignes équidistantes de deux droites L1 et L2
--- Cas parallèles : retourne la parallèle "milieu" (unique)
--- Cas sécantes  : retourne les deux bissectrices (interne, externe)
--- Paramètre optionnel 'choice' :
---   * nil     → retourne soit 1 ligne (parallèles) soit 2 lignes (sécantes)
---   * 1 ou 2  → ne retourner que la bissectrice #1 (u,v) ou #2 (up,vp)
+-- Lines equidistant from two lines L1 and L2
+-- Parallel lines: returns the "middle" parallel (unique)
+-- Secant lines: returns the two bisectors
+-- Optional parameter 'choice':
+--   * nil    -> 1 line (parallel lines) or 2 lines (secant lines)
+--   * 1 or 2 -> only the bisector #1 (u,v) or #2 (up,vp)
 function lines_equidistant_(L1, L2, choice)
 	local a, b = L1:get()
 	local c, d = L2:get()
 
-	-- 1) Parallèles → ligne "milieu"
+	-- 1) Parallel lines -> "middle" line
 	if is_parallel_(a, b, c, d) then
-		-- Distance entre deux parallèles (AB) et (CD)
+		-- Distance between the parallel lines (AB) and (CD)
 		local D = distance_(a, b, c)
-		-- Signe pour aller du côté de L2
+		-- Sign, towards L2
 		local s = (L1:side_line(c) >= 0) and 1 or -1
-		-- La droite à mi-distance (unique)
+		-- The line halfway (unique)
 		local mid = L1:collinear_at_distance(s * D / 2)
 		return mid
 	end
 
-	-- 2) Sécantes → deux bissectrices passant par l'intersection
+	-- 2) Secant lines -> two bisectors through the intersection
 	local i = intersection_ll_(a, b, c, d)
 
-	-- Points unité depuis i sur chaque droite, dans les deux orientations
-	-- NB : report_(pa, pb, ±1, i) → point sur (AB) à distance unitaire depuis i
+	-- Unit points from i on each line, in both directions
+	-- NB: report_(pa, pb, +-1, i) -> point on (AB) at distance 1 from i
 	local u  = report_(a, b,  1, i)
 	local up = report_(a, b, -1, i)
 	local v  = report_(c, d,  1, i)
 	local vp = report_(c, d, -1, i)
 
-	-- Les bissectrices sont les médiatrices de [u v] et [up vp]
-	local p1, q1 = mediator_(u,  v)   -- bissectrice #1 (interne)
-	local p2, q2 = mediator_(v, up)  -- bissectrice #2 (externe)
+	-- The bisectors are the perpendicular bisectors of [u v] and [v up]
+	local p1, q1 = mediator_(u,  v)   -- bisector #1
+	local p2, q2 = mediator_(v, up)  -- bisector #2
 
 	local B1 = line:new(p1, q1)
 	local B2 = line:new(p2, q2)

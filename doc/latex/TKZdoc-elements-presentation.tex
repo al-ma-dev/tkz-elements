@@ -23,8 +23,8 @@ This separation of concerns allows users to focus entirely on geometric construc
 \subsection{With Lua}
 The primary purpose of \tkzNamePack{tkz-elements} is to perform geometric computations and define points using \tkzname{Lua}. You can think of it as a computational kernel that can be used by either \tkzNamePack{tkz-euclide} or directly with \tkzNamePack{\TIKZ}.
 
-\tkzname{Lua} code can be executed in two ways: directly, using the \tkzMacro{lualatex}{directlua} primitive, or within a \tkzEnv{tkz-elements}{tkzelements} environment based on the \tkzNamePack{luacode} package (which must be loaded separately).
-When using \tkzMacro{lualatex}{directlua}, especially in complex documents, you can reset internal data structures — such as coordinate tables and scaling factors — using the \tkzFct{package}{init\_elements()} function.
+\tkzname{Lua} code can be executed in two ways: directly, using the \tkzMacro{lualatex}{directlua} primitive, or within the \tkzEnv{luacode}{luacode} environment provided by the \tkzNamePack{luacode} package (which must be loaded separately). The former \texttt{tkzelements} environment has been removed.
+When using \tkzMacro{lualatex}{directlua}, especially in complex documents, you can reset internal data structures — such as coordinate tables and scaling factors — using the \tkzFct{tkz-elements}{init\_elements()} function.
 
 \begin{minipage}[t]{.52\textwidth}\vspace{0pt}%
    The key points are:
@@ -37,7 +37,7 @@ When using \tkzMacro{lualatex}{directlua}, especially in complex documents, you 
 
 On the right, you will find a minimal template.
 
-The code is divided into two main parts:  the Lua code (executed using \tkzMacro{lualatex}{directlua} or placed inside a \tkzEnv{tkz-elements}{tkzelements} environment), and the  \tkzEnv{tikz}{tikzpicture} environment, where drawing commands — typically from \tkzNamePack{tkz-euclide} — are issued.
+The code is divided into two main parts:  the Lua code (executed using \tkzMacro{lualatex}{directlua} or placed inside a \tkzEnv{luacode}{luacode} environment), and the  \tkzEnv{tikz}{tikzpicture} environment, where drawing commands — typically from \tkzNamePack{tkz-euclide} — are issued.
 
 When using \tkzNamePack{tkz-euclide}, the \code{mini} option is recommended, as it loads only the macros
 required for drawing.
@@ -45,7 +45,7 @@ However, at the current stage, some drawing macros are not yet completely indepe
 if a compilation problem occurs, simply load \tkzNamePack{tkz-euclide} without this option.
 
 Within the \tkzname{Lua} section, it is best practice to systematically call the
-\tkzFct{package}{init\_elements()} function.
+\tkzFct{tkz-elements}{init\_elements()} function.
 This function resets internal tables and clears internal data structures.
 \textbf{Important:} from this point on, all scaling operations must be avoided in the \tkzname{Lua} code.
 
@@ -172,7 +172,7 @@ z.O_3 = T.P.circumcenter
   C.AB = circle(z.O_0, z.B)  %  new object “circle” stored and reused
   C.AC = circle(z.O_1, z.C)
   C.CB = circle(z.O_2, z.B)
-  z.P = C.CB.north            %  “north” atrributes of a circle
+  z.P = C.CB.north            %  “north” attribute of a circle
   z.Q = C.AC.north
   z.O = C.AB.south
   z.c = z.C:north(2)   %“north” method of a point (needs a parameter)

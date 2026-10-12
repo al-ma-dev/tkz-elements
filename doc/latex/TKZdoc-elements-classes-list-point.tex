@@ -29,33 +29,7 @@ while providing a set of convenience methods adapted to geometric workflows.
 \subsection{Attributes}
 \label{subsec:list_point_attributes}
 
-\vspace{1em}
-\bgroup
-\small
-\captionof{table}{\texttt{list\_point} attributes.}\label{list_point:attributes}
-\begin{tabular}{lll}
-\toprule
-\textbf{Attribute} & \textbf{Meaning} & \texttt{Reference} \\
-\midrule
-\tkzAttr{list\_point}{n} &  [\ref{ssub:attr_list_point_n}] \\
-\tkzAttr{list\_point}{items} & [\ref{ssub:attr_list_point_items}] \\
-\bottomrule
-\end{tabular}
-\egroup
-
-
-\subsubsection{Attribute \tkzAttr{list\_point}{n}}
-\label{ssub:attr_list_point_n}
-
-The attribute \tkzAttr{list\_point}{n} denotes the number of points stored in the list.
-In practice, it corresponds to the Lua length operator \texttt{\#P} (array part).
-
-\subsubsection{Attribute \tkzAttr{list\_point}{items}}
-\label{ssub:attr_list_point_items}
-
-The attribute \tkzAttr{list\_point}{items} refers to the ordered sequence of points stored in the list.
-Individual points are accessed using standard Lua indexing, e.g. \texttt{P[i]}.
-
+A \tkzClass{list\_point} object has a single attribute, \tkzAttr{list\_point}{type}, equal to \code{"list\_point"}. The number of points is given by \tkzMeth{list\_point}{len()} (or \code{\#LP.x}), and the i-th point by \tkzMeth{list\_point}{get(i)} (or \code{LP.x[i]}).
 
 \subsection{Creating an object}
 \label{subsec:list_point_create}
@@ -80,6 +54,7 @@ LP.Q = list_point(z.A, z.B, z.C)
 \end{tkzexample}
 
 Both forms are valid and produce independent \tkzClass{list\_point} objects.
+The arguments must be points; otherwise an error is raised.
 
 \medskip
 
@@ -132,7 +107,8 @@ the \tkzVar{list\_point}{LP} table.
 
 \tkzMeth{list\_point}{bbox()}     & [\ref{ssub:meth_list_point_bbox}] \\
 
-\tkzMeth{list\_point}{to\_path()}& [\ref{ssub:meth_list_point_to_path}] \\
+\tkzMeth{list\_point}{to\_tikz\_path()}& [\ref{ssub:meth_list_point_to_path}] \\
+\tkzMeth{list\_point}{as\_path()}& [\ref{ssub:meth_list_point_as_path}] \\
 \bottomrule
 \end{tabular}
 \egroup
@@ -145,7 +121,7 @@ Returns the number of points stored in the list.
 \subsubsection{Method \tkzMeth{list\_point}{get(i)}}
 \label{ssub:meth_list_point_get}
 
-Returns the point at index \code{i}.
+\code{get(i)} returns the point at index \code{i}; \code{get()} returns all the points.
 
 \subsubsection{Method \tkzMeth{list\_point}{unpack()}}
 \label{ssub:meth_list_point_unpack}
@@ -156,11 +132,11 @@ This method is useful when interfacing with functions expecting individual point
 \begin{tkzexample}[latex=.5\textwidth]
 \directlua{
 init_elements()
-LP = list_point()
-LP:add(point(0,0))
-LP:add(point(1,0))
-LP:add(point(1,1))
-z.A, z.B, z.C = LP:unpack()
+LP.pts = list_point()
+LP.pts:add(point(0,0))
+LP.pts:add(point(1,0))
+LP.pts:add(point(1,1))
+z.A, z.B, z.C = LP.pts:unpack()
 }
 \begin{center}
 \begin{tikzpicture}
@@ -177,12 +153,12 @@ z.A, z.B, z.C = LP:unpack()
 \subsubsection{Method \tkzMeth{list\_point}{add(p)}}
 \label{ssub:meth_list_point_add}
 
-Appends the point \code{p} to the list and returns the object itself.
+Appends the point \code{p} to the list and returns the object itself. An error is raised if \code{p} is not a point.
 
 \subsubsection{Method \tkzMeth{list\_point}{extend(pl)}}
 \label{ssub:meth_list_point_extend}
 
-Appends all points from another \tkzClass{list\_point} object \code{pl}.
+Appends all points from another \tkzClass{list\_point} object \code{pl}. An error is raised if an element is not a point.
 
 \subsubsection{Method \tkzMeth{list\_point}{clear()}}
 \label{ssub:meth_list_point_clear}
@@ -205,7 +181,7 @@ Applies the function \code{f(p, i)} to each point \code{p} with its index \code{
 \label{ssub:meth_list_point_map}
 
 Applies the function \code{f(p, i)} to each point and returns a new \tkzClass{list\_point} object
-containing the results.
+containing the results. The function must return a point.
 
 
 These methods support a functional programming style for geometric transformations.
@@ -233,7 +209,7 @@ Returns the bounding box of the point set as four numbers:
 \subsection{TikZ output}
 \label{subsec:list_point_output}
 
-\subsubsection{Method \tkzMeth{list\_point}{to\_path()}}
+\subsubsection{Method \tkzMeth{list\_point}{to\_tikz\_path()}}
 \label{ssub:meth_list_point_to_path}
 
 Converts the list of points into a TikZ path string of the form
@@ -241,6 +217,11 @@ Converts the list of points into a TikZ path string of the form
   (x_1,y_1) -- (x_2,y_2) -- \dots
 \]
 suitable for drawing with TikZ commands.
+
+\subsubsection{Method \tkzMeth{list\_point}{as\_path()}}
+\label{ssub:meth_list_point_as_path}
+
+Returns a \tkzClass{path} object containing the points of the list, which can be used with the path macros (\code{\textbackslash tkzDrawCoordinates}, \code{\textbackslash tkzDrawPointsFromPath}, \ldots). See the example in [\ref{sub:macro_tkzDrawPointsFromPath}].
 
 
 \medskip
@@ -309,7 +290,7 @@ This example uses the \tkzMeth{list\_point}{map} method to transform a set of po
 \begin{tkzexample}[code only]
 local P = list_point(z.A, z.B, z.C)
 LP.Q = P:map(function(p)
-  return rotation_(p, tkz.tau / 3, z.O)
+  return z.O:rotation(tkz.tau / 3, p) rotation_(p, tkz.tau / 3, z.O)
 end)
 \end{tkzexample}
 
@@ -323,7 +304,7 @@ This example illustrates the interaction between \tkzClass{list\_point} and TikZ
 
 \begin{tkzexample}[code only]
 LP.P = list_point(z.A, z.B, z.C)
-local path = LP.P:to_path()
+local path = LP.P:to_tikz_path()
 \end{tkzexample}
 
 The string returned by \tkzMeth{list\_point}{to\_path} can be passed directly

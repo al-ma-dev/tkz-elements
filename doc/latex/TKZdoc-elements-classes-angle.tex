@@ -9,7 +9,7 @@ Its main purpose is to provide a simple and direct interface for obtaining:
 
 \begin{itemize}
   \item the oriented angle in radians,
-  \item the normalised oriented angle in $[0, 2\pi]$
+  \item the normalised oriented angle in $[0, 2\pi)$,
   \item the interior (non-oriented) angle,
   \item the measure of the interior angle in degrees.
 \end{itemize}
@@ -28,9 +28,9 @@ time and never updated.
 
 The three arguments are:
 \begin{itemize}
-  \item \tkzVar{ps}: the vertex of the angle,
-  \item \tkzVar{pa}: the first point defining the first ray,
-  \item \tkzVar{pb}: the second point defining the second ray.
+  \item \tkzAttr{angle}{ps}: the vertex of the angle,
+  \item \tkzAttr{angle}{pa}: the first point defining the first ray,
+  \item \tkzAttr{angle}{pb}: the second point defining the second ray.
 \end{itemize}
 
 \subsection{Attributes}
@@ -49,7 +49,9 @@ The following attributes are stored inside every \tkzClass{angle} object:
 \tkzAttr{angle}{ps}   & Vertex of the angle & [\ref{par:attr_angle_ps}] \\
 \tkzAttr{angle}{pa}   & First defining point (ray $[ps\,pa]$) & [\ref{par:attr_angle_pa}] \\
 \tkzAttr{angle}{pb}   & Second defining point (ray $[ps\,pb]$) & [\ref{par:attr_angle_pb}] \\
+\tkzAttr{angle}{type} & Object type name, always \texttt{"angle"} & \\
 \tkzAttr{angle}{raw}  & Oriented angle (radians), may be negative & [\ref{par:attr_angle_raw}] \\
+\tkzAttr{angle}{norm} & Oriented angle normalised to $[0,2\pi)$ & [\ref{par:attr_angle_norm}] \\
 \tkzAttr{angle}{value} & Non-oriented angle in the range $[0,\pi]$ & [\ref{par:attr_angle_value}] \\
 \tkzAttr{angle}{deg} & Interior angle in degrees & [\ref{par:attr_angle_deg}] \\
 
@@ -67,7 +69,7 @@ A point defining the first ray $[ps\,pa]$.
 A point defining the second ray $[ps\,pb]$.
 
 \paragraph{\tkzAttr{angle}{raw}}\label{par:attr_angle_raw}
-The oriented angle in radians as returned by \texttt{get\_angle\_(ps,pa,pb)}; it may be negative.
+The oriented angle in radians, from the ray $[ps\,pa]$ to the ray $[ps\,pb]$, in the interval $(-\pi,\pi]$; it may be negative.
 
 \paragraph{\tkzAttr{angle}{norm}}\label{par:attr_angle_norm}
 The oriented angle normalised to the interval $[0,2\pi)$.

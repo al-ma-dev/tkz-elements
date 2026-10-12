@@ -3,19 +3,20 @@
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
 
--- point.lua
--- Définition locale de class
+-- local definition of class
 
 local function class(init, base)
 	local cls = {}
 	cls.__index = cls
 
 	if base then
-		setmetatable(cls, { __index = base })
 		cls._base = base
 	end
 
+	-- One single metatable: __index (inheritance) and __call (constructor).
+	-- Two successive setmetatable calls would discard the inheritance.
 	setmetatable(cls, {
+		__index = base,
 		__call = function(class_tbl, ...)
 			local self = setmetatable({}, class_tbl)
 			if init then
@@ -43,24 +44,35 @@ local function class(init, base)
 	return cls
 end
 
+-- -------------------------------------------------------------------
+-- helpers
+-- -------------------------------------------------------------------
+-- error() stops the current Lua chunk and reports the line of the
+-- caller (level), whereas tex.error() lets the computation go on with
+-- invalid values (nil, nan) that fail later with obscure messages.
+local function point_error(msg, level)
+	error("tkz-elements (point): " .. msg, (level or 1) + 1)
+end
+
 point = class(function(p, re, im)
-	-- Cas 1 : appel standard point(x, y)
+	-- case 1: standard call point(x, y)
 	if type(re) == "number" and type(im) == "number" then
 		p.re = re
 		p.im = im
 
-	-- Cas 2 : appel interne point({re=..., im=...})
+	-- case 2: internal call point({re=..., im=...})
 	elseif type(re) == "table" and im == nil and type(re.re) == "number" and type(re.im) == "number" then
 		p.re = re.re
 		p.im = re.im
 
-	-- Cas invalide
+	-- invalid case
 	else
-		tex.error(
-			"Invalid point: expected two numbers or a complex {re,im}, got re = "
-				.. tostring(re)
-				.. ", im = "
-				.. tostring(im)
+		-- level 3: init -> __call -> user code
+		point_error(
+			"invalid point: expected two numbers or a table {re=..., im=...}, got ("
+				.. type(re) .. " " .. tostring(re) .. ", "
+				.. type(im) .. " " .. tostring(im) .. ")",
+			3
 		)
 	end
 
@@ -94,7 +106,7 @@ local function is_point(obj)
 	return false
 end
 
-local function topoint(z)
+local function topoint(z, level)
 	if is_point(z) then
 		return z
 	elseif type(z) == "number" then
@@ -102,17 +114,15 @@ local function topoint(z)
 	elseif type(z) == "table" and type(z.re) == "number" and type(z.im) == "number" then
 		return point(z) -- It is managed in the constructor.
 	else
-		tex.error("topoint: cannot convert value to point")
+		-- level: 1 topoint, 2 its caller, 3 the user code
+		point_error("cannot convert a " .. type(z) .. " (" .. tostring(z) .. ") to a point", level or 3)
 	end
 end
 
 
 local function check(z1, z2)
-	local p1, p2 = topoint(z1), topoint(z2)
-	if not p1 or not p2 then
-		tex.error("check: expected point or number")
-	end
-	return p1, p2
+	-- one more level: topoint <- check <- metamethod <- user code
+	return topoint(z1, 4), topoint(z2, 4)
 end
 -- -------------------------------------------------------------------
 -- metamethods
@@ -156,70 +166,39 @@ function point.__div(z1, z2)
 	local c1, c2 = check(z1, z2)
 	local den = c2.re * c2.re + c2.im * c2.im
 	if den == 0 then
-		tex.error("Division by zero in point.__div")
+		point_error("division by zero", 2)
 	end
 	return point((c1.re * c2.re + c1.im * c2.im) / den, (c1.im * c2.re - c1.re * c2.im) / den)
 end
 
+-- Display of a point: the formatter is tkz_display_ (functions_maths),
+-- shared with tkz.display().
 function point.__tostring(z)
-	local real = z.re
-	local imag = z.im
-	local tolerance = 1e-10 -- Définir une tolérance
-
-	local function format_real(r)
-		if math.abs(r - math.round(r)) < tolerance then
-			return tostring(math.round(r)) -- Utiliser un entier
-		else
-			return string.format("%." .. tkz.dc .. "f", r) -- Utiliser un flottant
-		end
-	end
-
-	if real == 0 then
-		if imag == 0 then
-			return "0"
-		else
-			if imag == 1 then
-				return "i"
-			elseif imag == -1 then
-				return "-i"
-			else
-				return string.format("%." .. tkz.dc .. "f", imag) .. "i"
-			end
-		end
-	else
-		if imag > 0 then
-			if imag == 1 then
-				return format_real(real) .. "+i"
-			else
-				return format_real(real) .. "+" .. string.format("%." .. tkz.dc .. "f", imag) .. "i"
-			end
-		elseif imag < 0 then
-			if imag == -1 then
-				return format_real(real) .. "-i"
-			else
-				return format_real(real) .. string.format("%." .. tkz.dc .. "f", imag) .. "i"
-			end
-		else
-			return format_real(real)
-		end
-	end
+	return tkz_display_(z)
 end
 
-function point.__tonumber(z)
-	if z.im == 0 then
+-- Lua has no __tonumber metamethod: tonumber(z) always returns nil.
+-- Use z:tonumber() instead.
+function point.tonumber(z)
+	if math.abs(z.im) < tkz.epsilon then
 		return z.re
 	else
 		return nil
 	end
 end
+point.__tonumber = point.tonumber -- kept for compatibility
 
-function point.__eq(z1, z2)
-	local epsilon = 1e-10
-	return math.abs(z1.re - z2.re) < epsilon and math.abs(z1.im - z2.im) < epsilon
-end
-
+-- Two points are equal when their distance is less than tkz.epsilon.
+-- The same criterion is used by == and by identity().
 function point:identity(pt)
 	return point.abs(self - pt) < tkz.epsilon
+end
+
+function point.__eq(z1, z2)
+	if not (is_point(z1) and is_point(z2)) then
+		return false
+	end
+	return z1:identity(z2)
 end
 
 -- -------------------------------------------------------------------
@@ -239,9 +218,6 @@ end
 
 function point.mod(z)
 	local cx = topoint(z)
-	local function sqr(x)
-		return x * x
-	end
 	return pyth(cx.re, cx.im)
 end
 
@@ -328,20 +304,18 @@ end
 function point:normalize()
 	local d = point.abs(self)
 	if d < tkz.epsilon then
-	 tex.error("division by zero" )
-  else
-		return point(self.re / d, self.im / d)
-		end
+		point_error("normalize: null vector (point too close to the origin)", 2)
+	end
+	return point(self.re / d, self.im / d)
 end
 
 function point:normalize_from(p)
 	local u = (self - p)
 	local d = point.abs(u)
 	if d < tkz.epsilon then
-	 tex.error("division by zero" )
-	else
+		point_error("normalize_from: the two points are identical", 2)
+	end
 	return point(u.re / d, u.im / d) + p
-end
 end
 
 -- function point:identity(pt)
@@ -355,6 +329,9 @@ function point:orthogonal(d)
 		return point(-self.im, self.re)
 	else
 		m = point.mod(self) -- Get the modulus (magnitude) of the current point
+		if m < tkz.epsilon then
+			point_error("orthogonal: null vector, the direction is undefined", 2)
+		end
 		return point(-self.im * d / m, self.re * d / m) -- Return the scaled orthogonal point
 	end
 end
@@ -370,9 +347,9 @@ end
 -- Shift the current point A orthogonally to the direction (AB)
 -- by a distance "dist"
 function point:shift_orthogonal_to(B, dist)
-	local v = B - self             -- vecteur AB
-	local n = v:orthogonal(dist)   -- vecteur normal de norme "dist"
-	return n:at(self)              -- applique le décalage à A
+	local v = B - self             -- vector AB
+	local n = v:orthogonal(dist)   -- normal vector of norm "dist"
+	return n:at(self)              -- shifts A
 end
 
 -- Shift the current point A along the direction (AB)
@@ -390,26 +367,25 @@ end
 -- the result is a circle
 -- =====================
 -- Circle through three points: self, a, b
--- point:PPP — cercle passant par trois points (circonscrit)
--- Retourne :
---   PA_center : path des centres
---   PA_through: path des points "through"
---   n         : nombre de cercles trouvés (0 si dégénéré, 1 sinon)
+-- (circumcircle). Returns:
+--   PA_center : path of the centers
+--   PA_through: path of the "through" points
+--   n         : number of circles found (0 if degenerate, 1 otherwise)
 function point:PPP(a, b)
-	-- paths de sortie (toujours créés, même si n = 0)
+	-- output paths (always created, even if n = 0)
 	local PA_center = path()
 	local PA_through = path()
 
-	-- cas dégénéré : points alignés ou deux points confondus
+	-- degenerate case: collinear points or two identical points
 	if tkz.aligned(self, a, b)
 		 or self:identity(a) or self:identity(b) or a:identity(b) then
 		return PA_center, PA_through, 0
 	end
 
-	-- centre du cercle circonscrit
+	-- center of the circumcircle
 	local o = circum_center_(self, a, b)
 
-	-- on choisit "self" comme point-through (n'importe lequel des 3 convient)
+	-- "self" is used as the through point (any of the three would do)
 	PA_center:add_point(o)
 	PA_through:add_point(self)
 
@@ -419,95 +395,24 @@ end
 -- ----------------------------------------------------------------
 -- transformations
 -- ----------------------------------------------------------------
--- function point: symmetry(pt)
---     return symmetry_ (self ,pt)
--- end
-
+-- Central symmetry with center self.
+-- z.B = z.O:symmetry(z.A) ; L.new = z.O:symmetry(L.AB)
+-- z.B, L.new, T.new = z.O:symmetry(z.A, L.AB, T.ABC)
 function point:symmetry(...)
-	local tp = table.pack(...) -- Pack arguments into a table
-	local nb = tp.n -- Number of arguments
-	local obj = tp[1] -- The first object in the arguments
-
-	if nb == 1 then -- If there's only one argument
-		if obj.type == "point" then
-			return symmetry_(self, obj) -- Apply symmetry on the point
-		elseif obj.type == "line" then
-			return line:new(set_symmetry_(self, obj.pa, obj.pb)) -- Create a new line
-		elseif obj.type == "circle" then
-			return circle:new(set_symmetry_(self, obj.center, obj.through)) -- Create a new circle
-		else
-			return triangle:new(set_symmetry_(self, obj.pa, obj.pb, obj.pc)) -- Create a new triangle
-		end
-	else -- If there are multiple arguments
-		local results = {} -- Initialize a table to store results
-		for i = 1, nb do
-			table.insert(results, symmetry_(self, tp[i])) -- Apply symmetry on each object
-		end
-		return table.unpack(results) -- Return the results as separate values
-	end
+	return map_objects_(function(p) return symmetry_(self, p) end, "point:symmetry", ...)
 end
 
-function point:set_symmetry(...)
-	return set_symmetry_(self, ...)
-end
-
-function point:rotation_pt(angle, pt)
-	return rotation_(self, angle, pt)
-end
-
-function point:set_rotation(angle, ...)
-	return set_rotation_(self, angle, ...)
-end
-
+-- Rotation with center self (angle in radians).
 function point:rotation(angle, ...)
-	local tp = table.pack(...) -- Pack arguments into a table
-	local nb = tp.n -- Number of arguments
-	local obj = tp[1] -- The first object in the arguments
-
-	if nb == 1 then -- If there's only one argument
-		if obj.type == "point" then
-			return rotation_(self, angle, obj) -- Rotate the point
-		elseif obj.type == "line" then
-			return line:new(set_rotation_(self, angle, obj.pa, obj.pb)) -- Rotate the line
-		elseif obj.type == "triangle" then
-			return triangle:new(set_rotation_(self, angle, obj.pa, obj.pb, obj.pc)) -- Rotate the triangle
-		elseif obj.type == "circle" then
-			return circle:new(set_rotation_(self, angle, obj.center, obj.through)) -- Rotate the circle
-		else -- For other shapes like square
-			return square:new(set_rotation_(self, angle, obj.pa, obj.pb, obj.pc, obj.pd)) -- Rotate the square
-		end
-	else -- If there are multiple arguments
-		local results = {} -- Initialize a table to store results
-		for i = 1, nb do
-			table.insert(results, rotation_(self, angle, tp[i])) -- Rotate each object
-		end
-		return table.unpack(results) -- Return the results as separate values
-	end
+	return map_objects_(function(p) return rotation_(self, angle, p) end, "point:rotation", ...)
 end
 
+-- Homothety with center self and ratio coeff.
 function point:homothety(coeff, ...)
-	local tp = table.pack(...) -- Pack arguments into a table
-	local nb = tp.n -- Number of arguments
-	local obj = tp[1] -- The first object in the arguments
-	local t = {} -- Initialize a table to store results
-
-	if nb == 1 then -- If there's only one argument
-		if obj.type == "point" then
-			return homothety_(self, coeff, obj) -- Apply homothety to the point
-		elseif obj.type == "line" then
-			return line:new(set_homothety_(self, coeff, obj.pa, obj.pb)) -- Apply homothety to the line
-		elseif obj.type == "triangle" then
-			return triangle:new(set_homothety_(self, coeff, obj.pa, obj.pb, obj.pc)) -- Apply homothety to the triangle
-		elseif obj.type == "circle" then
-			return circle:new(set_homothety_(self, coeff, obj.center, obj.through)) -- Apply homothety to the circle
-		else -- For other shapes like square
-			return square:new(set_homothety_(self, coeff, obj.pa, obj.pb, obj.pc, obj.pd)) -- Apply homothety to the square
-		end
-	else -- If there are multiple arguments
-		for i = 1, nb do
-			table.insert(t, homothety_(self, coeff, tp[i])) -- Apply homothety to each object
-		end
-		return table.unpack(t) -- Return the results as separate values
-	end
+	return map_objects_(function(p) return homothety_(self, coeff, p) end, "point:homothety", ...)
 end
 
+-- "(x,y)" with fixed decimals, for TikZ
+function point:to_tikz()
+	return "(" .. checknumber_(self.re) .. "," .. checknumber_(self.im) .. ")"
+end

@@ -29,6 +29,12 @@ string formatting for TikZ output.
 
 \tkzFct{utils}{utils.almost\_equal(a, b, eps)}  & [\ref{sub:function_utils_almost_equal}]\\
 
+\tkzFct{utils}{utils.clamp(x, min, max)} & [\ref{sub:function_utils_clamp}]\\
+
+\tkzFct{utils}{utils.sign(x)}            & [\ref{sub:function_utils_sign}]\\
+
+\tkzFct{utils}{utils.w(...)}             & [\ref{sub:function_utils_w}]\\
+
 \tkzFct{utils}{utils.wlog(...)}              & [\ref{sub:function_utils_wlog}]\\
 \bottomrule
 \end{tabular}
@@ -352,7 +358,7 @@ Returns \code{true} if two numbers are approximately equal within a given tolera
 
 \begin{itemize}
 \item \code{a}, \code{b} – Two numbers to compare.
-\item \code{epsilon} – Optional tolerance (default: \code{tkz\_epsilon}).
+\item \code{epsilon} – Optional tolerance (default: \code{tkz.epsilon}).
 \end{itemize}
 
 \medskip
@@ -361,6 +367,59 @@ Returns \code{true} if two numbers are approximately equal within a given tolera
 A boolean: \code{true} if the values differ by less than the tolerance.
 
 
+
+\subsection{Function \tkzFct{utils}{utils.clamp(x, min, max)}}
+\label{sub:function_utils_clamp}
+
+Returns \code{x} restricted to the interval $[\code{min}, \code{max}]$.
+
+\medskip
+\texttt{Syntax: }
+
+\begin{center}
+\code{local t = utils.clamp(t, 0, 1)}
+\end{center}
+
+\medskip
+\texttt{Returns: }
+
+\code{min} if \code{x < min}, \code{max} if \code{x > max}, otherwise \code{x}.
+
+\subsection{Function \tkzFct{utils}{utils.sign(x)}}
+\label{sub:function_utils_sign}
+
+Returns the sign of a number.
+
+\medskip
+\texttt{Syntax: }
+
+\begin{center}
+\code{local s = utils.sign(z.A.im)}
+\end{center}
+
+\medskip
+\texttt{Returns: }
+
+\code{1} if \code{x > 0}, \code{-1} if \code{x < 0}, \code{0} if \code{x = 0}.
+
+\subsection{Function \tkzFct{utils}{utils.w(...)}}
+\label{sub:function_utils_w}
+
+Writes a formatted message to the terminal and to the .log file, with a
+\code{[tkz-elements]} prefix. The arguments are those of \code{string.format}.
+Use \tkzFct{utils}{utils.wlog} to write to the .log file only.
+
+\medskip
+\texttt{Syntax: }
+
+\begin{center}
+\code{utils.w("Radius: \%.3f", C.OA.radius)}
+\end{center}
+
+\medskip
+\texttt{Returns: }
+
+No return value.
 
 \subsection{Function \tkzFct{utils}{utils.wlog(...)}}
 \label{sub:function_utils_wlog}

@@ -12,13 +12,11 @@ function triangle:new(za, zb, zc)
 	-- ===== Guardrails against degeneration =====
 	-- sall vertices combined
 	if point.abs(za - zb) <= eps or point.abs(zb - zc) <= eps or point.abs(zc - za) <= eps then
-		tex.error("Degenerate triangle: two vertices coincide.")
-		return
+		error("tkz-elements: triangle: degenerate triangle (two vertices are identical)", 2)
 	end
 	-- aligned vertices
 	if tkz.is_linear(za, zb, zc) then
-		tex.error("Degenerate triangle: vertices aligned.")
-		return
+		error("tkz-elements: triangle: degenerate triangle (the vertices are collinear)", 2)
 	end
 
 	-- ===== Side lengths =====
@@ -142,14 +140,17 @@ function triangle:position(p, EPS)
 	elseif out_ then
 		return "OUT"
 	else
-		return "ON" -- zone de bord (tolérance)
+		return "ON" -- border zone (tolerance)
 	end
 end
 
 
+-- strict = true: the boundary is excluded
 function triangle:in_out(pt, strict)
-	-- ne change pas → tous les anciens documents restent valides
-	return in_out_(self.pa, self.pb, self.pc, pt, strict)
+	if strict == true then
+		return in_out_strict_(self.pa, self.pb, self.pc, pt)
+	end
+	return in_out_(self.pa, self.pb, self.pc, pt)
 end
 
 function triangle:on_triangle(pt, EPS)
@@ -217,16 +218,33 @@ function triangle:trilinear_to_d(x, y, z)
 	return trilinear_to_d_(x, y, z, self.a, self.b, self.c)
 end
 
+-- get_angle(arg): measure (radians) of the angle at a vertex;
+-- arg = 0, 1, 2 (vertex A, B, C) or a vertex given as a point.
 function triangle:get_angle(arg)
-	local i = resolve_triangle_index(self, arg)  -- 0,1,2
-	if i < 0 or i > 2 then
-		tex.error("triangle:get_angle -> invalid argument (use 0/1/2, 'a'/'b'/'c', or a vertex point)")
-		return nil
-	end
+	local i = resolve_triangle_index_(self, arg)  -- 0, 1, 2
+	if i == 0 then return self.alpha end  -- angle at A
+	if i == 1 then return self.beta  end  -- angle at B
+	return self.gamma                     -- angle at C
+end
 
-	if i == 0 then return self.alpha end  -- angle en B dans ton alpha = angle(za,zb,zc)
-	if i == 1 then return self.beta  end
-	return self.gamma
+-- angle(i): the angle object (class angle) at a vertex;
+-- i = 1, 2, 3 (as for get(i)) or a vertex given as a point.
+function triangle:angle(i)
+	local angles = { self.alpha_, self.beta_, self.gamma_ }
+	if type(i) == "number" then
+		if i ~= 1 and i ~= 2 and i ~= 3 then
+			error("tkz-elements: triangle:angle: the index must be 1, 2 or 3, got " .. tostring(i), 2)
+		end
+		return angles[i]
+	elseif type(i) == "table" and i.type == "point" then
+		for k, v in ipairs({ self.pa, self.pb, self.pc }) do
+			if point.abs(i - v) <= tkz.epsilon then
+				return angles[k]
+			end
+		end
+		error("tkz-elements: triangle:angle: the point is not a vertex of the triangle", 2)
+	end
+	error("tkz-elements: triangle:angle: expected 1, 2, 3 or a vertex, got " .. tostring(i), 2)
 end
 
 
@@ -243,7 +261,7 @@ function triangle:parameter(p)
 	elseif CA:on_segment(p) then
 		return (c + a + length_(C, p)) / ptotal
 	else
-		tex.error("The point is not on the boundary of the triangle.")
+		error("tkz-elements: triangle:parameter: the point is not on the boundary of the triangle", 2)
 	end
 end
 
@@ -260,9 +278,9 @@ function triangle:base(u, v) -- (ab,ac) base coord u,v
 end
 
 function triangle:point(t)
-	local p = self.a + self.b + self.c -- périmètre
-	local t1 = self.c / p -- fin de AB
-	local t2 = (self.c + self.a) / p -- fin de AB + BC
+	local p = self.a + self.b + self.c -- perimeter
+	local t1 = self.c / p -- end of AB
+	local t2 = (self.c + self.a) / p -- end of AB + BC
 
 	if t <= t1 then
 		return self.ab:point(t / t1)
@@ -354,7 +372,7 @@ function triangle:kimberling(n)
 			a * b / (c ^ 2 - 2 * a ^ 2 - 2 * b ^ 2)
 		) -- to get lemoine triangle
 	else
-		tex.error({ " Your number is not yet in the list" })
+		error("tkz-elements: triangle:kimberling: X(" .. tostring(n) .. ") is not available", 2)
 	end
 end
 
@@ -373,7 +391,7 @@ function triangle:excenter(pt)
 	elseif pt == self.pc then
 		return self:trilinear(1, 1, -1)
 	else
-		tex.error("The argument must be a vertex of the triangle")
+		error("tkz-elements: triangle:excenter: the argument must be a vertex of the triangle", 2)
 	end
 end
 
@@ -600,21 +618,11 @@ function triangle:macbeath_point()
 end
 
 function triangle:poncelet_point(pt)
-	local A, B, C, D = self.pa, self.pb, self.pc, pt
-	local e1 = euler_center_(A, B, C)
-	local e2 = euler_center_(A, C, D)
-	local m = midpoint_(A, C)
-	local x, y = intersection_cc_(e1, m, e2, m)
-
-	if not x or not y then
-		tex.error("Poncelet construction failed: no intersection.")
+	local p, err = poncelet_point_(self.pa, self.pb, self.pc, pt)
+	if not p then
+		error("tkz-elements: triangle:poncelet_point: " .. err, 2)
 	end
-
-	if x == m then
-		return y
-	else
-		return x
-	end
+	return p
 end
 
 function triangle:orthopole(l, EPS)
@@ -622,64 +630,61 @@ function triangle:orthopole(l, EPS)
 
 	-- garde-fous
 	if tkz.is_linear(self.pa, self.pb, self.pc) then
-		tex.error("orthopole: degenerate triangle")
-		return
+		error("tkz-elements: triangle:orthopole: degenerate triangle", 2)
 	end
 
 	local p, q = l:get()
 	if point.abs(p - q) <= EPS then
-		tex.error("orthopole: degenerate line")
-		return
+		error("tkz-elements: triangle:orthopole: degenerate line", 2)
 	end
 
 	-- projections de A,B sur l (on n'a pas besoin de C ici)
 	local ap = projection_(p, q, self.pa)
 	local bp = projection_(p, q, self.pb)
 
-	-- pieds sur les côtés CA et BC
-	local a1, a2 = self.bc:get()   -- droite (BC)
-	local c1, c2 = self.ca:get()   -- droite (CA)
+	-- feet on the sides CA and BC
+	local a1, a2 = self.bc:get()   -- line (BC)
+	local c1, c2 = self.ca:get()   -- line (CA)
 
 	if point.abs(a2 - a1) <= EPS or point.abs(c2 - c1) <= EPS then
-		tex.error("orthopole: degenerate triangle side")
-		return
+		error("tkz-elements: triangle:orthopole: degenerate side of the triangle", 2)
 	end
 
-	local app = projection_(a1, a2, ap)  -- pied de ap sur (BC)
-	local bpp = projection_(c1, c2, bp)  -- pied de bp sur (CA)
+	local app = projection_(a1, a2, ap)  -- foot of ap on (BC)
+	local bpp = projection_(c1, c2, bp)  -- foot of bp on (CA)
 
-	-- orthopole = intersection des droites (ap, app) et (bp, bpp)
+	-- orthopole = intersection of the lines (ap, app) and (bp, bpp)
 	return intersection(line:new(ap, app), line:new(bp, bpp))
 end
 
 
 
 function triangle:isodynamic_points()
-	-- Cas particulier : triangle équilatéral
+	-- Special case: equilateral triangle
 	if self:is_equilateral() then
-		-- On prend le centre de gravité G = (A + B + C)/3
+		-- The centroid G = (A + B + C)/3 is used
 		local A, B, C = self.pa, self.pb, self.pc
 		local G = (A + B + C) / 3
-		-- On renvoie deux fois le même point pour garder la même signature
+		-- The same point is returned twice, to keep the same signature
 		return G, G
 	end
 
-	-- Cas général
+	-- General case
 	local a, b, c = self.a, self.b, self.c
-	local ab, bc = self.ab, self.bc, self.ca  -- self.ca est inutile ici mais cohérent
+	local ab, bc = self.ab, self.bc, self.ca  -- self.ca is not used here
 
-	-- Cercles d’Apollonius associés aux rapports b/a sur AB et c/b sur BC
+	-- Apollonius circles for the ratios b/a on AB and c/b on BC
 	local Cab = ab:apollonius(b / a)
 	local Cbc = bc:apollonius(c / b)
 
-	-- L’intersection donne les deux points isodynamiques
+	-- Their intersection gives the two isodynamic points
 	return intersection(Cab, Cbc)
 end
 
 triangle.neuberg_points = triangle.isodynamic_points
 
--- Points d’intersection du cercle d’Apollonius (b/a, côté AB)
--- avec la droite (AB), en mettant en premier le point sur le segment [AB].
+-- Points of intersection of the Apollonius circle (b/a, side AB)
+-- with the line (AB), the point on the segment [AB] first.
 
 function triangle:apollonius_points(side, EPS)
 	EPS = EPS or tkz.epsilon
@@ -704,8 +709,8 @@ function triangle:apollonius_points(side, EPS)
 			x, y = c, a
 			X, Y = C, A           -- BC / AB
 	else
-			tex.error("triangle:apollonius_circle -> invalid side: use 'ab', 'bc', or 'ca'")
-			return
+			error("tkz-elements: triangle:apollonius_points: invalid side " .. tostring(side)
+				.. " (use \"ab\", \"bc\" or \"ca\")", 2)
 	end
 
 		if math.abs(x - y) <= EPS then
@@ -716,8 +721,6 @@ function triangle:apollonius_points(side, EPS)
      return L:harmonic(k)
 end
 
--- Ancien nom si tu veux conserver la compatibilité :
--- triangle.bisector_points = triangle.apollonius_points
 
 function triangle:the_apollonius_center()
 	local lbrocard = self:brocard_axis()
@@ -753,7 +756,7 @@ end
 
 function triangle:symmedian_line(arg)
 	local pts = { self.pa, self.pb, self.pc }
-	local i = resolve_triangle_index(self, arg)
+	local i = resolve_triangle_index_(self, arg)
 	if i < 0 or i > 2 then
 		return nil
 	end
@@ -770,7 +773,7 @@ end
 
 function triangle:altitude(arg)
 	local pts = { self.pa, self.pb, self.pc }
-	local i = resolve_triangle_index(self, arg)
+	local i = resolve_triangle_index_(self, arg)
 	if i < 0 or i > 2 then
 		return nil
 	end
@@ -784,7 +787,7 @@ end
 
 
 function triangle:bisector(arg)
-	local i = resolve_triangle_index(self, arg)
+	local i = resolve_triangle_index_(self, arg)
 	if i < 0 or i > 2 then
 		return nil
 	end
@@ -802,7 +805,7 @@ end
 
 
 function triangle:bisector_ext(arg)
-	local i = resolve_triangle_index(self, arg)
+	local i = resolve_triangle_index_(self, arg)
 	if i < 0 or i > 2 then
 		return nil
 	end
@@ -817,7 +820,7 @@ end
 
 
 function triangle:mediator(arg)
-	local i = resolve_triangle_index(self, arg)
+	local i = resolve_triangle_index_(self, arg)
 	if i < 0 or i > 2 then
 		return nil
 	end
@@ -832,7 +835,7 @@ end
 
 function triangle:trisector(arg)
 	local pts = { self.pa, self.pb, self.pc }
-	local i = resolve_triangle_index(self, arg)
+	local i = resolve_triangle_index_(self, arg)
 	if i < 0 or i > 2 then
 		return nil
 	end
@@ -852,14 +855,14 @@ end
 function triangle:antiparallel(pt, arg)
 	local a, b, c = self.pa, self.pb, self.pc
 	local I = self.incenter
-	local i = resolve_triangle_index(self, arg)
+	local i = resolve_triangle_index_(self, arg)
 
 	local S = { a, b, c }
-	local A = S[i + 1] -- sommet de départ
+	local A = S[i + 1] -- starting vertex
 	local B = S[(i + 1) % 3 + 1] -- premier sommet adjacent
 	local C = S[(i + 2) % 3 + 1] -- second sommet adjacent
 
-	-- u, v sont les symétriques de B et C par rapport à la bissectrice en I
+	-- u, v are the reflections of B and C about the bisector at I
 	local u = symmetry_axial_(A, I, B)
 	local v = symmetry_axial_(A, I, C)
 	local w = ll_from_(pt, u, v)
@@ -875,7 +878,7 @@ end
 -- N,H,G,O -- check_equilateral_ (a,b,c)
 function triangle:euler_line()
 	if check_equilateral_(self.pa, self.pb, self.pc) then
-		tex.error("An error has occurred", { "No euler line with equilateral triangle" })
+		error("tkz-elements: triangle:euler_line: no Euler line for an equilateral triangle", 2)
 	else
 		local a, b, c = orthic_axis_(self.pa, self.pb, self.pc)
 		local x = projection_(a, c, self.eulercenter)
@@ -890,7 +893,7 @@ function triangle:steiner_line(pt)
 	return line:new(u, v)
 end
 
-function triangle:lemoine_axis() -- revoir car problème
+function triangle:lemoine_axis() -- to be checked
 	local C = self:circum_circle()
 	local pl = self:lemoine_point()
 	return C:polar(pl)
@@ -937,11 +940,11 @@ function triangle:apollonius_circle(side, EPS)
 				L = self.ca
 				k = a / c        -- BC / AB
 		else
-				tex.error("triangle:apollonius_circle -> invalid side: use 'ab', 'bc', or 'ca'")
-				return
+				error("tkz-elements: triangle:apollonius_circle: invalid side " .. tostring(side)
+					.. " (use \"ab\", \"bc\" or \"ca\")", 2)
 		end
 
-		-- cas k ≈ 1 : volontairement traité
+		-- case k = 1 (approximately): handled on purpose
 		if math.abs(k - 1) <= EPS then
     	return L:bisector()
 		else
@@ -963,7 +966,7 @@ end
 
 function triangle:three_tangent_circles()
 	local i = self.incenter
-	local a, b, c = self:projection(i)
+	local a, b, c = self:projections(i)
 	return circle:new(self.pa, c), circle:new(self.pb, a), circle:new(self.pc, b)
 end
 
@@ -986,15 +989,15 @@ end
 
 function triangle:ex_circle(arg)
 	local pts = { self.pa, self.pb, self.pc }
-	local i = resolve_triangle_index(self, arg)
+	local i = resolve_triangle_index_(self, arg)
 	if i < 0 or i > 2 then return nil end
 
 	local A = pts[i + 1]
 	local B = pts[(i + 1) % 3 + 1]
 	local C = pts[(i + 2) % 3 + 1]
 
-	local O = ex_center_(A, B, C)          -- excentre opposé à A
-	local T = projection_(B, C, O)         -- point de tangence sur (BC)
+	local O = ex_center_(A, B, C)          -- excenter opposite A
+	local T = projection_(B, C, O)         -- point of tangency on (BC)
 
 	return circle:new(O, T)
 end
@@ -1130,7 +1133,7 @@ end
 
 function triangle:c_c(p, C)
 	local a, b, c
-	local i = resolve_triangle_index(self, p)
+	local i = resolve_triangle_index_(self, p)
 	if i == 0 then
 		a, b, c = self.pa, self.pb, self.pc
 	elseif i == 1 then
@@ -1153,65 +1156,63 @@ triangle.thebault = triangle.c_c
 
 function triangle:thebault_circles(p)
 	local pa, pb, pc = self.pa, self.pb, self.pc
-	local a, b, c    -- sommets réordonnés
-	local side       -- côté sur lequel se trouve p (objet line)
+	local a, b, c    -- reordered vertices
+	local side       -- side containing p (line object)
 
 	--------------------------------------------------
-	-- 1. Déterminer le côté contenant p et (a,b,c)
-	--    a = sommet opposé au côté portant p
+	-- 1. Side containing p, and (a,b,c)
+	--    a = vertex opposite the side containing p
 	--------------------------------------------------
 	if self.bc:on_segment(p) then
-		-- p sur BC -> sommet opposé A
+		-- p on BC -> opposite vertex A
 		a, b, c = pa, pb, pc
 		side    = self.bc
 
 	elseif self.ca:on_segment(p) then
-		-- p sur CA -> sommet opposé B
+		-- p on CA -> opposite vertex B
 		a, b, c = pb, pc, pa
 		side    = self.ca
 
 	elseif self.ab:on_segment(p) then
-		-- p sur AB -> sommet opposé C
+		-- p on AB -> opposite vertex C
 		a, b, c = pc, pa, pb
 		side    = self.ab
 
 	else
-		tex.error("thebault_circles: point is not on any side of the triangle.")
-		return
+		error("tkz-elements: triangle:thebault_circles: the point is not on a side of the triangle", 2)
 	end
 
 	--------------------------------------------------
-	-- 2. Construction des centres (comme dans ta version)
+	-- 2. Construction of the centers
 	--------------------------------------------------
-	local i  = self.incenter        -- incenter du triangle ABC
-	local ic = in_center_(p, a, c)  -- incenter du triangle (p,a,c)
-	local ib = in_center_(p, a, b)  -- incenter du triangle (p,a,b)
+	local i  = self.incenter        -- incenter of the triangle ABC
+	local ic = in_center_(p, a, c)  -- incenter of the triangle (p,a,c)
+	local ib = in_center_(p, a, b)  -- incenter of the triangle (p,a,b)
 
-	-- projections de p sur (ic i) et (ib i)
+	-- projections of p on (ic i) and (ib i)
 	local pc_ = projection_(p, ic, i)
 	local pb_ = projection_(p, ib, i)
 
-	-- intersections avec (b c)
+	-- intersections with (b c)
 	local tc = intersection_ll_(i, pc_, b, c)
 	local tb = intersection_ll_(i, pb_, b, c)
 
-	-- perpendiculaires à (b c) par tc et tb
+	-- perpendiculars to (b c) through tc and tb
 	local xc = ortho_from_(tc, b, c)
 	local xb = ortho_from_(tb, b, c)
 
-	-- centres des deux cercles
+	-- centers of the two circles
 	local center_c = intersection_ll_(p, ic, tc, xc)
 	local center_b = intersection_ll_(p, ib, tb, xb)
 
 	if not center_b or not center_c then
-		tex.error("thebault_circles: failed to construct circle centers.")
-		return
+		error("tkz-elements: triangle:thebault_circles: the centers of the circles cannot be constructed", 2)
 	end
 
 	--------------------------------------------------
-	-- 3. Points de tangence sur le côté et cercles
+	-- 3. Points of tangency on the side, and circles
 	--------------------------------------------------
-	-- side:projection(pt1, pt2) renvoie les projections
+	-- side:projection(pt1, pt2) returns the projections
 	local tb_tan, tc_tan = side:projection(center_b, center_c)
 
 	local Cb = circle:new(center_b, tb_tan)
@@ -1223,7 +1224,7 @@ end
 
 
 function triangle:mixtilinear_incircle(arg)
-	local i = resolve_triangle_index(self, arg)
+	local i = resolve_triangle_index_(self, arg)
 
 	local incenter = self.incenter
 	local pts = { self.pa, self.pb, self.pc }
@@ -1250,20 +1251,20 @@ end
 
 function triangle:feuerbach_apollonius(EPS)
 	EPS = EPS or tkz.epsilon
-	-- 1. Points de Feuerbach
+	-- 1. Feuerbach points
 	 local Ea, Eb, Ec = self:feuerbach():get()
-	-- -- 2. Excentre Ja
+	-- -- 2. Excenter Ja
 	local C_JaEa = self:ex_circle()
 	-- 4. Spieker center
 	local S = self.spiekercenter
-	-- 5. Cercle orthogonal
+	-- 5. Orthogonal circle
 	local Cortho = C_JaEa:orthogonal_from(S)
-	-- 6. Cercle d'Euler
+	-- 6. Euler circle
 	local Ceuler = self:euler_circle()
-	-- 7. Inversion du cercle
+	-- 7. Inversion of the circle
 	local InvEuler = Cortho:inversion(Ceuler)
 	local O = InvEuler.center
-	-- 8. Points inversés
+	-- 8. Inverted points
 	local xa, xb, xc = Cortho:inversion(Ea, Eb, Ec)
   return circle:new(O, xa)
 end
@@ -1504,16 +1505,16 @@ end
 --  kiepert parabola
 function triangle:kiepert_parabola()
 	if (self.a == self.b) or (self.a == self.c) or (self.c == self.b) then
-		tex.error("An error has occurred", { "No X(110)" })
+		error("tkz-elements: triangle:kiepert_parabola: undefined for an isosceles triangle (no X(110))", 2)
 	else
-		L = self:euler_line()
-		F = self:kimberling(110)
+		local L = self:euler_line()
+		local F = self:kimberling(110)
 		return conic:new(F, L, 1)
 	end
 end
 
 --lemoine inellipse
--- bifocal a besoin des deux foyers et d'un point sur l'ellipse ou bien de a
+-- bifocal needs the two foci and a point on the ellipse, or a
 function triangle:lemoine_inellipse()
 	local G = self.centroid
 	local L = self:lemoine_point()
@@ -1537,7 +1538,7 @@ function triangle:macbeath_inellipse()
 		local Xa = self:macbeath().pa
 		return conic:new(EL_bifocal(O, H, Xa))
 	else
-		tex.error("This function is only valid if none of the  angles is obtuse.")
+		error("tkz-elements: triangle:macbeath_inellipse: the triangle must not have an obtuse angle", 2)
 	end
 end
 
@@ -1561,34 +1562,34 @@ function triangle:orthic_inellipse()
 		local center, ra, rb, angle = ellipse_axes_angle(coefficients)
 		return conic:new(EL_radii(center, ra, rb, angle))
 	else
-		tex.error("This function is only valid if none of the angles is obtuse.")
+		error("tkz-elements: triangle:orthic_inellipse: the triangle must not have an obtuse angle", 2)
 	end
 end
 
 function triangle:path(p1, p2)
 	local list = {}
 
-	-- Liste des côtés et sommets
+	-- List of the sides and vertices
 	local sides = {
 		{ seg = self.ab, A = self.pa, B = self.pb },
 		{ seg = self.bc, A = self.pb, B = self.pc },
 		{ seg = self.ca, A = self.pc, B = self.pa },
 	}
 
-	-- Trouver les indices des segments contenant p1 et p2
+	-- Indices of the segments containing p1 and p2
 	local function locate(p)
 		for i, s in ipairs(sides) do
 			if s.seg:on_segment(p) then
 				return i
 			end
 		end
-		tex.error("Point not on triangle boundary.")
+		error("tkz-elements: triangle:path: the point is not on the boundary of the triangle", 3)
 	end
 
 	local i1 = locate(p1)
 	local i2 = locate(p2)
 
-	-- Cas simple : même segment
+	-- Simple case: same segment
 	if i1 == i2 then
 		table.insert(list, "(" .. checknumber_(p1.re) .. "," .. checknumber_(p1.im) .. ")")
 		table.insert(list, "(" .. checknumber_(p2.re) .. "," .. checknumber_(p2.im) .. ")")
@@ -1598,7 +1599,7 @@ function triangle:path(p1, p2)
 	-- Sinon, commencer par p1
 	table.insert(list, "(" .. checknumber_(p1.re) .. "," .. checknumber_(p1.im) .. ")")
 
-	-- Parcourir les sommets intermédiaires dans l’ordre trigonométrique
+	-- Intermediate vertices, counterclockwise
 	local i = i1
 	repeat
 		local s = sides[i]
@@ -1616,10 +1617,10 @@ end
 
 -- Circle tangent to the three lines of the triangle:
 -- returns (in this order): incircle, excircle at pa, excircle at pb, excircle at pc.
--- Optionnel: which ∈ { nil/"all", "in", "pa", "pb", "pc", "ex_a", "ex_b", "ex_c" }
+-- Optional: which in { nil/"all", "in", "pa", "pb", "pc", "ex_a", "ex_b", "ex_c" }
 function triangle:LLL(which)
 	which = which or "all"
-	-- --- sélecteur
+	-- --- selector
 	local C_in = self:in_circle()
 	local C_ea = self:ex_circle(0) -- pa
 	local C_eb = self:ex_circle(1) -- pb
@@ -1634,7 +1635,8 @@ function triangle:LLL(which)
 	if which == "pb" or which == "ex_b" then return C_eb end
 	if which == "pc" or which == "ex_c" then return C_ec end
 
-	tex.error("Unknown selector for triangle:c_lll: "..tostring(which))
+	error("tkz-elements: triangle:LLL: unknown selector " .. tostring(which)
+		.. " (use \"all\", \"in\", \"pa\", \"pb\" or \"pc\")", 2)
 
 end
 triangle.c_lll = triangle.LLL
@@ -1659,8 +1661,7 @@ function triangle:cevian_point(p, q, eps)
 	local sq = side_of_point_(self.pa, self.pb, self.pc, q, eps)
 
 	if not sp or not sq or sp == sq then
-		tex.error("cevian_point: points must lie on two distinct sides of the triangle.")
-		return nil
+		error("tkz-elements: triangle:cevian_point: the points must lie on two distinct sides of the triangle", 2)
 	end
 
 	local br
@@ -1673,8 +1674,7 @@ function triangle:cevian_point(p, q, eps)
 	end
 
 	if br == nil then
-		tex.error("cevian_point: unable to construct the cevian point.")
-		return nil
+		error("tkz-elements: triangle:cevian_point: the cevian point cannot be constructed", 2)
 	end
 
 	local x, y, z = cevian_(self.pa, self.pb, self.pc, br)
@@ -1686,8 +1686,7 @@ local function ellipse_from_brianchon_(T, br, eps)
 	eps = eps or tkz.epsilon
 
 	if br == nil then
-		tex.error("ellipse_inscribed: Brianchon's point is required.")
-		return nil
+		error("tkz-elements: triangle:ellipse_inscribed: the Brianchon point is required", 2)
 	end
 
 	local a, b, c = cevian_(T.pa, T.pb, T.pc, br)
@@ -1703,8 +1702,7 @@ function triangle:ellipse_inscribed(spec, eps)
 	eps = eps or tkz.epsilon
 
 	if type(spec) ~= "table" then
-		tex.error("ellipse_inscribed: a specification table is expected.")
-		return nil
+		error("tkz-elements: triangle:ellipse_inscribed: a specification table is expected", 2)
 	end
 
 	if spec.brianchon ~= nil then
@@ -1727,8 +1725,7 @@ function triangle:ellipse_inscribed(spec, eps)
 		return ellipse_from_brianchon_(self, br, eps)
 	end
 
-	tex.error("ellipse_inscribed: expected brianchon, center, or focus.")
-	return nil
+	error("tkz-elements: triangle:ellipse_inscribed: the table must contain brianchon, center or focus", 2)
 end
 
 

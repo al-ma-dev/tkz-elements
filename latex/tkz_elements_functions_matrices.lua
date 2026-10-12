@@ -4,11 +4,13 @@
 -- Maintainer: Alain Matthes
 
 -- ----------------------------------------------------------------------------
+-- display
+-- ----------------------------------------------------------------------------
 function print_matrix(m, mstyle, fmt)
 	mstyle = mstyle or "bmatrix"
-	fmt    = fmt    or 0
+	fmt = fmt or 0
 
-	-- si on reçoit un objet matrix, on récupère son set
+	-- a matrix object: use its table of rows
 	if m.type == "matrix" then
 		m = m.set
 	end
@@ -17,10 +19,7 @@ function print_matrix(m, mstyle, fmt)
 	tex.sprint("\\begin{" .. mstyle .. "}")
 	for i = 1, #m do
 		for j = 1, #m[1] do
-			local x = m[i][j]
-			-- si tkz_display_ accepte un format, on lui passe fmt
-			local st = tkz_display_(x, fmt)
-			tex.sprint(st)
+			tex.sprint(tkz_display_(m[i][j], fmt))
 			if j < #m[1] then
 				tex.sprint(" & ")
 			end
@@ -31,8 +30,8 @@ function print_matrix(m, mstyle, fmt)
 	tex.sprint("$")
 end
 
-function print_array(matrix)
-	local mdata = (matrix.type == "matrix" and matrix.set or matrix)
+function print_array(M)
+	local mdata = (M.type == "matrix" and M.set or M)
 	tex.sprint("\\{%")
 	for i = 1, #mdata do
 		local row = mdata[i]
@@ -43,26 +42,50 @@ function print_array(matrix)
 				row_str = row_str .. "  ,"
 			end
 		end
-		if (i ~= #mdata) and (j ~= #row) then
-			if i > 1 then
-				row_str = row_str .. " \\}},"
-			else
-				row_str = row_str .. " \\}},"
-			end
-			tex.sprint(row_str)
+		if i < #mdata then
+			row_str = row_str .. " \\}},"
 		else
-			if i > 1 then
-				row_str = row_str .. " \\}}"
-			else
-				row_str = row_str .. " \\}}"
-			end
-			tex.sprint(row_str)
+			row_str = row_str .. " \\}}"
 		end
+		tex.sprint(row_str)
 	end
 	tex.sprint("\\}")
 end
 
-function mul_matrix(A, B)
+-- ----------------------------------------------------------------------------
+-- helpers
+-- ----------------------------------------------------------------------------
+function copy_matrix_(M)
+	local C = {}
+	for i = 1, #M do
+		C[i] = {}
+		for j = 1, #M[i] do
+			C[i][j] = M[i][j]
+		end
+	end
+	return C
+end
+
+-- comparison of two entries (numbers, or complex numbers given as points)
+function near_entries_(x, y, EPS)
+	EPS = EPS or tkz.epsilon
+	if type(x) == "number" and type(y) == "number" then
+		return math.abs(x - y) <= EPS
+	end
+	return x == y
+end
+
+local function entry_abs(x)
+	if type(x) == "number" then
+		return math.abs(x)
+	end
+	return point.abs(x)
+end
+
+-- ----------------------------------------------------------------------------
+-- operations
+-- ----------------------------------------------------------------------------
+function mul_matrix_(A, B)
 	local adata = (A.type == "matrix" and A.set or A)
 	local bdata = (B.type == "matrix" and B.set or B)
 	local C = {}
@@ -79,103 +102,109 @@ function mul_matrix(A, B)
 	return matrix:new(C)
 end
 
-function add_matrix(A, B)
+function add_matrix_(A, B)
 	local adata = (A.type == "matrix" and A.set or A)
 	local bdata = (B.type == "matrix" and B.set or B)
 	local S = {}
 	for i = 1, #adata do
-		local T = {}
-		S[i] = T
+		S[i] = {}
 		for j = 1, #adata[1] do
-			T[j] = adata[i][j] + bdata[i][j]
+			S[i][j] = adata[i][j] + bdata[i][j]
 		end
 	end
 	return matrix:new(S)
 end
 
-function k_mul_matrix(n, A)
+function k_mul_matrix_(n, A)
 	local adata = (A.type == "matrix" and A.set or A)
 	local S = {}
-	for i = 1, #adata, 1 do
-		local T = {}
-		S[i] = T
-		for j = 1, #adata[1], 1 do
-			T[j] = n * adata[i][j]
+	for i = 1, #adata do
+		S[i] = {}
+		for j = 1, #adata[1] do
+			S[i][j] = n * adata[i][j]
 		end
 	end
 	return matrix:new(S)
 end
-
-function matrix.identity(n)
-	return id_matrix(n)
-end
-
 
 function transposeMatrix(A)
 	local mdata = (A.type == "matrix" and A.set or A)
-	local transposedMatrix = {}
+	local T = {}
 	for i = 1, #mdata[1] do
-		transposedMatrix[i] = {}
+		T[i] = {}
 		for j = 1, #mdata do
-			transposedMatrix[i][j] = mdata[j][i]
+			T[i][j] = mdata[j][i]
 		end
 	end
-	return matrix:new(transposedMatrix)
+	return matrix:new(T)
 end
 
--- Function to calculate the determinant of a square matrix
+-- Determinant of a square matrix (nil if the matrix is not square).
+-- Explicit formulas up to 3x3 (exact results with integers), Gaussian
+-- elimination with partial pivoting beyond.
 function determinant(A)
-	local matrix = (A.type == "matrix" and A.set or A)
-	if #matrix == #matrix[1] then
-		local n = #matrix
-		if n == 1 then
-			return matrix[1][1] -- Base case for 1x1 matrix
-		elseif n == 2 then
-			return matrix[1][1] * matrix[2][2] - matrix[1][2] * matrix[2][1] -- Base case for 2x2 matrix
-		else
-			local det = 0
-			for j = 1, n do
-				local minor = {}
-				for i = 2, n do
-					minor[i - 1] = {}
-					for k = 1, n do
-						if k ~= j then
-							minor[i - 1][#minor[i - 1] + 1] = matrix[i][k]
-						end
-					end
-				end
-				det = det + ((-1) ^ (j + 1)) * matrix[1][j] * determinant(minor) -- Recursive call for larger matrices
-			end
-			return det
-		end
-	else
+	local m = (A.type == "matrix" and A.set or A)
+	local n = #m
+	if n ~= #m[1] then
 		return nil
 	end
-end
-
-function check_square_matrix(A)
-	local matrix = (A.type == "matrix" and A.set or A)
-	if #matrix == #matrix[1] then
-		return true
-	else
-		return false
+	if n == 1 then
+		return m[1][1]
+	elseif n == 2 then
+		return m[1][1] * m[2][2] - m[1][2] * m[2][1]
+	elseif n == 3 then
+		return m[1][1] * (m[2][2] * m[3][3] - m[2][3] * m[3][2])
+			- m[1][2] * (m[2][1] * m[3][3] - m[2][3] * m[3][1])
+			+ m[1][3] * (m[2][1] * m[3][2] - m[2][2] * m[3][1])
 	end
+	local a = copy_matrix_(m)
+	local det = 1
+	for col = 1, n do
+		-- partial pivoting
+		local p = col
+		for i = col + 1, n do
+			if math.abs(a[i][col]) > math.abs(a[p][col]) then
+				p = i
+			end
+		end
+		if a[p][col] == 0 then
+			return 0
+		end
+		if p ~= col then
+			a[p], a[col] = a[col], a[p]
+			det = -det
+		end
+		local pivot = a[col][col]
+		det = det * pivot
+		for i = col + 1, n do
+			local factor = a[i][col] / pivot
+			if factor ~= 0 then
+				for j = col, n do
+					a[i][j] = a[i][j] - factor * a[col][j]
+				end
+			end
+		end
+	end
+	return det
 end
 
-function id_matrix(n)
+function id_matrix_(n)
 	local id = {}
 	for i = 1, n do
 		id[i] = {}
 		for j = 1, n do
-			-- Set diagonal elements to 1, others to 0
 			id[i][j] = (i == j) and 1 or 0
 		end
 	end
 	return matrix:new(id)
 end
 
+-- adjugate of a 2x2 or 3x3 matrix (nil otherwise)
 function adjugate_(A)
 	local m = (A.type == "matrix" and A.set or A)
+	if #m ~= #m[1] then
+		return nil
+	end
 	if #m == 2 then
 		local a, b, c, d = m[2][2], -m[1][2], -m[2][1], m[1][1]
 		return matrix:new({ { a, b }, { c, d } })
@@ -193,108 +222,118 @@ function adjugate_(A)
 	end
 end
 
+-- inverse by Gauss-Jordan on [A | I]
+-- returns the inverse, or nil and a message
+function inv_matrix_(A)
+	if not A:is_square() then
+		return nil, "the matrix is not square"
+	end
+	if math.abs(A.det) < tkz.epsilon then
+		return nil, "the matrix is not invertible (det close to 0)"
+	end
+	local n = A.rows
+	local aug = {}
+	for i = 1, n do
+		aug[i] = {}
+		for j = 1, n do
+			aug[i][j] = A.set[i][j]
+			aug[i][n + j] = (i == j) and 1 or 0
+		end
+	end
+	local R = matrix:new(aug):gauss_jordan()
+	local inv = {}
+	for i = 1, n do
+		inv[i] = {}
+		for j = 1, n do
+			inv[i][j] = R.set[i][n + j]
+		end
+	end
+	return matrix:new(inv)
+end
+
 function inv_matrix(A)
-	local tolerance = 1e-10 -- Définir une tolérance
-	if math.abs(A.det) < tolerance then
-		tex.print("Matrix not invertible: det is close to 0")
-		return nil
-	else
-		local n = #A.set
-		local augmentedData = {}
-
-		-- Create the augmented matrix [matrix | identity]
-		local identityMatrix = matrix.identity(n)
-		for i = 1, n do
-			augmentedData[i] = {}
-			for j = 1, 2 * n do
-				if j <= n then
-					-- Copy original matrix data
-					augmentedData[i][j] = A.set[i][j]
-				else
-					-- Append identity matrix data
-					augmentedData[i][j] = identityMatrix.set[i][j - n]
-				end
-			end
-		end
-
-		-- Apply Gauss-Jordan to the augmented matrix
-		local augmentedMatrix = matrix:new(augmentedData)
-		augmentedMatrix:gauss_jordan()
-
-		-- Extract the inverse matrix from the augmented matrix
-		local inverseData = {}
-		for i = 1, n do
-			inverseData[i] = {}
-			for j = n + 1, 2 * n do
-				-- Extract the right part of the augmented matrix
-				inverseData[i][j - n] = augmentedMatrix.set[i][j]
-			end
-		end
-
-		return matrix:new(inverseData)
+	local inv, err = inv_matrix_(A)
+	if not inv then
+		error("tkz-elements: inv_matrix: " .. err, 2)
 	end
+	return inv
 end
 
+-- Diagonalization of a 2x2 matrix: returns D (eigenvalues) and P
+-- (eigenvectors as columns) with A = P D P^-1. Complex eigenvalues are
+-- given as points (complex numbers).
 function diagonalize_(A)
-	local m = (A.type == "matrix" and A.set or A)
-	local trace = m[1][1] + m[2][2]
-	local a, b = m[1][1], m[1][2]
-	local det = A.det
-	local D = trace * trace - 4 * det
-	if D > 0 then
-		local va1 = (trace + math.sqrt(D)) / 2
-		local va2 = (trace - math.sqrt(D)) / 2
-		return matrix:new({ { va1, 0 }, { 0, va2 } }), matrix:new({ { 1, 1 }, { (va1 - a) / b, (va2 - a) / b } })
-	else
-		local va1 = point(trace / 2, math.sqrt(-D) / 2)
-		local va2 = point(trace / 2, -math.sqrt(-D) / 2)
-		return matrix:new({ { va1, 0 }, { 0, va2 } }) --,
-		--   matrix : new ({{1,1},{ (va1 - a )/b, (va2 - a)/b}})
+	if A.rows ~= 2 or A.cols ~= 2 then
+		error("tkz-elements: matrix:diagonalize: only 2x2 matrices are supported", 3)
 	end
+	local m = A.set
+	local a, b = m[1][1], m[1][2]
+	local c, d = m[2][1], m[2][2]
+	local EPS = tkz.epsilon
+
+	-- already diagonal
+	if math.abs(b) <= EPS and math.abs(c) <= EPS then
+		return matrix:new({ { a, 0 }, { 0, d } }), id_matrix_(2)
+	end
+
+	local trace = a + d
+	local det = a * d - b * c
+	local D = trace * trace - 4 * det
+	if math.abs(D) <= EPS then
+		error("tkz-elements: matrix:diagonalize: the matrix is not diagonalizable "
+			.. "(double eigenvalue)", 3)
+	end
+
+	local va1, va2
+	if D > 0 then
+		va1 = (trace + math.sqrt(D)) / 2
+		va2 = (trace - math.sqrt(D)) / 2
+	else
+		va1 = point(trace / 2, math.sqrt(-D) / 2)
+		va2 = point(trace / 2, -math.sqrt(-D) / 2)
+	end
+
+	-- eigenvector of va: (1, (va - a) / b) if b ~= 0, else ((va - d) / c, 1)
+	local P
+	if math.abs(b) > EPS then
+		P = matrix:new({ { 1, 1 }, { (va1 - a) / b, (va2 - a) / b } })
+	else
+		P = matrix:new({ { (va1 - d) / c, (va2 - d) / c }, { 1, 1 } })
+	end
+	return matrix:new({ { va1, 0 }, { 0, va2 } }), P
 end
 
-function isDiagonal_(A)
-	local matrix = (A.type == "matrix" and A.set or A)
-	if check_square_matrix(A) == true then
-		for i = 1, #matrix do
-			for j = 1, #matrix[1] do
-				if i ~= j and matrix[i][j] ~= 0 then
-					return false
-				end
+function is_diagonal_matrix_(A)
+	if not A:is_square() then
+		return false
+	end
+	for i = 1, A.rows do
+		for j = 1, A.cols do
+			if i ~= j and entry_abs(A.set[i][j]) > tkz.epsilon then
+				return false
 			end
 		end
-		return true
-	else
-		return false
 	end
+	return true
 end
 
-function isOrthogonal_(A)
-	local m = (A.type == "matrix" and A.set or A)
-	if (check_square_matrix(A) == true) and (A.det ~= 0) then
-		local mT = transposeMatrix(A)
-		local mI = inv_matrix(A)
-		if mT == mI then
-			return true
-		else
-			return false
-		end
-	else
+-- A is orthogonal if A^T A = I
+function is_orthogonal_matrix_(A)
+	if not A:is_square() then
 		return false
 	end
+	return mul_matrix_(transposeMatrix(A), A) == id_matrix_(A.rows)
 end
 
+-- ----------------------------------------------------------------------------
+-- homogeneous transformation matrices
+-- ----------------------------------------------------------------------------
 function homogenization_(A)
 	local m = (A.type == "matrix" and A.set or A)
-	if A.cols ~= 1 then
-		return nil
-	else
-		local a, b, c
-		a = m[1][1]
-		b = m[2][1]
-		c = 1
-		return matrix:new({ { a }, { b }, { c } })
+	if A.cols ~= 1 or A.rows ~= 2 then
+		error("tkz-elements: matrix:homogenization: a 2x1 column matrix is expected", 3)
 	end
+	return matrix:new({ { m[1][1] }, { m[2][1] }, { 1 } })
 end
 
 function get_element_(A, i, j)
@@ -309,112 +348,29 @@ function get_htm_point(A)
 	return point:new(m[1][1], m[2][1])
 end
 
-function htm_apply_(A, z)
-	local V = homogenization_(z.mtx)
-	local W = A * V
-	return get_htm_point(W)
-end
-
-function htm_apply_L_(A, obj)
-	local x, y
-	x = htm_apply_(A, obj.pa)
-	y = htm_apply_(A, obj.pb)
-	return line:new(x, y)
-end
-
-function htm_apply_C_(A, obj)
-	local x, y
-	x = htm_apply_(A, obj.center)
-	y = htm_apply_(A, obj.through)
-	return circle:new(x, y)
-end
-
-function htm_apply_T_(A, obj)
-	local x, y, z
-	x = htm_apply_(A, obj.pa)
-	y = htm_apply_(A, obj.pb)
-	z = htm_apply_(A, obj.pc)
-	return triangle:new(x, y, z)
-end
-
-function htm_apply_Q_(A, obj)
-	local x, y, z, t
-	x = htm_apply_(A, obj.pa)
-	y = htm_apply_(A, obj.pb)
-	z = htm_apply_(A, obj.pc)
-	t = htm_apply_(A, obj.pd)
-	if obj.type == "square" then
-		return square:new(x, y, z, t)
-	elseif obj.type == "rectangle" then
-		return rectangle:new(x, y, z, t)
-	elseif obj.type == "parallelogram" then
-		return parallelogram:new(x, y, z, t)
-	elseif obj.type == "quadrilateral" then
-		return quadrilateral:new(x, y, z, t)
+-- Affine map defined by a 3x3 homogeneous matrix.
+-- Returns f (point -> point), similar (f is a similarity) and degenerate
+-- (f is not invertible); used by matrix:htm_apply.
+function htm_map_(M)
+	local name = "matrix:htm_apply"
+	if M.rows ~= 3 or M.cols ~= 3 then
+		error("tkz-elements: " .. name .. ": a 3x3 matrix is expected", 3)
 	end
-end
-
-function matrix:augment_right(B)
-	local m = #self.set
-	local n = #self.set[1]
-	local p = #B.set[1]
-	local R = {}
-
-	for i = 1, m do
-		R[i] = {}
-		-- copie A
-		for j = 1, n do
-			R[i][j] = self.set[i][j]
-		end
-		-- colle B à droite
-		for j = 1, p do
-			R[i][n + j] = B.set[i][j]
-		end
+	local m = M.set
+	local EPS = tkz.epsilon
+	if math.abs(m[3][1]) > EPS or math.abs(m[3][2]) > EPS or math.abs(m[3][3] - 1) > EPS then
+		error("tkz-elements: " .. name .. ": the last row must be (0, 0, 1)", 3)
 	end
-
-	return matrix(R)
-end
-
-
-function matrix:right_block(k)
-	local m = #self.set
-	local n = #self.set[1]
-	local R = {}
-	local c0 = n - k + 1
-
-	for i = 1, m do
-		R[i] = {}
-		for j = 1, k do
-			R[i][j] = self.set[i][c0 + j - 1]
-		end
+	local a, b, tx = m[1][1], m[1][2], m[1][3]
+	local c, d, ty = m[2][1], m[2][2], m[2][3]
+	local f = function(p)
+		return point(a * p.re + b * p.im + tx, c * p.re + d * p.im + ty)
 	end
-
-	return matrix(R)
+	-- similarity: the columns of the linear part are orthogonal and of the
+	-- same norm
+	local n1, n2 = a * a + c * c, b * b + d * d
+	local scale = math.max(n1, n2, 1)
+	local similar = math.abs(n1 - n2) <= EPS * scale and math.abs(a * b + c * d) <= EPS * scale
+	local degenerate = math.abs(a * d - b * c) <= EPS * scale
+	return f, similar, degenerate
 end
-
-function matrix:left_block(k)
-	local m = #self.set
-	local R = {}
-	for i = 1, m do
-		R[i] = {}
-		for j = 1, k do
-			R[i][j] = self.set[i][j]
-		end
-	end
-	return matrix(R)
-end
-
-function matrix:submatrix(r1, r2, c1, c2)
-	local R = {}
-	for i = r1, r2 do
-		local row = {}
-		for j = c1, c2 do
-			row[#row+1] = self.set[i][j]
-		end
-		R[#R+1] = row
-	end
-	return matrix(R)
-end
-
-
-

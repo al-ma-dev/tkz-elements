@@ -30,7 +30,7 @@ S.ABCD = square(z.A, z.B)
 
 \subsection{Square attributes}
 \label{sub:square_attributes}
-Points are created in the direct direction. A test is performed to check whether the points form a square. Otherwise, compilation is blocked."
+Points are given in the direct direction. No test is performed: the four points must form a square.
 \begin{mybox}
 Creation | S.AB = square(z.A,z.B,z.C,z.D)|
 \end{mybox}
@@ -49,14 +49,18 @@ Creation | S.AB = square(z.A,z.B,z.C,z.D)|
   \tkzAttr{square}{pc}         & |z.C = S.AB.pc|       &  \\
   \tkzAttr{square}{pd}         & |z.D = S.AB.pd|       &  \\
   \tkzAttr{square}{type}       & |S.AB.type= 'square'| &  \\
-  \tkzAttr{square}{side}       & |s = S.AB.center|     & s = length of side   \\
+  \tkzAttr{square}{side}       & |s = S.AB.side|       & s = length of side   \\
   \tkzAttr{square}{center}     & |z.I = S.AB.center|   & center of the square \\
   \tkzAttr{square}{circumradius}   & |S.AB.circumradius|       & radius of the circumscribed circle \\
-  \tkzAttr{square}{inradius}   & |S.AB.inxradius|      & radius of the inscribed circle (apothem)  \\
-  \tkzAttr{square}{apothem\_foot}       & |S.AB.proj|           & projection of the center on one side \\
+  \tkzAttr{square}{inradius}   & |S.AB.inradius|      & radius of the inscribed circle (apothem)  \\
+  \tkzAttr{square}{apothem}    & |S.AB.apothem|       & same as inradius  \\
+  \tkzAttr{square}{apothem\_foot}       & |S.AB.apothem_foot|   & projection of the center on one side \\
+  \tkzAttr{square}{diagonal}   & |S.AB.diagonal|      & length of a diagonal  \\
+  \tkzAttr{square}{area}       & |S.AB.area|          & area  \\
+  \tkzAttr{square}{perimeter}  & |S.AB.perimeter|     & perimeter  \\
   \tkzAttr{square}{ab}         & |S.AB.ab|             &  line passing through two vertices   \\
-  \tkzAttr{square}{ac}         & |S.AB.ca|             &  idem. \\
-  \tkzAttr{square}{ad}         & |S.AB.ad|             &  idem. \\
+  \tkzAttr{square}{ac}         & |S.AB.ac|             &  idem. \\
+  \tkzAttr{square}{da}         & |S.AB.da|             &  idem. \\
   \tkzAttr{square}{bc}         & |S.AB.bc|             &  idem. \\
   \tkzAttr{square}{bd}         & |S.AB.bd|             &  idem. \\
   \tkzAttr{square}{cd}         & |S.AB.cd|             &  idem. \\
@@ -148,12 +152,35 @@ Creation | S.AB = square(z.A,z.B,z.C,z.D)|
   \tkzFct{square}{square.by\_rotation (zi,za)} &[\ref{ssub:method_square_rotation}]\\
 
   \tkzFct{square}{square.from\_side(za,zb,"swap")} & \ref{ssub:square_with_side_method} \\
+  \tkzMeth{square}{get(<i>)} & [\ref{ssub:method_square_get}]\\
   \bottomrule %
   \end{tabular}
   \egroup
 
 
 
+
+\subsubsection{Method \tkzMeth{square}{get(<i>)}}
+\label{ssub:method_square_get}
+
+This method returns the points that define the square object.
+
+\begin{itemize}
+  \item \code{S.ABCD:get()} returns the four vertices in order: \code{pa}, \code{pb}, \code{pc}, \code{pd};
+  \item \code{S.ABCD:get(i)}, with \code{i} from 1 to 4, returns only the
+        \code{i}-th vertex; for example \code{S.ABCD:get(2)} is equivalent to \code{S.ABCD.pb}.
+\end{itemize}
+
+\begin{tkzexample}[code only]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(2, 0)
+  S.ABCD = square.from_side(z.A, z.B)
+  z.E, z.F, z.G, z.H = S.ABCD:get()
+  z.K = S.ABCD:get(3)
+}
+\end{tkzexample}
 
 \subsubsection{Function \tkzFct{square}{square.by\_rotation(pt,pt)}}
 \label{ssub:method_square_rotation}

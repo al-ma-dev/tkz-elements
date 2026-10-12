@@ -85,13 +85,6 @@ function circle_point_position_(C, p, EPS)
 end
 
 
-function in_out_(o, t, p, EPS)
-  EPS = EPS or tkz.epsilon
-local r = point.abs(t - o)
-local d = point.abs(p - o)
-return math.abs(d - r) <= EPS
-end
-
 function in_out_disk_(a, b, pt)
     return point.abs(pt - a) <= point.abs(b - a)
 end
@@ -177,9 +170,9 @@ function orthogonal_from_(a, b, p)
     return tangent_from_(a, b, p)
 end
 
--- pb avec l'inversion
--- 1) si l'un des points est sur le cercle
--- 2) si l'un des points est l'inverse de l'autre par rapport au cercle
+-- problems with the inversion
+-- 1) if one of the points is on the circle
+-- 2) if one point is the inverse of the other with respect to the circle
 function orthogonal_through_(a, b, x, y, EPS)
    EPS = EPS or tkz.epsilon
     if math.abs(point.mod(x - a) - point.mod(b - a)) < EPS then
@@ -197,89 +190,6 @@ function are_inverses_(a, b, x, y, EPS)
    EPS = EPS or tkz.epsilon
   local z = inversion_(a, b, x)
     return point.mod(z - y) < EPS
-end
-
-function orthogonal_circle_through_(a, b, x, y, EPS)
-  EPS = EPS or tkz.epsilon
-
-  -- rayon du cercle de référence C(a,b)
-  local r0 = point.abs(b - a)
-
-  -- garde-fous
-  if point.abs(x - y) <= EPS then
-    return nil, "orthogonal_circle_through_: x and y must be distinct"
-  end
-
-  -- tests "sur le cercle"
-  local x_on = on_circle_(a, b, x, EPS)
-  local y_on = on_circle_(a, b, y, EPS)
-
-  ----------------------------------------------------------------------
-  -- Cas 1 : x sur C(a,b)  (ou y sur C(a,b))
-  -- Propriété: si deux cercles sont orthogonaux et partagent un point P,
-  -- alors les centres sont alignés avec P et le centre du cercle de référence.
-  -- Donc: centre C recherché est sur la droite (a,x) et aussi sur la médiatrice de [x,y].
-  ----------------------------------------------------------------------
-  if x_on then
-    local m1, m2 = mediator_(x, y)          -- médiatrice de [x,y]
-    local c = intersection_ll_(a, x, m1, m2)
-    if not c then
-      return nil, "orthogonal_circle_through_: degenerate case (x on circle)"
-    end
-    return c, x
-  end
-
-  if y_on then
-    local m1, m2 = mediator_(x, y)
-    local c = intersection_ll_(a, y, m1, m2)
-    if not c then
-      return nil, "orthogonal_circle_through_: degenerate case (y on circle)"
-    end
-    return c, y
-  end
-
-  ----------------------------------------------------------------------
-  -- Cas 2 : x et y sont inverses par rapport à C(a,b)
-  -- Dans ce cas, (x,y) forment une paire inverse : il existe des cercles
-  -- orthogonaux passant par x,y ; on fixe une solution géométrique stable.
-  ----------------------------------------------------------------------
-  if are_inverses_(a, b, x, y, EPS) then
-    local m1, m2 = mediator_(x, y)          -- centre sur la médiatrice de [x,y]
-
-    -- On choisit un point "le plus éloigné" du centre a pour une construction plus stable
-    local p = (point.abs(x - a) > point.abs(y - a)) and x or y
-
-    -- tangentes depuis p au cercle C(a,b)
-    local t1, t2 = tangent_from_(a, b, p)
-    if not t1 or not t2 then
-      return nil, "orthogonal_circle_through_: tangents undefined (inverse case)"
-    end
-
-    -- centre aussi sur la médiatrice de [t1,p] (ou [t2,p], au choix)
-    local n1, n2 = mediator_(t1, p)
-    local c = intersection_ll_(m1, m2, n1, n2)
-    if not c then
-      return nil, "orthogonal_circle_through_: cannot determine center (inverse case)"
-    end
-
-    return c, x
-  end
-
-  ----------------------------------------------------------------------
-  -- Cas 3 : cas général (x pas sur le cercle, y pas sur le cercle, non inverses)
-  -- Construction standard : si z = inversion(x), alors le cercle (x,y,z) est orthogonal à C(a,b).
-  ----------------------------------------------------------------------
-  local z = inversion_(a, b, x, EPS)
-  if not z then
-    return nil, "orthogonal_circle_through_: inversion failed"
-  end
-
-  local c = circum_center_(x, y, z)
-  if not c then
-    return nil, "orthogonal_circle_through_: circumcenter undefined (collinear points?)"
-  end
-
-  return c, x
 end
 
 function inversion_(c, p, pt, EPS)
@@ -368,7 +278,7 @@ function radical_center_(c1, p1, c2, p2)
     return h * (c2 - c1) / d + c1
 end
 
-function radical_center3(C1, C2, C3)
+function radical_center3_(C1, C2, C3)
     local t1, t2, t3, t4
     t1, t2 = radical_axis_(C1.center, C1.through, C2.center, C2.through)
     if C3 == nil then
@@ -415,12 +325,38 @@ function midcircle_cc_(o1, t1, o2, t2, EPS)
   r2 = length_(o2, t2)
   state = circles_position_(o1, r1, o2, r2, EPS)
 
-  i = barycenter_({ o2, r1 }, { o1, -r2 })
+  -- identical circles: no midcircle
+  if state == "IDENTICAL" then
+    error("tkz-elements: midcircle: the two circles are identical", 2)
+  end
+
+  -- concentric circles: the concentric circle of radius sqrt(r1 r2)
+  if state == "CONCENTRIC" then
+    return circle:radius(o1, math.sqrt(r1 * r2))
+  end
+
+  -- internal center of similitude
   j = barycenter_({ o2, r1 }, { o1, r2 })
-  tg1, _ = tangent_from_(o1, t1, i)
-  TG1, _ = tangent_from_(o2, t2, i)
+
+  -- equal radii: the external center of similitude is at infinity and
+  -- the inversion becomes the reflection in the perpendicular bisector
+  -- of the centers, returned as a line (circle "of infinite radius")
+  if math.abs(r1 - r2) <= EPS then
+    local u, v = mediator_(o1, o2)
+    if (state == "DISJOINT_EXT") or (state == "TANGENT_EXT") then
+      return line:new(u, v)
+    elseif state == "SECANT" then
+      r, s = intersection_cc_(o1, t1, o2, t2, EPS)
+      return line:new(u, v), circle:radius(j, point.mod(r - j))
+    end
+  end
+
+  -- external center of similitude
+  i = barycenter_({ o2, r1 }, { o1, -r2 })
 
     if (state == "DISJOINT_EXT") or (state == "TANGENT_EXT") then
+        tg1, _ = tangent_from_(o1, t1, i)
+        TG1, _ = tangent_from_(o2, t2, i)
         p = math.sqrt(point.mod(i - tg1) * point.mod(i - TG1))
         return circle:radius(i, p)
     elseif state == "SECANT" then
@@ -461,7 +397,7 @@ end
 -- - intersection_lc_(X, Y, O, T): line (X,Y) with circle (O,T)
 -- - ortho_from_(P, X, Y): line through P perpendicular to line (X,Y)
 -- - distance_(a, b, P): distance from point P to line L =(a,b)
--- - antipode_(O, S): point opposite to S on circle centered at O and through S (your helper)
+-- - antipode_(O, S): point opposite to S on circle centered at O and through S
 --
 -- Returns:
 --   * secant case: two circles (centered at A and B) passing through S1 (hence tangent to L at S1)
@@ -496,7 +432,7 @@ function midcircle_cl_(O, T, x, y, EPS)
 
   -- Disjoint case: TWO solutions (centers A and B)
   if not S then
-    -- Power condition → R^2 = 2 r · d(center, L)
+    -- Power condition -> R^2 = 2 r d(center, L)
     local AL = distance_(x, y, A)
     local BL = distance_(x, y, B)
     local R1 = math.sqrt(2 * r * AL)
@@ -517,22 +453,24 @@ end
 
 
 --- =========== Common tangents of two circles =======-----
-function common_tangent_(C1, C2, mode, EPS)
-   EPS = EPS or tkz.epsilon
-  mode = mode or "external" -- "external" | "internal" | "both"
+-- common_tangents_(C1, C2, mode, EPS)
+-- mode: "external" (default), "internal", "both" ("all" is an alias of "both").
+-- Returns a list of pairs { P, Q } (each pair defines a tangent line) and
+-- the relative position of the circles. The list is empty when no common
+-- tangent of the requested family exists. No error is raised here.
+--   external family: DISJOINT_EXT, TANGENT_EXT, SECANT -> 2 ;
+--                    TANGENT_INT -> 1 (tangent at the contact point)
+--   internal family: DISJOINT_EXT -> 2 ; TANGENT_EXT -> 1 (at the contact point)
+function common_tangents_(C1, C2, mode, EPS)
+  EPS = EPS or tkz.epsilon
+  mode = mode or "external"
+  if mode == "all" then mode = "both" end
 
   local A, rA = C1.center, C1.radius
   local B, rB = C2.center, C2.radius
+  local pos = circles_position_(A, rA, B, rB, EPS)
 
-  local pos   = circles_position_(A, rA, B, rB, EPS)
-  local S_ext = external_similitude_(A, rA, B, rB)
-  local S_int = internal_similitude_(A, rA, B, rB)
-
-  local function equal_radii()
-    return math.abs(rA - rB) < EPS
-  end
-
-  -- --------- Helpers factorisés ----------
+  -- pair the tangent points so that each pair lies on the same tangent
   local function pair_with_inout(S, t1a, t1b, t2a, t2b)
     if line_in_out_(t1a, S, t2a) then
       return t1a, t2a, t1b, t2b
@@ -541,122 +479,66 @@ function common_tangent_(C1, C2, mode, EPS)
     end
   end
 
-  local function externals_via_S(S)
+  -- two tangents through a center of similitude S
+  local function via_S(S)
     local t1a, t1b = tangent_from_(A, C1.through, S)
     local t2a, t2b = tangent_from_(B, C2.through, S)
     local P1, Q1, P2, Q2 = pair_with_inout(S, t1a, t1b, t2a, t2b)
-    return P1, Q1, P2, Q2
+    return { { P1, Q1 }, { P2, Q2 } }
   end
 
+  -- equal radii: the external center of similitude is at infinity,
+  -- the two external tangents are parallel to (AB)
   local function externals_equal_radii()
-    -- S_ext à l’infini → deux tangentes externes parallèles
-    local v  = (B - A)
-    local P1 = v:orthogonal(rA):at(A)
-    local Q1 = v:orthogonal(rA):at(B)
-    local P2 = v:orthogonal(-rA):at(A)
-    local Q2 = v:orthogonal(-rA):at(B)
-    return P1, Q1, P2, Q2
+    local v = B - A
+    return { { v:orthogonal(rA):at(A), v:orthogonal(rA):at(B) },
+             { v:orthogonal(-rA):at(A), v:orthogonal(-rA):at(B) } }
   end
 
-  local function internals_via_S(S)
-    local t1a, t1b = tangent_from_(A, C1.through, S)
-    local t2a, t2b = tangent_from_(B, C2.through, S)
-    local P1, Q1, P2, Q2 = pair_with_inout(S, t1a, t1b, t2a, t2b)
-    return P1, Q1, P2, Q2
+  -- tangent circles: the common tangent at the contact point
+  local function at_contact()
+    local T = intersection(C1, C2)
+    local U = T:shift_orthogonal_to(A, rA)
+    return { { T, U } }
   end
 
-  local function internals_equal_radii()
-    -- rA == rB : S_int = milieu(AB) → on passe par la voie générale
-    return internals_via_S(S_int)
-  end
-
-  local function one_tangent_proc()
-    -- Cas “une seule tangente commune” (cercles tangents)
-    local T = intersection(C1, C2)            -- (unique) point de contact
-    local U = T:shift_orthogonal_to(A, rA)    -- point distinct sur la tangente en T à C1
-    return T, U, T, U
-  end
-
-  -- --------- Procédures par position ----------
-  local function inside_proc()
-    -- Aucune tangente commune
-    return nil, nil
-  end
-
-  local function intersect_proc()
-    -- Deux tangentes externes seulement
-    if mode == "internal" then
-      tex.error("internal tangents non-existent (intersect)")
-      return nil, nil
-    end
-    if equal_radii() then
-      return externals_equal_radii()
-    else
-      return externals_via_S(S_ext)
-    end
-  end
-
-local function outside_tangent_proc()
-    -- Cercles tangents extérieurement.
-    if mode == "internal" or mode == "both" then
-      -- La famille "interne" dégénère : une seule tangente commune (au point de contact).
-      return one_tangent_proc()
-    elseif mode == "external" then
-      -- Les deux tangentes externes existent toujours.
-      if equal_radii() then
-        return externals_equal_radii()      -- deux parallèles si rA == rB
-      else
-        return externals_via_S(S_ext)       -- deux tangentes via le centre de similitude externe
-      end
-    else
-      -- Par défaut, on suit le comportement "external".
-      if equal_radii() then
+  local function externals()
+    if pos == "DISJOINT_EXT" or pos == "TANGENT_EXT" or pos == "SECANT" then
+      if math.abs(rA - rB) < EPS then
         return externals_equal_radii()
-      else
-        return externals_via_S(S_ext)
       end
+      return via_S(external_similitude_(A, rA, B, rB))
+    elseif pos == "TANGENT_INT" then
+      return at_contact()
     end
+    return {}
   end
 
-
-local function inside_tangent_proc()
-    -- Cercles tangents intérieurement.
-    if mode == "external" then
-      tex.error("external tangents non-existent (inside tangent)")
-      return nil, nil, nil, nil
+  local function internals()
+    if pos == "DISJOINT_EXT" then
+      return via_S(internal_similitude_(A, rA, B, rB))
+    elseif pos == "TANGENT_EXT" then
+      return at_contact()
     end
-    -- La famille "interne" dégénère : une seule tangente au point de contact.
-    return one_tangent_proc()
+    return {}
   end
 
-  local function outside_proc()
-    -- Les 4 existent (2 externes + 2 internes). On respecte 'mode'.
-    if mode == "internal" then
-      if equal_radii() then
-        return internals_equal_radii()
-      else
-        return internals_via_S(S_int)
-      end
-    elseif mode == "external" then
-      if equal_radii() then
-        return externals_equal_radii()
-      else
-        return externals_via_S(S_ext)
-      end
-    end
+  local list = {}
+  if mode == "external" or mode == "both" then
+    for _, t in ipairs(externals()) do list[#list + 1] = t end
   end
-
-
-  -- --------- Dispatcher clair ----------
-  if     pos == "DISJOINT_INT"  then return inside_proc()
-  elseif pos == "SECANT"        then return intersect_proc()
-  elseif pos == "TANGENT_INT"   then return inside_tangent_proc()
-  elseif pos == "TANGENT_EXT"   then return outside_tangent_proc()
-  elseif pos == "DISJOINT_EXT"  then return outside_proc()
+  if mode == "internal" or mode == "both" then
+    for _, t in ipairs(internals()) do list[#list + 1] = t end
   end
+  return list, pos
+end
 
-  tex.error("common_tangent_: invalid configuration ('"..tostring(pos).."', mode='"..tostring(mode).."').")
-  return nil, nil, nil, nil
+-- Old interface (kept for internal use): the points of the first two
+-- tangents, or nil.
+function common_tangent_(C1, C2, mode, EPS)
+  local list = common_tangents_(C1, C2, mode, EPS)
+  local t1, t2 = list[1] or {}, list[2] or {}
+  return t1[1], t1[2], t2[1], t2[2]
 end
 
 -- nouvel ajout for CLL
@@ -752,14 +634,14 @@ function classify_by_sector_(i, u, up, v, vp, circles)
       (point_in_open_sector_(i, vp, u,  w) and 4) or
       nil
     if k then table.insert(buckets[k], C) end
-    -- (cas limites: si w est sur un bord, à traiter plus tard comme tu l’as noté)
+    -- (limit cases: w on a border, to be handled later)
   end
   return buckets
 end
 
 function circle_sector_signature_(i, u, up, v, vp, o, r)
 
-  -- 0) cercle contenant le sommet i -> 4 secteurs
+  -- 0) circle containing the vertex i -> 4 sectors
   if (o - i):mod() <= r + tkz.epsilon then
     return {1, 2, 3, 4}
   end
@@ -770,27 +652,27 @@ function circle_sector_signature_(i, u, up, v, vp, o, r)
            ((b - i) ^ (p - i)) <= 0
   end
 
-  -- 1) secteur strict du centre (k0)
+  -- 1) strict sector of the center (k0)
   local k0 =
     (in_open(i, u,  v,  o) and 1) or
     (in_open(i, v,  up, o) and 2) or
     (in_open(i, up, vp, o) and 3) or
     (in_open(i, vp, u,  o) and 4) or
-    0  -- 0 = centre sur un bord (cas limite)
+    0  -- 0 = center on a border (limit case)
 
-  -- 2) distances aux DROITES sous-jacentes (pas aux 4 demi-droites)
+  -- 2) distances to the underlying LINES (not to the 4 rays)
   --    L1 = (a,b) porte u/up ; L2 = (c,d) porte v/vp
-  --    IMPORTANT : une seule fois par droite.
-  local D1 = distance_(u, up, o)  -- équiv. distance à la droite de L1
-  local D2 = distance_(v, vp, o)  -- équiv. distance à la droite de L2
+  --    IMPORTANT: only once per line.
+  local D1 = distance_(u, up, o)  -- distance to the line L1
+  local D2 = distance_(v, vp, o)  -- distance to the line L2
   local T1 = D1 <= r + tkz.epsilon
   local T2 = D2 <= r + tkz.epsilon
 
-  -- 3) si k0 connu : ne considérer que les deux bords qui bornent k0
+  -- 3) if k0 is known: only the two borders of k0
   if k0 == 1 then
     if     T1 and not T2 then return {4, 1}   -- touche u
     elseif T2 and not T1 then return {1, 2 }  -- touche v
-    elseif T1 and T2     then return {4, 1, 2} -- touche u et v (3 secteurs, cas réel)
+    elseif T1 and T2     then return {4, 1, 2} -- touches u and v (3 sectors, real case)
     else                      return {1}
     end
   elseif k0 == 2 then
@@ -813,29 +695,29 @@ function circle_sector_signature_(i, u, up, v, vp, o, r)
     end
   end
 
-  -- 4) cas limite : centre sur un bord.
-  --    Éviter le double-compte en regroupant par DROITE :
+  -- 4) limit case: center on a border.
+  --    Avoid counting twice by grouping by LINE:
   local Tu  = distance_(i, u,  o) <= r + tkz.epsilon
   local Tv  = distance_(i, v,  o) <= r + tkz.epsilon
   local Tup = distance_(i, up, o) <= r + tkz.epsilon
   local Tvp = distance_(i, vp, o) <= r + tkz.epsilon
-  local L1_touched = (Tu or Tup)   -- une seule fois pour la droite L1
-  local L2_touched = (Tv or Tvp)   -- idem pour L2
+  local L1_touched = (Tu or Tup)   -- only once for the line L1
+  local L2_touched = (Tv or Tvp)   -- same for L2
 
   if     L1_touched and not L2_touched then
-    -- tangence à la seule L1 -> exactement 2 secteurs,
-    -- choisir la paire adjacente qui correspond au côté où se trouve o.
-    -- On discrimine avec le secteur "à droite" du bord considéré.
-    -- Ici, renvoyer la paire la plus sûre : "4/1" (côté u)
+    -- tangent to L1 only -> exactly 2 sectors,
+    -- choose the adjacent pair on the side of o.
+    -- The sector "on the right" of the border is used.
+    -- Here, the safest pair is returned: "4/1" (side u)
     return  {4, 1}
   elseif L2_touched and not L1_touched then
     return {1, 2}
   elseif L1_touched and L2_touched then
-    -- tangence aux deux droites alors que le centre est sur un bord :
-    -- raisonnablement 3 secteurs (géométrie réelle)
+    -- tangent to both lines while the center is on a border:
+    -- reasonably 3 sectors (real geometry)
     return {4, 1, 2}
   else
-    -- pas de tangence détectée → considérer 1 secteur voisin
+    -- no tangency detected -> 1 neighbouring sector
     return {1}
   end
 end
@@ -845,7 +727,7 @@ end
 function lines_secant_circle_(o, r, a, b, c, d)
   local i = intersection_ll_(a, b, c, d)
   if not i then
-    -- fallback (en théorie jamais atteint si la détection est faite au-dessus)
+    -- fallback (in theory never reached)
     return lines_parallel_circle_(o, r, a, b, c, d)
   end
   local s = ((b - a) ^ (d - c)) >= 0 and 1 or -1
@@ -855,25 +737,25 @@ function lines_secant_circle_(o, r, a, b, c, d)
   local vp = report_(c, d, -s,  i)
   return circle_sector_signature_(i, u, up, v, vp, o, r)
 end
--- L1=(a,b), L2=(c,d), cercle=(o,r)
+-- L1=(a,b), L2=(c,d), circle=(o,r)
 -- Secteurs : 1=entre L1/L2, 2=outside L1, 3=outside L2
 function lines_parallel_circle_(o, r, a, b, c, d)
   local d1 = distance_(a, b, o)           -- dist(o, L1)
   local d2 = distance_(c, d, o)           -- dist(o, L2)
-  local D  = distance_(a, b, c)           -- écart des parallèles
+  local D  = distance_(a, b, c)           -- distance between the parallel lines
 
-  local inside_strip  = tkz.approx(d1 + d2, D)            -- o entre L1 et L2
-  local outside_strip = tkz.approx(math.abs(d1 - d2), D)  -- o du même côté
+  local inside_strip  = tkz.approx(d1 + d2, D)            -- o between L1 and L2
+  local outside_strip = tkz.approx(math.abs(d1 - d2), D)  -- o on the same side
 
   local mn, mx = math.min(d1, d2), math.max(d1, d2)
-  local nearer_is_L1 = (d1 <= d2)         -- en cas d’égalité, côté L1
-  local OUT = nearer_is_L1 and 2 or 3     -- secteur extérieur du côté proche
+  local nearer_is_L1 = (d1 <= d2)         -- if equal, side L1
+  local OUT = nearer_is_L1 and 2 or 3     -- outer sector on the near side
 
   if inside_strip then
     if r < mn and not tkz.approx(r, mn) then return {1} end
     if tkz.approx(r, mn)                  then return {1, OUT} end
     if r > mn and r < mx                  then return {1, OUT} end
-    -- r ≥ mx  (tangence à la plus éloignée ou dépassement)
+    -- r >= mx  (tangent to the farthest line, or beyond)
     return {1,2,3}
   end
 
@@ -881,11 +763,11 @@ function lines_parallel_circle_(o, r, a, b, c, d)
     if r < mn and not tkz.approx(r, mn)   then return {OUT} end
     if tkz.approx(r, mn)                  then return {OUT,1} end
     if r > mn and r < mx                  then return {OUT,1} end
-    -- r ≥ mx
+    -- r >= mx
     return {1,2,3}
   end
 
-  -- zone grise numérique : choisir le scénario le plus proche
+  -- numerical grey zone: the nearest scenario is chosen
   if math.abs((d1 + d2) - D) <= math.abs(math.abs(d1 - d2) - D) then
     -- traiter comme inside_strip
     if r < mn and not tkz.approx(r, mn) then return {1} end

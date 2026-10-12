@@ -103,7 +103,7 @@ function circle:position(obj, EPS)
                              obj.center, obj.radius, EPS)
   end
 
-  error("Unsupported object in circle:position()")
+  error("tkz-elements: circle:position: a point, a line or a circle is expected", 2)
 end
 
 -- legacy alias (keep for backward compatibility)
@@ -154,30 +154,9 @@ function circle:lines_position(L1, L2, mode)
   end
 end
 
-function circle:are_circles_tangents(C, EPS)
-  return act_(self.center, self.through, C.center, C.through, EPS)
-end
-
 ------------------------
 -- string --------------
 ------------------------
-function circle:position(obj, EPS)
-  EPS = EPS or tkz.epsilon
-  local mt = getmetatable(obj)
-
-  if mt == point then
-    return circle_point_position_(self, obj, EPS)
-
-  elseif mt == line then
-    return line_circle_position_(obj, self, EPS)
-
-  elseif mt == circle then
-    return circles_position_(self.center, self.radius,
-                             obj.center, obj.radius, EPS)
-  end
-
-  error("Unsupported object in circle:position()")
-end
 
 
 function circle:circles_position(C, EPS)
@@ -203,20 +182,14 @@ function circle:midarc(z1, z2)
   return rotation_(self.center, phi, z1)
 end
 
--- function circle:point(t)
---   local phi = 2 * t * math.pi
---   return rotation_(self.center, phi, self.through)
--- end
-
 function circle:point(t, P, EPS)
   local phi = 2 * t * math.pi
   local A = P or self.through
   EPS = EPS or tkz.epsilon
 
-  -- Vérification avec le modèle "position"
+  -- the starting point must be on the circle
   if self:position(A, EPS) ~= "ON" then
-    tex.error("Point not on circle in circle:point")
-    return nil
+    error("tkz-elements: circle:point: the point P is not on the circle", 2)
   end
 
   return rotation_(self.center, phi, A)
@@ -240,12 +213,21 @@ function circle:internal_similitude(C)
 end
 
 function circle:external_similitude(C)
-  return external_similitude_(self.center, self.radius, C.center, C.radius)
+  if math.abs(self.radius - C.radius) < tkz.epsilon then
+    error("tkz-elements: circle:external_similitude: the radii are equal, "
+      .. "the external center of similitude is at infinity", 2)
+  end
+  local S = external_similitude_(self.center, self.radius, C.center, C.radius)
+  return S
 end
 
 function circle:similitude(C, mode)
   mode = mode or "internal"
   local s = (mode == "external") and -1 or 1
+  if s == -1 and math.abs(self.radius - C.radius) < tkz.epsilon then
+    error("tkz-elements: circle:similitude: the radii are equal, "
+      .. "the external center of similitude is at infinity", 2)
+  end
 
   local c1, r1 = self.center, self.radius
   local c2, r2 = C.center, C.radius
@@ -262,30 +244,30 @@ function circle:radical_center(C1, C2)
       return radical_center_(C1.center, C1.through, self.center, self.through)
     end
   else
-    return radical_center3(self, C1, C2)
+    return radical_center3_(self, C1, C2)
   end
 end
 
--- Pôle d’une droite L par rapport au cercle self
--- Retour : le point P (ou nil,"INFINITE" si L passe par O)
+-- Pole of the line L with respect to the circle self
+-- Returns the point P (or nil, "INFINITE" if L passes through O)
 function circle:pole(L, EPS)
    EPS = EPS or tkz.epsilon
   local O = self.center
   local R = self.radius
 
-  -- 1) H = projection de O sur L
+  -- 1) H = projection of O on L
   local H = L:projection(O)
   if not H then
-    return nil, "NO_PROJECTION"  -- cas pathologique
+    return nil, "NO_PROJECTION"  -- pathological case
   end
 
-  -- 2) Si L passe par O -> pôle à l’infini (direction ⟂ L)
+  -- 2) If L passes through O -> pole at infinity (direction orthogonal to L)
   if length_(O, H) < EPS then
-    return nil, "INFINITE"       -- le pôle est au point à l’infini
+    return nil, "INFINITE"       -- the pole is at infinity
   end
 
-  -- 3) P = inversion de H dans le cercle (centre O, rayon R)
-  --     OP * OH = R^2, P sur la demi-droite OH
+  -- 3) P = inverse of H in the circle (center O, radius R)
+  --     OP * OH = R^2, P on the ray OH
   local P = self:inversion(H)
   return P
 end
@@ -326,47 +308,45 @@ function circle:polar(p)
   return line:new(qa, qb)
 end
 
-function circle:external_tangent(C)
-  local i, t1, t2, k, T1, T2
-  -- Find the barycenter of the two circles
-  i = barycenter_({ C.center, self.radius }, { self.center, -C.radius })
 
-  -- Calculate the tangents from the circle to the point of intersection
-  t1, t2 = tangent_from_(self.center, self.through, i)
 
-  -- Calculate the scaling factor for the homothety
-  k = point.mod((C.center - i) / (self.center - i))
-
-  -- Apply homothety to the tangents
-  T1 = homothety_(i, k, t1)
-  T2 = homothety_(i, k, t2)
-
-  -- Return the two tangent lines
-  return line:new(t1, T1), line:new(t2, T2)
-end
-
-function circle:internal_tangent(C)
-  local i, t1, t2, k, T1, T2
-  -- Find the barycenter of the two circles with opposite signs for radii
-  i = barycenter_({ C.center, self.radius }, { self.center, C.radius })
-
-  -- Calculate the tangents from the circle to the point of intersection
-  t1, t2 = tangent_from_(self.center, self.through, i)
-
-  -- Calculate the scaling factor for the homothety
-  k = -point.mod((C.center - i) / (self.center - i))
-
-  -- Apply homothety to the tangents
-  T1 = homothety_(i, k, t1)
-  T2 = homothety_(i, k, t2)
-
-  -- Return the two tangent lines
-  return line:new(t1, T1), line:new(t2, T2)
-end
-
+-- common_tangent(C, mode): common tangents of two circles, as lines.
+-- mode = "external" (default), "internal" or "both" (externals first).
+-- An explicit error is raised when no tangent of the requested family exists.
 function circle:common_tangent(C, mode, EPS)
-  local x, y, z, t = common_tangent_(self, C, mode, EPS)
-  return line:new(x, y), line:new(z, t)
+  mode = mode or "external"
+  if mode ~= "external" and mode ~= "internal" and mode ~= "both" and mode ~= "all" then
+    error("tkz-elements: circle:common_tangent: mode must be \"external\", \"internal\" or \"both\", got "
+      .. tostring(mode), 2)
+  end
+  local list, pos = common_tangents_(self, C, mode, EPS)
+  if #list == 0 then
+    local why = {
+      IDENTICAL    = "the two circles are identical",
+      CONCENTRIC   = "the two circles are concentric",
+      DISJOINT_INT = "one circle is inside the other",
+      SECANT       = "the circles intersect",
+      TANGENT_INT  = "the circles are internally tangent",
+    }
+    error("tkz-elements: circle:common_tangent: no " .. (mode == "both" and "" or mode .. " ")
+      .. "common tangent (" .. (why[pos] or pos) .. ")", 2)
+  end
+  local lines = {}
+  for i, t in ipairs(list) do
+    lines[i] = line:new(t[1], t[2])
+  end
+  return table.unpack(lines)
+end
+
+-- Same as common_tangent, without error: nothing is returned when no
+-- tangent exists (used by the Apollonius solvers).
+function circle:common_tangent_or_nil_(C, mode, EPS)
+  local list = common_tangents_(self, C, mode, EPS)
+  local lines = {}
+  for i, t in ipairs(list) do
+    lines[i] = line:new(t[1], t[2])
+  end
+  return table.unpack(lines)
 end
 
 -----------------------
@@ -393,75 +373,60 @@ end
 function circle:orthogonal_from(pt)
   -- test if pt is outside the circle
   if self:in_out_disk(pt) then
-    tex.error("circle:orthogonal_from", "The point must lie outside the circle to construct an orthogonal circle.")
+    error("tkz-elements: circle:orthogonal_from: the point must lie outside the circle", 2)
   else
-    -- Calculate tangents from point ‘pt’.
+    -- Calculate tangents from point 'pt'.
     local t1, t2 = tangent_from_(self.center, self.through, pt)
     -- Return a circle with the center in 'pt' and one of the tangents as the radius
     return circle:new(pt, t1)
   end
 end
 
--- function circle:orthogonal_through(pta, ptb, EPS)
-  -- EPS = EPS or tkz.epsilon
-  -- -- Case where the three points are collinear
-  -- if is_linear_(self.center, pta, ptb) then
-  --   -- and the two points are inverses of each other
-  --   if are_inverses_(self.center, self.through, pta, ptb, EPS) then
-  --     local c = midpoint_(pta, ptb)
-  --     -- Write a note to the log instead of throwing an error
-  --     texio.write_nl(
-  --       "term and log",
-  --       "[tkz-elements] circle:orthogonal_through: the two points are inverses; "
-  --         .. "the midpoint is used as the centre, but any point on the perpendicular bisector could serve as centre."
-  --     )
---
-  --     tex.print(
-  --       "\\PackageWarningNoLine{tkz-elements}{The two points are inverses; the midpoint is used as the centre, but any point on the perpendicular bisector could serve as centre.}"
-  --     )
---
-  --     return circle:new(c, pta)
-  --   else
-  --     -- Error case: collinear but not inverses
-  --     tex.error("circle:orthogonal_through", "The points are aligned but not inverses.")
-  --     return nil
-  --   end
---
-  -- -- General (non‑collinear) case
-  -- else
-  --   local o = orthogonal_through_(self.center, self.through, pta, ptb, EPS)
-  --   return circle:new(o, pta)
-  -- end
--- end
 
-function circle:orthogonal_through(pta, ptb, EPS)
+-- orthogonal_through(pta, ptb [, X] [, EPS])
+-- Circle orthogonal to self and passing through pta and ptb.
+-- If pta and ptb are inverse with respect to self, every circle through them
+-- is orthogonal to self: the circle through X is returned if a third point X
+-- is given, otherwise the circle with diameter [pta, ptb].
+function circle:orthogonal_through(pta, ptb, X, EPS)
+  if type(X) == "number" then          -- old call: orthogonal_through(pta, ptb, EPS)
+    EPS, X = X, nil
+  end
   EPS = EPS or tkz.epsilon
+  if X ~= nil and (type(X) ~= "table" or X.type ~= "point") then
+    error("tkz-elements: circle:orthogonal_through: the third argument must be a point", 2)
+  end
+  if point.abs(pta - ptb) <= EPS then
+    error("tkz-elements: circle:orthogonal_through: the two points must be distinct", 2)
+  end
 
   -- Case where the three points are collinear
   if is_linear_(self.center, pta, ptb) then
 
-    -- the two points are inverses of each other
+    -- the two points are inverses of each other: a family of solutions
     if are_inverses_(self.center, self.through, pta, ptb, EPS) then
-      -- There is a FAMILY of solutions; picking midpoint is generally NOT orthogonal.
-      -- Return a clear diagnostic and let caller choose a convention.
-      return nil, "circle:orthogonal_through: collinear inverse points -> infinite family; choose a convention"
+      if X then
+        if is_linear_(pta, ptb, X) then
+          error("tkz-elements: circle:orthogonal_through: the third point is on the line "
+            .. "through the two points", 2)
+        end
+        return circle:new(circum_center_(pta, ptb, X), pta)
+      end
+      return circle:new(midpoint_(pta, ptb), pta)
 
     else
-      tex.error("circle:orthogonal_through", {"The points are aligned but not inverses."})
-      return nil
+      error("tkz-elements: circle:orthogonal_through: the points are collinear with the "
+        .. "center but not inverse: no orthogonal circle", 2)
     end
 
   else
     local o = orthogonal_through_(self.center, self.through, pta, ptb, EPS)
     if not o then
-      return nil, "circle:orthogonal_through: orthogonal_through_ failed"
+      error("tkz-elements: circle:orthogonal_through: no orthogonal circle through these points", 2)
     end
     return circle:new(o, pta)
   end
 end
-
-circle.orthogonal_circle_through = circle.orthogonal_through
-
 
 -- alias retained
 circle.orthogonal_circle_through = circle.orthogonal_through
@@ -478,12 +443,12 @@ end
 
 function circle:midcircle(obj, EPS)
   if type(obj) == "table" and obj.type == "circle" then
-  -- Retourne le cercle médian entre 'self' et 'C'
+  -- Returns the midcircle of 'self' and 'C'
     return midcircle_cc_(self.center, self.through, obj.center, obj.through, EPS)
   elseif type(obj) == "table" and obj.type == "line" then
     return midcircle_cl_(self.center, self.through, obj.pa, obj.pb, EPS)
   else
-    tex.error("midcircle: unsupported types (expect circle/circle or circle/line)")
+    error("tkz-elements: circle:midcircle: a circle or a line is expected", 2)
   end
 end
 
@@ -492,39 +457,29 @@ end
 -- Result -> drawing
 -----------------------------------------------------------
 function circle:draw()
-  -- Récupère les coordonnées du centre et le rayon du cercle
+  -- Coordinates of the center and radius of the circle
   local x, y = self.center:get()
   local r = self.radius
 
-  -- Format de la commande LaTeX pour dessiner le cercle
+  -- Format of the LaTeX command that draws the circle
   local frmt = "\\draw (%0.3f,%0.3f) circle [radius=%0.3f];"
 
-  -- Affiche la commande LaTeX en formatant les valeurs de x, y et r
+  -- Print the LaTeX command with the values of x, y and r
   tex.sprint(string.format(frmt, x, y, r))
 end
 
-function circle:set_inversion(...)
-  local tp = table.pack(...)
-  local i
-  local t = {}
-  for i = 1, tp.n do
-    table.insert(t, inversion_(self.center, self.through, tp[i]))
-  end
-  return table.unpack(t)
-end
-
 function circle:inversion_L(L)
-  -- Vérifie si le centre du cercle est à l'intérieur ou à l'extérieur de la ligne L
+  -- Check whether the center of the circle is on the line L
   if L:in_out(self.center) then
-    return L -- Retourne la ligne L inchangée si le centre est du bon côté
+    return L -- Returns the line L unchanged if the center is on it
   else
-    -- Calcul de la projection du centre sur la ligne L
+    -- Projection of the center on the line L
     local p = L:projection(self.center)
 
-    -- Inversion du point projeté par rapport au cercle défini par 'self.center' et 'self.through'
+    -- Inverse of the projected point in the circle (self.center, self.through)
     local q = inversion_(self.center, self.through, p)
 
-    -- Retourne un cercle avec le centre au milieu de 'self.center' et 'q' et comme rayon 'q'
+    -- Returns the circle with center the midpoint of 'self.center' and 'q', through 'q'
     return circle:new(midpoint_(self.center, q), q)
   end
 end
@@ -545,25 +500,29 @@ function circle:inversion_C(C)
   end
 end
 
+-- Inversion in the circle self. Each argument may be a point, a line
+-- or a circle; a line or a circle may be sent to a circle or a line.
+-- z.P = C:inversion(z.M) ; z.P, C.new = C:inversion(z.M, L.AB)
 function circle:inversion(...)
-  local tp = table.pack(...)
-  local obj = tp[1]
-  local nb = tp.n
-  if nb == 1 then
-    if obj.type == "point" then
-      return inversion_(self.center, self.through, obj)
-    elseif obj.type == "line" then
-      return self:inversion_L(obj)
+  local n = select("#", ...)
+  local t = {}
+  for i = 1, n do
+    local obj = select(i, ...)
+    local ty = type(obj) == "table" and obj.type or type(obj)
+    if ty == "point" then
+      if point.abs(obj - self.center) <= tkz.epsilon then
+        error("tkz-elements: circle:inversion: the inversion is undefined at the center", 2)
+      end
+      t[i] = inversion_(self.center, self.through, obj)
+    elseif ty == "line" then
+      t[i] = self:inversion_L(obj)
+    elseif ty == "circle" then
+      t[i] = self:inversion_C(obj)
     else
-      return self:inversion_C(obj)
+      error("tkz-elements: circle:inversion: expected a point, a line or a circle, got a " .. tostring(ty), 2)
     end
-  else
-    local t = {}
-    for i = 1, nb do
-      table.insert(t, inversion_(self.center, self.through, tp[i]))
-    end
-    return table.unpack(t)
   end
+  return table.unpack(t, 1, n)
 end
 
 -- Alias simple : inversion de rapport < 0
@@ -616,13 +575,13 @@ function circle:CPP(a, b)
   local bin = in_disk_(o, th, b)
 
   ------------------------------------------------------------
-  -- 0) Un point dedans et l’autre dehors → aucune solution
+  -- 0) One point inside and the other outside -> no solution
   ------------------------------------------------------------
   if (ain and not bin) or (bin and not ain) then
     return pa_center, pa_through, 0
 
   ------------------------------------------------------------
-  -- 1) Droite (AB) tangent au cercle (self)
+  -- 1) Line (AB) tangent to the circle (self)
   ------------------------------------------------------------
   elseif is_tangent_(a, b, o, th) and (not is_equidistant_(a, b, o)) then
     local w = circum_center_(a, b, o)
@@ -645,18 +604,21 @@ function circle:CPP(a, b)
     return pa_center, pa_through, n
 
   ------------------------------------------------------------
-  -- 2) Droite (AB) parallèle à une tangente au cercle
+  -- 2) Line (AB) parallel to a tangent to the circle
   ------------------------------------------------------------
   elseif is_equidistant_(a, b, o) then
     local t1, t2 = intersection_lc_(u, v, o, th)
-    local w1 = circum_center_(a, b, t1)
-    local w2 = circum_center_(a, b, t2)
-    push(w1, t1)
-    push(w2, t2)
+    -- if (AB) is tangent to the circle, one of the points is on (AB):
+    -- this degenerate solution is skipped
+    for _, t in ipairs({ t1, t2 }) do
+      if not tkz.aligned(a, b, t) then
+        push(circum_center_(a, b, t), t)
+      end
+    end
     return pa_center, pa_through, n
 
   ------------------------------------------------------------
-  -- 3) Deux points EXTERIEURS : cas classique (ton cas général)
+  -- 3) Two EXTERNAL points: classical (general) case
   ------------------------------------------------------------
   elseif (not ain) and (not bin) then
     local w = circum_center_(a, b, o)
@@ -670,7 +632,7 @@ function circle:CPP(a, b)
     return pa_center, pa_through, n
 
   ------------------------------------------------------------
-  -- 4) Deux points INTERIEURS → inversion
+  -- 4) Two INTERNAL points -> inversion
   ------------------------------------------------------------
   elseif ain and bin then
     local Cinv = circle:new(a, b)
@@ -712,17 +674,17 @@ local function sp_c_cc_p(p, o1, t1, o2, t2, r1, r2, ex)
   end
 
   -- NB: on suppose que report_ accepte (A,B,scale[,origin]) comme ailleurs.
-  local x = report_(o1, o2, r1)       -- point sur la direction o1->o2, distance ~r1
-  local y = report_(o2, o1, r2)       -- point sur la direction o2->o1, distance ~r2
-  local o = circum_center_(p, x, y)   -- centre du cercle (p,x,y)
+  local x = report_(o1, o2, r1)       -- point in the direction o1->o2, distance ~r1
+  local y = report_(o2, o1, r2)       -- point in the direction o2->o1, distance ~r2
+  local o = circum_center_(p, x, y)   -- center of the circle (p,x,y)
 
-  -- intersections de cercles : (o,p) et (o2,t2)
+  -- intersections of the circles (o,p) and (o2,t2)
   local u, v  = intersection_cc_(o, p, o2, t2)
   if not u or not v then
     return pa_center, pa_through, 0
   end
 
-  -- choisir u tel que u != y (échange sinon)
+  -- choose u such that u != y (swap otherwise)
   if u:identity(y) then u, v = v, u end
 
   -- ligne (y,u) croise (ex,p) en i
@@ -731,13 +693,13 @@ local function sp_c_cc_p(p, o1, t1, o2, t2, r1, r2, ex)
     return pa_center, pa_through, 0
   end
 
-  -- tangentes depuis i au cercle (o2,t2)
-  local tau1, tau2 = tangent_from_(o2, t2, i)  -- renommé pour ne pas masquer paramètres
+  -- tangents from i to the circle (o2,t2)
+  local tau1, tau2 = tangent_from_(o2, t2, i)  -- renamed so as not to hide the parameters
   if not tau1 or not tau2 then
     return pa_center, pa_through, 0
   end
 
-  -- centres = intersections des droites (o2,tau_k) et (p,o)
+  -- centers = intersections of the lines (o2,tau_k) and (p,o)
   local w1 = intersection_ll_(o2, tau1, p, o)
   local w2 = intersection_ll_(o2, tau2, p, o)
   if not w1 or not w2 then
@@ -747,7 +709,7 @@ local function sp_c_cc_p(p, o1, t1, o2, t2, r1, r2, ex)
     return pa_center, pa_through, n
   end
 
-  -- ordre : w1 le plus proche de p
+  -- order: w1 is the nearest to p
   if length_(w1, p) > length_(w2, p) then w1, w2, tau1, tau2 = w2, w1, tau2, tau1 end
   push(w1, tau1)
   push(w2, tau2)
@@ -757,11 +719,11 @@ end
 
 -- ===================================================
 -- solve_intersect(Cself, C, p, mode)
---  → Cherche les cercles tangents à Cself et C passant par p
---  → version simple, sans inversion, sans dépendances externes
+--  -> Circles tangent to Cself and C through p
+--  -> simple version, without inversion or external dependencies
 -- ===================================================
 
--- Cercle tangent à self et C, passant par p (cas général)
+-- Circle tangent to self and C, through p (general case)
 local function solve_intersect(Cself, C, p, mode)
   if Cself:on_circle(p) then
     local tA, tB = tangent_at_(Cself.center, p)
@@ -786,7 +748,7 @@ local function solve_intersect(Cself, C, p, mode)
     local K = circle:new(p, I)
     local A = K:inversion(Cself)
     local B = K:inversion(C)
-    local T1, T2 =  A:common_tangent(B, "external")
+    local T1, T2 =  A:common_tangent_or_nil_(B, "external")
     local C1 = K:inversion(T1)
     local C2 = K:inversion(T2)
     local O1, T1 = C1:get()
@@ -798,7 +760,7 @@ local function solve_intersect(Cself, C, p, mode)
 end
 
 --------------------------------------------------------
--- CCP : deux cercles tangents intérieurement, cercle solution passant par p
+-- CCP: two internally tangent circles, solution circle through p
 -- (Uniformisation push/paths, logique intacte)
 --------------------------------------------------------
 local function solve_inside_tangent(Cself, C, p, mode)
@@ -814,14 +776,14 @@ local function solve_inside_tangent(Cself, C, p, mode)
 
   local T = intersection(Cself, C)           -- point de tangence commun
   if p:identity(T) then
-    return path:new(), path:new(), 0        -- P = T -> aucune solution
+    return path:new(), path:new(), 0        -- P = T -> no solution
   end
 
   -- Inversion en p
   local K = circle:new(p, Cself.through or (p + point(1,0)))
-  local A = K:inversion(Cself)               -- typiquement une droite (p ∈ Cself ?)
+  local A = K:inversion(Cself)               -- usually a line (p on Cself?)
   local B = K:inversion(C)
-  local L1, L2 = A:common_tangent(B, "all")
+  local L1, L2 = A:common_tangent_or_nil_(B, "all")
   local function valid(L) return L and (not L:on_line(p)) end
   local pa_center  = path:new()
   local pa_through = path:new()
@@ -848,26 +810,26 @@ local function solve_inside_tangent(Cself, C, p, mode)
 end
 
 --------------------------------------------------------
--- CCP : cas "inside"
+-- CCP: case "inside"
 --------------------------------------------------------
 
 local function solve_inside(Cself, C, p, mode)
   local a = Cself:point_position(p)
   local b = C:point_position(p)
 
-  -- Cas spéciaux (0 solution)
+  -- Special cases (no solution)
   if (a == "OUT" and b == "ON") or (a == "IN" and b == "IN") then
     return path:new(), path:new(), 0
   else
-  -- Création du cercle d'inversion K (exactement comme tu as proposé)
+  -- Circle of inversion K
   local K = circle:new(C.through, Cself.through)
   local A = K:inversion(Cself)
   local B = K:inversion(C)
 
-  -- Image inversée du point p
+  -- Inverse of the point p
   local ip = K:inversion(p)
 
-  -- On crée les chemins de sortie
+  -- Output paths
   local pa_center  = path:new()
   local pa_through = path:new()
   local n = 0
@@ -886,17 +848,11 @@ local function solve_inside(Cself, C, p, mode)
       local o_inv = pc_inv:get(i)
       local t_inv = pt_inv:get(i)
       if o_inv and t_inv then
-        -- Reconstitue le cercle dans le plan inversé
+        -- Circle in the inverted plane
         local Cinv = circle:new(o_inv, t_inv)
-        -- Retour dans le plan original
+        -- Back to the original plane
         local S = K:inversion(Cinv)
         push(S.center, S.through)
-        -- if S and S.center and S.through then
-        --   local r = length_(S.center, S.through)
-        --   if r and r > tkz.epsilon then
-        --
-        --   end
-        -- end
       end
     end
   end
@@ -906,11 +862,11 @@ local function solve_inside(Cself, C, p, mode)
 end
 
 --------------------------------------------------------
--- CCP : cas "outside"
--- (Uniformisation + garde-fous, même structure)
+-- CCP: case "outside"
+-- (same structure, with safeguards)
 --------------------------------------------------------
 
--- ==================== CAS SPÉCIAL r1 == r2 ====================
+-- ==================== SPECIAL CASE r1 == r2 ====================
   local function solve_outside_equal_radii(Cself, C, p, mode)
   mode = mode or "external"
   local pa_center  = path:new()
@@ -964,12 +920,12 @@ local function solve_outside(Cself, C, p, mode)
   return path:new(), path:new(), 0
 
   elseif pos1 == "ON" then
-    local tA, tB = tangent_at_(o1, p)   -- deux points sur la tangente à self en p
+    local tA, tB = tangent_at_(o1, p)   -- two points on the tangent to self at p
     local T = line:new(tA, tB)
     return C:CLP(T, p)
 
   elseif pos2 == "ON"  then
-    local tA, tB = tangent_at_(o2, p)   -- deux points sur la tangente à self en p
+    local tA, tB = tangent_at_(o2, p)   -- two points on the tangent to self at p
     local T = line:new(tA, tB)
   return Cself:CLP(T, p)
 
@@ -980,7 +936,7 @@ local function solve_outside(Cself, C, p, mode)
       return (PCe + PCi), (PTe + PTi), (ne + ni)
     end
 
-    -- ======= DÉLÉGATION SI r1 == r2 =======
+    -- ======= DELEGATION IF r1 == r2 =======
     if tkz.approx(r1, r2) then
       return solve_outside_equal_radii(Cself, C, p, mode)
     end
@@ -990,7 +946,7 @@ local function solve_outside(Cself, C, p, mode)
       local x = report_(o1, o2, -r1, o1)
       local y = report_(o2, o1,  r2, o2)
       local o = circum_center_(x, y, p)
-      local r, s = intersection_lc_(i, p, o, p)  -- r ≠ p
+      local r, s = intersection_lc_(i, p, o, p)  -- r != p
       if not r or not s then
         return path:new(), path:new(), 0
       end
@@ -1013,7 +969,7 @@ end
 
 
 --------------------------------------------------------
--- Routeur CCP (inchangé structurellement)
+-- CCP dispatcher
 --------------------------------------------------------
 function circle:CCP(C, p, mode)
   mode = mode or "all"
@@ -1035,7 +991,7 @@ function circle:CCP(C, p, mode)
       return solve_inside(self, C, p, mode)
 
   elseif pos == "CONCENTRIC" or pos == "IDENTICAL" then
-      return false  -- ou gestion spécifique
+      return false  -- or specific handling
 
   else
       error("Unknown circle position in CCP: "..tostring(pos))
@@ -1060,8 +1016,8 @@ function circle:CLP(l, p, which)
 
   local pos_line = self:line_position(l)
   local os, ts, rs = self.center, self.through, self.radius
-  local ip = projection_(l.pa, l.pb, p)     -- ou l:projection(p)
-  local i  = projection_(l.pa, l.pb, os)    -- ou l:projection(os)
+  local ip = projection_(l.pa, l.pb, p)     -- or l:projection(p)
+  local i  = projection_(l.pa, l.pb, os)    -- or l:projection(os)
   local no = report_(os, i, -rs)
   local so = report_(os, i,  rs)
   local pos = intersection_ll_(l.pa, l.pb, os, p)
@@ -1087,7 +1043,7 @@ function circle:CLP(l, p, which)
       push(o2, p)
       return pa_center, pa_through, n
 
-    -- (2) P sur l (P ≠ i)
+    -- (2) P on l (P != i)
     elseif l:on_line(p) then
       if not l.length or l.length == 0 then return pa_center, pa_through, n end
       local k  = rs / l.length
@@ -1101,15 +1057,15 @@ function circle:CLP(l, p, which)
       push(o2, p)
       return pa_center, pa_through, n
 
-    -- (3) P du mauvais côté
+    -- (3) P on the wrong side
     elseif sO ~= sP then
       return pa_center, pa_through, n
 
-    -- (4) P strictement dans le disque
+    -- (4) P strictly inside the disk
     elseif self:in_disk_strict(p) then
       return pa_center, pa_through, n
 
-    -- (5) P sur C
+    -- (5) P on C
     elseif self:on_circle(p) then
       if p:identity(no) then
         push(midpoint_(no, i), p)
@@ -1133,14 +1089,14 @@ function circle:CLP(l, p, which)
         return pa_center, pa_through, n
       end
 
-    -- (6) Cas général : inversion en P
+    -- (6) General case: inversion at P
     else
       local Cinv = circle:new(p, ip)
       local C1   = Cinv:inversion(self)
       local C2   = Cinv:inversion(l)
 
       if which == "external" or which == "all" then
-        local L1, L2 = C1:common_tangent(C2, "external")
+        local L1, L2 = C1:common_tangent_or_nil_(C2, "external")
         if L1 then
           local S = Cinv:inversion(L1)
           if S and S.center and S.through then push(S.center, S.through) end
@@ -1151,7 +1107,7 @@ function circle:CLP(l, p, which)
         end
       end
       if which == "internal" or which == "all" then
-        local L1, L2 = C1:common_tangent(C2, "internal")
+        local L1, L2 = C1:common_tangent_or_nil_(C2, "internal")
         if L1 then
           local S = Cinv:inversion(L1)
           if S and S.center and S.through then push(S.center, S.through) end
@@ -1170,10 +1126,10 @@ function circle:CLP(l, p, which)
       push(os, i)
       return pa_center, pa_through, n
 
-    -- (2) P sur l (config tangente)
+    -- (2) P on l (tangent configuration)
     elseif l:on_line(p) then
       local Cinv  = circle:new(i, p)
-      local Linv  = Cinv:inversion(self)         -- image de C : une droite
+      local Linv  = Cinv:inversion(self)         -- image of C: a line
       local pac, pat, m = l:LLP(Linv, p)
       for k = 1, (m or 0) do
         local o = pac:get(k)
@@ -1188,20 +1144,20 @@ function circle:CLP(l, p, which)
       end
       return pa_center, pa_through, n
 
-    -- (3) P du mauvais côté
+    -- (3) P on the wrong side
     elseif sO ~= sP then
       return pa_center, pa_through, n
 
-    -- (4) P strictement dans le disque
+    -- (4) P strictly inside the disk
     elseif self:in_disk_strict(p) then
       return pa_center, pa_through, n
 
-    -- (5) P sur C, au point singulier (no/so)
+    -- (5) P on C, at the singular point (no/so)
     elseif self:on_circle(p) and (p:identity(no) or p:identity(so)) then
       push(os, ts)
       return pa_center, pa_through, n
 
-    -- (6) P sur C, cas général
+    -- (6) P on C, general case
     elseif self:on_circle(p) then
       local Cinv  = circle:new(i, p)
       local Lself = Cinv:inversion(self)
@@ -1213,7 +1169,7 @@ function circle:CLP(l, p, which)
       end
       return pa_center, pa_through, n
 
-    -- (7) Cas général tangent
+    -- (7) General tangent case
     else
       local Cinv  = circle:new(i, p)
       local Lself = Cinv:inversion(self)
@@ -1239,8 +1195,8 @@ function circle:CLP(l, p, which)
 elseif self:on_circle(p) then
 
         local Cinv  = circle:new(p, ip)
-        local Lself = Cinv:inversion(self)   -- droite
-        local C2    = Cinv:inversion(l)      -- cercle
+        local Lself = Cinv:inversion(self)   -- line
+        local C2    = Cinv:inversion(l)      -- circle
 
         if not (Lself and C2 and C2.center and C2.radius) then
           return pa_center, pa_through, n
@@ -1256,17 +1212,17 @@ elseif self:on_circle(p) then
         local nuy = -(d.re / dn)
         local nvec = point(nux, nuy)
 
-        -- Deux points à distance r2 du centre de C2, le long de la normale à Lself
+        -- Two points at distance r2 from the center of C2, along the normal to Lself
         local O2 = C2.center
         local r2 = C2.radius
         local Q1 = O2 + r2 * nvec
         local Q2 = O2 - r2 * nvec
 
-        -- Deux droites parallèles à Lself (donc "tangentes" à Lself au sens requis) et tangentes à C2
+        -- Two lines parallel to Lself ("tangent" to Lself in the required sense) and tangent to C2
         local L1  = line:new(Q1, Q1 + d)
         local L2  = line:new(Q2, Q2 + d)
 
-        -- Ré-inversion → deux cercles solutions (passant par P, tangents à C et à l)
+        -- Inverse again -> two solution circles (through P, tangent to C and l)
         if L1 then local S = Cinv:inversion(L1); if S and S.center and S.through then push(S.center, S.through) end end
         if L2 then local S = Cinv:inversion(L2); if S and S.center and S.through then push(S.center, S.through) end end
 
@@ -1304,10 +1260,10 @@ elseif self:on_circle(p) then
       else
 
         local Cinv = circle:new(p, ip)
-        local C1   = Cinv:inversion(self)    -- cercle
-        local C2   = Cinv:inversion(l)       -- cercle (car p ∉ l)
+        local C1   = Cinv:inversion(self)    -- circle
+        local C2   = Cinv:inversion(l)       -- circle (p is not on l)
 
-        local Le1, Le2 = C1:common_tangent(C2, "external")
+        local Le1, Le2 = C1:common_tangent_or_nil_(C2, "external")
         if Le1 then
           local S = Cinv:inversion(Le1)
           if S and S.center and S.through then push(S.center, S.through) end
@@ -1331,11 +1287,11 @@ circle.c_cl_p = circle.CLP
 
 
 --========================================
--- CLL : cercle tangent à 2 droites L1,L2
+-- CLL: circle tangent to the two lines L1, L2
 --========================================
 
 --==============================
--- Helper : cercle dégénéré ?
+-- Helper: degenerate circle?
 --==============================
 local function is_degenerate_circle(C, I)
   if not C then return true end
@@ -1345,9 +1301,9 @@ local function is_degenerate_circle(C, I)
 end
 
 local function circle_outside_strip_(o, r, a, b, c, d)
-  local d1 = distance_(a, b, o)   -- distance à L1
-  local d2 = distance_(c, d, o)   -- distance à L2
-  local D  = distance_(a, b, c)   -- distance entre L1 et L2
+  local d1 = distance_(a, b, o)   -- distance to L1
+  local d2 = distance_(c, d, o)   -- distance to L2
+  local D  = distance_(a, b, c)   -- distance between L1 and L2
   local EPS = 0.00001
   if math.abs((d1 + d2) - D) <= EPS then
     return false
@@ -1377,7 +1333,7 @@ function circle:CLL_parallel(L1, L2)
   local r = self.radius
   local a, b = L1:get()
   local c, d = L2:get()
--- manque cercle tgt ext de la bande
+-- missing: circle externally tangent outside the strip
 if circle_outside_strip_(o, r, a, b, c, d) then
     return path:new(), path:new(), 0
  else
@@ -1413,35 +1369,35 @@ function circle:CLL(L1, L2, choice, inside)
     local r = self.radius
     local i = intersection_ll_(a, b, c, d)
 
-    -- Orientation relative des droites
+    -- Relative orientation of the lines
     local s  = (((b - a) ^ (d - c)) >= 0) and 1 or -1
     local u  = report_(a, b,  1,  i)
     local up = report_(a, b, -1,  i)
     local v  = report_(c, d,  s,  i)
     local vp = report_(c, d, -s,  i)
 
-    -- Choix du secteur (1..4)
+    -- Choice of the sector (1..4)
     local x, y
     if     choice == 1 then x, y = u,  v
     elseif choice == 2 then x, y = v,  up
     elseif choice == 3 then x, y = up, vp
     elseif choice == 4 then x, y = vp, u
     else
-      tex.error("Bad choice ! Integer must be between 1 and 4")
+      error("tkz-elements: circle:CLL: the choice must be 1, 2, 3, 4 or \"all\", got " .. tostring(choice), 2)
     end
 
-    -- Gestion inside : rayon changé de signe
+    -- inside: the sign of the radius is changed
     inside = (inside == "inside")
     if inside then r = -r end
 
-    -- Deux droites à distance ±r depuis I vers x/y
+    -- Two lines at distance +-r from I towards x/y
     local LL1 = line:new(collinear_at_distance_(i, x, -r))
     local LL2 = line:new(collinear_at_distance_(i, y,  r))
 
-    -- LLP (version paths) : centres sur LL2, tangence sur LL1, passant par o
+    -- LLP (paths version): centers on LL2, tangent to LL1, through o
     local pc, pt, m = LL2:c_ll_p(LL1, o)
 
-    -- Reconstitution des cercles solution (projeter sur la droite (i,x))
+    -- Solution circles (projection on the line (i,x))
     local S1, S2 = nil, nil
     if (m or 0) >= 1 then
       local w1 = pc:get(1)
@@ -1454,7 +1410,7 @@ function circle:CLL(L1, L2, choice, inside)
       S2 = circle:new(w2, t2)
     end
 
-    -- Filtrage dégénérés
+    -- Remove degenerate circles
     local d1 = S1 and is_degenerate_circle(S1, i)
     local d2 = S2 and is_degenerate_circle(S2, i)
     if d1 and (not d2) and S2 then
@@ -1464,7 +1420,7 @@ function circle:CLL(L1, L2, choice, inside)
       S1, S2 = nil, nil
     end
 
-    -- Emballage en paths avec push "à la CLP"
+    -- Store in paths with push (as in CLP)
     local pa_center  = path:new()
     local pa_through = path:new()
     local n = 0
@@ -1487,7 +1443,7 @@ end
 circle.c_cll = circle.CLL
 
 --=====================================================
--- CLL_all : toutes les solutions selon les “sectors”
+-- CLL_all: all the solutions, sector by sector
 --=====================================================
 function circle:CLL_all(L1, L2)
   local sectors = self:lines_position(L1, L2)
@@ -1496,7 +1452,7 @@ function circle:CLL_all(L1, L2)
   local pa_through = path:new()
   local n = 0
 
-  -- push "à la CLP" (centralisé ici)
+  -- push (as in CLP)
   local function push(o_, t_)
     if o_ and t_ then
       pa_center:add_point(o_)
@@ -1505,7 +1461,7 @@ function circle:CLL_all(L1, L2)
     end
   end
 
-  -- Ingestion (pc, pt, m) → paths locaux via push
+  -- (pc, pt, m) -> local paths via push
   local function push_from_paths(pc, pt, m)
     if not pc or not pt or not m then return end
     for i = 1, m do
@@ -1537,7 +1493,7 @@ function circle:CLL_all(L1, L2)
     add_choice(m, nil)        -- 2
     add_choice(m, "inside")   -- 2 -> total 8
   else
-    -- {1,2,3,4} -> 8 solutions (2 par secteur)
+    -- {1,2,3,4} -> 8 solutions (2 per sector)
     add_choice(1, nil)
     add_choice(2, nil)
     add_choice(3, nil)
@@ -1584,11 +1540,11 @@ function circle:CCL_DDD(C2, D)
     local s1 = signed_side_(L, O1)
     local s2 = signed_side_(L, O2)
     if s1 == 0 or s2 == 0 or s1 * s2 >= 0 then
-      return false  -- centres du même côté ou sur la droite -> pas “entre”
+      return false  -- centers on the same side or on the line -> not "between"
     end
     local d1 = D:distance(O1)
     local d2 = D:distance(O2)
-    return (d1 > R1 + EPS) and (d2 > R2 + EPS)  -- strictement en dehors des deux disques
+    return (d1 > R1 + EPS) and (d2 > R2 + EPS)  -- strictly outside the two disks
   end
 
 
@@ -1597,7 +1553,7 @@ function circle:CCL_DDD(C2, D)
     return pa_center, pa_through, 0
   end
   ----------------------------------------------------------
-  -- ====== FAMILLE R1 - R2 : droite translatée -R2 ======
+  -- ====== FAMILY R1 - R2: line translated by -R2 ======
   ----------------------------------------------------------
   do
     local newR = R1 - R2
@@ -1631,7 +1587,7 @@ function circle:CCL_DDD(C2, D)
   end
 
   ----------------------------------------------------------
-  -- ====== FAMILLE R1 - R2 : droite translatée +R2 ======
+  -- ====== FAMILY R1 - R2: line translated by +R2 ======
   ----------------------------------------------------------
   do
     local newR = R1 - R2
@@ -1666,7 +1622,7 @@ function circle:CCL_DDD(C2, D)
   end
 
   ----------------------------------------------------------
-  -- ====== FAMILLE R1 + R2 : droite translatée -R2 ======
+  -- ====== FAMILY R1 + R2: line translated by -R2 ======
   ----------------------------------------------------------
   do
     local newR = R1 + R2
@@ -1679,7 +1635,7 @@ function circle:CCL_DDD(C2, D)
       local ti = pt:get(i)
 
       local r0 = length_(wi, ti)
-      local r  = r0 - R2                     -- même principe que R1-R2 / -R2
+      local r  = r0 - R2                     -- same principle as R1-R2 / -R2
       local Ti_new = report_(wi, ti, r)
 
       local di = D:distance(wi)
@@ -1695,7 +1651,7 @@ function circle:CCL_DDD(C2, D)
   end
 
   ----------------------------------------------------------
-  -- ====== FAMILLE R1 + R2 : droite translatée +R2 ======
+  -- ====== FAMILY R1 + R2: line translated by +R2 ======
   ----------------------------------------------------------
   do
     local newR = R1 + R2
@@ -1708,7 +1664,7 @@ function circle:CCL_DDD(C2, D)
       local ti = pt:get(i)
 
       local r0 = length_(wi, ti)
-      local r  = r0 + R2                     -- même principe que R1-R2 / +R2
+      local r  = r0 + R2                     -- same principle as R1-R2 / +R2
       local Ti_new = report_(wi, ti, r)
 
       local di = D:distance(wi)
@@ -1747,27 +1703,27 @@ function circle:CCL_ITT(C2, D)
   local c2, t2 = C2:get()
   local r1 = point.abs(c1 - t1)
   local r2 = point.abs(c2 - t2)
-  -- cercle d'inversion : centre O (intersection des deux cercles), rayon OC2
+  -- circle of inversion: center O (intersection of the two circles), radius OC2
   local O = tangent_point_two_circles_(c1, r1, c2, r2)
 
 
   local Cinv = circle:new(O, c2)
 
-  -- inversion des deux cercles et de la droite D
+  -- inversion of the two circles and of the line D
   local L1  = Cinv:inversion(C1)   -- ligne image de C1
   local L2  = Cinv:inversion(C2)   -- ligne image de C2
-  local CD  = Cinv:inversion(D)    -- cercle image de la droite D
+  local CD  = Cinv:inversion(D)    -- circle, image of the line D
 
-  -- cercles tangents à CD et aux deux lignes L1, L2
+  -- circles tangent to CD and to the two lines L1, L2
   local pc, pt, nsol = CD:CLL(L1, L2)
 
-  -- pour chaque solution de CLL, on ré-inverse le cercle trouvé
+  -- each solution of CLL is inverted back
   for i = 1, nsol do
     local W = pc:get(i)
     local T = pt:get(i)
     if W and T then
-      local CW = circle:new(W, T)      -- cercle solution dans le monde inversé
-      local w, t = Cinv:inversion(CW):get()  -- retour dans la géométrie initiale
+      local CW = circle:new(W, T)      -- solution circle in the inverted plane
+      local w, t = Cinv:inversion(CW):get()  -- back to the original plane
       push(w, t)
     end
   end
@@ -1793,7 +1749,7 @@ function circle:CCL_ISD(C2, D)
   local I = I1 or I2
   local Cinv = circle:new(I, c1)
   local L1  = Cinv:inversion(C1)
-  local C2i = Cinv:inversion(C2)  -- cercle C2'
+  local C2i = Cinv:inversion(C2)  -- circle C2'
   local pc, pt, m = C2i:CLL(L1, D)
 
   for i = 1, m do
@@ -1849,11 +1805,11 @@ if (posCC == "DISJOINT_INT" or posCC == "TANGENT_INT")
   end
 
 end
----===== START  CCC by Viète =====-------
+---===== START  CCC by Viete =====-------
 -- === Test de tangence robuste (absolu ET relatif) ============================
 
 
--- === CCC : toutes les solutions (0..8) ======================================
+-- === CCC: all the solutions (0..8) ======================================
 function circle:CCC_viete_core(C2, C3, opts)
   opts = opts or {}
   local C1, R3, W3 = self, C3.radius, C3.center
@@ -1861,7 +1817,7 @@ function circle:CCC_viete_core(C2, C3, opts)
   local pc, pt, n = path:new(), path:new(), 0
   local function push(o,t) pc:add_point(o); pt:add_point(t); n = n + 1 end
 
-  -- dédup : compare centre et rayon avec tolérance
+  -- remove duplicates: compare center and radius with a tolerance
   local function exists_(o,t)
     local r = length_(o,t)
     for i=1,n do
@@ -1876,26 +1832,26 @@ function circle:CCC_viete_core(C2, C3, opts)
   end
   local function push_unique(o,t) if o and t and not exists_(o,t) then push(o,t) end end
 
-  -- ta variante “garder centre, ajouter ΔR au rayon”
+  -- variant: keep the center, add dR to the radius
   local function grow_keep_center(C, dR)
     return circle:new(C.center, report_(C.center, C.through, dR, C.through))
   end
 
-  -- test "rayon ~ 0" robuste (absolu OU relatif)
+  -- robust test "radius ~ 0" (absolute OR relative)
   local function radius_is_zero_(r, ref)
     local eps_abs = (opts.abs ~= nil) and opts.abs or 1e-4
     local eps_rel = (opts.rel ~= nil) and opts.rel or 1e-6
     return (math.abs(r) <= eps_abs) or (math.abs(r)/math.max(ref,1.0) <= eps_rel)
   end
 
-  -- petit helper : à partir d'une liste de centres (path pcv, nv),
-  -- produire les deux relèvements +/- R3 (comme dans ton code initial)
+  -- helper: from a list of centers (path pcv, nv),
+  -- build the two lifts +/- R3
   local function lift_from_centers_(pcv, nv)
     for i=1,nv do
       local O = pcv:get(i)
       if O then
-        local Tplus  = report_(O, W3,  R3, W3)  -- r = |OW3| + R3  (tangence interne à C3)
-        local Tminus = report_(O, W3, -R3, W3)  -- r = |OW3| - R3  (tangence externe à C3)
+        local Tplus  = report_(O, W3,  R3, W3)  -- r = |OW3| + R3  (internally tangent to C3)
+        local Tminus = report_(O, W3, -R3, W3)  -- r = |OW3| - R3  (externally tangent to C3)
 
         if Tplus then
           local S = circle:new(O, Tplus)
@@ -1918,7 +1874,7 @@ function circle:CCC_viete_core(C2, C3, opts)
     end
   end
 
-  -- Les 4 branches de Viète (±R3 sur C1 et C2)
+  -- The 4 branches of Viete (+-R3 on C1 and C2)
   local mods = { {-R3,-R3}, {-R3, R3}, { R3,-R3}, { R3, R3} }
 
   for _, m in ipairs(mods) do
@@ -1933,23 +1889,23 @@ function circle:CCC_viete_core(C2, C3, opts)
     local z2  = radius_is_zero_(r2t, ref)
 
     if z1 and z2 then
-      -- === PPP : les deux transformés sont des points => cercle passant par O1,O2,O3
+      -- === PPP: both images are points => circle through O1, O2, O3
       local pcv, ptv, nv = C1.center:PPP(C2.center, W3)
       lift_from_centers_(pcv, nv)
 
     elseif z1 then
-      -- === CPP : un seul transformé est un point => tangent à C2T et passant par O1 et O3
+      -- === CPP: only one image is a point => tangent to C2T and through O1 and O3
       local pcv, ptv, nv = C2T:CPP(C1.center, W3)
-      -- on n’utilise que les centres pour garder la même logique de relèvement
+      -- only the centers are used, to keep the same lifting logic
       lift_from_centers_(pcv, nv)
 
     elseif z2 then
-      -- === CPP : un seul transformé est un point => tangent à C1T et passant par O2 et O3
+      -- === CPP: only one image is a point => tangent to C1T and through O2 and O3
       local pcv, ptv, nv = C1T:CPP(C2.center, W3)
       lift_from_centers_(pcv, nv)
 
     else
-      -- === CCP classique : cercle (préimage) passant par W3 et tangent à C1T et C2T
+      -- === classical CCP: circle (preimage) through W3, tangent to C1T and C2T
       local pcv, _, nv = C1T:CCP(C2T, W3, "all")
       lift_from_centers_(pcv, nv)
     end
@@ -1960,12 +1916,12 @@ function circle:CCC_viete_core(C2, C3, opts)
 end
 
 ------------------------------------------------------------
--- Dispatcher CCC : classification 3 cercles → résolution
--- - route "non-sécants" vers ta version qui marche (CCC_viete_ok)
--- - isole tous les cas "sécants" pour un traitement dédié (CCC_secant)
+-- CCC dispatcher: classification of the 3 circles -> resolution
+-- - "non-secant" cases -> CCC_viete_ok
+-- - "secant" cases -> dedicated treatment (CCC_secant)
 ------------------------------------------------------------
 
--- === Tolérances (abs + rel) ====================================
+-- === Tolerances (abs + rel) ====================================
 local function approx_(a, b, opts)
   opts = opts or {}
   local eps_abs = (opts.abs ~= nil) and opts.abs or 1e-4
@@ -1975,8 +1931,8 @@ local function approx_(a, b, opts)
 end
 
 
--- === Signature des trois paires =================================
--- Relation entre deux cercles Ci, Cj à partir de circles_position_
+-- === Signature of the three pairs =================================
+-- Relation between two circles Ci, Cj from circles_position_
 
 local function circle_relation_from_positions(Ci, Cj, EPS)
   EPS = EPS or tkz.epsilon
@@ -1984,7 +1940,7 @@ local function circle_relation_from_positions(Ci, Cj, EPS)
   local c1, r1 = Ci.center, Ci.radius
   local c2, r2 = Cj.center, Cj.radius
 
-  -- d'abord : test "centres confondus" pour distinguer concentriques / égaux
+  -- first: "same center" test, to separate concentric / equal circles
   local d = point.mod(c1 - c2)
   local same_center = tkz.approx(d, 0, EPS)
   if same_center then
@@ -1994,16 +1950,16 @@ local function circle_relation_from_positions(Ci, Cj, EPS)
       return "concentric"
     end
   end
-  -- sinon, on délègue à circles_position_
+  -- otherwise, circles_position_ is used
   return circles_position_(c1, r1, c2, r2, EPS)
 end
 
--- === Signature des trois paires =================================
+-- === Signature of the three pairs =================================
 local function three_circles_signature(C1, C2, C3, opts)
   opts = opts or {}
   local EPS = opts.EPS or opts.eps or tkz.epsilon
 
-  -- relations pour chaque paire
+  -- relation for each pair
   local r12 = circle_relation_from_positions(C1, C2, EPS)
   local r23 = circle_relation_from_positions(C2, C3, EPS)
   local r31 = circle_relation_from_positions(C3, C1, EPS)
@@ -2038,7 +1994,7 @@ local function acc(tag)
       counts.equal = counts.equal + 1
 
     else
-      -- optionnel mais utile pour éviter les faux silencieux
+      -- optional, but useful to avoid silent failures
       -- error("three_circles_signature: unexpected tag "..tostring(tag))
     end
   end
@@ -2058,22 +2014,22 @@ end
 
 
 local function CCC_viete_ok(C1, C2, C3, opts)
-  return C1:CCC_viete_core(C2, C3, opts)  -- <-- ajuste le nom si différent
+  return C1:CCC_viete_core(C2, C3, opts)
 end
 
--- === 2) Stub pour les cas sécants (à implémenter ensuite) =========
--- Cas CCC : les trois cercles sont deux à deux sécants
--- Stratégie : inversion en X = C1∩C2  →  C1,C2 ↦ lignes
---             résoudre (S3:CLL(L1,L2)) ou (L1:LLL(L2,L3))  →  ré-inversion
+-- === 2) Secant cases =========
+-- CCC case: the three circles are pairwise secant
+-- Strategy: inversion at X = C1 n C2  ->  C1, C2 become lines
+--             solve (S3:CLL(L1,L2)) or (L1:LLL(L2,L3))  ->  inverse back
 local function CCC_secant(C1, C2, C3, opts)
   opts = opts or {}
 
-  -- --- sorties (toujours renvoyées)
+  -- --- outputs (always returned)
   local pa_center  = path:new()
   local pa_through = path:new()
   local n = 0
 
-  -- --- push unique (style unifié)
+  -- --- single push
   local function push(o, t)
     if o and t then
       pa_center:add_point(o)
@@ -2082,62 +2038,62 @@ local function CCC_secant(C1, C2, C3, opts)
     end
   end
 
-  -- --- 1) intersections de C1 et C2 (doivent exister dans ce cas)
+  -- --- 1) intersections of C1 and C2 (they exist in this case)
   local X, Y = intersection(C1, C2)
   if (not X) or (not Y) then
-    -- garde-fou : si pas sécants, on ne traite pas ici
+    -- safeguard: not secant -> not handled here
     return pa_center, pa_through, 0
   end
 
-  -- --- 2) cercle d'inversion : centre X, rayon arbitraire (on prend XY)
+  -- --- 2) circle of inversion: center X, arbitrary radius (XY)
   local Cinv = circle:new(X, Y)
 
-  -- --- 3) objets inversés
+  -- --- 3) inverted objects
   local L1 = Cinv:inversion(C1)  -- attendu : ligne
   local L2 = Cinv:inversion(C2)  -- attendu : ligne
-  local S3 = Cinv:inversion(C3)  -- cercle OU ligne (si C3 passe par X)
+  local S3 = Cinv:inversion(C3)  -- circle OR line (if C3 passes through X)
 
-  -- --- helper : ré-inverser une solution donnée par (o_i, t_i) dans l'espace inversé
+  -- --- helper: inverse back a solution given by (o_i, t_i) in the inverted plane
   local function push_back_from_inverted(o_i, t_i)
     if (not o_i) or (not t_i) then return end
-    local S_i  = circle:new(o_i, t_i)         -- cercle solution dans l'espace inversé
-    local S_o  = Cinv:inversion(S_i)          -- ré-inversion → cercle solution original
-    local t_out = Cinv:inversion(t_i)         -- ré-inversion du point de tangence/through
+    local S_i  = circle:new(o_i, t_i)         -- solution circle in the inverted plane
+    local S_o  = Cinv:inversion(S_i)          -- inverse back -> solution circle
+    local t_out = Cinv:inversion(t_i)         -- inverse back the tangency (through) point
     if S_o and S_o.center and t_out then
       push(S_o.center, t_out)
     end
   end
 
-  -- --- 4) Résolution dans l'espace inversé puis ré-inversion
+  -- --- 4) Resolution in the inverted plane, then inverse back
   if S3 and S3.center then
-    -- 4.a) S3 est un cercle : problème CLL (cercle tangent à 2 lignes L1,L2 et à S3)
-    --     On demande toutes les solutions (secteurs) ; adaptez via opts.which / opts.inside si besoin.
+    -- 4.a) S3 is a circle: CLL problem (circle tangent to the lines L1, L2 and to S3)
+    --     All the solutions (sectors); see opts.which / opts.inside.
     local pc, pt, m = S3:CLL(L1, L2, "all")
     if m and m > 0 then
       for i = 1, m do
-        push_back_from_inverted(pc:get(i), pt:get(i))  -- pt[i] est le point de tangence sur S3
+        push_back_from_inverted(pc:get(i), pt:get(i))  -- pt[i] is the point of tangency on S3
       end
     end
 
   elseif S3 then
-    -- 4.b) S3 est une ligne (C3 passait par X) : problème LLL (trois lignes)
+    -- 4.b) S3 is a line (C3 passes through X): LLL problem (three lines)
     local pc, pt, m = L1:LLL(L2, S3, "all")
     if m and m > 0 then
       for i = 1, m do
-        push_back_from_inverted(pc:get(i), pt:get(i))  -- pt[i] : pied sur L1 (OK)
+        push_back_from_inverted(pc:get(i), pt:get(i))  -- pt[i]: foot on L1
       end
     end
   else
-    -- inversion de C3 échouée (hautement improbable) → pas de solution
+    -- inversion of C3 failed (very unlikely) -> no solution
     return pa_center, pa_through, 0
   end
 
   return pa_center, pa_through, n
 end
 
--- === 3) Cas spécial : "deux tangents + un disjoint" ==============
+-- === 3) Special case: "two tangent + one disjoint" ==============
 local function CCC_two_tangent_one_disjoint(C1, C2, C3, sig, opts)
-  -- Ex : r12 tangent, r23 tangent, r31 disjoint (ou toute permutation)
+  -- Ex: r12 tangent, r23 tangent, r31 disjoint (or any permutation)
   return CCC_viete_ok(C1, C2, C3, opts)
 end
 
@@ -2155,11 +2111,11 @@ function circle:CCC(C2, C3, opts)
   local C1 = self
   local sig = three_circles_signature(C1, C2, C3, opts)
   local k = sig.counts
-  -- (A) Si AU MOINS une paire est sécante → on isole et on traite à part
+  -- (A) If AT LEAST one pair is secant -> separate treatment
   if k.secant > 0 then
     return CCC_secant(C1, C2, C3, opts)
 
-  -- (B) Cas spécial "deux tangents + un disjoint"
+  -- (B) Special case "two tangent + one disjoint"
   elseif (k.tangent == 2) and (k.disjoint == 1) and (k.inside == 0) and (k.concentric == 0) then
     return CCC_two_tangent_one_disjoint(C1, C2, C3, sig, opts)
 
@@ -2185,17 +2141,17 @@ end
 
 
 ----=================================
-----=========== <END CCC viète ===========
+----=========== <END CCC Viete ===========
 ----=================================
 
 ---=========================================================
 
--- CCC_gergonne : cercles tangents aux trois cercles (self, C2, C3)
--- Implémente la construction de Gergonne :
---  - lignes des centres de similitude (JJJ et JII),
---  - pôles Xi de ces lignes par rapport aux trois cercles,
---  - points de contact = (wX) ∩ (chaque cercle),
---  - centres solutions = cercles circonscrits à 3 points de contact
+-- CCC_gergonne: circles tangent to the three circles (self, C2, C3)
+-- Gergonne's construction:
+--  - lines of the centers of similitude (JJJ and JII),
+--  - poles Xi of these lines with respect to the three circles,
+--  - points of contact = (wX) n (each circle),
+--  - solution centers = circumcircles of 3 points of contact
 -- Retour : (PA.center, PA.through, n)  — chemins + compteur
 
 function circle:CCC_gergonne(C2, C3, opts)
@@ -2207,7 +2163,7 @@ function circle:CCC_gergonne(C2, C3, opts)
   local O2, T2 = C2.center, C2.through
   local O3, T3 = C3.center, C3.through
 
-  -- chemins résultat
+  -- result paths
   local PA_center  = path:new()
   local PA_through = path:new()
   local n = 0
@@ -2223,7 +2179,7 @@ function circle:CCC_gergonne(C2, C3, opts)
   -- --- utilitaires locaux -----------------------------------------------
   local function d_(a,b) return length_(a,b) end
 
-  -- test : un cercle (O,R) est tangent au cercle Ci
+  -- test: the circle (O,R) is tangent to the circle Ci
   local function tangent_to(O, R, Ci)
     local d = d_(O, Ci.center)
     local r = Ci.radius
@@ -2231,7 +2187,7 @@ function circle:CCC_gergonne(C2, C3, opts)
         or tkz.approx(math.abs(d - math.abs(R - r)), 0, EPS)
   end
 
-  -- dédoublonnage (même centre)
+  -- remove duplicates (same center)
   local function already_kept(O)
     for i = 1, n do
       if d_(O, PA_center:get(i)) <= 1e-4 then return true end
@@ -2247,32 +2203,32 @@ function circle:CCC_gergonne(C2, C3, opts)
   local I13 = C1:internal_similitude(C3)
   local I23 = C2:internal_similitude(C3)
 
-  -- centre radical (intersection de deux axes radicaux)
+  -- radical center (intersection of two radical axes)
   local w = C1:radical_center(C2, C3)
 
-  -- Les 4 droites de Gergonne : 1× JJJ et 3× JII
+  -- The 4 lines of Gergonne: 1 JJJ and 3 JII
   local lines = {
-    line(J12, J23),   -- JJJ (passe aussi par J13)
+    line(J12, J23),   -- JJJ (also through J13)
     line(J12, I13),   -- JII
     line(J13, I12),   -- JII
-    line(J23, I12),   -- JII  (peu importe laquelle des deux "I" on prend)
+    line(J23, I12),   -- JII  (either "I" can be used)
   }
 
-  -- Pour chaque droite : pôles, points de contact, combinaisons candidates
+  -- For each line: poles, points of contact, candidate combinations
   for _, L in ipairs(lines) do
-    -- Pôles par rapport aux trois cercles
+    -- Poles with respect to the three circles
     local X1 = C1:pole(L)
     local X2 = C2:pole(L)
     local X3 = C3:pole(L)
 
-    -- Intersections (wXi) avec chaque cercle = 2 points de contact par cercle
+    -- Intersections (wXi) with each circle = 2 points of contact per circle
     local a1, a2 = intersection_lc_(w, X1, O1, T1)
     local b1, b2 = intersection_lc_(w, X2, O2, T2)
     local c1, c2 = intersection_lc_(w, X3, O3, T3)
 
-    -- candidates = 4 trios "à parité impaire" sur {1,2}^3
-    -- (112), (121), (211) + leurs complémentaires (221), (212), (122)
-    -- On les calcule toutes puis on filtre par le test de tangence.
+    -- candidates = 4 "odd parity" triples in {1,2}^3
+    -- (112), (121), (211) + their complements (221), (212), (122)
+    -- All are computed, then filtered by the tangency test.
     local triples = {
       {a1,b1,c2}, {a1,b2,c1}, {a2,b1,c1}, {a2,b2,c1},
       {a2,b2,c1}, {a2,b1,c2}, {a1,b2,c2}, {a1,b1,c2},
@@ -2283,11 +2239,11 @@ function circle:CCC_gergonne(C2, C3, opts)
       if A and B and C then
         local O = circum_center_(A, B, C)
         if O then
-          local R = d_(O, A)            -- rayon = distance au point de contact choisi
-          -- garde seulement si tangent aux trois cercles
+          local R = d_(O, A)            -- radius = distance to the chosen point of contact
+          -- kept only if tangent to the three circles
           if tangent_to(O, R, C1) and tangent_to(O, R, C2) and tangent_to(O, R, C3) then
             if not already_kept(O) then
-              push(O, A)                -- "through" = un des points de contact
+              push(O, A)                -- "through" = one of the points of contact
             end
           end
         end

@@ -20,12 +20,9 @@ Below is the list of reserved classes and the default variable names associated 
 
 \vspace{1em}
 \textcolor{red}{\directlua{
-local variables = {"A", "C", "CO", "F", "PF", "L", "LP", "M", "O", "P", "PA", "z", "Q", "R", "RP", "S", "T", "V"}
-local modules = {"angle", "circle",  "conic", "fct", "pfct",  "line", "list\\_point", "matrix", "occs", "parallelogram", "path",  "point", "quadrilateral", "rectangle", "regular\\_polygon", "square",  "triangle", "vector"}
-  for i = 1, utils.table_getn(modules) do
-    local class = modules[i]
-    local var   = variables[i]
-    tex.sprint( class.. "  -->  ".. var.."\\\\")
+  for _, t in ipairs(tkz.tables) do
+    local class = (string.gsub(t[2], "_", "\\_"))
+    tex.sprint(class .. "  -->  " .. t[1] .. "\\\\")
   end
 } }
 
@@ -208,7 +205,7 @@ Assigning \verb|z.A = nil| removes the point entirely.
 
 
 \subsection{Assigning a Name to Other Objects}
-For all geometric objects other than points, you are free to choose names. However, adopting consistent conventions greatly improves code readability and maintainability. To be more precise, each Lua code block is usually preceded by the call to the function \tkzFct{package}{init\_elements()}, whose role is to clear and reset the various tables (such as \tkzname{L}, \tkzname{C}, etc.).
+For all geometric objects other than points, you are free to choose names. However, adopting consistent conventions greatly improves code readability and maintainability. To be more precise, each Lua code block is usually preceded by the call to the function \tkzFct{tkz-elements}{init\_elements()}, whose role is to clear and reset the various tables (such as \tkzname{L}, \tkzname{C}, etc.).
 If you choose to use custom variable names or structures, you are free to do so — but in that case, you are responsible for managing and cleaning your variables and tables manually to avoid conflicts or unintended behavior.
 
 In this documentation, the following naming strategy is used:

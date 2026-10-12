@@ -4,7 +4,7 @@
 \label{sec:class_vector}
 
 A \tkzname{vector} object represents an oriented segment from a tail point $A$ to a head point $B$.
-Internally, it is built from two points \tkzVar{za} and \tkzVar{zb}, interpreted as complex numbers.
+Internally, it is built from two points \tkzAttr{vector}{za} and \tkzAttr{vector}{zb}, interpreted as complex numbers.
 The vector stores both its geometric endpoints and its analytic data (components, length, direction).
 
 
@@ -339,7 +339,7 @@ This is, of course, multiplication by a scalar.
 \subsubsection{Method \tkzMeth{vector}{unm}}
 \label{ssub:method_vector_unm}
 
-Cette méthode vous permet d'écrire \code{V.w = -V.v}
+This metamethod lets you write \code{V.w = -V.v}
 \begin{tkzexample}[latex=.5\textwidth]
 \directlua{
   z.A = point(0, 1)
@@ -461,20 +461,24 @@ The code required to display the angle measurement is as follows:
 \tkzMeth{vector}{is\_parallel(v,[EPS])} & \\
 \tkzMeth{vector}{is\_orthogonal(v,[EPS])} & \\
 \midrule
-\texttt{Methods Returning a Point} & \\
+\texttt{Methods Returning Points} & \\
 \midrule
-\tkzMeth{vector}{get()}   & \\
+\tkzMeth{vector}{get()}   & [\ref{sub:vector_other_methods}] \\
+\midrule
+\texttt{Methods Returning a Number} & \\
+\midrule
+\tkzMeth{vector}{dot(v)}        & [\ref{sub:vector_other_methods}] \\
+\tkzMeth{vector}{cross(v)}      & [\ref{sub:vector_other_methods}] \\
+\tkzMeth{vector}{angle\_to(v)}  & [\ref{sub:vector_other_methods}] \\
 \midrule
 \texttt{Methods Returning a Vector} & \\
-\tkzMeth{vector}{add(v)}        & \\
-\tkzMeth{vector}{scale(d)}      & \\
-\tkzMeth{vector}{dot(v)}        &\\
-\tkzMeth{vector}{cross(v)}      &\\
+\midrule
+\tkzMeth{vector}{add(v)}        & [\ref{sub:vector_other_methods}] \\
+\tkzMeth{vector}{scale(d)}      & [\ref{sub:vector_other_methods}] \\
 \tkzMeth{vector}{normalize()}   & [\ref{ssub:method_vector_normalize}]     \\
-\tkzMeth{vector}{angle\_to(v)}  & \\
 \tkzMeth{vector}{at (pt)}       & [\ref{ssub:method_vector_at}]            \\
-\tkzMeth{vector}{rotate(\tkzVar{$\theta$})} & \\
-\tkzMeth{vector}{orthogonal([side],[length])} & \\
+\tkzMeth{vector}{rotate($\theta$)} & [\ref{sub:vector_other_methods}] \\
+\tkzMeth{vector}{orthogonal([side],[length])} & [\ref{ssub:method_vector_orthogonal_r}] \\
 \bottomrule
 \end{tabular}
 
@@ -491,7 +495,7 @@ if V:is_orthogonal(W) then ... end
 \end{verbatim}
 
 These methods test basic geometric relations between vectors, using an optional
-tolerance \tkzVar{EPS}, which defaults to \tkzVar{tkz.epsilon}. They are convenient
+tolerance \tkzKey{EPS}, which defaults to \tkzSysVar{tkz.epsilon}. They are convenient
 when deciding whether two directions should be treated as parallel or orthogonal
 in numerical computations.
 
@@ -550,13 +554,69 @@ Vlen   = V:orthogonal("ccw", 2.0) -- orthogonal of prescribed length
 The \tkzMeth{vector}{orthogonal} method constructs an orthogonal vector to \code{V},
 with the same tail:
 \begin{itemize}
-  \item the optional argument \tkzVar{side} may be \code{"ccw"} (counter-clockwise,
+  \item the optional argument \tkzKey{side} may be \code{"ccw"} (counter-clockwise,
         the default) or \code{"cw"} (clockwise),
-  \item the optional argument \tkzVar{length} may be used to prescribe the norm
+  \item the optional argument \tkzKey{length} may be used to prescribe the norm
         of the resulting vector; if omitted, the length is determined by a rotation
         of the current vector.
 \end{itemize}
 
+\subsection{Other methods}
+\label{sub:vector_other_methods}
+
+\begin{itemize}
+  \item \tkzMeth{vector}{get()} returns the tail and the head of the vector.
+  \item \tkzMeth{vector}{add(v)} returns the sum of the two vectors, with the
+        tail of the current vector (also \code{V + W}).
+  \item \tkzMeth{vector}{scale(d)} returns the vector multiplied by \code{d},
+        with the same tail (also \code{d * V}).
+  \item \tkzMeth{vector}{dot(v)} returns the dot product (also \code{V .. W}).
+  \item \tkzMeth{vector}{cross(v)} returns the cross product
+        $x_V y_W - y_V x_W$ (also \code{V \textasciicircum{} W}).
+  \item \tkzMeth{vector}{angle\_to(v)} returns the oriented angle from the
+        current vector to \code{v}, in $[0, 2\pi)$.
+  \item \tkzMeth{vector}{rotate(theta)} returns the vector rotated by
+        \code{theta} (in radians) around its tail.
+\end{itemize}
+
+\begin{verbatim}
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(3, 1)
+ z.C = point(1, 2)
+ V.u = vector(z.A, z.B)
+ V.v = vector(z.A, z.C)
+ z.S = V.u:add(V.v).head
+ z.R = V.u:rotate(math.pi / 2).head
+ z.D = V.u:scale(-0.5).head
+ tex.print("dot = " .. V.u:dot(V.v) .. ", cross = " .. V.u:cross(V.v)..", angle = " .. tkz.round(math.deg(V.u:angle_to(V.v)), 2) .. " degrees")}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawSegments[->](A,B A,C A,S A,R A,D)
+\tkzDrawPoints(A,B,C,S,R,D)
+\tkzLabelPoints(A,B,C,S,R,D)
+\end{tikzpicture}
+\end{verbatim}
+
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(3, 1)
+ z.C = point(1, 2)
+ V.u = vector(z.A, z.B)
+ V.v = vector(z.A, z.C)
+ z.S = V.u:add(V.v).head
+ z.R = V.u:rotate(math.pi / 2).head
+ z.D = V.u:scale(-0.5).head
+ tex.print("dot = " .. V.u:dot(V.v) .. ", cross = " .. V.u:cross(V.v)..", angle = " .. tkz.round(math.deg(V.u:angle_to(V.v)), 2) .. " degrees")
+   tex.print('\\\\')}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawSegments[->](A,B A,C A,S A,R A,D)
+\tkzDrawPoints(A,B,C,S,R,D)
+\tkzLabelPoints(A,B,C,S,R,D)
+\end{tikzpicture}
 
 \begin{tkzexample}[latex=.5\textwidth]
  \directlua{

@@ -277,6 +277,9 @@ The variables \code{alpha\_}, \code{beta\_}, and \code{gamma\_} are
 They store the defining triple of points and provide methods to
 retrieve the measure (in radians or degrees) and to support later
 geometric operations or drawings based on that angle.
+The method \tkzMeth{triangle}{angle(i)} [see \ref{ssub:method_triangle_angle}]
+gives the same objects with the numbering of \tkzMeth{triangle}{get(i)};
+it is the recommended way.
 
 \medskip
 \noindent\texttt{Remark: }
@@ -306,7 +309,7 @@ or with full geometric angle objects
   T.ABC = triangle(z.A, z.B, z.C)
   A.A = T.ABC.alpha_
   A.B = T.ABC.beta_
-  T.C = T.ABC.gamma_
+  A.C = T.ABC.gamma_
   tex.print("A(value) = \\", A.A.value)
   tex.print('\\\\')
   tex.print("A(raw) = \\", A.A.raw)
@@ -330,9 +333,9 @@ You can access different lengths, in particular side lengths with:
 \begin{mybox}
 \begin{tkzexample}[code only]
   T.ABC = triangle(z.A, z.B, z.C)
-  p = T.ABC.a + T.ABC.b +T.ABC.c % p perimeter of T
-  T.ABC.a, T.ABC.b and T.ABC.c are the lengths of the opposite sides to A, B and C.
-  % Other accessible lengths
+  -- T.ABC.a, T.ABC.b and T.ABC.c are the lengths of the sides opposite A, B and C
+  p = T.ABC.a + T.ABC.b + T.ABC.c -- perimeter of T.ABC
+  -- Other accessible lengths
   s = T.ABC.semiperimeter
   ri = T.ABC.inradius
   R = T.ABC.circumradius
@@ -391,7 +394,7 @@ This approach saves time and space in scripts involving medians, altitudes, bise
 
 \subsubsection{Triangle attributes: orientation}
 \label{ssub:triangle_attributes_orientation}
-The \tkzAttr{orientation} attribute of a triangle indicates the orientation
+The \tkzAttr{triangle}{orientation} attribute of a triangle indicates the orientation
 of its vertices.
 It is positive when the vertices are ordered counter--clockwise,
 negative when they are ordered clockwise,
@@ -557,6 +560,7 @@ init_elements()
 
 \texttt{Methods Returning a Boolean}&\\
 \midrule
+\tkzMeth{triangle}{check\_isosceles(<EPS>)} & [\ref{ssub:method_triangle_check_isosceles}]\\
 \tkzMeth{triangle}{in\_out(pt)}  & [\ref{ssub:_triangle_in__out_pt}]\\
 \tkzMeth{triangle}{on\_triangle(pt)}  & [\ref{ssub:method_triangle_on_triangle}]\\
 \tkzMeth{triangle}{check\_equilateral()}&[\ref{ssub:_triangle_check__equilateral}] \\
@@ -569,13 +573,19 @@ init_elements()
 \midrule
 \texttt{Methods Returning a Real Number} &\\
 \midrule
+\tkzMeth{triangle}{parameter(pt)} & [\ref{ssub:method_triangle_parameter}]\\
 \tkzMeth{triangle}{barycentric\_coordinates(pt)}& [\ref{ssub:_triangle_barycentric__coordinates_pt}]\\
 \tkzMeth{triangle}{trilinear\_coordinates(pt)} & [\ref{ssub:triangle_trilinear_coordinates_pt}]\\
 \tkzMeth{triangle}{get\_angle(arg)} & [\ref{ssub:method_triangle_get_angle}] \\
+\tkzMeth{triangle}{angle(i)} (object of class \tkzClass{angle}) & [\ref{ssub:method_triangle_angle}] \\
 \tkzMeth{triangle}{trilinear\_to\_d} & \ref{ssub:triangle_trilinear_to_d}\\
 \midrule
 \texttt{Methods Returning a Point} &\\
 \midrule
+\tkzMeth{triangle}{brocard\_midpoint()} & [\ref{ssub:method_triangle_brocard_midpoint}]\\
+\tkzMeth{triangle}{soddy\_points()} & [\ref{ssub:method_triangle_soddy_points}]\\
+\tkzMeth{triangle}{conway\_center()} & [\ref{ssub:method_triangle_conway_center}]\\
+\tkzMeth{triangle}{the\_apollonius\_center()} & [\ref{ssub:method_triangle_the_apollonius_center}]\\
 \tkzMeth{triangle}{get(arg)} & [\ref{ssub:method_triangle_get}]\\
 \tkzMeth{triangle}{point(r)} & [\ref{ssub:method_triangle_point_r}]\\
 \tkzMeth{triangle}{random(<'inside'>)} & [\ref{ssub:method_triangle_random_inside}]\\
@@ -594,12 +604,15 @@ init_elements()
 \tkzMeth{triangle}{projections(p)}  & [\ref{ssub:method_triangle_projections_pt}]\\
 \tkzMeth{triangle}{reflections(p)}  & [\ref{ssub:method_triangle_reflections_pt}]\\
 \tkzMeth{triangle}{euler\_points()} &  [\ref{ssub:method_triangle_euler__points}] \\
+\tkzMeth{triangle}{medial\_points()} &  [\ref{ssub:method_triangle_special_points}] \\
+\tkzMeth{triangle}{orthic\_points()} &  [\ref{ssub:method_triangle_special_points}] \\
+\tkzMeth{triangle}{tangential\_points()} &  [\ref{ssub:method_triangle_special_points}] \\
 \tkzMeth{triangle}{nine\_points()} &  [\ref{ssub:method_triangle_nine__points}] \\
 \tkzMeth{triangle}{taylor\_points()} & See  [\ref{ssub:method_triangle_taylor__circle}]\\
 \tkzMeth{triangle}{parallelogram()} & [\ref{ssub:director_circle}]\\
 \tkzMeth{triangle}{kimberling(n)}  & See  [\ref{ssub:method_triangle_kimberling_n}]\\
 \tkzMeth{triangle}{isogonal(p)}  & See   [\ref{ssub:method_triangle_isogonal}]\\
-\tkzMeth{triangle}{macbeath\_point()(p)} & See [\ref{ssub:method_triangle_macbeath_point}]\\
+\tkzMeth{triangle}{macbeath\_point()} & See [\ref{ssub:method_triangle_macbeath_point}]\\
 \tkzMeth{triangle}{poncelet\_point(p)} & See   [\ref{ssub:method_triangle_poncelet_point}]\\
 \tkzMeth{triangle}{orthopole(L)}  & See   [\ref{ssub:method_triangle_orthopole}]\\
 \tkzMeth{triangle}{first\_fermat\_point()}  &
@@ -638,6 +651,8 @@ See [ \ref{ssub:method_triangle_orthic}; \ref{ssub:method_triangle_orthic_axis_p
 
 \texttt{Methods Returning a Line} &\\
 \midrule
+\tkzMeth{triangle}{trisector(arg)} & [\ref{ssub:method_triangle_trisector}]\\
+\tkzMeth{triangle}{soddy\_line()} & [\ref{ssub:method_triangle_soddy_line}]\\
 \tkzMeth{triangle}{altitude(arg) } & [\ref{ssub:method_triangle_altitude}]\\
 \tkzMeth{triangle}{bisector(arg) }  &  [\ref{ssub:method_triangle_bisector}]\\
 \tkzMeth{triangle}{bisector\_ext(arg) } & [\ref{ssub:method_triangle_bisector_ext}]\\
@@ -671,6 +686,8 @@ See [ \ref{ssub:method_triangle_orthic}; \ref{ssub:method_triangle_orthic_axis_p
 \midrule
 \texttt{Methods Returning a Circle} &\\
 \midrule
+\tkzMeth{triangle}{thebault\_circles(pt)} & [\ref{ssub:method_triangle_thebault_circles}]\\
+\tkzMeth{triangle}{the\_apollonius\_circle()} & [\ref{ssub:method_triangle_the_apollonius_circle}]\\
 \tkzMeth{triangle}{euler\_circle()} &   [\ref{ssub:method_triangle_euler_circle}]\\
 \tkzMeth{triangle}{circum\_circle()}  & [\ref{ssub:method_triangle_circum_circle}] \\
 \tkzMeth{triangle}{in\_circle()}  &[\ref{ssub:method_triangle_in_circle}]\\
@@ -699,14 +716,16 @@ See [ \ref{ssub:method_triangle_orthic}; \ref{ssub:method_triangle_orthic_axis_p
   See [\ref{ssub:three_apollonius_circles}] \\
 \tkzMeth{triangle}{apollonius\_circle(side, EPS)}  &
   See [\ref{ssub:apollonius_circle}] \\
-\tkzMeth{triangle}{feuerbach\_apollonius\_k181(side, EPS)}  &
+\tkzMeth{triangle}{feuerbach\_apollonius\_k181(EPS)}  &
   See [\ref{ssub:feuerbach_apollonius_k181}] \\
-\tkzMeth{triangle}{feuerbach\_apollonius(side, EPS)}  &
+\tkzMeth{triangle}{feuerbach\_apollonius(EPS)}  &
   See [\ref{ssub:feuerbach_apollonius}] \\
 \midrule
 
 \texttt{Methods Returning a Triangle} &\\
 \midrule
+\tkzMeth{triangle}{morley()} & [\ref{ssub:method_triangle_morley}]\\
+\tkzMeth{triangle}{napoleon(<"swap">)} & [\ref{ssub:method_triangle_napoleon}]\\
 \tkzMeth{triangle}{orthic()}   & [\ref{ssub:method_triangle_altitude}]   \\
 \tkzMeth{triangle}{medial()} &  [\ref{ssub:method_triangle_medial} ; \ref{ssub:method_triangle_symmedial}]\\
 \tkzMeth{triangle}{incentral()}  &[\ref{ssub:method_incentral}] \\
@@ -735,10 +754,10 @@ See [ \ref{ssub:method_triangle_orthic}; \ref{ssub:method_triangle_orthic_axis_p
 \tkzMeth{triangle}{steiner\_inellipse()}& [ \ref{ssub:steiner_inellipse_and_circumellipse}] \\
 \tkzMeth{triangle}{steiner\_circumellipse()} & [ \ref{ssub:steiner_inellipse_and_circumellipse}] \\
 \tkzMeth{triangle}{euler\_ellipse()}  & [\ref{ssub:euler_ellipse}]\\
-\tkzMeth{triangle}{lemoine\_ellipse()} & [\ref{ssub:method_triangle_lemoine_inellipse}]\\
+\tkzMeth{triangle}{lemoine\_inellipse()} & [\ref{ssub:method_triangle_lemoine_inellipse}]\\
 \tkzMeth{triangle}{brocard\_inellipse()}  & [\ref{ssub:method_triangle_brocard__inellipse}]\\
 \tkzMeth{triangle}{macbeath\_inellipse()}  & [\ref{ssub:method_triangle_macbeath__inellipse}]\\
-\tkzMeth{triangle}{mandart\_ellipse()}  & [\ref{ssub:method_triangle_mandart__inellipse}]\\
+\tkzMeth{triangle}{mandart\_inellipse()}  & [\ref{ssub:method_triangle_mandart__inellipse}]\\
 \tkzMeth{triangle}{orthic\_inellipse()}  & [\ref{ssub:method_triangle_orthic__inellipse}]\\
 \tkzMeth{triangle}{projection()}  & [See \ref{ssub:method_triangle_projection}]\\
 \tkzMeth{triangle}{reflection()}  & [See \ref{ssub:method_triangle_reflection}; \ref{ssub:method_triangle_simson__line}; \ref{ssub:method_yiu_circles}]\\
@@ -1002,6 +1021,23 @@ end
 
 \subsection{Returns a real number}
 
+\subsubsection{Method \tkzMeth{triangle}{check\_isosceles(<EPS>)}}
+\label{ssub:method_triangle_check_isosceles}
+
+Returns \code{true} if at least two sides of the triangle have the same length
+(up to the tolerance \code{EPS}, default \code{tkz.epsilon}).
+Alias: \tkzMeth{triangle}{is\_isosceles(<EPS>)}.
+
+\begin{tkzexample}[code only]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(5, 0)
+  z.C = point(2.5, 3)
+  T.ABC = triangle(z.A, z.B, z.C)
+  if T.ABC:is_isosceles() then tex.print("isosceles") end}
+\end{tkzexample}
+
 \subsubsection{Method \tkzMeth{triangle}{barycentric\_coordinates(pt)}}
 \label{ssub:_triangle_barycentric__coordinates_pt}
 
@@ -1084,12 +1120,9 @@ This method returns one of the three internal angles of the triangle.
 \medskip
 
 The argument \code{arg} identifies the vertex at which the angle is measured.
-It can be specified in several equivalent ways:
-\begin{itemize}
-  \item by a cyclic index \code{0}, \code{1}, or \code{2},
-  \item by a symbolic identifier (\code{pa}, \code{pb}, \code{pc}),
-  \item or directly by passing one of the triangle’s vertices as a point.
-\end{itemize}
+It is either a cyclic index \code{0}, \code{1}, \code{2} (vertices $A$, $B$, $C$)
+or one of the vertices, given as a point (the stored vertex or a point with
+the same coordinates).
 
 \medskip
 
@@ -1098,9 +1131,9 @@ The vertices of the triangle are assumed to be ordered in direct
 Accordingly, the returned angle is determined as follows:
 
 \begin{itemize}
-  \item \code{arg = 0} or \code{arg = pa}: returns the angle at vertex $A$,
-  \item \code{arg = 1} or \code{arg = pb}: returns the angle at vertex $B$,
-  \item \code{arg = 2} or \code{arg = pc}: returns the angle at vertex $C$.
+  \item \code{arg = 0} or the vertex $A$: returns the angle at vertex $A$,
+  \item \code{arg = 1} or the vertex $B$: returns the angle at vertex $B$,
+  \item \code{arg = 2} or the vertex $C$: returns the angle at vertex $C$.
 \end{itemize}
 
 \medskip
@@ -1136,6 +1169,25 @@ arbitrary points, independently of any triangle object.
  \tkzLabelAngle(B,A,C){\tkzUseLua{tkzAngleA}}
  \end{tikzpicture}
 \end{center}
+\end{tkzexample}
+
+\subsubsection{Method \tkzMeth{triangle}{angle(i)}}
+\label{ssub:method_triangle_angle}
+
+This method returns the angle at a vertex as an object of class
+\tkzClass{angle} [see \ref{sec:class_angle}].
+The argument \code{i} is \code{1}, \code{2} or \code{3} (vertices $A$, $B$, $C$,
+as for \tkzMeth{triangle}{get(i)}), or a vertex given as a point.
+
+\begin{tkzexample}[code only]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(4, 0)
+  z.C = point(0, 3)
+  T.ABC = triangle(z.A, z.B, z.C)
+  A.B = T.ABC:angle(2)        -- or T.ABC:angle(z.B)
+  tex.print(utils.format_number(A.B.deg, 2))}
 \end{tkzexample}
 
 \subsubsection{Method \tkzMeth{triangle}{trilinear\_to\_d}}
@@ -1235,6 +1287,26 @@ The parameter \code{r} must be a real number between \code{0} and \code{1}, repr
      \tkzLabelPoints(A,B,C,M)
      \tkzDrawSegments[red,thick](A,B B,M)
   \end{tikzpicture}
+\end{tkzexample}
+
+\subsubsection{Method \tkzMeth{triangle}{parameter(pt)}}
+\label{ssub:method_triangle_parameter}
+
+This method is the inverse of \tkzMeth{triangle}{point(r)}: for a point \code{pt}
+on the boundary of the triangle, it returns the real number \code{r} in $[0,1]$
+such that \code{T:point(r)} gives \code{pt}, i.e.\ the fraction of the perimeter
+travelled from \code{pa} along the oriented boundary. An error is raised if the
+point is not on the boundary.
+
+\begin{tkzexample}[code only]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(5, 0)
+  z.C = point(1, 4)
+  T.ABC = triangle(z.A, z.B, z.C)
+  z.P = T.ABC:point(0.3)
+  tex.print(utils.format_number(T.ABC:parameter(z.P), 2))}   % 0.30
 \end{tkzexample}
 
 \subsubsection{Method \tkzMeth{triangle}{random(<'inside'>)}}
@@ -1464,6 +1536,23 @@ Only a selection of centers is currently implemented in this method. The accessi
 \end{center}
 \end{tkzexample}
 
+\subsubsection{Method \tkzMeth{triangle}{brocard\_midpoint()}}
+\label{ssub:method_triangle_brocard_midpoint}
+
+Returns the \textbf{Brocard midpoint}, the midpoint of the two Brocard points,
+which is the center $X(39)$ of the Encyclopedia of Triangle Centers.
+It is equivalent to \code{T:kimberling(39)}.
+
+\begin{tkzexample}[code only]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(5, 0)
+  z.C = point(1, 4)
+  T.ABC = triangle(z.A, z.B, z.C)
+  z.M = T.ABC:brocard_midpoint()}
+\end{tkzexample}
+
 \subsubsection{Method \tkzMeth{triangle}{isogonal(pt)}} %(fold)
 \label{ssub:method_triangle_isogonal}
 
@@ -1672,7 +1761,7 @@ z.P2, z.P3 = T.ABC:reflections(z.P)
 \label{ssub:method_triangle_parallelogram}
 Complete a triangle as a parallelogram. If \code{z.D = T.ABC:parallelogram()} then  $ABCD$ is a parallelogram.
 
-\subsubsection{Method \tkzMeth{triangle}{mittenpunkt}} %(fold)
+\subsubsection{Method \tkzMeth{triangle}{mittenpunkt\_point()}} %(fold)
 \label{ssub:method_triangle_mittenpunkt}
 
 This method returns the \textbf{Mittenpunkt} of the triangle, also known as the \emph{middlespoint}.
@@ -1807,7 +1896,7 @@ These contact points are the feet of the perpendiculars from the incenter to eac
 \end{tkzexample}
 \end{minipage}
 
-\subsubsection{Method \tkzMeth{triangle}{Nagel\_point}} %(fold)
+\subsubsection{Method \tkzMeth{triangle}{nagel\_point()}} %(fold)
 \label{ssub:method_triangle_nagel__point}
 
 Let $E_a$ be the point at which the $J_a$-excircle meets the side $(BC)$ of a triangle $ABC$, and define $E_b$ and $E_c$ similarly. Then the lines $A,E_a$, $B,E_b$ and $C,E_c$ concur in the Nagel point  $Na$.
@@ -2219,6 +2308,23 @@ See  section~\ref{ssub:method_triangle_euler_circle} for details about the assoc
 \end{tkzexample}
 \end{minipage}
 
+\subsubsection{Method \tkzMeth{triangle}{soddy\_points()}}
+\label{ssub:method_triangle_soddy_points}
+
+Returns four points: the inner Soddy center [see \ref{ssub:method_triangle_soddy_center}],
+then the three points of contact of the inner Soddy circle with the three
+mutually tangent circles centered at the vertices.
+
+\begin{tkzexample}[code only]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(5, 0)
+  z.C = point(1, 4)
+  T.ABC = triangle(z.A, z.B, z.C)
+  z.S, z.X, z.Y, z.Z = T.ABC:soddy_points()}
+\end{tkzexample}
+
 \subsubsection{Method \tkzMeth{triangle}{conway\_points()}}
 \label{ssub:method_triangle_conway_points}
 
@@ -2250,9 +2356,25 @@ See  the corresponding figure in section~\ref{ssub:method_triangle_conway} for a
 \begin{tkzexample}[code only]
   C.conway = T.ABC:conway_circle()
   z.w,z.t  = C.conway:get() %   % z.w = T.ABC : conway_center ()
-  z.t1, z.t2, z.t3, z.t4, z.t5, z.t6 = T.ABC: onway_points()
+  z.t1, z.t2, z.t3, z.t4, z.t5, z.t6 = T.ABC:conway_points()
 \end{tkzexample}
 \end{mybox}
+
+\subsubsection{Method \tkzMeth{triangle}{conway\_center()}}
+\label{ssub:method_triangle_conway_center}
+
+Returns the center of the Conway circle [see \ref{ssub:method_triangle_conway_points}],
+which is the incenter of the triangle.
+
+\begin{tkzexample}[code only]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(5, 0)
+  z.C = point(1, 4)
+  T.ABC = triangle(z.A, z.B, z.C)
+  z.I = T.ABC:conway_center()}   % same as T.ABC.incenter
+\end{tkzexample}
 
 \subsubsection{Method \tkzMeth{triangle}{first\_fermat\_point()}}
 \label{ssub:method_triangle_first_fermat_point}
@@ -2318,7 +2440,7 @@ Given a triangle $ABC$, construct the \code{contact} triangle $T_AT_BT_C$. Now e
 
 \subsubsection{Method \tkzMeth{triangle}{macbeath\_point}}
 \label{ssub:method_triangle_macbeath_point}
-The MacBeath point is the center of the cercle kimberling(264).
+The MacBeath point is the center of the circle \code{kimberling(264)}.
 
 \begin{tkzexample}[latex=.5\textwidth]
 \directlua{
@@ -2538,6 +2660,24 @@ Consider the excircles $J_A$, $J_B$, and $J_C$ of a triangle, and the external A
 \href{https://mathworld.wolfram.com/ApolloniusPoint.html}{\textit{(Reference: Weisstein, Eric W. "Apollonius Point." MathWorld)}}
 \end{flushright}
 
+
+\subsubsection{Method \tkzMeth{triangle}{the\_apollonius\_center()}}
+\label{ssub:method_triangle_the_apollonius_center}
+
+Returns the center of the Apollonius circle of the triangle (the circle tangent
+internally to the three excircles) [see \ref{ssub:method_triangle_the_apollonius_circle}].
+It is obtained as the intersection of the Brocard axis and of the line through
+the nine-point center and the Spieker center.
+
+\begin{tkzexample}[code only]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(5, 0)
+  z.C = point(1, 4)
+  T.ABC = triangle(z.A, z.B, z.C)
+  z.W = T.ABC:the_apollonius_center()}
+\end{tkzexample}
 
 \subsubsection{Method \tkzMeth{triangle}{cevian\_point()}}
 \label{ssub:cevian_point}
@@ -2946,6 +3086,37 @@ This method returns an \textbf{external angle bisector} of the triangle, from a 
 \medskip
 
 Its interface is identical to \tkzMeth{triangle}{bisector}, accepting either an index \code{n} or a vertex point (\code{z.A}, \code{z.B}, \code{z.C}). See Section~\ref{ssub:method_triangle_bisector} for usage details.
+
+\subsubsection{Method \tkzMeth{triangle}{trisector(arg)}}
+\label{ssub:method_triangle_trisector}
+
+Returns the two lines that divide the angle at a vertex into three equal parts.
+The argument \code{arg} is \code{0}, \code{1}, \code{2} (vertices $A$, $B$, $C$)
+or a vertex given as a point, as for \tkzMeth{triangle}{get\_angle(arg)}.
+The first line is the nearer to the side that follows the vertex.
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(5, 0)
+  z.C = point(1, 4)
+  T.ABC = triangle(z.A, z.B, z.C)
+  L.t1, L.t2 = T.ABC:trisector(z.A)
+  z.P = intersection(L.t1, T.ABC.bc)
+  z.Q = intersection(L.t2, T.ABC.bc)}
+\begin{center}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawSegments[red](A,P A,Q)
+  \tkzDrawPoints(A,B,C,P,Q)
+  \tkzLabelPoints(A,B,P)
+  \tkzLabelPoints[above](C,Q)
+  \tkzMarkAngles[size=1](B,A,P P,A,Q Q,A,C)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
 
 \subsubsection{Method \tkzMeth{triangle}{mediator(...)}}
 \label{ssub:triangle_mediator}
@@ -3419,6 +3590,23 @@ The method \tkzMeth{triangle}{brocard\_axis()} returns this line as an object of
 \end{flushright}
 
 \vspace{1em}
+
+\subsubsection{Method \tkzMeth{triangle}{soddy\_line()}}
+\label{ssub:method_triangle_soddy_line}
+
+Returns the \textbf{Soddy line}, the line through the inner and outer Soddy
+centers [see \ref{ssub:method_triangle_soddy_center}]. It also passes through
+the incenter and the de Longchamps point.
+
+\begin{tkzexample}[code only]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(5, 0)
+  z.C = point(1, 4)
+  T.ABC = triangle(z.A, z.B, z.C)
+  L.soddy = T.ABC:soddy_line()}
+\end{tkzexample}
 
 \subsubsection{Method \tkzMeth{triangle}{simson\_line(pt)}} %(fold)
 \label{ssub:method_triangle_simson__line}
@@ -4503,6 +4691,43 @@ A \code{circle} object $\mathcal{T}$ tangent to the two sides adjacent to \(p\) 
 \end{tkzexample}
 
 
+\subsubsection{Method \tkzMeth{triangle}{thebault\_circles(pt)}}
+\label{ssub:method_triangle_thebault_circles}
+
+For a point \code{pt} on a side of the triangle, this method returns the two
+\textbf{Thébault circles}: the circles tangent to the side containing \code{pt},
+to the cevian through \code{pt} and to the circumcircle (internally). By
+Thébault's theorem, their centers and the incenter are collinear.
+An error is raised if \code{pt} is not on a side of the triangle.
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(5, 0)
+  z.C = point(1, 4)
+  T.ABC = triangle(z.A, z.B, z.C)
+  z.P = T.ABC.bc:point(0.4)
+  C.b, C.c = T.ABC:thebault_circles(z.P)
+  z.O = T.ABC.circumcenter
+  z.I = T.ABC.incenter
+  z.Ob, z.Oc = C.b.center, C.c.center
+  z.Tb, z.Tc = C.b.through, C.c.through}
+\begin{center}
+\begin{tikzpicture}[scale=.8]
+  \tkzGetNodes
+  \tkzDrawCircle(O,A)
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawSegment(A,P)
+  \tkzDrawCircles[red](Ob,Tb Oc,Tc)
+  \tkzDrawLine[blue](Ob,Oc)
+  \tkzDrawPoints(A,B,C,P,I,Ob,Oc)
+  \tkzLabelPoints(A,B,I)
+  \tkzLabelPoints[above](C,P)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
 \subsubsection{Method \tkzMeth{triangle}{mixtilinear\_incircle(arg)}}
 \label{ssub:method_triangle_mixti}
 
@@ -4562,32 +4787,32 @@ Three circle objects tangent to one another and to the triangle’s sides.
 
 \texttt{Example usage: }
 
-% \begin{tkzexample}[latex=.45\textwidth]
-% \directlua{
-%   init_elements()
-%   z.A = point(0, 0)
-%   z.B = point(5, 0)
-%   z.C = point(1, 4)
-%   T.ABC = triangle(z.A, z.B, z.C)
-%   C.A,
-%   C.B,
-%   C.C = T.ABC:three_tangent_circles()
-%   z.ta = C.A.through
-%   z.tb = C.B.through
-%   z.tc = C.C.through
-%   C.ins = T.ABC:in_circle()
-%   z.I, z.T = C.ins:get()}
-% \begin{center}
-% \begin{tikzpicture}[scale=.6]
-% \tkzGetNodes
-% \tkzDrawCircles(A,ta B,tb C,tc I,T)
-% \tkzDrawPolygon(A,B,C)
-% \tkzDrawPoints(A,B,C)
-% \tkzLabelPoints(A,B)
-% \tkzLabelPoints[above](C)
-% \end{tikzpicture}
-% \end{center}
-% \end{tkzexample}
+\begin{tkzexample}[latex=.45\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(5, 0)
+  z.C = point(1, 4)
+  T.ABC = triangle(z.A, z.B, z.C)
+  C.A,
+  C.B,
+  C.C = T.ABC:three_tangent_circles()
+  z.ta = C.A.through
+  z.tb = C.B.through
+  z.tc = C.C.through
+  C.ins = T.ABC:in_circle()
+  z.I, z.T = C.ins:get()}
+\begin{center}
+\begin{tikzpicture}[scale=.6]
+\tkzGetNodes
+\tkzDrawCircles(A,ta B,tb C,tc I,T)
+\tkzDrawPolygon(A,B,C)
+\tkzDrawPoints(A,B,C)
+\tkzLabelPoints(A,B)
+\tkzLabelPoints[above](C)
+\end{tikzpicture}
+\end{center}
+ \end{tkzexample}
 
 \subsubsection{Method \tkzMeth{triangle}{three\_apollonius\_circles()}}
 \label{ssub:three_apollonius_circles}
@@ -4719,6 +4944,25 @@ three Apollonius circles or the isodynamic points.
 \end{tkzexample}
 
 
+
+\subsubsection{Method \tkzMeth{triangle}{the\_apollonius\_circle()}}
+\label{ssub:method_triangle_the_apollonius_circle}
+
+Returns the \textbf{Apollonius circle} of the triangle: the circle tangent
+internally to the three excircles. Its center is given by
+\tkzMeth{triangle}{the\_apollonius\_center()}.
+Not to be confused with \tkzMeth{triangle}{apollonius\_circle(side)}, which
+returns a circle of Apollonius relative to a side.
+
+\begin{tkzexample}[code only]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(5, 0)
+  z.C = point(1, 4)
+  T.ABC = triangle(z.A, z.B, z.C)
+  C.apo = T.ABC:the_apollonius_circle()}
+\end{tkzexample}
 
 \subsubsection{Method \tkzMeth{triangle}{feuerbach\_apollonius\_k181}(<EPS<)}
 \label{ssub:feuerbach_apollonius_k181}
@@ -5344,6 +5588,65 @@ The Yiu triangle $O_AO_BO_C$ is the triangle formed by the centers of the Yiu ci
 \end{center}
 \end{tkzexample}
 
+\subsubsection{Method \tkzMeth{triangle}{morley()}}
+\label{ssub:method_triangle_morley}
+
+Returns the \textbf{Morley triangle}: the intersections of the adjacent angle
+trisectors [see \ref{ssub:method_triangle_trisector}] form an equilateral
+triangle (Morley's theorem).
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(5, 0)
+  z.C = point(1, 4)
+  T.ABC = triangle(z.A, z.B, z.C)
+  T.M = T.ABC:morley()
+  z.D, z.E, z.F = T.M:get()}
+\begin{center}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawPolygon[red,fill=red!10](D,E,F)
+  \tkzDrawSegments[gray](A,D B,D B,E C,E C,F A,F)
+  \tkzDrawPoints(A,B,C,D,E,F)
+  \tkzLabelPoints(A,B)
+  \tkzLabelPoints[above](C)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+\subsubsection{Method \tkzMeth{triangle}{napoleon(<"swap">)}}
+\label{ssub:method_triangle_napoleon}
+
+Returns the \textbf{Napoleon triangle}: the centers of the equilateral triangles
+built on the sides of the triangle form an equilateral triangle (Napoleon's
+theorem). By default the equilateral triangles are built outwards (outer
+Napoleon triangle); with \code{"swap"} they are built inwards (inner Napoleon
+triangle).
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(5, 0)
+  z.C = point(1, 4)
+  T.ABC = triangle(z.A, z.B, z.C)
+  T.N = T.ABC:napoleon()
+  z.N1, z.N2, z.N3 = T.N:get()}
+\begin{center}
+\begin{tikzpicture}[scale=.7]
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawPolygon[red](N1,N2,N3)
+  \tkzDrawPoints(A,B,C,N1,N2,N3)
+  \tkzLabelPoints(A,B,N1)
+  \tkzLabelPoints[above](C)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
 \subsubsection{Method \tkzMeth{triangle}{projection()}}
 \label{ssub:method_triangle_projection}
 This method returns a triangle whose vertices are the projections of the original triangle's vertices with respect to the opposite sides.
@@ -5435,7 +5738,7 @@ Given a triangle $ABC$ and a point $P$ not located at a vertex, the \emph{circum
 \subsubsection{Method \tkzMeth{triangle}{tangential()}} %(fold)
 \label{ssub:method_triangle_tangential}
 
-The tangential triangle is the triangle $TaTbTc$ formed by the lines tangent to the circumcircle of a given triangle DeltaABC at its vertices. It is therefore antipedal triangle of $ABC$ with respect to the circumcenter $O$. It is also anticevian triangle of $ABC$ with the symmedian point $K$ as the anticevian point(Kimberling 1998, p. 156). Furthermore, the symmedian point $K$ of $ABC$ is the Gergonne point of $TaTbTc$.
+The tangential triangle is the triangle $TaTbTc$ formed by the lines tangent to the circumcircle of a given triangle $ABC$ at its vertices. It is therefore the antipedal triangle of $ABC$ with respect to the circumcenter $O$. It is also the anticevian triangle of $ABC$ with the symmedian point $K$ as the anticevian point(Kimberling 1998, p. 156). Furthermore, the symmedian point $K$ of $ABC$ is the Gergonne point of $TaTbTc$.
 
 The sides of an orthic triangle are parallel to the tangents to the circumcircle at the vertices(Johnson 1929, p. 172). This is equivalent to the statement that each line from a triangle's circumcenter to a vertex is always perpendicular to the corresponding side of the orthic triangle(Honsberger 1995, p. 22), and to the fact that the orthic and tangential triangles are homothetic.\begin{flushright}
   \small
@@ -5486,7 +5789,7 @@ The sides of an orthic triangle are parallel to the tangents to the circumcircle
   z.A = point(0, 0)
   z.B = point(4, 0)
   z.C = point(2, 3)
-  T.ABC triangle(z.A, z.B, z.C)
+  T.ABC = triangle(z.A, z.B, z.C)
   z.H = T.ABC.orthocenter
   z.O = T.ABC.circumcenter
   z.L = T.ABC:symmedian_point()
@@ -5499,6 +5802,47 @@ The sides of an orthic triangle are parallel to the tangents to the circumcircle
   z.Tc = T.ABC:tangential():get()}
 \end{tkzexample}
 \end{minipage}
+
+\subsubsection{Methods \tkzMeth{triangle}{medial\_points()}, \tkzMeth{triangle}{orthic\_points()} and \tkzMeth{triangle}{tangential\_points()}}
+\label{ssub:method_triangle_special_points}
+
+These three methods return directly the three vertices of the medial, orthic and tangential triangles, without creating an intermediate \tkzClass{triangle} object. They are shortcuts for:
+
+\begin{mybox}
+\begin{tkzexample}[code only]
+  z.Ma, z.Mb, z.Mc = T.ABC:medial():get()      -- same as T.ABC:medial_points()
+  z.Ha, z.Hb, z.Hc = T.ABC:orthic():get()      -- same as T.ABC:orthic_points()
+  z.Ta, z.Tb, z.Tc = T.ABC:tangential():get()  -- same as T.ABC:tangential_points()
+\end{tkzexample}
+\end{mybox}
+
+The points are returned in the order of the vertices: the first point is associated with $A$, the second with $B$ and the third with $C$ (for example, $H_a$ is the foot of the altitude from $A$, and $T_a$ is the vertex of the tangential triangle opposite to $A$). Use the \code{*\_points()} form when only the points are needed; use \code{medial()}, \code{orthic()} or \code{tangential()} when you need the attributes and methods of the resulting triangle.
+
+\begin{tkzexample}[latex=.45\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(4, 0)
+  z.C = point(1.5, 3)
+  T.ABC = triangle(z.A, z.B, z.C)
+  z.O = T.ABC.circumcenter
+  z.Ma, z.Mb, z.Mc = T.ABC:medial_points()
+  z.Ha, z.Hb, z.Hc = T.ABC:orthic_points()
+  z.Ta, z.Tb, z.Tc = T.ABC:tangential_points()}
+\begin{center}
+\begin{tikzpicture}[scale = .6]
+  \tkzGetNodes
+  \tkzDrawCircle(O,A)
+  \tkzDrawPolygons(A,B,C)
+  \tkzDrawPolygons[cyan](Ta,Tb,Tc)
+  \tkzDrawPolygons[red](Ha,Hb,Hc)
+  \tkzDrawPolygons[blue](Ma,Mb,Mc)
+  \tkzDrawPoints(A,B,C,Ma,Mb,Mc,Ha,Hb,Hc,Ta,Tb,Tc)
+  \tkzLabelPoints(A,B,Ta,Tb)
+  \tkzLabelPoints[above](C,Tc)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
 
 \subsubsection{Method \tkzMeth{triangle}{anti()}} %(fold)
 \label{ssub:method_triangle_anti}

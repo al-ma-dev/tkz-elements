@@ -3,7 +3,7 @@
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
 
-function get_a(h, e)
+function get_a_(h, e)
 	if math.abs(e - 1) < tkz.epsilon then
 		return nil
 	elseif e < 1 then
@@ -13,7 +13,7 @@ function get_a(h, e)
 	end
 end
 
-function get_b(h, e)
+function get_b_(h, e)
 	if math.abs(e - 1) < tkz.epsilon then
 		return nil
 	elseif e < 1 then
@@ -23,7 +23,7 @@ function get_b(h, e)
 	end
 end
 
-function get_c(h, e)
+function get_c_(h, e)
 	if math.abs(e - 1) < tkz.epsilon then
 		return nil
 	elseif e < 1 then
@@ -33,27 +33,27 @@ function get_c(h, e)
 	end
 end
 
-function next_focus(F, K, e, h)
+function next_focus_(F, K, e, h)
 	if math.abs(e - 1) < tkz.epsilon then
 		return nil
 	elseif e > 1 then
-		return report_(F, K, 2 * get_c(h, e))
+		return report_(F, K, 2 * get_c_(h, e))
 	elseif e < 1 then
-		return report_(F, K, -2 * get_c(h, e))
+		return report_(F, K, -2 * get_c_(h, e))
 	end
 end
 
-function conic_center(F, K, e, h)
+function conic_center_(F, K, e, h)
 	if math.abs(e - 1) < tkz.epsilon then
 		return nil
 	elseif e > 1 then
-		return report_(F, K, get_c(h, e))
+		return report_(F, K, get_c_(h, e))
 	elseif e < 1 then
-		return report_(F, K, -get_c(h, e))
+		return report_(F, K, -get_c_(h, e))
 	end
 end
 
-function get_subtype(e)
+function get_subtype_(e)
 	if math.abs(e - 1) < tkz.epsilon then
 		return "parabola"
 	elseif e < 1 then
@@ -63,30 +63,30 @@ function get_subtype(e)
 	end
 end
 
-function get_vertex(F, K, e, h)
+function get_vertex_(F, K, e, h)
 	if math.abs(e - 1) < tkz.epsilon then
 		return report_(K, F, h / 2)
 	else
-		local center = conic_center(F, K, e, h)
-		return report_(center, F, get_a(h, e))
+		local center = conic_center_(F, K, e, h)
+		return report_(center, F, get_a_(h, e))
 	end
 end
 
-function get_covertex(F, K, e, h)
+function get_covertex_(F, K, e, h)
 	if math.abs(e - 1) < tkz.epsilon then
 		return nil
 	else
-		local center = conic_center(F, K, e, h)
-		return report_(center, ortho_from_(center, center, F), get_b(h, e))
+		local center = conic_center_(F, K, e, h)
+		return report_(center, ortho_from_(center, center, F), get_b_(h, e))
 	end
 end
 
-function get_minor_axis(F, K, e, h)
+function get_minor_axis_(F, K, e, h)
 	if math.abs(e - 1) < tkz.epsilon then
 		return nil
 	else
-		local center = conic_center(F, K, e, h)
-		local pa = get_covertex(F, K, e, h)
+		local center = conic_center_(F, K, e, h)
+		local pa = get_covertex_(F, K, e, h)
 		local pb = symmetry_(center, pa)
 		return line:new(pa, pb)
 	end
@@ -97,19 +97,19 @@ end
 
 function get_points_conic_(Co, ta, tb, nb)
 	if math.abs(Co.e - 1) < tkz.epsilon then
-		return get_points_parabola(Co, ta, tb, nb)
+		return get_points_parabola_(Co, ta, tb, nb)
 	elseif Co.e > 1 then
-		return get_points_hyperbola(Co, ta, tb, nb)
+		return get_points_hyperbola_(Co, ta, tb, nb)
 	elseif Co.e < 1 then
-		return get_points_ellipse(Co, ta, tb, nb)
+		return get_points_ellipse_(Co, ta, tb, nb)
 	end
 end
 
 function get_points_sym_conic_(Co, ta, tb, nb)
-	return get_points_hyperbola_sym(Co, ta, tb, nb)
+	return get_points_hyperbola_sym_(Co, ta, tb, nb)
 end
 
-function get_points_parabola(C, ta, tb, nb)
+function get_points_parabola_(C, ta, tb, nb)
 	local points = {}
 	--Function to add points in a given range
 	for t = ta, tb, 1 / nb do
@@ -122,7 +122,7 @@ function get_points_parabola(C, ta, tb, nb)
 	return points
 end
 
-function get_points_hyperbola(C, ta, tb, nb)
+function get_points_hyperbola_(C, ta, tb, nb)
 	local points = {}
 	local LC = C.minor_axis
 	local LS = LC:ll_from(C.vertex)
@@ -140,7 +140,7 @@ function get_points_hyperbola(C, ta, tb, nb)
 	return points
 end
 
-function get_points_hyperbola_sym(C, ta, tb, nb)
+function get_points_hyperbola_sym_(C, ta, tb, nb)
 	local points = {}
 	local LC = C.minor_axis
 	local LS = LC:ll_from(C.vertex)
@@ -160,7 +160,7 @@ function get_points_hyperbola_sym(C, ta, tb, nb)
 	return points
 end
 
-function get_points_ellipse(C, x, y, nb)
+function get_points_ellipse_(C, x, y, nb)
 	local points = {}
 	for t = x, y + 1 / nb, 1 / nb do
 		-- point on circle
@@ -177,7 +177,7 @@ end
 
 function get_one_point_conic_(C, t)
 	if C.e < 1 then
-		return get_one_point_ellipse(C, t)
+		return get_one_point_ellipse_(C, t)
 	else
 		local a, b = C.directrix.pa, C.directrix.pb
 		local c, d = C.Fa, C.K
@@ -188,19 +188,19 @@ function get_one_point_conic_(C, t)
 		local LT = C.major_axis:ll_from(T)
 
 		if math.abs(C.e - 1) < tkz.epsilon then
-			return get_one_point_parabola(C, T, LT)
+			return get_one_point_parabola_(C, T, LT)
 		else
-			return get_one_point_hyperbola(C, T, LT)
+			return get_one_point_hyperbola_(C, T, LT)
 		end
 	end
 end
 
-function get_one_point_parabola(C, T, LT)
+function get_one_point_parabola_(C, T, LT)
 	local x, y = mediator_(C.Fa, T)
 	return intersection_ll_(x, y, LT.pa, LT.pb)
 end
 
-function get_one_point_hyperbola(C, T, LT)
+function get_one_point_hyperbola_(C, T, LT)
 	local LC = C.minor_axis
 	local LS = LC:ll_from(C.vertex)
 	local D = intersection_ll_(LC.pa, LC.pb, C.Fa, T)
@@ -212,22 +212,22 @@ function get_one_point_hyperbola(C, T, LT)
 	return P
 end
 
-function get_one_point_hyperbola_ii(C, t)
+function get_one_point_hyperbola_ii_(C, t)
 	local T = C.directrix:report(t, C.K)
 	local LT = C.major_axis:ll_from(T)
-	local p = get_one_point_hyperbola(C, T, LT)
+	local p = get_one_point_hyperbola_(C, T, LT)
 	local D = C.minor_axis
 	return symmetry_axial_(D.pa, D.pb, p)
 end
 
-function get_one_point_ellipse(C, t)
+function get_one_point_ellipse_(C, t)
 	-- point on circle
 	CI = circle:new(C.center, C.vertex)
 	local M = CI:point(t)
 	return affinity_(C.Fa, C.Fb, C.center, C.covertex, C.b / C.a, M)
 end
 
-function EL_in_out(CO, pt)
+function EL_in_out_(CO, pt)
 	local d = point.abs(pt - CO.center)
 	local L = line:new(CO.center, pt)
 	local x, y = intersection(L, CO)
@@ -239,7 +239,7 @@ function EL_in_out(CO, pt)
 	end
 end
 
-function PA_in_out(PA, pt)
+function PA_in_out_(PA, pt)
 	local D = PA.major_axis
 	local Dp = D:ortho_from(pt)
 	local x, y = intersection(Dp, PA)
@@ -251,7 +251,7 @@ function PA_in_out(PA, pt)
 	end
 end
 
-function HY_in_out(HY, pt)
+function HY_in_out_(HY, pt)
 	local D = HY.major_axis
 	local Dp = D:ortho_from(pt)
 	local x, y = intersection(Dp, HY)
@@ -324,12 +324,10 @@ function PA_focus(D, pA, pB)
 	local HA = D:projection(pA)
 	local HB = D:projection(pB)
 	local x, y = intersection_cc_(pA, HA, pB, HB)
-	if x == false then
-		tex.error("An error has occurred. Bad configuration")
-		return
-	else
-		return x, y
+	if not x then
+		error("tkz-elements: PA_focus: no focus for this configuration", 2)
 	end
+	return x, y
 end
 
 function search_center_ellipse(coefficients)
@@ -341,7 +339,7 @@ function search_center_ellipse(coefficients)
 	return point:new(xc, yc)
 end
 
-function matrix_conic(coefficients)
+function matrix_conic_(coefficients)
 	local A, B, C, D, E, F =
 		coefficients.A, coefficients.B, coefficients.C, coefficients.D, coefficients.E, coefficients.F
 	return matrix.square(3, A, B, D, B, C, E, D, E, F)
@@ -357,8 +355,8 @@ function search_ellipse(...)
 		end
 		return T
 	end
-	Names = { ... }
-	points = create_coordinates_table(table.unpack(Names))
+	local Names = { ... }
+	local points = create_coordinates_table(table.unpack(Names))
 	local ma = matrix.create(5, 6)
 	for i, point in ipairs(points) do
 		local x, y = point[1], point[2]
@@ -394,8 +392,8 @@ function search_ellipse_(...)
 		end
 		return T
 	end
-	Names = { ... }
-	points = create_coordinates_table_(table.unpack(Names))
+	local Names = { ... }
+	local points = create_coordinates_table_(table.unpack(Names))
 	local ma = matrix.create(5, 6)
 	for i, point in ipairs(points) do
 		local x, y = point[1], point[2]
@@ -421,18 +419,6 @@ function search_ellipse_(...)
 	return { A = A, B = B, C = C, D = D, E = E, F = F }
 end
 
-function test_angle_major(Center, radius, temp_angle, A, B, C, D, E, F)
-	local new_angle = 0
-	local V = Center + point(math.cos(temp_angle), math.sin(temp_angle))
-	local test_point = report_(Center, V, radius)
-	if math.abs(test_ellipse(test_point.re, test_point.im, A, B, C, D, E, F)) < tkz.epsilon then
-		new_angle = temp_angle
-	else
-		new_angle = temp_angle + math.pi / 2
-	end
-	return new_angle
-end
-
 -- Utility function to calculate ellipse axes and angles
 function ellipse_axes_angle(coefficients)
 	local A, B, C, D, E, F =
@@ -440,7 +426,7 @@ function ellipse_axes_angle(coefficients)
 
 	local discriminant = 4 * A * C - B * B
 	if math.abs(discriminant) < tkz.epsilon then
-		tex.error("Degenerate ellipse (discriminant close to zero)")
+		error("tkz-elements: ellipse_axes_angle: degenerate ellipse (discriminant close to zero)", 2)
 	end
 
 	local radicand_ra = 2
@@ -451,7 +437,7 @@ function ellipse_axes_angle(coefficients)
 		* ((A + C) - math.sqrt((A - C) ^ 2 + B ^ 2))
 
 	if radicand_ra < 0 or radicand_rb < 0 then
-		tex.error("Negative square root in ellipse axis calculation")
+		error("tkz-elements: ellipse_axes_angle: the points do not define an ellipse", 2)
 	end
 
 	local ra = math.sqrt(radicand_ra) / discriminant
@@ -473,10 +459,60 @@ function ellipse_axes_angle(coefficients)
 	return center, ra, rb, angle
 end
 
-function define_ellipse(coefficients)
-	local center, ra, rb, angle = ellipse_axes_angle(coefficients)
-	local vertex, covertex = EL_radii(center, ra, rb, angle)
-	return EL_points(center, vertex, covertex)
+-- EL_from_equation(t) or EL_from_equation(A, B, C, D, E, F)
+-- Ellipse Ax^2 + Bxy + Cy^2 + Dx + Ey + F = 0.
+-- Returns the arguments for conic(...) (focus, directrix, eccentricity),
+-- like EL_five_points.
+function EL_from_equation(...)
+	local t = ...
+	if type(t) ~= "table" then
+		local A, B, C, D, E, F = ...
+		t = { A = A, B = B, C = C, D = D, E = E, F = F }
+	end
+	for _, k in ipairs({ "A", "B", "C", "D", "E", "F" }) do
+		if type(t[k]) ~= "number" then
+			error("tkz-elements: EL_from_equation: coefficient " .. k .. " is missing or not a number", 2)
+		end
+	end
+	if 4 * t.A * t.C - t.B * t.B <= tkz.epsilon then
+		error("tkz-elements: EL_from_equation: the equation does not define an ellipse (4AC - B^2 <= 0)", 2)
+	end
+	local center, ra, rb, angle = ellipse_axes_angle(t)
+	return EL_radii(center, ra, rb, angle)
+end
+
+-- conjugate_axes_(c, m, n) : semi-axes of the ellipse with center c and
+-- conjugate semi-diameters [c, m] and [c, n] (Rytz).
+-- Returns a, b, angle (a >= b, angle = direction of the major axis),
+-- or nil if [c, m] and [c, n] are collinear (degenerate ellipse).
+function conjugate_axes_(c, m, n)
+	local u, v = m - c, n - c
+	local uu, vv, uv = u .. u, v .. v, u .. v
+	if math.abs(u ^ v) <= tkz.epsilon then
+		return nil
+	end
+	local t = 0.5 * math.atan(2 * uv, uu - vv)
+	local A = u * math.cos(t) + v * math.sin(t)
+	local B = v * math.cos(t) - u * math.sin(t)
+	local a, b = point.abs(A), point.abs(B)
+	if a < b then
+		a, b, A = b, a, B
+	end
+	return a, b, point.arg(A)
+end
+
+-- EL_conjugate(c, m, n) : ellipse with center c, given two conjugate
+-- semi-diameters [c, m] and [c, n]. Like EL_five_points, it returns the
+-- arguments of conic(...) : CO.EL = conic(EL_conjugate(z.O, z.M, z.N))
+function EL_conjugate(c, m, n)
+	local a, b, angle = conjugate_axes_(c, m, n)
+	if not a then
+		error("tkz-elements: EL_conjugate: the two semi-diameters are collinear", 2)
+	end
+	if math.abs(a - b) <= tkz.epsilon then
+		error("tkz-elements: EL_conjugate: the conjugate semi-diameters define a circle", 2)
+	end
+	return EL_radii(c, a, b, angle)
 end
 
 -- Utility function for testing a point relative to the ellipselocal
@@ -497,7 +533,7 @@ function EL_radii(center_point, ra, rb, angle)
 	return EL_points(center_point, V, CV)
 end
 
-function inverse_affinity_ellipse(C, z)
+function inverse_affinity_ellipse_(C, z)
 	local ortho = C.major_axis:ortho_from(z)
 	local CI = circle:new(C.center, C.vertex)
 	return intersection(CI, ortho, { near = z })
@@ -506,15 +542,13 @@ end
 
 function EL_five_points(z1,z2,z3,z4,z5)
 	local coefficients = search_ellipse_(z1,z2,z3,z4,z5)
-if coefficients == nil then
-	tex.error("ellipse_inscribed: unable to determine the conic.")
-	return nil
-end
+	if coefficients == nil then
+		error("tkz-elements: EL_five_points: unable to determine the conic", 2)
+	end
 
 	local center, ra, rb, angle = ellipse_axes_angle(coefficients)
 	if not center then
-		tex.error("EL_ellipse_five_points: impossible to determine ellipse data.")
-		return nil
+		error("tkz-elements: EL_five_points: unable to determine the ellipse", 2)
 	end
 
 	return EL_radii(center, ra, rb, angle)

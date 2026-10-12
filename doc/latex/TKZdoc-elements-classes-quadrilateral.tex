@@ -29,17 +29,17 @@ Q.ABCD = quadrilateral(z.A, z.B, z.C, z.D)
 \end{mybox}
 
 \subsection{Quadrilateral Attributes}
-Points are created in the direct direction. A test is performed to check whether the points form a rectangle, otherwise compilation is blocked.
+The four points are given in order; no test is performed.
 
 \begin{center}
- \code{ Creation: Q.new = rectangle:new(z.A,z.B,z.C,z.D)}
+ \code{ Creation: Q.new = quadrilateral(z.A,z.B,z.C,z.D)}
 \end{center}
 
 
   \bgroup
   \catcode`_=12
   \small
-  \captionof{table}{rectangle attributes.}\label{quadrilateral:attributes}
+  \captionof{table}{Quadrilateral attributes.}\label{quadrilateral:attributes}
   \begin{tabular}{lll}
   \toprule
   \textbf{Attributes}         & \textbf{Application} & \\
@@ -50,13 +50,13 @@ Points are created in the direct direction. A test is performed to check whether
   \tkzAttr{quadrilateral}{type} & |Q.new.type= 'quadrilateral'|  &\\
   \tkzAttr{quadrilateral}{center}    & |z.I = Q.new.center| & intersection of diagonals\\
   \tkzAttr{quadrilateral}{g}    & |z.G = Q.new.g| & barycenter\\
-  \tkzAttr{quadrilateral}{a}    & |AB = Q.new.a| & barycenter\\
-  \tkzAttr{quadrilateral}{b}    & |BC = Q.new.b| & barycenter\\
-  \tkzAttr{quadrilateral}{c}    & |CD = Q.new.c| & barycenter\\
-  \tkzAttr{quadrilateral}{d}    & |DA = Q.new.d| & barycenter\\
+  \tkzAttr{quadrilateral}{a}    & |AB = Q.new.a| & length of AB\\
+  \tkzAttr{quadrilateral}{b}    & |BC = Q.new.b| & length of BC\\
+  \tkzAttr{quadrilateral}{c}    & |CD = Q.new.c| & length of CD\\
+  \tkzAttr{quadrilateral}{d}    & |DA = Q.new.d| & length of DA\\
   \tkzAttr{quadrilateral}{ab}   & |Q.new.ab|   &  line passing through two vertices   \\
-  \tkzAttr{quadrilateral}{ac}   & |Q.new.ca|   &  idem. \\
-  \tkzAttr{quadrilateral}{ad}   & |Q.new.ad|   &  idem. \\
+  \tkzAttr{quadrilateral}{ac}   & |Q.new.ac|   &  idem. \\
+  \tkzAttr{quadrilateral}{da}   & |Q.new.da|   &  idem. \\
   \tkzAttr{quadrilateral}{bc}   & |Q.new.bc|   &  idem. \\
   \tkzAttr{quadrilateral}{bd}   & |Q.new.bd|   &  idem. \\
   \tkzAttr{quadrilateral}{cd}   & |Q.new.cd|   &  idem. \\
@@ -213,14 +213,42 @@ z.Gp = intersection(L.llg, Q.ABCD.cd)}
   \tkzMeth{quadrilateral}{is\_cyclic ()} & [\ref{ssub:iscyclic}]\\
   \tkzMeth{quadrilateral}{is\_convex ()} & [\ref{ssub:isconvex}]\\
   \tkzMeth{quadrilateral}{poncelet\_point()} & [\ref{ssub:poncelet_point}]\\
+  \tkzMeth{quadrilateral}{area()} & [\ref{ssub:quadrilateral_area}]\\
+  \tkzMeth{quadrilateral}{get(<i>)} & [\ref{ssub:method_quadrilateral_get}]\\
   \bottomrule %
   \end{tabular}
   \egroup
 
 
 
+\subsubsection{Method \tkzMeth{quadrilateral}{get(<i>)}}
+\label{ssub:method_quadrilateral_get}
+
+This method returns the points that define the quadrilateral object.
+
+\begin{itemize}
+  \item \code{Q.ABCD:get()} returns the four vertices in order: \code{pa}, \code{pb}, \code{pc}, \code{pd};
+  \item \code{Q.ABCD:get(i)}, with \code{i} from 1 to 4, returns only the
+        \code{i}-th vertex; for example \code{Q.ABCD:get(2)} is equivalent to \code{Q.ABCD.pb}.
+\end{itemize}
+
+\begin{tkzexample}[code only]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(2, 0)
+  z.C = point(3, 2)
+  z.D = point(0, 1)
+  Q.ABCD = quadrilateral(z.A, z.B, z.C, z.D)
+  z.E, z.F, z.G, z.H = Q.ABCD:get()
+  z.K = Q.ABCD:get(3)
+}
+\end{tkzexample}
+
 \subsubsection{Method \tkzMeth{quadrilateral}{is\_cyclic()}}
 \label{ssub:iscyclic}
+
+Returns \code{true} if the four vertices lie on a same circle (with the tolerance \code{tkz.epsilon}), \code{false} otherwise.
 
 \textbf{Inscribed quadrilateral}
 
@@ -287,6 +315,21 @@ end
 \subsubsection{Method \tkzMeth{quadrilateral}{is\_convex()}}
 \label{ssub:isconvex}
 
+Returns \code{true} if the quadrilateral is convex, \code{false} otherwise. A quadrilateral with three consecutive collinear vertices is not convex.
+
+\begin{verbatim}
+if Q.ABCD:is_convex() then ... end
+\end{verbatim}
+
+\subsubsection{Method \tkzMeth{quadrilateral}{area()}}
+\label{ssub:quadrilateral_area}
+
+Returns the area of the quadrilateral, convex or not. An error is raised for a crossed quadrilateral.
+
+\begin{verbatim}
+local s = Q.ABCD:area()
+\end{verbatim}
+
 
 
 
@@ -297,6 +340,7 @@ end
 \label{ssub:poncelet_point}
 
 See [\ref{ssub:method_triangle_poncelet_point}] for the definition.
+The Poncelet point is defined for any quadrilateral; an error is raised if three vertices are collinear.
 
 \begin{tkzexample}[latex=.5\textwidth]
 \directlua{

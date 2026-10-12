@@ -9,12 +9,14 @@
 parallelogram = {}
 parallelogram.__index = parallelogram
 function parallelogram:new(pa, pb, pc, pd)
-	local d
+	if not (is_point_(pa) and is_point_(pb) and is_point_(pc) and is_point_(pd)) then
+		-- level 2: __call is a tail call (return cls:new(...))
+		error("tkz-elements: parallelogram: four points are expected", 2)
+	end
 	local zi = midpoint_(pa, pc)
 	local zj = midpoint_(pb, pd)
-	if point.abs(zj - zi) < tkz.epsilon then
-	else
-		tex.error("it's not a parallelogram")
+	if point.abs(zj - zi) >= tkz.epsilon then
+		error("tkz-elements: parallelogram: the diagonals do not have the same midpoint", 2)
 	end
 	local type = "parallelogram"
 	local center = zi
@@ -48,8 +50,12 @@ setmetatable(parallelogram, {
 	end,
 })
 
-function parallelogram:get()
-	return self.pa, self.pb, self.pc, self.pd
+-- get() returns the four vertices ; get(i) returns the i-th vertex (1 to 4)
+function parallelogram:get(i)
+	if i == nil then
+		return self.pa, self.pb, self.pc, self.pd
+	end
+	return ({ self.pa, self.pb, self.pc, self.pd })[i]
 end
 
 return parallelogram

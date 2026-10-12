@@ -21,13 +21,24 @@ setmetatable(path, {
 
 
 
+-- true if the two entries are the same point (compared numerically,
+-- so that "(1,0)" and "(1.00000,0.00000)" are equal)
+local function same_entry(a, b)
+	if a == b then
+		return true
+	end
+	local ok1, x1, y1 = pcall(utils.parse_point, a)
+	local ok2, x2, y2 = pcall(utils.parse_point, b)
+	return ok1 and ok2 and math.abs(x1 - x2) <= tkz.epsilon and math.abs(y1 - y2) <= tkz.epsilon
+end
+
 function path.__add(p1, p2)
 	local result = {}
 	for _, pt in ipairs(p1) do
 		result[#result + 1] = pt
 	end
 
-	if #p1 > 0 and #p2 > 0 and p1[#p1] == p2[1] then
+	if #p1 > 0 and #p2 > 0 and same_entry(p1[#p1], p2[1]) then
 		for i = 2, #p2 do
 			result[#result + 1] = p2[i]
 		end
@@ -63,13 +74,14 @@ function path:__tostring()
 end
 
 
--- function path:add_point(z, decimals)
--- 	table.insert(self, utils.format_point(z, decimals))
--- end
-
+-- Points are stored with 10 decimals by default (as before, the coordinates
+-- are TikZ strings). With 5 decimals, a point computed by a method returning
+-- paths (CPP, CCP, ...) lost its precision: a tangency was no longer
+-- detected by intersection (tkz.epsilon = 1e-10).
 function path:add_point(z, decimals)
+	decimals = decimals or 10
 	if type(z) == "string" then
-		local x,y = utils.parse_point(z)
+		local x,y = utils.parse_point(z, 3)
 		z = point(x,y)
 	end
 	table.insert(self, utils.format_point(z, decimals))
@@ -81,7 +93,7 @@ function path:concat(sep)
 end
 
 function path:add_pair_to_path(z1, z2, decimals)
-	decimals = decimals or 5
+	decimals = decimals or 10
 	local x1 = utils.format_coord(z1.re, decimals)
 	local y1 = utils.format_coord(z1.im, decimals)
 	local x2 = utils.format_coord(z2.re, decimals)
@@ -117,7 +129,7 @@ function path:translate(dx, dy)
 	return path:new(moved)
 end
 
--- Homothétie de centre (cx, cy), rapport k
+-- Homothety with center `center` and ratio k
 function path:homothety(center, k)
 	local scaled = {}
 	for _, pt in ipairs(self) do
@@ -129,7 +141,7 @@ function path:homothety(center, k)
 	return path:new(scaled)
 end
 
--- Mise à l'échelle anisotrope
+-- Anisotropic scaling
 function path:scale(kx, ky)
 	local scaled = {}
 	for _, pt in ipairs(self) do
@@ -146,7 +158,7 @@ function path:scale(kx, ky)
 	return path:new(scaled)
 end
 
--- Rotation autour de (cx, cy) d'un angle theta en radians
+-- Rotation about `center` by the angle theta (radians)
 function path:rotate(center, theta)
 	local rotated = {}
 	local cos_t = math.cos(theta)
@@ -161,7 +173,7 @@ function path:rotate(center, theta)
 	return path:new(rotated)
 end
 
--- Fermeture
+-- Close the path (append the first point if needed)
 function path:close()
 	if #self == 0 then
 		return self
@@ -170,7 +182,7 @@ function path:close()
 	local x1, y1 = utils.parse_point(self[1])
 	local x2, y2 = utils.parse_point(self[#self])
 
-local eps = tkz.epsilon or 1e-9
+	local eps = tkz.epsilon or 1e-9
 	if math.abs(x1 - x2) > eps or math.abs(y1 - y2) > eps then
 		local closed = {}
 		for i, pt in ipairs(self) do
@@ -184,7 +196,7 @@ local eps = tkz.epsilon or 1e-9
 end
 
 
--- Sous-chemin
+-- Sub-path from index i1 to i2
 function path:sub(i1, i2)
 	local subp = {}
 	for i = i1 or 1, i2 or #self do
@@ -193,56 +205,60 @@ function path:sub(i1, i2)
 	return path:new(subp)
 end
 
+-- "x1/y1,x2/y2,..." for \foreach (the coordinates are kept as written)
 function path:concat_rawpair(sep)
 	sep = sep or ","
 	local list = {}
 	for i = 1, #self do
-		local x, y = self[i]:match("%(([^,]+),([^%)]+)%)")
+		local x, y = tostring(self[i]):match("^%s*%(%s*([^,]-)%s*,%s*([^%)]-)%s*%)%s*$")
+		if not x or x == "" or y == "" then
+			error("tkz-elements: path:concat_rawpair: entry #" .. i .. " is not a point \""
+				.. tostring(self[i]) .. "\" (a path built with add_pair contains pairs of points)", 2)
+		end
 		list[#list + 1] = x .. "/" .. y
 	end
 	return table.concat(list, sep)
-end
-
-function path:get_rawpair_list()
-	local result = {}
-	for _, pt in ipairs(self) do
-		local x, y = utils.parse_point(pt)
-		table.insert(result, string.format("%.5f/%.5f", x, y))
-	end
-	return result
 end
 
 function path:count()
 	return #self
 end
 
--- format interne: "(x,y)" uniquement
-local function parse_xy(entry)
-	local s = tostring(entry)
-	local x, y = s:match("^%(%s*([%+%-]?[%d%.eE]+)%s*,%s*([%+%-]?[%d%.eE]+)%s*%)$")
-	return tonumber(x), tonumber(y)
-end
-
-
---  coordinates of the i-th point
-function path:get_number_path(i)
+-- coordinates of the i-th point; level = error level (see below)
+local function number_at(self, i, name, level)
 	local item = self[i]
 	if not item then
-		error(("path:get_number_path: index %s out of bounds (1..%d)"):format(tostring(i), #self))
+		error(("tkz-elements: path:%s: index %s out of bounds (1..%d)"):format(name, tostring(i), #self), level)
 	end
-	local x, y = parse_xy(item)
-	if not x or not y then
-		error(("path:get_number_path: Unable to analyze the input #%d"):format(i))
-	end
+	local x, y = utils.parse_point(item, level + 1) -- not a tail call (error level)
 	return x, y
 end
 
+-- coordinates of the i-th point
+function path:get_number_path(i)
+	local x, y = number_at(self, i, "get_number_path", 3)
+	return x, y
+end
 
+-- the i-th point
 function path:get_point(i)
-	local x, y = self:get_number_path(i)
+	local x, y = number_at(self, i, "get_point", 3)
 	return point(x, y)
 end
-path.get = path.get_point
+
+-- get(i): the i-th point ; get(): all the points
+function path:get(i)
+	if i == nil then
+		local t = {}
+		for k = 1, #self do
+			local x, y = number_at(self, k, "get", 3)
+			t[k] = point(x, y)
+		end
+		return table.unpack(t, 1, #self)
+	end
+	local x, y = number_at(self, i, "get", 3)
+	return point(x, y)
+end
 
 --  Practical iterator
 -- for i, x, y in PA.A:iter() do
@@ -253,7 +269,7 @@ function path:iter()
 	return function()
 		i = i + 1
 		if i <= n then
-			local x, y = self:get_number_path(i)
+			local x, y = number_at(self, i, "iter", 3)
 			return i, x, y
 		end
 	end

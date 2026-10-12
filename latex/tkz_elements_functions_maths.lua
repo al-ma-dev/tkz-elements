@@ -7,14 +7,6 @@
 ---- numbers --------------------------------------------------------------
 ---------------------------------------------------------------------------
 
-function is_integer_(x)
-	return type(x) == "number"
-		and x == x -- exclude NaN
-		and x < math.huge -- exclude +inf
-		and -x < math.huge -- exclude -inf
-		and is_zero_(x - math.floor(x + 0.5))
-end
-
 function near_integer_(x)
 	return is_zero_(x - tkz_round_(x))
 end
@@ -38,23 +30,29 @@ function checknumber_(x)
 	elseif type(x) == "string" and tonumber(x) then
 		return string.format("%.12f", tonumber(x))
 	else
-		return x -- table ou invalide
+		return x -- table or invalid value: returned unchanged
 	end
 end
 
+-- Round to idp decimals (default 0).
+-- Rounding is symmetric: tkz_round_(-2.5) == -3, tkz_round_(2.5) == 3.
+-- An integral result is returned as a Lua integer (3, not 3.0), so that
+-- tostring() and \tkzUseLua print "3".
+-- Note: 1.005 is stored as 1.00499999... in binary, so
+-- tkz_round_(1.005, 2) gives 1.0, as in every language using doubles.
 function tkz_round_(num, idp)
 	idp = idp or 0
 	local mult = 10 ^ idp
-	return math.floor(num * mult + 0.5) / mult
+	local r = math.floor(math.abs(num) * mult + 0.5) / mult
+	if num < 0 then
+		r = -r
+	end
+	return math.tointeger(r) or r
 end
 
 ---------------------------------------------------------------------------
 ---------------------------------------------------------------------------
 ---------------------------------------------------------------------------
-
-function dot_product_(z1, z2, z3)
-	return (z2 - z1) .. (z3 - z1)
-end
 
 --[[
   Computes the 2D cross product (signed area) of the triangle
@@ -77,18 +75,14 @@ end
 function det3pt_(z1, z2, z3)
 	return oriented_area2_(z1.re, z1.im, z2.re, z2.im, z3.re, z3.im)
 end
---orient2d or det3pt determinant de 3 pts
+-- det3pt_ (orient2d): determinant of three points
 
-function islinear_(z1, z2, z3)
+function is_linear_(z1, z2, z3)
 	return math.abs(det3pt_(z1, z2, z3)) < tkz.epsilon
 end
-is_linear_ = islinear_
 
-function isortho_(z1, z2, z3)
-	return math.abs((z2 - z1) .. (z3 - z1)) < tkz.epsilon
-end
-
-function parabola_(xa, ya, xb, yb, xc, yc) -- added
+-- Parabola y = Ax^2 + Bx + C through three points (nil if two abscissas are equal)
+function parabola_(xa, ya, xb, yb, xc, yc)
 	local D = (xa - xb) * (xa - xc) * (xb - xc)
 	if math.abs(D) < tkz.epsilon then
 		return nil
@@ -104,22 +98,15 @@ end
 ---- angles -------------------------------------
 ---------------------------------------------------------------------------
 
--- function get_angle_(a, b, c)
-	-- if (b == a) or (c == a) then
-	-- 	tex.error("Points confused in get_angle_")
-	-- end
-	-- return point.arg((c - a) / (b - a))
--- end
-
--- Angle orienté ∠BAC en A, dans (-π, π]
+-- Oriented angle BAC at A, in (-pi, pi]
 function get_angle_(a, b, c)
-   if point.abs(b - a) < tkz.epsilon or point.abs(c - a) < tkz.epsilon then	 tex.error("Points confused in get_angle_")
-end
-	-- vecteur AB = b - a, AC = c - a
-	-- arg(AC / AB) = angle pour tourner AB vers AC
+	if point.abs(b - a) < tkz.epsilon or point.abs(c - a) < tkz.epsilon then
+		error("tkz-elements: get_angle_: the angle is undefined (two points are identical)", 2)
+	end
+	-- vectors AB = b - a, AC = c - a
+	-- arg(AC / AB) = angle that turns AB onto AC
 	return point.arg((c - a) / (b - a))
 end
-angle_at = get_angle_
 
 
 function inner_angle_(a, b, c)
@@ -128,7 +115,7 @@ end
 
 
 function angle_normalize_(a)
-	return a % tkz.tau  -- dans [0, 2π)
+	return a % tkz.tau  -- in [0, 2pi)
 end
 
 
@@ -138,19 +125,17 @@ end
 
 
 
+-- Oriented angle from vector AB to vector CD, in (-π, π].
 function tkz_angle_between_vectors_(a, b, c, d)
-	-- Vector calculation
 	local zab = b - a
 	local zcd = d - c
-
-	-- Angle between vectors using ratio argument
-  local y = -zab.im * zcd.re + zab.re * zcd.im
-	local x =  zab.re * zcd.re + zab.im * zcd.im
-	local theta = math.atan(y / x)
-	if x < 0 then theta = theta + math.pi end
-
-
-	return theta -- Angle in radians
+	if point.abs(zab) < tkz.epsilon or point.abs(zcd) < tkz.epsilon then
+		error("tkz-elements: angle_between_vectors: null vector, the angle is undefined", 3)
+	end
+	-- y = det(AB, CD), x = AB . CD
+	local y = zab.re * zcd.im - zab.im * zcd.re
+	local x = zab.re * zcd.re + zab.im * zcd.im
+	return math.atan(y, x) -- atan2 (Lua 5.3): result in (-π, π]
 end
 
 
@@ -161,75 +146,50 @@ end
 ---------------------------------------------------------------------------
 ----------------- display  ---------------------------------------
 -----------------------------------------------------
--- Optionnel : si utils.sign n’est pas fiable, utilise ceci
-local function sign(x)
-	if x > 0 then
-		return "+"
+-- Format a real number:
+--   * an integer (up to tkz.epsilon) is written without decimals;
+--   * other values are written with tkz.dc decimals;
+--   * a value that rounds to zero is written "0" (never "-0.00").
+local function format_real_(r)
+	if near_integer_(r) then
+		return string.format("%d", tkz_round_(r))
 	end
-	if x < 0 then
-		return "-"
-	end
-	return ""
-end
-
-function tkz_display_(z)
-	local function display_real(r)
-		if r == nil then
-			return ""
-		end
-		local fmt
-		if near_integer_(r) then
-			r = math.round(r)
-			fmt = "%.0f"
-		else
-			fmt = string.format("%%.%df", tkz.dc)
-		end
-		return string.format(fmt, r)
-	end
-
-	local function display_imag(r, force_sign)
-		local sgn = sign(r)
-		if not force_sign and sgn == "+" then
-			sgn = "" -- supprime le + quand il n’est pas nécessaire
-		end
-		r = math.abs(r)
-		local part
-		if math.abs(r - 1) < tkz.epsilon then
-			part = "" -- afficher juste "i" ou "-i"
-		elseif near_integer_(r) then
-			part = tostring(math.round(r))
-		else
-			part = display_real(r)
-		end
-		return sgn, part
-	end
-
-	if type(z) == "number" then
-		return display_real(z)
-	end
-
-	local re, im = z.re, z.im
-	local is_re_zero = is_zero_(re)
-	local is_im_zero = is_zero_(im)
-
-	if is_re_zero and is_im_zero then
+	local str = string.format("%." .. tkz.dc .. "f", r)
+	if tonumber(str) == 0 then
 		return "0"
 	end
-
-	if is_im_zero then
-		return display_real(re)
-	end
-
-	if is_re_zero then
-		local sgn, part = display_imag(im, false)
-		return sgn .. part .. "i"
-	end
-
-	-- Cas général : partie réelle et partie imaginaire
-	local str_re = display_real(re)
-	local sgn_im, part_im = display_imag(im, true)
-	return str_re .. sgn_im .. part_im .. "i"
+	return str
 end
 
+-- Display a number or a point (complex number): 2, -1.50, i, -2i, 1+2i,
+-- 1.50-0.25i. Used by tostring(point) and tkz.display().
+-- The second argument (format) is accepted for compatibility and ignored.
+function tkz_display_(z, _)
+	if type(z) == "number" then
+		return format_real_(z)
+	end
 
+	local re_str = format_real_(z.re)
+	local im_str = format_real_(z.im)
 
+	if im_str == "0" then
+		return re_str
+	end
+
+	local im_part
+	if im_str == "1" then
+		im_part = "i"
+	elseif im_str == "-1" then
+		im_part = "-i"
+	else
+		im_part = im_str .. "i"
+	end
+
+	if re_str == "0" then
+		return im_part
+	elseif z.im > 0 then
+		return re_str .. "+" .. im_part
+	else
+		return re_str .. im_part
+	end
+end

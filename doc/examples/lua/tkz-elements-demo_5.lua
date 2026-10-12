@@ -1,25 +1,27 @@
--- search_circle.lua
+-- tkz-elements-demo_5.lua : the six circles theorem
+-- r (argument of loadfile) = distance from A to the center of the first circle
 local r = ...
 
-function newcircle(T, C)
-  -- homothétie du triangle à partir de l’incentre
+-- circle tangent to the sides (T.pb T.pa) and (T.pb T.pc) and externally tangent to C
+local function newcircle(T, C)
+  -- homothety of the triangle from the incenter
   local k  = 1 + C.radius / T.inradius
   local NT = T.incenter:homothety(k, T)
 
-  -- les deux côtés qui encadrent le cercle cherché
+  -- the two sides around the circle we are looking for
   local Lba = line(NT.pb, NT.pa)
   local Lbc = line(NT.pb, NT.pc)
 
-  -- cercles tangent à Lba et Lbc et passant par C.center
+  -- circles tangent to Lba and Lbc and passing through C.center
   local pc, pa = Lba:LLP(Lbc, C.center)
 
-  -- petite fonction utilitaire : construit le candidat n
+  -- small helper: builds candidate number idx
   local function candidate(idx)
     local w = pc:get(idx)
     if not w then return nil end
     local t = T.bc:projection(w)
-    local r_new = w:length(t)              -- rayon du nouveau cercle
-    local d     = w:length(C.center)       -- distance entre centres
+    local r_new = w:length(t)              -- radius of the new circle
+    local d     = w:length(C.center)       -- distance between centers
     return w, t, r_new, d
   end
 
@@ -28,26 +30,26 @@ function newcircle(T, C)
 
   local EPS = tkz.epsilon or 1e-6
 
-  -- test de tangence externe avec C
+  -- external tangency test with C
   local function good_ext(d, r_new)
     return math.abs(d - (r_new + C.radius)) < 10 * EPS
   end
 
-  -- choix du bon candidat
+  -- choice of the right candidate
   if w1 and good_ext(d1, r1) and not (w2 and good_ext(d2, r2)) then
     return w1, t1
   elseif w2 and good_ext(d2, r2) and not (w1 and good_ext(d1, r1)) then
     return w2, t2
   elseif w1 and w2 then
-    -- si les deux ou aucun ne passent le test, on prend par défaut
-    -- le cercle de plus petit rayon (habituellement le cercle intérieur)
+    -- if both or none pass the test, take by default
+    -- the circle with the smaller radius (usually the inner one)
     if r1 <= r2 then
       return w1, t1
     else
       return w2, t2
     end
   else
-    -- pas de solution exploitable
+    -- no usable solution
     return nil, nil
   end
 end

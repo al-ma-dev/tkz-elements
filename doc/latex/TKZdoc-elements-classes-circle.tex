@@ -1,7 +1,7 @@
 \newpage
 \section{Class \tkzClass{circle}}
 
-The \tkzVar{circle}{C} variable is a table reserved for storing circle objects. Although its use is optional and any valid variable name may be used (e.g., \code{Circles}), it is strongly recommended to adopt the standard name \texttt{C} to ensure consistency and readability. If a custom variable is used, it must be initialized manually. The \tkzFct{tkz-elements}{init\_elements()} function will reset the \texttt{circle}{C} table if it has already been defined.
+The \tkzVar{circle}{C} variable is a table reserved for storing circle objects. Although its use is optional and any valid variable name may be used (e.g., \code{Circles}), it is strongly recommended to adopt the standard name \texttt{C} to ensure consistency and readability. If a custom variable is used, it must be initialized manually. The \tkzFct{tkz-elements}{init\_elements()} function will reset the \texttt{C} table if it has already been defined.
 
 
 \subsubsection{Creating a circle}
@@ -173,7 +173,7 @@ The circle class offers a wide range of methods, which can be grouped according 
 \tkzMeth{circle}{antipode(pt)} & [\ref{ssub:method_circle_antipode}]   \\
 \tkzMeth{circle}{midarc(pt,pt)} &  [\ref{ssub:method_circle_midarc}]\\
 \tkzMeth{circle}{point(r,<pt>)} & [\ref{ssub:method_circle_point}]\\
-\tkzMeth{circle}{random\_pt(<'inside'>)}  & [\ref{ssub:method_imeth_circle_random_inside}]\\
+\tkzMeth{circle}{random(<'inside'>)}  & [\ref{ssub:method_imeth_circle_random_inside}]\\
 \tkzMeth{circle}{inversion(obj)} & [\ref{ssub:inversion}; \ref{par:inversion_circle} \ref{par:inversion_line}]\\
 \tkzMeth{circle}{inversion\_neg(obj)} & [\ref{ssub:inversion_neg}]\\
 \tkzMeth{circle}{internal\_similitude(C)}  &  [\ref{ssub:method_circle_internal__similitude}]\\
@@ -1551,12 +1551,16 @@ Each tangent is returned as a straight line segment centered at its point of con
 \end{tkzexample}
 
 
-\subsubsection{Method \tkzMeth{circle}{commun\_tangent(C)}}
+\subsubsection{Method \tkzMeth{circle}{common\_tangent(C)}}
 \label{ssub:common_tangent}
 
-This method constructs a \textbf{common tangent} to two circles.
-It used to return only external tangents; the new version supports three options for \verb|mode|:
+This method constructs the \textbf{common tangents} to two circles.
+It supports three options for \verb|mode|:
 \verb|"external"| (default), \verb|"internal"|, and \verb|"both"|.
+The method returns the tangents as lines: two in general, one when the circles
+are tangent (the tangent at the contact point), up to four with \verb|"both"|
+(external tangents first). If no tangent of the requested family exists, an
+error is raised.
 The number of solutions depends on the relative position of the circles and ranges from 0 to 4.
 \medskip
 
@@ -2061,7 +2065,7 @@ The result is a circle that intersects the original one at right angles. The con
 \end{tkzexample}
 \end{minipage}
 
-\subsubsection{Method \tkzMeth{circle}{orthogonal\_through(pt,pt)}}
+\subsubsection{Method \tkzMeth{circle}{orthogonal\_through(pt,pt[,pt])}}
 \label{ssub:method_circle_orthogonal_through}
 
 This method constructs a circle that is orthogonal to a given circle and passes through two specified points.
@@ -2079,8 +2083,10 @@ Geometrically, the resulting circle satisfies:
 Special cases:
 \begin{itemize}
 \item Inverse points:
-If the two points are inverse with respect to the given circle, there is an infinite number of solutions, all with their centers lying on the perpendicular bisector of the segment joining the two points.
-The chosen solution is the one whose center is the midpoint of the two points.
+If the two points are inverse with respect to the given circle, every circle passing through them is orthogonal to the given circle: there is an infinite number of solutions, all with their centers on the perpendicular bisector of the segment joining the two points.
+By default, the circle with diameter the segment joining the two points is returned. An optional third point selects another solution: \code{C.OT:orthogonal\_through(z.A, z.B, z.X)} returns the circle through the three points.
+
+\item The two points must be distinct.
 
 \item Collinear with center (non-inverse):
 If the two points are collinear with the center of the given circle but are not inverse points, no orthogonal circle exists.
