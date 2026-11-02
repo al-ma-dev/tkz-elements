@@ -1,0 +1,38 @@
+% File: tkz-elements-3d.sty
+% Copyright (c) 2026 Alain Matthes
+% SPDX-License-Identifier: LPPL-1.3c
+% Maintainer: Alain Matthes
+%
+% 3D module of tkz-elements (prototype). Loaded by the option 3d of
+% tkz-elements (\usepackage[3d]{tkz-elements}) or by another package
+% (\RequirePackage{tkz-elements-3d}).
+% Same version and date as tkz-elements (scripts/set-version.sh updates both).
+\ProvidesPackage{tkz-elements-3d}[2026/11/01 v6.10c 3D module of tkz-elements (experimental)]
+\RequirePackage{tkz-elements}
+\@ifpackagelater{tkz-elements}{2026/11/01}{}{%
+  \PackageError{tkz-elements-3d}{%
+    tkz-elements of 2026/11/01 or later is required}{%
+    Update tkz-elements: the 3D module and tkz-elements\MessageBreak
+    have the same version.}}
+\directlua{require("tkz_elements_3d")}
+% \tkzDrawVisible[options]{group}, \tkzDrawHidden[options]{group}
+% (dashed by default) : the visible and hidden pieces of a group of lines
+\def\tkzDrawVisible{\@ifnextchar[{\tkz@DrawPieces{v}}{\tkz@DrawPieces{v}[]}}
+\def\tkzDrawHidden{\@ifnextchar[{\tkz@DrawPieces{h}}{\tkz@DrawPieces{h}[dashed]}}
+\def\tkz@DrawPieces#1[#2]#3{%
+  \directlua{tkz3d_draw("#1", "\luaescapestring{#3}", "\luaescapestring{#2}")}}
+% closed regions PA.<name> (zone of a sphere, ...)
+\def\tkzFillRegion{\@ifnextchar[{\tkz@FillRegion}{\tkz@FillRegion[]}}
+\def\tkz@FillRegion[#1]#2{%
+  \directlua{tkz3d_region("\luaescapestring{#2}", "fill", "\luaescapestring{#1}")}}
+\def\tkzClipRegion#1{\directlua{tkz3d_region("\luaescapestring{#1}", "clip")}}
+% filled faces (painter's algorithm), extra options for all the faces
+\def\tkzFillFaces{\@ifnextchar[{\tkz@FillFaces}{\tkz@FillFaces[]}}
+\def\tkz@FillFaces[#1]#2{%
+  \directlua{tkz3d_faces("\luaescapestring{#2}", "\luaescapestring{#1}")}}
+% shaded balls at the vertices of a graph: \tkzDrawBalls[color][radius]{group}
+\def\tkzDrawBalls{\@ifnextchar[{\tkz@DrawBalls}{\tkz@DrawBalls[gray]}}
+\def\tkz@DrawBalls[#1]{\@ifnextchar[{\tkz@@DrawBalls[#1]}{\tkz@@DrawBalls[#1][2.2pt]}}
+\def\tkz@@DrawBalls[#1][#2]#3{%
+  \directlua{tkz3d_balls("\luaescapestring{#3}", "\luaescapestring{#1}", "\luaescapestring{#2}")}}
+\endinput

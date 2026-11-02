@@ -3,9 +3,18 @@
 % SPDX-License-Identifier: LPPL-1.3c
 % Maintainer: Alain Matthes
 
-\ProvidesPackage{tkz-elements}[2026/10/11 v6.00c Graphic Object Library]
+\ProvidesPackage{tkz-elements}[2026/11/01 v6.10c Graphic Object Library]
 
-\typeout{Package tkz-elements v6.00c (2026/10/11) loaded.}
+\typeout{Package tkz-elements v6.10c (2026/11/01) loaded.}
+
+% Option 3d (or 3D): the 3D module (tkz_elements_3d.lua) and its macros,
+% in the package tkz-elements-3d, loaded at the end of this file. Another
+% package (tkz-graph with its option 3d) can load tkz-elements-3d itself:
+% there is no option clash whatever the order of the packages.
+\newif\iftkzel@threed
+\DeclareOption{3d}{\tkzel@threedtrue}
+\DeclareOption{3D}{\tkzel@threedtrue}
+\ProcessOptions\relax
 
 \RequirePackage{iftex}
 \ifluatex\else
@@ -181,6 +190,9 @@
     \@ifpackageloaded{tkz-euclide}{%
       \@ifpackagelater{tkz-euclide}{\tkzel@minversion}{}{\tkzel@oldeuclide}}{}%
   \fi}
+\iftkzel@threed
+  \RequirePackage{tkz-elements-3d}
+\fi
 \makeatother
 
 

@@ -7,6 +7,8 @@
 #
 # Fichiers modifiés :
 #   latex/tkz-elements.sty : \ProvidesPackage{...}[DATE vX.YYc ...] et \typeout{... vX.YYc (DATE) ...}
+#   latex/tkz-elements-3d.sty : même version et même date (\ProvidesPackage et
+#                            date minimale de tkz-elements dans \@ifpackagelater)
 #   README.md              : _Current release: **[DATE version X.YYc]**_
 #   CHANGELOG.md           : première entrée "## [DATE — version X.YYc]"
 #                            - si elle porte déjà la nouvelle version ou une version en préparation :
@@ -18,6 +20,7 @@ set -eu
 SRC="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$SRC"
 STY="latex/tkz-elements.sty"
+STY3D="latex/tkz-elements-3d.sty"
 README="README.md"
 CHANGELOG="CHANGELOG.md"
 
@@ -61,10 +64,20 @@ count() { perl -ne "\$n++ if $1; END { print \$n+0 }" "$2"; }
 [ "$(count '/\\typeout\{Package tkz-elements v\d+\.\d+[a-z]? \(\d{4}\/\d\d\/\d\d\)/' "$STY")" = 1 ] || die "\\typeout non reconnu dans $STY"
 [ "$(count '/Current release: \*\*\[\d{4}\/\d\d\/\d\d version \d+\.\d+[a-z]?\]\*\*/' "$README")" = 1 ] || die "ligne « Current release » non reconnue dans $README"
 [ -n "$CL_VER" ] || die "aucune entrée « ## [AAAA/MM/JJ — version X.YYc] » dans $CHANGELOG"
+if [ -f "$STY3D" ]; then
+  [ "$(count '/\\ProvidesPackage\{tkz-elements-3d\}\[\d{4}\/\d\d\/\d\d v\d+\.\d+[a-z]?/' "$STY3D")" = 1 ] || die "\\ProvidesPackage non reconnu dans $STY3D"
+  [ "$(count '/\\\@ifpackagelater\{tkz-elements\}\{\d{4}\/\d\d\/\d\d\}/' "$STY3D")" = 1 ] || die "\\@ifpackagelater non reconnu dans $STY3D"
+  [ "$(count '/tkz-elements of \d{4}\/\d\d\/\d\d or later/' "$STY3D")" = 1 ] || die "message d'erreur non reconnu dans $STY3D"
+fi
 
 # ---------- Modifications ----------
 perl -pi -e 's/(\\ProvidesPackage\{tkz-elements\}\[)\d{4}\/\d\d\/\d\d v\d+\.\d+[a-z]?/$1$ENV{DATE} v$ENV{VER}/;
               s/(\\typeout\{Package tkz-elements v)\d+\.\d+[a-z]? \(\d{4}\/\d\d\/\d\d\)/$1$ENV{VER} ($ENV{DATE})/' "$STY"
+if [ -f "$STY3D" ]; then
+  perl -pi -e 's/(\\ProvidesPackage\{tkz-elements-3d\}\[)\d{4}\/\d\d\/\d\d v\d+\.\d+[a-z]?/$1$ENV{DATE} v$ENV{VER}/;
+                s/(\\\@ifpackagelater\{tkz-elements\}\{)\d{4}\/\d\d\/\d\d/$1$ENV{DATE}/;
+                s/(tkz-elements of )\d{4}\/\d\d\/\d\d( or later)/$1$ENV{DATE}$2/' "$STY3D"
+fi
 perl -pi -e 's/(Current release: \*\*\[)\d{4}\/\d\d\/\d\d version \d+\.\d+[a-z]?(\]\*\*)/$1$ENV{DATE} version $ENV{VER}$2/' "$README"
 
 if [ "$CL_VER" = "$OLD_VER" ] && [ "$VER" != "$OLD_VER" ]; then
@@ -80,6 +93,7 @@ fi
 echo "tkz-elements : $OLD_VER ($OLD_DATE) -> $VER ($DATE)"
 echo
 grep -n -E '\\ProvidesPackage|\\typeout\{Package' "$STY" | sed "s|^|  $STY:|"
+[ -f "$STY3D" ] && grep -n -E '\\ProvidesPackage|ifpackagelater|or later is' "$STY3D" | sed "s|^|  $STY3D:|"
 grep -n 'Current release' "$README" | sed "s|^|  $README:|"
 grep -n -m1 '^## \[' "$CHANGELOG" | sed "s|^|  $CHANGELOG:|"
 echo "  ($CL_MSG)"

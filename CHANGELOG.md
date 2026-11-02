@@ -1,3 +1,42 @@
+## [2026/11/01 — version 6.10c]
+
+   ### Added
+   - Option `3d` (or `3D`): `\usepackage[3d]{tkz-elements}` loads the 3D
+     module (prototype), the new files `tkz-elements-3d.sty` and
+     `tkz_elements_3d.lua`, with the macros `\tkzDrawVisible`,
+     `\tkzDrawHidden`, `\tkzFillRegion`, `\tkzClipRegion`, `\tkzFillFaces`,
+     `\tkzDrawBalls`. Another package can load `tkz-elements-3d` itself (the
+     option `3d` of tkz-graph does it): no option clash. Without the option
+     nothing changes. `tkz-elements-3d` has the same version and date as
+     tkz-elements (updated together by `scripts/set-version.sh`) and checks
+     that tkz-elements is not older.
+   - 3D module: geometry of space for the classroom: `named_cube` (cube
+     ABCDEFGH with the names of the textbooks), projections and distances
+     on a line and on a plane (`project`, `distance`), intersections
+     line/line, line/plane, plane/plane, plane/sphere, `plane:patch` (a
+     rectangle of a plane, to draw it), `polyhedron:section` (section by a
+     plane), `polygon3:split`, `scene3:polygon` and `scene3:plain`
+     (construction lines).
+
+   ### Documentation
+   - Overview tables (Attributes, Methods, Metamethods) at the beginning of the
+     documentation: the links now show the table number ("see table 12"
+     instead of "see table"), with the new macros `\tkzTableRef` and
+     `\tkzSecRef` (thanks to quark67, GitHub issue #8).
+   - Metamethods Overview: the links pointed to the tables of methods; they
+     now point to the tables of metamethods of point, vector, matrix and path
+     (new label `point:metamethods`); `occs` removed (no metamethods); column
+     heading "Metamethods".
+   - Attributes Overview: `list_point` pointed to a missing label; it now
+     points to the section on its attributes.
+   - Captions: "Metamethods of the class path" and "Metamethods of the class
+     vector" (both said "Methods of the class vector").
+   - New document `tkz-elements-3d.pdf` for the 3D module (experimental),
+     with its source `doc/latex-3d/tkz-elements-3d.tex`: every figure is
+     built from the code shown above it.
+
+
+
 ## [2026/10/11 — version 6.00c]
 
    ### Added

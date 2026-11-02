@@ -89,7 +89,7 @@ It transfers the points defined in Lua to TikZ as usable nodes.
 To test your installation and follow the examples in this documentation, you need to load two packages: \tkzNamePack{tkz-euclide} and \tkzNamePack{tkz-elements}. The first package automatically loads \tkzNamePack{\TIKZ}, which is necessary for all graphical rendering.
 
 
-The \tkzname{Lua} code is provided as an argument to the \tkzMacro{lualatex}{directlua} macro. We will often refer to this code block as the \tkzname{Lua part } \footnote{This code can also be placed in an external file, e.g., \texttt{file.lua}.}. This part depends entirely on the \tkzNamePack{tkz-elements} package.
+The \tkzname{Lua} code is provided as an argument to the \tkzMacro{lualatex}{directlua} macro. We will often refer to this code block as the \tkzname{Lua part}\footnote{This code can also be placed in an external file, e.g., \texttt{file.lua}.}. This part depends entirely on the \tkzNamePack{tkz-elements} package.
 
 A crucial component in the \tkzEnv{tikz}{tikzpicture} environment is the macro \tkzMacro{tkz-elements}{tkzGetNodes}. This macro transfers the points defined in \tkzname{Lua} to \tkzNamePack{\TIKZ} by creating the corresponding nodes. All such points are stored in a table named \tkzname{z} and are accessed using the syntax \tkzname{z.label}. These labels are then reused within \tkzNamePack{tkz-euclide}.
 

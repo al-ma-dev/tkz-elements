@@ -1,0 +1,763 @@
+% !TEX TS-program = lualatex
+% Documentation of the 3D module of tkz-elements (experimental)
+\documentclass[11pt]{article}
+\usepackage[margin=2.3cm]{geometry}
+\usepackage{tkz-euclide}
+\usetikzlibrary{patterns}
+\usepackage[3d]{tkz-elements}
+\usepackage{fancyvrb,booktabs,array}
+\usepackage[colorlinks, linkcolor = black, urlcolor = blue]{hyperref}
+\newcommand\code[1]{\texttt{#1}}
+\newcommand\bs{\textbackslash}
+% an example: the code is written to a file, shown, then executed
+\newenvironment{example}[1]
+  {\def\exfile{#1.tex}\VerbatimOut{\exfile}}
+  {\endVerbatimOut
+   \VerbatimInput[fontsize=\small, frame=single]{\exfile}
+   \begin{center}\input{\exfile}\end{center}}
+
+\title{tkz-elements 3D\\[4pt]\large Drawing solids with tkz-elements}
+\author{Alain Matthes}
+\date{Draft --- October 2026 (prototype)}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+This document describes an extension of \code{tkz-elements} for drawings in
+space: polyhedra, spheres, cylinders, cones, plane faces, curves and graphs,
+with their visible and hidden parts. The spirit is the one of
+\code{tkz-elements}: the figure is computed in Lua, the points of the drawing
+are stored in the table \code{z}, and the drawing is done with
+\code{tkz-euclide}. It is not a new drawing language.
+\end{abstract}
+\tableofcontents
+\clearpage
+
+% =====================================================================
+\section{Getting started: a 3D figure step by step}
+\label{sec:getting_started}
+
+\subsection{The idea}
+
+A 3D figure is \emph{described in space and drawn in the plane}. You give
+the points and the solids in space; a \emph{camera} projects them onto the
+page; the \emph{scene} sorts each line into a visible part and a hidden part.
+The drawing itself is done, as in 2D, with \code{tkz-euclide}.
+
+Three tables are used:
+\begin{itemize}
+  \item \code{z3}: the points of space (class \code{point3});
+  \item \code{z}: the points of the drawing (class \code{point}, as usual);
+  \item the \emph{groups} of lines of the scene (for example \code{"cube"} or
+        \code{"diag"}), each one split into visible and hidden pieces.
+\end{itemize}
+
+\subsection{Seven steps}
+
+\begin{enumerate}
+  \item \textbf{Choose the point of view:}
+        \code{cam = camera\{azimuth = 30, elevation = 20\}}.
+  \item \textbf{Create the scene:} \code{S = scene3(cam)}.
+  \item \textbf{Place the points of space:} \code{z3.O = point3(0, 0, 0)}.
+  \item \textbf{Build the solids and add them to the scene}, so that they
+        can hide what is behind them: \code{CU = S:add(cube(z3.O, 4))}.
+  \item \textbf{Say what is to be drawn, group by group:}
+        \code{S:polyhedron("cube", CU)}, \code{S:segment("diag", M, N)},
+        \code{S:circle(...)}\ldots{} Visible and hidden parts are computed
+        here.
+  \item \textbf{Finish and prepare the labels:} \code{S:export()}, then
+        \code{cam:to\_z\{...\}} (or \code{CU:vertices\_to\_z}) to put in
+        \code{z} the points to be named.
+  \item \textbf{Draw:} in the \code{tikzpicture}, \code{\bs tkzGetNodes}, then
+        for each group \code{\bs tkzDrawVisible[...]\{group\}} and
+        \code{\bs tkzDrawHidden[...]\{group\}}, and the points and labels with
+        \code{tkz-euclide}.
+\end{enumerate}
+
+\subsection{A first example: a cube and one of its diagonals}
+
+\begin{example}{ex-cube}
+\directlua{
+  init_elements()
+  local cam = camera{azimuth = 30, elevation = 20}
+  local S = scene3(cam)
+  z3.O = point3(0, 0, 0)
+  local CU = S:add(cube(z3.O, 3))
+  S:polyhedron("cube", CU)
+  z3.A, z3.G = CU.vertices[1], CU.vertices[7]
+  z3.M = z3.A - 0.4 * (z3.G - z3.A)
+  z3.N = z3.G + 0.4 * (z3.G - z3.A)
+  S:segment("diag", z3.M, z3.N)
+  S:export()
+  CU:vertices_to_z(cam, {"A","B","C","D","E","F","G","H"})
+  cam:to_z{M = z3.M, N = z3.N}
+}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawVisible[thick]{cube}  \tkzDrawHidden{cube}
+  \tkzDrawVisible[red]{diag}    \tkzDrawHidden[red, dashed]{diag}
+  \tkzDrawPoints(A,B,C,D,E,F,G,H,M,N)
+  \tkzLabelPoints(A,B,C,D)
+  \tkzLabelPoints[above](E,F,G,H)
+  \tkzLabelPoints[red, left](M)
+  \tkzLabelPoints[red, right](N)
+\end{tikzpicture}
+\end{example}
+
+The line $(MN)$ contains the diagonal $[AG]$ of the cube; $A$ is the farthest
+vertex and $G$ the nearest one. \code{\bs tkzDrawVisible} draws the visible
+pieces of a group, \code{\bs tkzDrawHidden} its hidden pieces: here $[MA]$ is
+hidden by the cube, $[AG]$ is inside the cube, only $[GN]$ is visible. A group
+may have no piece of one kind; the macro then draws nothing.
+
+The cube is opaque: its three back edges are dashed. With \code{cube(z3.O, 3, false)} the cube becomes a
+\emph{wireframe}: its back edges are still dashed, but it hides nothing.
+
+\subsection{Two traps}
+
+\begin{itemize}
+  \item No Lua comment \code{--} inside \code{\bs directlua}: the line ends are
+        removed and the comment would swallow the rest of the code. Use
+        \code{\%}.
+  \item Avoid names of points ending with \code{p} (\code{lp}, \code{Ap}\ldots):
+        \code{tkz-elements} turns them into \code{l'}, \code{A'}.
+\end{itemize}
+
+% =====================================================================
+\section{Loading the extension}
+
+The extension is loaded by an option of \code{tkz-elements}:
+\begin{Verbatim}[fontsize=\small]
+\usepackage[3d]{tkz-elements}
+\end{Verbatim}
+Without this option nothing is loaded: the 2D part of \code{tkz-elements} is
+not modified. The option loads the package \code{tkz-elements-3d}, made of
+the Lua file \code{tkz\_elements\_3d.lua} and of the drawing macros
+(\code{\bs tkzDrawVisible}, \code{\bs tkzDrawHidden}\ldots). Another package
+can also load it with \code{\bs RequirePackage\{tkz-elements-3d\}}.
+
+This module is \emph{experimental}: names and options may still change.
+
+The source of this document is given with the package
+(\code{doc/latex-3d/tkz-elements-3d.tex}): every figure is built from the code
+shown above it.
+
+% =====================================================================
+\section{Points and vectors of space}
+
+The class \code{point3} represents both the points and the vectors of space.
+The points are stored in the table \code{z3} (the analogue of \code{z}).
+
+\begin{center}
+\begin{tabular}{>{\ttfamily}l l}
+\toprule
+\textrm{Syntax} & Result \\
+\midrule
+point3(x, y, z)          & the point (or vector) $(x, y, z)$ \\
+P + Q,\ P - Q,\ -P       & sum, difference, opposite \\
+k * P,\ P * k,\ P / k    & product by a number \\
+P:dot(Q)                 & scalar product \\
+P:cross(Q)               & cross product \\
+P:norm(),\ P:unit()      & norm, unit vector \\
+midpoint3(A, B)          & midpoint \\
+barycenter3(\{A, B, C\}) & isobarycenter \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% =====================================================================
+\section{The camera}
+
+The camera defines the projection of space onto the page. Three
+projections are available.
+
+\begin{center}
+\begin{tabular}{>{\ttfamily}l p{9cm}}
+\toprule
+\textrm{Camera} & Projection \\
+\midrule
+camera\{azimuth = a, elevation = e\} &
+  orthographic (default): parallel projection, orthogonal to the page;
+  the axis $(Oz)$ stays vertical \\
+camera\{..., perspective = true, distance = d\} &
+  perspective (central projection): the eye is at distance $d$ from the
+  target \\
+camera\{cavalier = true, angle = a, ratio = k\} &
+  cavalier perspective: the plane $(yOz)$ in true size, the receding axis
+  $x$ at the angle $a$ with the ratio $k$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Other options: \code{target} (point aimed at, default the origin) and
+\code{scale}. The azimuth turns the figure around the vertical axis, the
+elevation shows more or less of the top.
+
+Methods: \code{cam:project(P)} returns the 2D point (class \code{point});
+\code{cam:to\_z\{A = z3.A, B = z3.B\}} stores the projections in \code{z}.
+
+\begin{example}{ex-cameras}
+\directlua{
+  init_elements()
+  function view(cam)
+    init_elements()
+    local S = scene3(cam)
+    local CU = S:add(cube(point3(0, 0, 0), 2.4))
+    S:polyhedron("cube", CU)
+    S:export()
+  end
+}
+\directlua{view(camera{azimuth = 30, elevation = 20})}
+\begin{tikzpicture}
+  \tkzDrawVisible[thick]{cube} \tkzDrawHidden{cube}
+\end{tikzpicture}\hspace{1cm}
+\directlua{view(camera{azimuth = 30, elevation = 20,
+                       perspective = true, distance = 7})}
+\begin{tikzpicture}
+  \tkzDrawVisible[thick]{cube} \tkzDrawHidden{cube}
+\end{tikzpicture}\hspace{1cm}
+\directlua{view(camera{cavalier = true, angle = 30, ratio = 0.5})}
+\begin{tikzpicture}
+  \tkzDrawVisible[thick]{cube} \tkzDrawHidden{cube}
+\end{tikzpicture}
+\end{example}
+
+\subsection{Changing the point of view}
+
+The same figure (the cube and the line $(MN)$ of the first example) seen
+from four points of view. Only the camera changes: the visible and hidden
+parts are computed again for each view.
+
+\begin{example}{ex-views}
+\directlua{
+  init_elements()
+  function cube_view(az, el)
+    init_elements()
+    local cam = camera{azimuth = az, elevation = el}
+    local S = scene3(cam)
+    local CU = S:add(cube(point3(0, 0, 0), 2.4))
+    S:polyhedron("cube", CU)
+    local A, G = CU.vertices[1], CU.vertices[7]
+    S:segment("diag", A - 0.4 * (G - A), G + 0.4 * (G - A))
+    S:export()
+    cam:to_z{A = A, G = G}
+  end
+}
+\def\View#1#2{%
+  \directlua{cube_view(#1, #2)}%
+  \begin{tikzpicture}[baseline]
+    \tkzGetNodes
+    \tkzDrawVisible[thick]{cube}  \tkzDrawHidden{cube}
+    \tkzDrawVisible[red]{diag}    \tkzDrawHidden[red, dashed]{diag}
+    \tkzDrawPoints(A,G)
+    \tkzLabelPoints[below](A,G)
+    \node[font = \small] at (0, -2.4) {azimuth #1, elevation #2};
+  \end{tikzpicture}}
+\View{30}{20}\hfill\View{120}{20}\par\bigskip
+\View{30}{60}\hfill\View{-60}{-20}
+\end{example}
+
+With a negative elevation the cube is seen from below; with an azimuth of
+$120^\circ$ another face is in front, and the vertex $A$ is no longer the
+farthest one, so the visible part of $(MN)$ changes.
+
+% =====================================================================
+\section{Objects}
+
+\begin{center}
+\begin{tabular}{>{\ttfamily}l p{8.3cm}}
+\toprule
+\textrm{Constructor} & Object \\
+\midrule
+line3(A, B),\ plane(A, B, C) & line, plane (or \code{plane(P, normal)}) \\
+polyhedron(V, F)  & convex polyhedron: list of vertices, list of faces
+                    (lists of indices) \\
+cube(O, a)        & cube of center $O$, edge $a$ \\
+tetrahedron(A, B, C, D) & tetrahedron \\
+pyramid(\{A, B, ...\}, S) & pyramid of apex $S$ (attributes \code{apex},
+                    \code{base\_center}) \\
+prism(\{A, B, ...\}, v) & prism (translation vector $v$) \\
+regular\_polygon3(c, n, r, k) & list of the $k$ vertices of a regular polygon \\
+sphere(O, r)      & sphere \\
+cylinder(B, T, r) & cylinder (bases of centers $B$ and $T$) \\
+cone(B, S, r)     & cone (base of center $B$, apex $S$) \\
+polygon3(\{A, B, ...\}, opts) & plane convex face (\code{color}, \code{fill}) \\
+open\_box(O, L, W, H, opts) & open box with flaps (\code{flaps = \{a1, a2,
+                    a3, a4\}}) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Every solid has the attribute \code{opaque}, \code{true} by default; it is
+given as the last argument, for example \code{cube(O, 4, false)} for a
+wireframe cube. Polyhedra have the attribute \code{centroid}.
+
+\begin{example}{ex-classroom}
+\directlua{
+  init_elements()
+  local cam = camera{cavalier = true, angle = 30, ratio = 0.5}
+  local S = scene3(cam)
+  local CY = S:add(cylinder(point3(0, 0, 0), point3(0, 0, 3), 1.2))
+  S:cylinder("cyl", CY)
+  S:segment("axis", point3(0, 0, 0), point3(0, 0, 3))
+  local CO = S:add(cone(point3(0, 4, 0), point3(0, 4, 3.5), 1.4))
+  S:cone("cone", CO)
+  S:segment("axis", point3(0, 4, 0), point3(0, 4, 3.5))
+  local PY = S:add(pyramid({point3(1.4, 6.6, 0), point3(1.4, 9.4, 0),
+    point3(-1.4, 9.4, 0), point3(-1.4, 6.6, 0)}, point3(0, 8, 3.2)))
+  S:polyhedron("pyr", PY)
+  S:segment("axis", PY.base_center, PY.apex)
+  S:export()
+}
+\begin{tikzpicture}[scale = .8]
+  \tkzDrawVisible[thick]{cyl}  \tkzDrawHidden{cyl}
+  \tkzDrawVisible[thick]{cone} \tkzDrawHidden{cone}
+  \tkzDrawVisible[thick]{pyr}  \tkzDrawHidden{pyr}
+  \tkzDrawVisible{axis}        \tkzDrawHidden{axis}
+\end{tikzpicture}
+\end{example}
+
+% =====================================================================
+\section{The scene: visible and hidden parts}
+
+A scene is created with a camera: \code{S = scene3(cam)}. The objects that
+can hide the others are declared with \code{S:add(obj)}; only the opaque
+ones hide something. Then each call below adds pieces to a \emph{group}.
+
+\begin{center}
+\begin{tabular}{>{\ttfamily}l p{8.8cm}}
+\toprule
+\textrm{Method} & Pieces added to the group \\
+\midrule
+S:segment(g, A, B)        & a segment \\
+S:circle(g, C, n, r)      & a circle (center, normal, radius) \\
+S:curve(g, f, opts)       & a curve $f(t)$, $t\in[0,1]$
+                            (\code{closed}, \code{n}, \code{nohide}) \\
+S:polyhedron(g, P)        & the edges of a polyhedron \\
+S:sphere(g, SP)           & the apparent contour of a sphere \\
+S:cylinder(g, CY),\ S:cone(g, CO) & rims and contour generators \\
+S:polygon\_edges(g, L)    & the edges of a list of plane faces \\
+S:graph(g, G)             & the edges and vertices of a graph \\
+S:export()                & creates the paths and the counts \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Three levels of hidden parts are handled:
+\begin{enumerate}
+  \item \emph{a polyhedron alone}: a face is seen if its outward normal
+        points toward the camera; an edge is hidden if its two faces are
+        hidden;
+  \item \emph{curves on a sphere, contours of cylinders and cones}: the
+        change between visible and hidden is at the points of contact with
+        the apparent contour;
+  \item \emph{several objects}: each line is cut where it crosses the
+        contour of another object; each piece is tested by a ray toward the
+        camera.
+\end{enumerate}
+By convention, a segment inside an opaque solid (height, axis, radius of the
+base) is hidden.
+
+% =====================================================================
+\section{Drawing}
+
+\begin{center}
+\begin{tabular}{>{\ttfamily}l p{8cm}}
+\toprule
+\textrm{Macro} & Drawing \\
+\midrule
+\bs tkzDrawVisible[opt]\{g\} & visible pieces of the group \code{g} \\
+\bs tkzDrawHidden[opt]\{g\}  & hidden pieces (\code{dashed} by default) \\
+\bs tkzFillFaces[opt]\{g\}   & faces, from the farthest to the nearest,
+                               shaded by orientation \\
+\bs tkzFillRegion[opt]\{r\}  & fills a region \\
+\bs tkzClipRegion\{r\}       & clips to a region \\
+\bs tkzDrawBalls[color][r]\{g\} & shaded balls at the vertices of a graph \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Regions are closed paths built by \code{S:faces(g, L)} (faces),
+\code{S:sphere\_zone(name, SP, axis, h1, h2)} (visible part of a zone of a
+sphere), \code{S:hull\_region(name, points)} (outline of a convex surface)
+and \code{S:curve\_region(name, f)} (region bounded by a closed curve).
+Shadings, transparency and patterns are those of TikZ.
+
+\begin{example}{ex-zone}
+\directlua{
+  init_elements()
+  local cam = camera{azimuth = 20, elevation = 15}
+  local S = scene3(cam)
+  z3.O = point3(0, 0, 0)
+  local SP = S:add(sphere(z3.O, 1.8))
+  local k = point3(0, 0, 1)
+  S:sphere_zone("zone", SP, k, 1.1, -1.4)
+  S:circle("circles", point3(0, 0, 1.1), k, math.sqrt(1.8^2 - 1.1^2))
+  S:circle("circles", point3(0, 0, -1.4), k, math.sqrt(1.8^2 - 1.4^2))
+  S:segment("axis", point3(0, 0, -2.6), point3(0, 0, 2.6))
+  S:export()
+  cam:to_z{O = z3.O}
+}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \shade[ball color = gray!15] (O) circle (1.8);
+  \begin{scope}
+    \tkzClipRegion{zone}
+    \shade[ball color = orange] (O) circle (1.8);
+  \end{scope}
+  \tkzDrawVisible[green!50!black]{circles}
+  \tkzDrawHidden[green!50!black]{circles}
+  \tkzDrawVisible{axis} \tkzDrawHidden{axis}
+\end{tikzpicture}
+\end{example}
+
+% =====================================================================
+\section{Transformations and graphs}
+
+A transformation of space is a Lua function from \code{point3} to
+\code{point3}: \code{translation3(v)}, \code{scale3(kx, ky, kz [, c])},
+\code{rotation3(c, u, angle)} (rotation around the axis $(c, \vec u)$, angle
+in radians), \code{compose3(f, g)}, or any function.
+
+A graph in space (\code{graph3}) has named vertices
+(\code{G:vertex(name, P)}) and edges (\code{G:edge(a, b, tag)});
+\code{grid3(nx, ny, nz)} builds a grid. \code{G:map(f)} is the image of the
+graph by \code{f}; the edges are transformed too, so a non-linear map bends
+them. The vertices are nodes: they can be used by \code{tkz-euclide} or, later,
+by \code{tkz-graph}.
+
+% \begin{example}{ex-graph}
+% \directlua{
+%   init_elements()
+%   local cam = camera{azimuth = 22, elevation = 18}
+%   local S = scene3(cam)
+%   local G = grid3(3, 3, 3):map(rotation3(point3(0, 1, 0),
+%                                          point3(1, 1, 1), math.rad(60)))
+%   S:graph("g", G)
+%   S:export()
+% }
+% \begin{tikzpicture}
+%   \tkzGetNodes
+%   \tkzDrawVisible[gray, thin]{ginner}
+%   \tkzDrawVisible[thick]{gframe}
+%   \tkzDrawBalls[green!70!black]{g}
+% \end{tikzpicture}
+% \end{example}
+
+\begin{example}{ex-graph}
+\directlua{
+  init_elements()
+  cam = camera{azimuth = 22, elevation = 18}
+  G0 = grid3(3, 3, 3, 1)
+  function panel(G)
+    init_elements()
+    local S = scene3(cam)
+    S:graph("g", G)
+    S:segment("axes", point3(0, 0, 0), point3(3.6, 0, 0))
+    S:segment("axes", point3(0, 0, 0), point3(0, 3.6, 0))
+    S:segment("axes", point3(0, 0, 0), point3(0, 0, 3.2))
+    S:export()
+    cam:to_z{x = point3(3.6, 0, 0), y = point3(0, 3.6, 0), z = point3(0, 0, 3.2),
+             xa = point3(3.3, 0, 0), ya = point3(0, 3.3, 0), za = point3(0, 0, 2.9)}
+  end
+}
+
+\def\Panel#1#2{%
+  \begin{tikzpicture}[scale = .9]
+    \tkzGetNodes
+    \tkzDrawVisible[thin]{axes}
+    \draw[-latex] (xa) -- (x);  \draw[-latex] (ya) -- (y);  \draw[-latex] (za) -- (z);
+    \tkzDrawVisible[gray, thin]{ginner}
+    \tkzDrawVisible[thick]{gframe}
+    \tkzDrawBalls[#1]{g}
+    \tkzLabelPoint[below left](x){$x$}
+    \tkzLabelPoint[right](y){$y$}
+    \tkzLabelPoint[above](z){$z$}
+    \node[right, font = \small] at (z) {#2};
+  \end{tikzpicture}}
+
+\begin{tabular}{cc}
+\directlua{panel(G0)}\Panel{black!70}{initial}
+&
+\directlua{panel(G0:map(scale3(1, 1.6, 1)))}\Panel{red}{stretching along the $y$-axis}
+\\[1em]
+\directlua{panel(G0:map(rotation3(point3(0, 1, 0), point3(1, 1, 1), math.rad(60))))}%
+\Panel{green!70!black}{rotation around $(M(0,1,0), \vec{u}(1,1,1))$}
+&
+\directlua{panel(G0:map(function(p)
+  return point3(p.x, p.y + 0.5 * math.sin(math.pi * p.z / 2),
+   p.z + 0.6 * math.sin(math.pi * p.y / 2)) end))}%
+\Panel{cyan!40!gray}{non-linear}
+\end{tabular}
+\end{example}
+
+
+% =====================================================================
+\section{Space geometry in the classroom}
+
+This section shows figures of the last years of French secondary school
+(\emph{terminale}): sections of a cube, intersections of planes, plane and
+sphere, constructions in a tetrahedron. They use the following tools.
+
+\begin{center}
+\begin{tabular}{>{\ttfamily}l p{8.3cm}}
+\toprule
+\textrm{Syntax} & Result \\
+\midrule
+named\_cube(a [, O])      & cube $ABCDEFGH$ with the names of the textbooks
+                            (\code{CU.V.A} \ldots{} \code{CU.V.H}); front face
+                            $ABFE$ \\
+L:project(P),\ L:distance(P) & projection on a line, distance \\
+L:intersect\_line(L2)     & point of two coplanar lines (\code{nil} otherwise) \\
+L:intersect\_plane(P)     & point of a line and a plane \\
+P:project(M),\ P:distance(M) & orthogonal projection on a plane, signed distance \\
+P:intersect\_plane(Q)     & line of intersection of two planes \\
+P:intersect\_sphere(S)    & center and radius of the circle of intersection \\
+P:patch(a, b, c, angle, opts) & rectangle of the plane, to draw it \\
+CU:section(P)             & section of a convex polyhedron (ordered points) \\
+F:split(P)                & the two parts of a face on each side of a plane \\
+S:polygon(g, pts)         & closed polygonal line (visible/hidden) \\
+S:plain(g, A, B)          & construction segment, no hidden part \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Section of a cube by the plane (IJK)}
+
+The plane $(IJK)$ cuts the cube along a pentagon. \code{CU:section(P)} gives it directly; the construction of the textbook is also drawn: $L=(IK)\cap(EF)$ in the plane of the top face, $M=(LJ)\cap(BF)$ and $N=(LJ)\cap(AE)$ in the plane of the front face, $O=(NI)\cap(AD)$ in the plane of the left face. The sides of the section on hidden faces are dashed automatically.
+
+\begin{example}{ex-section}
+\directlua{
+  init_elements()
+  local cam = camera{cavalier = true, angle = 35, ratio = 0.55}
+  local S = scene3(cam)
+  local CU = S:add(named_cube(4))
+  local V = CU.V
+  for k, p in pairs(V) do z3[k] = p end
+  z3.I = V.E + (2/3) * (V.H - V.E)
+  z3.K = V.F + (1/3) * (V.G - V.F)
+  z3.J = V.A + (2/3) * (V.B - V.A)
+  local P = plane(z3.I, z3.J, z3.K)
+  % construction
+  z3.L = line3(z3.I, z3.K):intersect_line(line3(V.E, V.F))
+  z3.M = line3(z3.L, z3.J):intersect_line(line3(V.B, V.F))
+  z3.N = line3(z3.L, z3.J):intersect_line(line3(V.A, V.E))
+  z3.O = line3(z3.N, z3.I):intersect_line(line3(V.A, V.D))
+  % the section (computed directly)
+  local sec = CU:section(P)
+  S:faces("secfill", {polygon3(sec, {fill = "red!25, fill opacity = .8"})})
+  S:polygon("secedges", sec)
+  S:polyhedron("cube", CU)
+  S:plain("cons", z3.I, z3.L)  S:plain("cons", z3.L, z3.N)  S:plain("cons", z3.N, z3.I)
+  S:plain("cons", V.F, z3.L)   S:plain("cons", V.A, z3.N)
+  S:export()
+  cam:to_z(z3)
+}
+\begin{tikzpicture}[scale = .8]
+  \tkzGetNodes
+  \tkzFillFaces{secfill}
+  \tkzDrawVisible[thick]{cube}       \tkzDrawHidden[thick, dashed]{cube}
+  \tkzDrawVisible[red, thick]{secedges} \tkzDrawHidden[red, thick, dashed]{secedges}
+  \tkzDrawVisible[densely dotted]{cons}
+  \tkzDrawPoints(I,J,K,L,M,N,O)
+  \tkzLabelPoints(A,B,J,M)
+  \tkzLabelPoints[left](E,N,O)
+  \tkzLabelPoints[above](H,G,I,K)
+  \tkzLabelPoints[right](C,L)
+  \tkzLabelPoints[above right](D)
+  \tkzLabelPoints[below left](F)
+\end{tikzpicture}
+\end{example}
+
+\subsection{Two secant planes and their line of intersection}
+
+Two planes are drawn as rectangles (\code{P:patch}). Each one is cut along the other plane (\code{F:split}) so that the four pieces can be filled from the farthest to the nearest; the edges hidden by the other plane are dashed. The line of intersection is given by \code{P1:intersect\_plane(P2)}.
+
+\begin{example}{ex-planes}
+\directlua{
+  init_elements()
+  local cam = camera{azimuth = -65, elevation = 22}
+  local S = scene3(cam)
+  local P1 = plane(point3(0, 0, 0), point3(0, 0, 1))
+  local P2 = plane(point3(0, 0, 0), point3(1, 0.25, 0.45))
+  local F1 = P1:patch(3.2, 1.8, nil, 0, {fill = "purple!15, fill opacity = .85"})
+  local F2 = P2:patch(1.5, 2.6, nil, 90, {fill = "violet!35, fill opacity = .8"})
+  S:add(F1) S:add(F2)
+  local parts = F1:split(P2)
+  for _, f in ipairs(F2:split(P1)) do table.insert(parts, f) end
+  S:faces("planes", parts)
+  S:polygon_edges("edges1", {F1})
+  S:polygon_edges("edges2", {F2})
+  local d = P1:intersect_plane(P2)
+  local u = d:dir()
+  S:segment("d", d.pa - 4.2 * u, d.pa + 4.2 * u)
+  S:export()
+  cam:to_z{lab = d.pa + 4.2 * u}
+}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzFillFaces{planes}
+  \tkzDrawVisible[purple!70!black]{edges1} \tkzDrawHidden[purple!70!black, dashed]{edges1}
+  \tkzDrawVisible[violet]{edges2}          \tkzDrawHidden[violet, dashed]{edges2}
+  \tkzDrawVisible[green!60!black, thick]{d} \tkzDrawHidden[green!60!black, thick, dashed]{d}
+  \tkzLabelPoint[right, green!50!black](lab){$d = \mathcal{P}_1\cap\mathcal{P}_2$}
+\end{tikzpicture}
+\end{example}
+
+\subsection{A plane and a sphere: the circle of intersection}
+
+The center $\Omega$ of the circle of intersection is the orthogonal projection of $O$ on the plane, and its radius is $\sqrt{R^2-d^2}$: \code{P:intersect\_sphere(SP)} returns both. The plane is not opaque (it does not hide the sphere) but the sphere hides the back of the circle.
+
+\begin{example}{ex-sphere-plane}
+\directlua{
+  init_elements()
+  local cam = camera{azimuth = 25, elevation = 18}
+  local S = scene3(cam)
+  z3.O = point3(0, 0, 0)
+  local SP = S:add(sphere(z3.O, 2))
+  local P = plane(point3(0, 0, 0.9), point3(0.15, 0.1, 1))
+  z3.W, r = P:intersect_sphere(SP)
+  local nrm = P.normal
+  local e1 = (point3(0, 1, 0) - nrm:dot(point3(0, 1, 0)) * nrm):unit()
+  z3.M = z3.W + r * e1
+  local F = P:patch(3.2, 2.6, z3.W, 0, {fill = "blue!10, fill opacity = .55", opaque = false})
+  S:faces("plane", {F})
+  S:polygon_edges("pedges", {F})
+  S:sphere("contour", SP)
+  S:circle("section", z3.W, nrm, r)
+  S:segment("radius", z3.O, z3.W)
+  S:segment("radius", z3.W, z3.M)
+  S:export()
+  cam:to_z(z3)
+  cam:to_z{lab = F.pts[3]}
+}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \shade[ball color = orange!40] (O) circle (2);
+  \tkzFillFaces{plane}
+  \tkzDrawVisible[blue!60!black]{pedges} \tkzDrawHidden[blue!60!black, dashed]{pedges}
+  \tkzDrawVisible{contour}
+  \tkzDrawVisible[red, thick]{section}  \tkzDrawHidden[red, dashed]{section}
+  \tkzDrawVisible{radius}                \tkzDrawHidden[dashed]{radius}
+  \tkzDrawPoints(O,W,M)
+  \tkzLabelPoint[below](O){$O$}
+  \tkzLabelPoint[above left](W){$\Omega$}
+  \tkzLabelPoint[right](M){$M$}
+  \tkzLabelPoint[above, blue!60!black](lab){$\mathcal{P}$}
+\end{tikzpicture}
+\end{example}
+
+\subsection{Roof theorem in a tetrahedron}
+
+$I$ and $J$ are the midpoints of $[AB]$ and $[AC]$, $H$ a point of $[AD]$. The lines $(HI)$ and $(DB)$ are coplanar and meet at $M$, $(HJ)$ and $(DC)$ meet at $N$ (\code{line3:intersect\_line}). By the roof theorem, $(MN)$ is parallel to $(IJ)$ and $(BC)$.
+
+\begin{example}{ex-roof}
+\directlua{
+  init_elements()
+  local cam = camera{azimuth = 15, elevation = 12}
+  local S = scene3(cam)
+  z3.A = point3(0.6, 0.6, 4.2)
+  z3.B = point3(2.4, 0.2, 0)
+  z3.C = point3(0.2, 3.6, 0)
+  z3.D = point3(-1.6, -1.3, 0)
+  local TE = S:add(tetrahedron(z3.A, z3.B, z3.C, z3.D))
+  z3.I = midpoint3(z3.A, z3.B)
+  z3.J = midpoint3(z3.A, z3.C)
+  z3.H = z3.A + 0.3 * (z3.D - z3.A)
+  z3.M = line3(z3.H, z3.I):intersect_line(line3(z3.D, z3.B))
+  z3.N = line3(z3.H, z3.J):intersect_line(line3(z3.D, z3.C))
+  S:polyhedron("tetra", TE)
+  local function con(a, b, k) S:segment("cons", a, b + k * (b - a)) end
+  con(z3.H, z3.M, 0.25)  con(z3.H, z3.N, 0.1)  con(z3.D, z3.M, 0.2)  con(z3.D, z3.N, 0.1)
+  S:segment("par", z3.I, z3.J)
+  S:segment("par", z3.M, z3.N)
+  S:export()
+  cam:to_z(z3)
+}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawVisible[thick]{tetra}  \tkzDrawHidden[thick, dashed]{tetra}
+  \tkzDrawVisible[blue!70, densely dotted, thick]{cons}
+  \tkzDrawHidden[blue!45, densely dotted]{cons}
+  \tkzDrawVisible[orange]{par}   \tkzDrawHidden[orange, dashed]{par}
+  \tkzDrawPoints[orange](I,J,M,N)
+  \tkzDrawPoints[blue!60](H)
+  \tkzLabelPoints[above](A)
+  \tkzLabelPoints(B,M)
+  \tkzLabelPoints[left](D,H,I)
+  \tkzLabelPoints[right](C,J,N)
+\end{tikzpicture}
+\end{example}
+
+\subsection{Distance from a point to a plane: O and the plane (ABC)}
+
+$H$ is the orthogonal projection of $O$ on the plane $(ABC)$ (\code{P:project(z3.O)}); $OH$ is the distance from $O$ to the plane. The segment $[OH]$, inside the tetrahedron, is dashed.
+
+\begin{example}{ex-distance}
+\directlua{
+  init_elements()
+  local cam = camera{cavalier = true, angle = 35, ratio = 0.6}
+  local S = scene3(cam)
+  z3.O = point3(0, 0, 0)
+  z3.A = point3(3, 0, 0)
+  z3.B = point3(0, 4, 0)
+  z3.C = point3(0, 0, 3.5)
+  local P = plane(z3.A, z3.B, z3.C)
+  z3.H = P:project(z3.O)
+  local T = polygon3({z3.A, z3.B, z3.C}, {fill = "gray!25, fill opacity = .8", opaque = false})
+  local TE = S:add(tetrahedron(z3.O, z3.A, z3.B, z3.C))
+  S:faces("face", {T})
+  S:polyhedron("tetra", TE)
+  S:segment("OH", z3.O, z3.H)
+  S:segment("axes", point3(-0.8, 0, 0), point3(4.2, 0, 0))
+  S:segment("axes", point3(0, -0.8, 0), point3(0, 5.2, 0))
+  S:segment("axes", point3(0, 0, -0.8), point3(0, 0, 4.5))
+  S:export()
+  cam:to_z(z3)
+  cam:to_z{i = point3(1, 0, 0), j = point3(0, 1, 0), k = point3(0, 0, 1)}
+}
+\begin{tikzpicture}[scale = 1.3]
+  \tkzGetNodes
+  \tkzFillFaces{face}
+  \tkzDrawVisible{axes}            \tkzDrawHidden[dashed]{axes}
+  \tkzDrawVisible[thick]{tetra}    \tkzDrawHidden[thick, dashed]{tetra}
+  \tkzDrawVisible[red]{OH}         \tkzDrawHidden[red, dashed]{OH}
+  \tkzDrawSegments[->, thick](O,i O,j O,k)
+  \tkzDrawPoints(O,A,B,C,H)
+  \tkzLabelPoints[below left](A)
+  \tkzLabelPoint[above left](O){$O$}
+  \tkzLabelPoints[below right](B)
+  \tkzLabelPoints[left](C)
+  \tkzLabelPoints[above right](H)
+  \tkzLabelPoint[left](i){$\vec\imath$}
+  \tkzLabelPoint[below](j){$\vec\jmath$}
+  \tkzLabelPoint[right](k){$\vec k$}
+\end{tikzpicture}
+\end{example}
+
+% =====================================================================
+\section{Gallery}
+
+More examples (cube and inscribed sphere, perspective views, open cartons,
+zone of a sphere, mesh of an ellipsoid, paraboloid and volume element,
+transformations of a grid\ldots), with their code, are published on
+\href{https://altermundus.fr}{altermundus.fr}.
+
+% =====================================================================
+\section{Limits of the present version}
+
+\begin{itemize}
+  \item Polyhedra must be convex.
+  \item The lines are cut by sampling and bisection (200 steps for a
+        segment, 360 for a circle); an exact computation of the crossings
+        is planned.
+  \item Cylinders and cones are replaced by inscribed prisms and pyramids
+        with 256 faces for the tests of hidden parts (the drawing uses the
+        exact circles and generators).
+  \item The outline of a surface of revolution is computed as a convex hull:
+        it is exact only for convex surfaces.
+  \item Faces are filled by the painter's algorithm (sorting by depth),
+        which can fail for faces that cross each other.
+\end{itemize}
+
+\end{document}

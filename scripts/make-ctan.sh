@@ -5,9 +5,12 @@
 #
 # 1. copie doc/latex/build/TKZdoc-elements-main.pdf -> doc/tkz-elements.pdf
 #    dans le dossier de travail (sauf si doc/tkz-elements.pdf est plus récent)
+#    et, si le module 3D existe, la doc 3D compilée -> doc/tkz-elements-3d.pdf
+#    (cherchée dans doc/latex-3d/build, puis dans "Claude outputs/3d/doc/build")
 # 2. copie le paquet dans un dossier temporaire, SANS :
 #    .git .gitignore .nova "Claude outputs" scripts build/ *.mp *.table
-#    .DS_Store ._*
+#    .DS_Store ._*  et les dossiers et fichiers des outils d'IA
+#    (.claude .codegraph .mcp.json CLAUDE.md)
 # 3. enlève attributs étendus et ACL (macOS), permissions 755 / 644
 # 4. crée $OUT_DIR/tkz-elements.zip  (dossier racine : tkz-elements/)
 #    + une copie datée tkz-elements-<version>.zip pour tes archives
@@ -19,8 +22,11 @@ SRC="$(cd "$(dirname "$0")/.." && pwd)"   # dossier du paquet (parent de scripts
 OUT_DIR="${OUT_DIR:-$(dirname "$SRC")/ctan}"  # par défaut : ~/Documents/WKS/Elements/ctan
 DOC_PDF="doc/latex/build/TKZdoc-elements-main.pdf"
 DOC_DEST="doc/${PKG}.pdf"
+DOC3D_SRCS=("doc/latex-3d/build/${PKG}-3d.pdf" "Claude outputs/3d/doc/build/${PKG}-3d.pdf")
+DOC3D_DEST="doc/${PKG}-3d.pdf"
 EXCLUDES=(.git .gitignore .nova "Claude outputs" scripts build
-          '*.mp' '*.table' .DS_Store '._*')
+          '*.mp' '*.table' .DS_Store '._*'
+          .claude .codegraph .mcp.json CLAUDE.md)
 
 die() { printf "Erreur : %b\n" "$*" >&2; exit 1; }
 
@@ -40,6 +46,26 @@ if [[ -f "$DOC_DEST" && "$DOC_PDF" -ot "$DOC_DEST" ]]; then
 else
   cp "$DOC_PDF" "$DOC_DEST"
   echo "Doc       : $DOC_PDF -> $DOC_DEST"
+fi
+
+# ---------- 1 bis. Doc 3D ----------
+if [[ -f "latex/${PKG}-3d.sty" ]]; then
+  DOC3D_PDF=""
+  for f in "${DOC3D_SRCS[@]}"; do
+    if [[ -f "$f" ]]; then DOC3D_PDF="$f"; break; fi
+  done
+  if [[ -n "$DOC3D_PDF" ]]; then
+    if [[ -f "$DOC3D_DEST" && "$DOC3D_PDF" -ot "$DOC3D_DEST" ]]; then
+      echo "Doc 3D    : $DOC3D_PDF est plus ancien que $DOC3D_DEST -> on garde $DOC3D_DEST"
+    else
+      cp "$DOC3D_PDF" "$DOC3D_DEST"
+      echo "Doc 3D    : $DOC3D_PDF -> $DOC3D_DEST"
+    fi
+  elif [[ -f "$DOC3D_DEST" ]]; then
+    echo "Doc 3D    : pas de PDF compilé trouvé -> on garde $DOC3D_DEST"
+  else
+    die "doc 3D introuvable (${DOC3D_SRCS[*]}) : compile tkz-elements-3d.tex d'abord"
+  fi
 fi
 
 # ---------- 2. Copie filtrée ----------
@@ -65,7 +91,7 @@ rm -f "$ZIP"
 cp "$ZIP" "$OUT_DIR/${PKG}-${VERSION}.zip"
 
 # ---------- Contrôle ----------
-bad=$(zipinfo -1 "$ZIP" | grep -E '(^|/)(\.DS_Store|\._|__MACOSX|\.git|\.nova|Claude outputs|scripts/|build/)|\.(mp|table)$' || true)
+bad=$(zipinfo -1 "$ZIP" | grep -E '(^|/)(\.DS_Store|\._|__MACOSX|\.git|\.nova|\.claude|\.codegraph|\.mcp\.json|CLAUDE\.md|Claude outputs|scripts/|build/)|\.(mp|table)$' || true)
 [[ -z "$bad" ]] || die "fichiers indésirables dans l'archive :\n$bad"
 echo "Archive   : $ZIP  ($(zipinfo -1 "$ZIP" | grep -vc '/$') fichiers)"
 echo "Copie     : $OUT_DIR/${PKG}-${VERSION}.zip"

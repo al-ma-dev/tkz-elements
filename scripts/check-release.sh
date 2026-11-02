@@ -8,6 +8,7 @@ REF_STY="latex/tkz-elements.sty"
 # Fichiers où vérifier date & version
 CHECK_FILES=(
   "latex/tkz-elements.sty"
+  "latex/tkz-elements-3d.sty"
   "README.md"
   "CHANGELOG.md"
 )
@@ -16,7 +17,7 @@ CHECK_FILES=(
 EXEC_GLOBS=("*.sh" "*.zsh" "scripts/*.sh" "scripts/*.zsh")
 
 # Répertoires à ignorer pour les permissions
-PRUNE_DIRS=(.git)
+PRUNE_DIRS=(.git .nova "Claude outputs")
 
 # ---------- Utils ----------
 die() { print -r -- "Error: $*" >&2; exit 1; }

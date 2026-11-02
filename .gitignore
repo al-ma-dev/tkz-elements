@@ -20,9 +20,7 @@ doc/latex/tmp.table
 doc/latex/myfic.mp
 
 # builds locaux
-/build/
-doc/latex/build
-doc/build/
+build/
 .DS_Store
 __MACOSX/
 
@@ -30,6 +28,10 @@ __MACOSX/
 .nova/
 .git.bak-*/
 Claude outputs/
+.claude/
+.codegraph/
+.mcp.json
+CLAUDE.md
 
 # ignorer les scripts en général
 *.sh
