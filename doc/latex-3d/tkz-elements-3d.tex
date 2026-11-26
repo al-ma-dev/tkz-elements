@@ -18,7 +18,7 @@
 
 \title{tkz-elements 3D\\[4pt]\large Drawing solids with tkz-elements}
 \author{Alain Matthes}
-\date{Draft --- October 2026 (prototype)}
+\date{Version 6.12c --- 2026/11/26 (experimental)}
 
 \begin{document}
 \maketitle
@@ -279,6 +279,8 @@ pyramid(\{A, B, ...\}, S) & pyramid of apex $S$ (attributes \code{apex},
 prism(\{A, B, ...\}, v) & prism (translation vector $v$) \\
 regular\_polygon3(c, n, r, k) & list of the $k$ vertices of a regular polygon \\
 sphere(O, r)      & sphere \\
+ellipsoid(O, a, b, c) & ellipsoid of semi-axes $a$, $b$, $c$ (along
+                    $x$, $y$, $z$, or along a given basis) \\
 cylinder(B, T, r) & cylinder (bases of centers $B$ and $T$) \\
 cone(B, S, r)     & cone (base of center $B$, apex $S$) \\
 polygon3(\{A, B, ...\}, opts) & plane convex face (\code{color}, \code{fill}) \\
@@ -335,6 +337,7 @@ S:curve(g, f, opts)       & a curve $f(t)$, $t\in[0,1]$
                             (\code{closed}, \code{n}, \code{nohide}) \\
 S:polyhedron(g, P)        & the edges of a polyhedron \\
 S:sphere(g, SP)           & the apparent contour of a sphere \\
+S:ellipsoid(g, E)         & the apparent contour of an ellipsoid \\
 S:cylinder(g, CY),\ S:cone(g, CO) & rims and contour generators \\
 S:polygon\_edges(g, L)    & the edges of a list of plane faces \\
 S:graph(g, G)             & the edges and vertices of a graph \\
@@ -380,6 +383,7 @@ base) is hidden.
 Regions are closed paths built by \code{S:faces(g, L)} (faces),
 \code{S:sphere\_zone(name, SP, axis, h1, h2)} (visible part of a zone of a
 sphere), \code{S:hull\_region(name, points)} (outline of a convex surface)
+\code{S:ellipsoid\_region(name, E)} (outline of an ellipsoid)
 and \code{S:curve\_region(name, f)} (region bounded by a closed curve).
 Shadings, transparency and patterns are those of TikZ.
 
@@ -408,6 +412,109 @@ Shadings, transparency and patterns are those of TikZ.
   \tkzDrawVisible[green!50!black]{circles}
   \tkzDrawHidden[green!50!black]{circles}
   \tkzDrawVisible{axis} \tkzDrawHidden{axis}
+\end{tikzpicture}
+\end{example}
+
+% =====================================================================
+\section{The ellipsoid}
+
+\code{ellipsoid(O, a, b, c)} is the ellipsoid of center $O$ and semi-axes
+$a$, $b$, $c$ along the axes $x$, $y$, $z$:
+\[\frac{x^2}{a^2}+\frac{y^2}{b^2}+\frac{z^2}{c^2}=1.\]
+An inclined ellipsoid
+is given by an orthonormal basis of its axes:
+\code{ellipsoid(O, a, b, c, true, \{e1, e2, e3\})}. The affine map
+$(x, y, z)\mapsto(x/a, y/b, z/c)$ sends it to the unit sphere: the hidden
+parts and the apparent contour are computed there, so the contour is exact
+(it is an ellipse, with the three cameras).
+
+\begin{center}
+\begin{tabular}{>{\ttfamily}l p{8.3cm}}
+\toprule
+\textrm{Method} & Result \\
+\midrule
+E:point(th, ph)    & point of longitude $\theta$ and latitude $\varphi$ \\
+E:meridian(th)     & the meridian $\theta$, a curve $f(t)$, $t\in[0,1]$ \\
+E:parallel(ph)     & the parallel $\varphi$, a curve $f(t)$ \\
+E:contour(cam)     & the apparent contour, a curve $f(t)$ \\
+S:ellipsoid(g, E)  & the contour in the group \code{g} \\
+S:ellipsoid\_region(name, E) & the outline as a region (to fill or clip) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The meridians and the parallels are drawn with \code{S:curve}: the ellipsoid,
+declared with \code{S:add}, hides their back part.
+
+\begin{example}{ex-ellipsoid}
+\directlua{
+  init_elements()
+  local cam = camera{azimuth = 30, elevation = 22}
+  local S = scene3(cam)
+  z3.O = point3(0, 0, 0)
+  local E = S:add(ellipsoid(z3.O, 1.6, 1.6, 3.2))
+  S:ellipsoid("outline", E)
+  S:ellipsoid_region("outline", E)
+  S:curve("equator", E:parallel(0), {closed = true})
+  S:curve("meridians", E:meridian(0), {closed = true})
+  S:curve("meridians", E:meridian(math.pi / 2), {closed = true})
+  z3.x, z3.y, z3.z = point3(4.2, 0, 0), point3(0, 5.2, 0), point3(0, 0, 5)
+  z3.P = point3(0.6, 2.5, 4.2)
+  S:segment("axes", z3.O, z3.x)
+  S:segment("axes", z3.O, z3.y)
+  S:segment("axes", z3.O, z3.z)
+  S:segment("vecP", z3.O, z3.P)
+  S:export()
+  cam:to_z(z3)
+}
+\begin{tikzpicture}[scale = .8, line cap = round]
+  \tkzGetNodes
+  \tkzDrawHidden[densely dashed]{axes}
+  \tkzDrawHidden[red, densely dashed]{vecP}
+  \tkzDrawHidden[gray, densely dashed]{equator}
+  \tkzDrawHidden[gray, densely dashed]{meridians}
+  \begin{scope}
+    \tkzClipRegion{outline}
+    \shade[inner color = white, outer color = gray!60, opacity = .55]
+      ([shift = {(-.7, 1.2)}]O) circle (4.5);
+  \end{scope}
+  \tkzDrawVisible[semithick]{outline}
+  \tkzDrawVisible[gray!70!black]{equator}
+  \tkzDrawVisible[gray!70!black]{meridians}
+  \tkzDrawVisible[thick, -stealth]{axes}
+  \tkzDrawVisible[red, thick, -stealth]{vecP}
+  \tkzLabelPoint[below left](x){$x$}
+  \tkzLabelPoint[right](y){$y$}
+  \tkzLabelPoint[above](z){$z$}
+  \tkzLabelPoint[above right, red](P){$P$}
+\end{tikzpicture}
+\end{example}
+
+An inclined ellipsoid with its meridians and parallels:
+
+\begin{example}{ex-ellipsoid-inclined}
+\directlua{
+  init_elements()
+  local cam = camera{azimuth = 20, elevation = 15}
+  local S = scene3(cam)
+  local R = rotation3(point3(0, 0, 0), point3(1, 1, 0), math.rad(40))
+  local E = S:add(ellipsoid(point3(0, 0, 0), 3, 1.8, 1.1, true,
+    {R(point3(1, 0, 0)), R(point3(0, 1, 0)), R(point3(0, 0, 1))}))
+  S:ellipsoid("outline", E)
+  S:ellipsoid_region("outline", E)
+  for k = -2, 2 do
+    S:curve("mesh", E:parallel(k * math.pi / 6), {closed = true})
+  end
+  for k = 0, 5 do
+    S:curve("mesh", E:meridian(k * math.pi / 6), {closed = true})
+  end
+  S:export()
+}
+\begin{tikzpicture}
+  \tkzFillRegion[blue!10]{outline}
+  \tkzDrawHidden[gray, densely dotted]{mesh}
+  \tkzDrawVisible[blue!60!black]{mesh}
+  \tkzDrawVisible[thick]{outline}
 \end{tikzpicture}
 \end{example}
 

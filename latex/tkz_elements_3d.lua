@@ -1,6 +1,6 @@
 -- tkz_elements_3d.lua
--- Prototype of a 3D extension of tkz-elements (not part of the package).
--- Loaded after tkz-elements with:  require("tkz_elements_3d")
+-- 3D module of tkz-elements (experimental).
+-- Loaded by tkz-elements-3d.sty (option 3d of tkz-elements).
 -- 3D points live in the table z3; the camera projects them to 2D points of
 -- tkz-elements (class point), stored in z and drawn with tkz-euclide.
 
@@ -284,6 +284,83 @@ function sphere:contour(cam)
   if d <= r then error("tkz-elements 3d: the camera is inside the sphere", 2) end
   local n = de / d
   return self.center + (r * r / d) * n, n, r * math.sqrt(1 - (r / d) ^ 2)
+end
+
+---------------------------------------------------------------------------
+-- ellipsoid (opaque by default)
+--   ellipsoid(c, a, b, cc)              semi-axes a, b, cc along x, y, z
+--   ellipsoid(c, a, b, cc, opaque, {e1, e2, e3})   along an orthonormal
+--                                                  basis (inclined ellipsoid)
+-- The affine map p -> ((p-c).e1/a, (p-c).e2/b, (p-c).e3/cc) sends it to the
+-- unit sphere: the hidden parts and the contour are computed there.
+---------------------------------------------------------------------------
+ellipsoid = {}
+ellipsoid.__index = ellipsoid
+local UNIT_SPHERE = sphere:new(P3(0, 0, 0), 1, true)
+
+function ellipsoid:new(c, a, b, cc, opaque, axes)
+  if opaque == nil then opaque = true end
+  if not (a > 0 and b > 0 and cc > 0) then
+    error("tkz-elements 3d: ellipsoid: the semi-axes must be positive", 2)
+  end
+  local E = { center = c, a = a, b = b, c = cc, opaque = opaque, type = "ellipsoid" }
+  if axes then
+    E.e1, E.e2, E.e3 = axes[1]:unit(), axes[2]:unit(), axes[3]:unit()
+  else
+    E.e1, E.e2, E.e3 = P3(1, 0, 0), P3(0, 1, 0), P3(0, 0, 1)
+  end
+  return setmetatable(E, ellipsoid)
+end
+setmetatable(ellipsoid, { __call = function(cls, ...) return cls:new(...) end })
+
+-- vector and point in the frame of the unit sphere, and back
+function ellipsoid:to_unit_vector(w)
+  return P3(w:dot(self.e1) / self.a, w:dot(self.e2) / self.b, w:dot(self.e3) / self.c)
+end
+function ellipsoid:to_unit(p) return self:to_unit_vector(p - self.center) end
+function ellipsoid:from_unit(u)
+  return self.center + (self.a * u.x) * self.e1 + (self.b * u.y) * self.e2
+         + (self.c * u.z) * self.e3
+end
+
+-- point of longitude th and latitude ph (radians)
+function ellipsoid:point(th, ph)
+  return self:from_unit(P3(math.cos(ph) * math.cos(th), math.cos(ph) * math.sin(th),
+                           math.sin(ph)))
+end
+
+-- meridian of longitude th and parallel of latitude ph: curves f(t), t in [0, 1]
+function ellipsoid:meridian(th)
+  return function(t) return self:point(th, 2 * math.pi * t) end
+end
+function ellipsoid:parallel(ph)
+  return function(t) return self:point(2 * math.pi * t, ph) end
+end
+
+-- true if the ray x + t w (t > 0) goes through the ellipsoid
+function ellipsoid:blocks(x, w)
+  return UNIT_SPHERE:blocks(self:to_unit(x), self:to_unit_vector(w):unit())
+end
+
+-- apparent contour (an ellipse, the image of a circle of the unit sphere):
+-- curve f(t), t in [0, 1]
+function ellipsoid:contour(cam)
+  local k0, n, r
+  if cam.perspective then
+    local k = self:to_unit(cam.eye)
+    local d = k:norm()
+    if d <= 1 then error("tkz-elements 3d: the camera is inside the ellipsoid", 2) end
+    n = k / d
+    k0, r = (1 / d) * n, math.sqrt(1 - 1 / (d * d))
+  else
+    n = self:to_unit_vector(cam.d):unit()
+    k0, r = P3(0, 0, 0), 1
+  end
+  local u1, u2 = basis_of(n)
+  return function(t)
+    local a = 2 * math.pi * t
+    return self:from_unit(k0 + (r * math.cos(a)) * u1 + (r * math.sin(a)) * u2)
+  end
 end
 
 ---------------------------------------------------------------------------
@@ -877,6 +954,17 @@ function scene3:sphere(group, S)
   self:circle(group, c, n, r, { exclude = S })
 end
 
+-- apparent contour of an ellipsoid (its curves: scene3:curve with
+-- E:meridian(th), E:parallel(ph), ...; the ellipsoid hides their back part)
+function scene3:ellipsoid(group, E)
+  self:curve(group, E:contour(self.cam), { closed = true, exclude = E })
+end
+
+-- closed path PA.<name>: the outline of the ellipsoid (to fill or to clip)
+function scene3:ellipsoid_region(name, E, n)
+  self:curve_region(name, E:contour(self.cam), n or 180)
+end
+
 -- closed polygonal line through a list of point3 (section, ...)
 function scene3:polygon(group, pts)
   for i = 1, #pts do self:segment(group, pts[i], pts[i % #pts + 1]) end
@@ -1037,7 +1125,7 @@ function tkz3d_balls(group, color, radius)
   end
 end
 
--- used by \tkzDrawVisible / \tkzDrawHidden (prototype of the .sty macros)
+-- used by \tkzDrawVisible / \tkzDrawHidden (macros of tkz-elements-3d.sty)
 function tkz3d_draw(kind, group, opts)
   local g = TD[group]
   if not g then error("tkz-elements 3d: unknown group " .. group, 2) end

@@ -1,3 +1,45 @@
+## [2026/11/26 — version 6.12c]
+
+   ### Fixed
+   - **conic**
+     - `EL_five_points`: crash when the origin lies inside the ellipse (the
+       semi-axes given by `ellipse_axes_angle` were swapped, so the minor
+       axis could be longer than the major one); clear error messages when
+       the points do not define an ellipse.
+     - `EL_five_points`: wrong ellipse when its axes make an angle of 135°
+       with (Ox) (the case A = C gave 45° whatever the sign of B); error
+       "degenerate ellipse" when the ellipse passes through the origin or
+       when the coordinates are large. The computation is now made in a frame
+       centered at the centroid of the five points and scaled to unit size,
+       and the direction of the major axis no longer depends on an absolute
+       tolerance. Five points on a circle now raise an explicit error.
+     - `EL_from_equation`: same correction of the angle.
+   - **triangle**
+     - `apollonius_point()` raised an error (it called `kimberling(181)`
+       instead of `self:kimberling(181)`).
+     - `mandart_inellipse()`, `orthic_inellipse()`: computed with
+       `EL_five_points` (same corrections).
+     - `kimberling(176)` no longer creates the global variables `ra`, `rb`,
+       `rc`.
+   - Internal functions: no more global variables created by mistake (`CI`
+     in the computation of the points of an ellipse, `_` in `midcircle_cc_`
+     and `euler_circle_`); the circle used to compute the points of an
+     ellipse is created once, not for each point.
+
+   ### Added
+   - 3D module: `ellipsoid(O, a, b, c)` (axes along x, y, z, or along a given
+     orthonormal basis), opaque, with `point(th, ph)`, `meridian(th)`,
+     `parallel(ph)` and an exact apparent contour `contour(cam)` (computed
+     on the unit sphere); `scene3:ellipsoid(group, E)` and
+     `scene3:ellipsoid_region(name, E)`.
+
+   ### Documentation
+   - `apollonius_point()`: the Apollonius circle is tangent internally to the
+     excircles (it encloses them); `X_{181}`; an example.
+   - `tkz-elements-3d.pdf`: new section "The ellipsoid".
+
+
+
 ## [2026/11/01 — version 6.10c]
 
    ### Added

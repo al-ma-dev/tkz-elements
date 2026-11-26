@@ -162,9 +162,9 @@ end
 
 function get_points_ellipse_(C, x, y, nb)
 	local points = {}
+	local CI = circle:new(C.center, C.vertex)
 	for t = x, y + 1 / nb, 1 / nb do
 		-- point on circle
-		CI = circle:new(C.center, C.vertex)
 		local M = CI:point(t)
 		-- point on ellipse
 		local P = affinity_(C.Fa, C.Fb, C.center, C.covertex, C.b / C.a, M)
@@ -222,7 +222,7 @@ end
 
 function get_one_point_ellipse_(C, t)
 	-- point on circle
-	CI = circle:new(C.center, C.vertex)
+	local CI = circle:new(C.center, C.vertex)
 	local M = CI:point(t)
 	return affinity_(C.Fa, C.Fb, C.center, C.covertex, C.b / C.a, M)
 end
@@ -424,17 +424,16 @@ function ellipse_axes_angle(coefficients)
 	local A, B, C, D, E, F =
 		coefficients.A, coefficients.B, coefficients.C, coefficients.D, coefficients.E, coefficients.F
 
+	-- ellipse: 4AC - B^2 > 0 (test relative to the size of the coefficients)
 	local discriminant = 4 * A * C - B * B
-	if math.abs(discriminant) < tkz.epsilon then
-		error("tkz-elements: ellipse_axes_angle: degenerate ellipse (discriminant close to zero)", 2)
+	if discriminant <= tkz.epsilon * (A * A + B * B + C * C) then
+		error("tkz-elements: ellipse_axes_angle: the points do not define an ellipse", 2)
 	end
 
-	local radicand_ra = 2
-		* (A * E ^ 2 + C * D ^ 2 - B * D * E + (B ^ 2 - 4 * A * C) * F)
-		* ((A + C) + math.sqrt((A - C) ^ 2 + B ^ 2))
-	local radicand_rb = 2
-		* (A * E ^ 2 + C * D ^ 2 - B * D * E + (B ^ 2 - 4 * A * C) * F)
-		* ((A + C) - math.sqrt((A - C) ^ 2 + B ^ 2))
+	local K = A * E ^ 2 + C * D ^ 2 - B * D * E + (B ^ 2 - 4 * A * C) * F
+	local S = math.sqrt((A - C) ^ 2 + B ^ 2)
+	local radicand_ra = 2 * K * ((A + C) + S)
+	local radicand_rb = 2 * K * ((A + C) - S)
 
 	if radicand_ra < 0 or radicand_rb < 0 then
 		error("tkz-elements: ellipse_axes_angle: the points do not define an ellipse", 2)
@@ -442,19 +441,21 @@ function ellipse_axes_angle(coefficients)
 
 	local ra = math.sqrt(radicand_ra) / discriminant
 	local rb = math.sqrt(radicand_rb) / discriminant
+	-- ra must be the semi-major axis: when the normalized equation has
+	-- A + C < 0 (e.g. the origin lies inside the ellipse) the formulas swap
+	if ra < rb then
+		ra, rb = rb, ra
+	end
 	local center = search_center_ellipse(coefficients)
-	local angle = 0
-	if math.abs(A - C) < tkz.epsilon then
-		angle = math.pi / 4
-	else
-		local temp_angle = 0.5 * math.atan(B / (A - C))
-		local V = center + point(math.cos(temp_angle), math.sin(temp_angle))
-		local test_point = report_(center, V, ra)
-		if math.abs(test_ellipse(test_point, coefficients)) < tkz.epsilon then
-			angle = temp_angle
-		else
-			angle = temp_angle + math.pi / 2
-		end
+	-- the major axis makes the angle t or t + pi/2 with (Ox) (atan(B, A - C)
+	-- also handles A = C): keep the direction whose vertex satisfies the
+	-- equation best (comparison, no absolute tolerance)
+	local t = 0.5 * math.atan(B, A - C)
+	local V1 = center + point(ra * math.cos(t), ra * math.sin(t))
+	local V2 = center + point(-ra * math.sin(t), ra * math.cos(t))
+	local angle = t
+	if math.abs(test_ellipse(V2, coefficients)) < math.abs(test_ellipse(V1, coefficients)) then
+		angle = t + math.pi / 2
 	end
 	return center, ra, rb, angle
 end
@@ -540,8 +541,26 @@ function inverse_affinity_ellipse_(C, z)
 end
 
 
-function EL_five_points(z1,z2,z3,z4,z5)
-	local coefficients = search_ellipse_(z1,z2,z3,z4,z5)
+function EL_five_points(z1, z2, z3, z4, z5)
+	-- the computation is made in a frame centered at the centroid of the
+	-- points (inside the ellipse, so the normalization F = 1 of
+	-- search_ellipse_ is always possible, even if the ellipse passes through
+	-- the origin) and scaled to unit size (large or small coordinates)
+	local pts = { z1, z2, z3, z4, z5 }
+	local g = barycenter_({ z1, 1 }, { z2, 1 }, { z3, 1 }, { z4, 1 }, { z5, 1 })
+	local s = 0
+	for _, p in ipairs(pts) do
+		s = math.max(s, point.abs(p - g))
+	end
+	if s < tkz.epsilon then
+		error("tkz-elements: EL_five_points: the points must be distinct", 2)
+	end
+	local q = {}
+	for i, p in ipairs(pts) do
+		q[i] = (p - g) / s
+	end
+
+	local coefficients = search_ellipse_(q[1], q[2], q[3], q[4], q[5])
 	if coefficients == nil then
 		error("tkz-elements: EL_five_points: unable to determine the conic", 2)
 	end
@@ -550,6 +569,9 @@ function EL_five_points(z1,z2,z3,z4,z5)
 	if not center then
 		error("tkz-elements: EL_five_points: unable to determine the ellipse", 2)
 	end
+	if ra - rb <= 1e-9 * ra then
+		error("tkz-elements: EL_five_points: the five points lie on a circle", 2)
+	end
 
-	return EL_radii(center, ra, rb, angle)
+	return EL_radii(g + s * center, s * ra, s * rb, angle)
 end

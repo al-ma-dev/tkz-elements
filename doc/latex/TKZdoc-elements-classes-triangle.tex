@@ -2653,7 +2653,17 @@ constructions.
 
 This method should not be confused with the previous one.
 
-Consider the excircles $J_A$, $J_B$, and $J_C$ of a triangle, and the external Apollonius circle  tangent externally to all three. Denote the contact point  by $xa$, $xb$ and $xc$, etc. Then the lines $Axa$, $Bxb$, and $Cxc$ concur in a point known as the Apollonius point. This point is Kimberling center $X_(181)$ (Kimberling 1998, p. 102).
+Consider the excircles $J_A$, $J_B$ and $J_C$ of a triangle, and the Apollonius circle, which is tangent internally to all three (it encloses them). Denote the contact points by $x_a$, $x_b$ and $x_c$. Then the lines $Ax_a$, $Bx_b$ and $Cx_c$ concur in a point known as the Apollonius point. This point is the Kimberling center $X_{181}$ (Kimberling 1998, p.~102).
+
+\begin{tkzexample}[code only]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(5, 0)
+  z.C = point(1, 4)
+  T.ABC = triangle(z.A, z.B, z.C)
+  z.X = T.ABC:apollonius_point()}
+\end{tkzexample}
 
 \begin{flushright}
 \small

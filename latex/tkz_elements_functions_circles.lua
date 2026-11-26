@@ -355,8 +355,8 @@ function midcircle_cc_(o1, t1, o2, t2, EPS)
   i = barycenter_({ o2, r1 }, { o1, -r2 })
 
     if (state == "DISJOINT_EXT") or (state == "TANGENT_EXT") then
-        tg1, _ = tangent_from_(o1, t1, i)
-        TG1, _ = tangent_from_(o2, t2, i)
+        tg1 = tangent_from_(o1, t1, i)
+        TG1 = tangent_from_(o2, t2, i)
         p = math.sqrt(point.mod(i - tg1) * point.mod(i - TG1))
         return circle:radius(i, p)
     elseif state == "SECANT" then

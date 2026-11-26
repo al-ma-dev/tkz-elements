@@ -355,7 +355,7 @@ function triangle:kimberling(n)
 		local ra, rb, rc = radius_excircle_(self.pa, self.pb, self.pc)
 		return self:barycentric(a - ra, b - rb, c - rc)
 	elseif n == 176 then
-		ra, rb, rc = radius_excircle_(self.pa, self.pb, self.pc)
+		local ra, rb, rc = radius_excircle_(self.pa, self.pb, self.pc)
 		return self:barycentric(a + ra, b + rb, c + rc)
 	elseif n == 181 then
 	  return self:trilinear((a * (b + c) ^ 2) / (b + c - a), (b * (c + a) ^ 2) / (c + a - b), (c * (a + b) ^ 2) / (a + b - c))--apollonius point
@@ -731,7 +731,7 @@ function triangle:the_apollonius_center()
 end
 
 function triangle:apollonius_point()
-	return kimberling(181)
+	return self:kimberling(181)
 end
 
 function triangle:isotomic(p)
@@ -1547,9 +1547,7 @@ function triangle:mandart_inellipse()
 	local M = T:mittenpunkt_point()
 	local Xa, Yb, Zc = T:extouch():get()
 	local X, Y = M:symmetry(Xa, Yb)
-	local coefficients = search_ellipse_(X, Y, Xa, Yb, Zc)
-	local center, ra, rb, angle = ellipse_axes_angle(coefficients)
-	return conic:new(EL_radii(center, ra, rb, angle))
+	return conic:new(EL_five_points(X, Y, Xa, Yb, Zc))
 end
 
 function triangle:orthic_inellipse()
@@ -1558,9 +1556,7 @@ function triangle:orthic_inellipse()
 		local K = T:symmedian_point()
 		local Ha, Hb, Hc = T:orthic():get()
 		local Sa, Sb = K:symmetry(Ha, Hb)
-		local coefficients = search_ellipse_(Ha, Hb, Hc, Sa, Sb)
-		local center, ra, rb, angle = ellipse_axes_angle(coefficients)
-		return conic:new(EL_radii(center, ra, rb, angle))
+		return conic:new(EL_five_points(Ha, Hb, Hc, Sa, Sb))
 	else
 		error("tkz-elements: triangle:orthic_inellipse: the triangle must not have an obtuse angle", 2)
 	end

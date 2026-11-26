@@ -10,7 +10,11 @@
 #   latex/tkz-elements-3d.sty : même version et même date (\ProvidesPackage et
 #                            date minimale de tkz-elements dans \@ifpackagelater)
 #   README.md              : _Current release: **[DATE version X.YYc]**_
+#   doc/latex/TKZdoc-elements-main.tex : \gdef\tkzversionofpack{X.YYc},
+#                            \gdef\tkzdateofpack{DATE} et le commentaire de la ligne 2
+#   doc/latex-3d/tkz-elements-3d.tex : \date{Version X.YYc --- DATE (experimental)}
 #   CHANGELOG.md           : première entrée "## [DATE — version X.YYc]"
+#                            - si c'est "## [Unreleased]" : elle est renommée ;
 #                            - si elle porte déjà la nouvelle version ou une version en préparation :
 #                              son en-tête est mis à jour ;
 #                            - si elle porte la version actuelle du .sty (déjà publiée) :
@@ -23,6 +27,8 @@ STY="latex/tkz-elements.sty"
 STY3D="latex/tkz-elements-3d.sty"
 README="README.md"
 CHANGELOG="CHANGELOG.md"
+MAIN="doc/latex/TKZdoc-elements-main.tex"
+DOC3D="doc/latex-3d/tkz-elements-3d.tex"
 
 die() { echo "Erreur : $*" >&2
         command -v osascript >/dev/null && [ ! -t 0 ] && \
@@ -35,6 +41,8 @@ for f in "$STY" "$README" "$CHANGELOG"; do [ -f "$f" ] || die "$f introuvable"; 
 OLD_VER=$(perl -ne 'if (/\\ProvidesPackage\{tkz-elements\}\[\S+ v(\d+\.\d+[a-z]?)/) { print $1; exit }' "$STY")
 OLD_DATE=$(perl -ne 'if (/\\ProvidesPackage\{tkz-elements\}\[(\d{4}\/\d\d\/\d\d)/) { print $1; exit }' "$STY")
 CL_VER=$(perl -ne 'if (/^## \[\d{4}\/\d\d\/\d\d — version (\d+\.\d+[a-z]?)\]/) { print $1; exit }' "$CHANGELOG")
+# première entrée "## [Unreleased]" ?
+CL_UNREL=$(perl -ne 'if (/^## \[/) { print((/^## \[Unreleased\]/) ? 1 : 0); exit }' "$CHANGELOG")
 [ -n "$OLD_VER" ] || die "version introuvable dans $STY"
 
 # ---------- Nouvelle version ----------
@@ -63,7 +71,14 @@ count() { perl -ne "\$n++ if $1; END { print \$n+0 }" "$2"; }
 [ "$(count '/\\ProvidesPackage\{tkz-elements\}\[\d{4}\/\d\d\/\d\d v\d+\.\d+[a-z]?/' "$STY")" = 1 ] || die "\\ProvidesPackage non reconnu dans $STY"
 [ "$(count '/\\typeout\{Package tkz-elements v\d+\.\d+[a-z]? \(\d{4}\/\d\d\/\d\d\)/' "$STY")" = 1 ] || die "\\typeout non reconnu dans $STY"
 [ "$(count '/Current release: \*\*\[\d{4}\/\d\d\/\d\d version \d+\.\d+[a-z]?\]\*\*/' "$README")" = 1 ] || die "ligne « Current release » non reconnue dans $README"
-[ -n "$CL_VER" ] || die "aucune entrée « ## [AAAA/MM/JJ — version X.YYc] » dans $CHANGELOG"
+[ -n "$CL_VER" ] || [ "$CL_UNREL" = 1 ] || die "aucune entrée « ## [AAAA/MM/JJ — version X.YYc] » dans $CHANGELOG"
+if [ -f "$MAIN" ]; then
+  [ "$(count '/^\\gdef\\tkzversionofpack\{/' "$MAIN")" = 1 ] || die "\\tkzversionofpack non reconnu dans $MAIN"
+  [ "$(count '/^\\gdef\\tkzdateofpack\{/' "$MAIN")" = 1 ] || die "\\tkzdateofpack non reconnu dans $MAIN"
+fi
+if [ -f "$DOC3D" ]; then
+  [ "$(count '/^\\date\{/' "$DOC3D")" = 1 ] || die "\\date non reconnu dans $DOC3D"
+fi
 if [ -f "$STY3D" ]; then
   [ "$(count '/\\ProvidesPackage\{tkz-elements-3d\}\[\d{4}\/\d\d\/\d\d v\d+\.\d+[a-z]?/' "$STY3D")" = 1 ] || die "\\ProvidesPackage non reconnu dans $STY3D"
   [ "$(count '/\\\@ifpackagelater\{tkz-elements\}\{\d{4}\/\d\d\/\d\d\}/' "$STY3D")" = 1 ] || die "\\@ifpackagelater non reconnu dans $STY3D"
@@ -80,7 +95,20 @@ if [ -f "$STY3D" ]; then
 fi
 perl -pi -e 's/(Current release: \*\*\[)\d{4}\/\d\d\/\d\d version \d+\.\d+[a-z]?(\]\*\*)/$1$ENV{DATE} version $ENV{VER}$2/' "$README"
 
-if [ "$CL_VER" = "$OLD_VER" ] && [ "$VER" != "$OLD_VER" ]; then
+if [ -f "$MAIN" ]; then
+  perl -pi -e 's/^(\\gdef\\tkzversionofpack\{)[^}]*\}/$1$ENV{VER}}/;
+                s/^(\\gdef\\tkzdateofpack\{)[^}]*\}/$1$ENV{DATE}}/;
+                s/^(% Documentation of tkz-elements v)\d+\.\d+[a-z]?/$1$ENV{VER}/' "$MAIN"
+fi
+if [ -f "$DOC3D" ]; then
+  perl -pi -e 's/^\\date\{.*\}\s*$/\\date{Version $ENV{VER} --- $ENV{DATE} (experimental)}\n/' "$DOC3D"
+fi
+
+if [ "$CL_UNREL" = 1 ]; then
+  # section en préparation : elle devient la nouvelle version
+  perl -0pi -e 's/^## \[Unreleased\]/## [$ENV{DATE} — version $ENV{VER}]/m' "$CHANGELOG"
+  CL_MSG="section [Unreleased] renommée"
+elif [ "$CL_VER" = "$OLD_VER" ] && [ "$VER" != "$OLD_VER" ]; then
   # la première entrée est la version publiée : on ajoute une entrée au-dessus
   perl -0pi -e 's/^(## \[\d{4}\/\d\d\/\d\d — version )/## [$ENV{DATE} — version $ENV{VER}]\n\n   ### Added\n\n   ### Fixed\n\n$1/m' "$CHANGELOG"
   CL_MSG="nouvelle entrée ajoutée en tête"
@@ -95,5 +123,7 @@ echo
 grep -n -E '\\ProvidesPackage|\\typeout\{Package' "$STY" | sed "s|^|  $STY:|"
 [ -f "$STY3D" ] && grep -n -E '\\ProvidesPackage|ifpackagelater|or later is' "$STY3D" | sed "s|^|  $STY3D:|"
 grep -n 'Current release' "$README" | sed "s|^|  $README:|"
+[ -f "$MAIN" ] && grep -n -E '^% Documentation of|tkzversionofpack\{|tkzdateofpack\{' "$MAIN" | sed "s|^|  $MAIN:|"
+[ -f "$DOC3D" ] && grep -n '^\\date{' "$DOC3D" | sed "s|^|  $DOC3D:|"
 grep -n -m1 '^## \[' "$CHANGELOG" | sed "s|^|  $CHANGELOG:|"
 echo "  ($CL_MSG)"

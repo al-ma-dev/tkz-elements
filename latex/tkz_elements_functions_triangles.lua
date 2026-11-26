@@ -386,7 +386,8 @@ function euler_circle_(a, b, c)
 	ha, hb, hc = orthic_tr_(a, b, c)
 
 	-- Get the Euler line and midpoint (H) on the Euler line
-	_, _, H, _ = euler_line_(a, b, c)
+	local _
+	_, _, H = euler_line_(a, b, c)
 
 	-- Return all relevant geometric elements
 	return o,

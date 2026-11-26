@@ -3,15 +3,15 @@
 % SPDX-License-Identifier: LPPL-1.3c
 % Maintainer: Alain Matthes
 %
-% 3D module of tkz-elements (prototype). Loaded by the option 3d of
+% 3D module of tkz-elements (experimental). Loaded by the option 3d of
 % tkz-elements (\usepackage[3d]{tkz-elements}) or by another package
 % (\RequirePackage{tkz-elements-3d}).
 % Same version and date as tkz-elements (scripts/set-version.sh updates both).
-\ProvidesPackage{tkz-elements-3d}[2026/11/01 v6.10c 3D module of tkz-elements (experimental)]
+\ProvidesPackage{tkz-elements-3d}[2026/11/26 v6.12c 3D module of tkz-elements (experimental)]
 \RequirePackage{tkz-elements}
-\@ifpackagelater{tkz-elements}{2026/11/01}{}{%
+\@ifpackagelater{tkz-elements}{2026/11/26}{}{%
   \PackageError{tkz-elements-3d}{%
-    tkz-elements of 2026/11/01 or later is required}{%
+    tkz-elements of 2026/11/26 or later is required}{%
     Update tkz-elements: the 3D module and tkz-elements\MessageBreak
     have the same version.}}
 \directlua{require("tkz_elements_3d")}
